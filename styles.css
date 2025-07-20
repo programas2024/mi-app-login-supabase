@@ -16,11 +16,11 @@
 
     /* Colores de acento */
     --accent-blue-light: #6a93cb; /* Azul suave, casi pastel */
-    --accent-blue-dark: #8458a1;  /* Azul un poco más profundo */
+    --accent-blue-dark: #8458a1;  /* Azul un poco más profundo (mantenido del anterior) */
 
-    /* Degradados para botones - MUY SUTILES */
-    --btn-primary-gradient: linear-gradient(135deg, var(--accent-blue-light) 0%, var(--accent-blue-dark) 100%);
-    --btn-secondary-gradient: linear-gradient(135deg, #a7b7c7 0%, #8da2b3 100%); /* Gris azulado suave */
+    /* Degradados para botones - MUY SUTILES y DIFERENCIADOS */
+    --btn-login-gradient: linear-gradient(135deg, #6ec0ee 0%, #468ac7 100%); /* Celeste a Azul Medio */
+    --btn-register-gradient: linear-gradient(135deg, #2d5a8f 0%, #1e3a5a 100%); /* Azul Oscuro */
     --btn-logout-gradient: linear-gradient(135deg, #d9534f 0%, #c43a36 100%); /* Rojo de salida suave */
 
     /* Colores de mensaje (adaptados al minimalismo) */
@@ -122,9 +122,10 @@ h2 {
     left: 50%;
     transform: translateX(-50%); /* Centra horizontalmente */
     width: calc(100% - 80px); /* Ancho del card menos padding del container */
-    max-width: 380px; /* Mantiene el max-width del container interno */
+    max-width: 480px; /* Mantiene el max-width del container interno */
     margin: 0; /* Elimina márgenes para que position: absolute funcione bien */
     box-sizing: border-box;
+    height: 350px;
 
     /* Transición para la animación de aparecer/desaparecer */
     transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out, visibility 0.4s ease-in-out;
@@ -248,20 +249,20 @@ input[data-tooltip]:hover::before {
 /* Colores de botones específicos con degradados MUY SUAVES */
 .btn-register,
 .btn-register-action {
-    background: var(--btn-primary-gradient);
+    background: var(--btn-register-gradient); /* Ahora usa el degradado azul oscuro */
 }
 .btn-register:hover,
 .btn-register-action:hover {
-    background: linear-gradient(135deg, #7ba0d4 0%, #4a7aa8 100%); /* Ligera variación en hover */
+    background: linear-gradient(135deg, #3d6a9a 0%, #29486c 100%); /* Ligera variación en hover para azul oscuro */
 }
 
 .btn-login,
 .btn-login-action {
-    background: var(--btn-primary-gradient); /* Usar el mismo degradado azul principal para login */
+    background: var(--btn-login-gradient); /* Ahora usa el degradado celeste */
 }
 .btn-login:hover,
 .btn-login-action:hover {
-    background: linear-gradient(135deg, #7ba0d4 0%, #4a7aa8 100%);
+    background: linear-gradient(135deg, #7ccefc 0%, #50a1d6 100%); /* Ligera variación en hover para celeste */
 }
 
 .btn-logout {
