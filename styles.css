@@ -47,10 +47,12 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow: hidden; /* Evita barras de desplazamiento innecesarias */
+    /* --- CAMBIO CLAVE AQUÍ: Permitir overflow-y para barra de desplazamiento si es necesario --- */
+    overflow-y: auto; /* Permite desplazamiento vertical cuando el contenido es demasiado grande */
+    overflow-x: hidden; /* Evita desplazamiento horizontal */
 }
 
-/* Importar fuente de Google Fonts (opcional, pero mejora mucho la estética) */
+/* Importar fuente de Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 
@@ -66,12 +68,16 @@ body {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.15); /* Borde un poco más visible */
     animation: fadeInScale 0.8s ease-out forwards; /* Animación de entrada con escala */
-    
+
     /* AJUSTES DE FLEXBOX PARA CENTRADO INTERNO DEL CONTENEDOR */
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra el contenido verticalmente dentro del .container */
-    align-items: center; /* Centra el contenido horizontalmente dentro del .container */
+    /* justify-content: center;  ELIMINAMOS ESTO AQUÍ para evitar conflictos con position: absolute */
+    align-items: center;
+    position: relative; /* CRUCIAL: Contenedor padre para position: absolute */
+    padding-bottom: 30px; /* Asegura espacio extra abajo si la barra de desplazamiento es visible */
+    min-height: 400px; /* Opcional: Una altura mínima para el contenedor si está vacío o con poco contenido */
+    /* Ajusta este min-height si ves que el contenedor se encoge demasiado */
 }
 
 @keyframes fadeInScale {
@@ -93,6 +99,7 @@ h1 {
     text-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); /* Sombra de texto más suave */
     letter-spacing: 1.5px;
     font-weight: 700; /* Más negrita */
+    z-index: 2; /* Para asegurar que el título esté por encima de los formularios */
 }
 
 h2 {
@@ -109,36 +116,37 @@ h2 {
     padding: 35px;
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    margin-top: 30px; /* Margen superior de las tarjetas */
-    margin-bottom: 20px; /* Añadido margen inferior para separar si hay elementos debajo */
     box-shadow: 0 8px 20px var(--shadow-light);
+
+    /* --- CAMBIOS CLAVE PARA LA SUPERPOSICIÓN Y POSICIÓN CONSISTENTE --- */
+    position: absolute; /* Superpone todos los .card */
+    top: 130px; /* Ajusta esta distancia desde la parte superior del .container (después del h1) */
+    left: 50%;
+    transform: translateX(-50%); /* Centra horizontalmente */
+    width: calc(100% - 90px); /* Ancho del card menos padding del container */
+    max-width: 480px; /* Mantiene el max-width del container */
+    margin: 0; /* Elimina márgenes para que position: absolute funcione bien */
+
     /* Transición de propiedades múltiples para una animación suave de aparecer/desaparecer */
-    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out, height 0.6s ease-in-out, padding 0.6s ease-in-out, margin 0.6s ease-in-out, border 0.6s ease-in-out;
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    z-index: 1; /* Por debajo del título */
 }
 
 /* Ocultar elementos con animación */
 .form-hidden,
 .dashboard-hidden {
     opacity: 0;
-    transform: translateY(20px);
     pointer-events: none; /* Deshabilita interacciones mientras está oculto */
-    height: 0; /* Colapsa el espacio */
-    overflow: hidden; /* Oculta el contenido al colapsar */
-    padding: 0; /* Quita el padding para el colapso */
-    margin-top: 0; /* Quita el margin superior para el colapso */
-    margin-bottom: 0; /* Quita el margin inferior para el colapso */
-    border: none; /* Oculta el borde para el colapso */
+    visibility: hidden; /* Oculta completamente el elemento del flujo */
+    transform: translateX(-50%) translateY(20px); /* Animación de salida ligeramente hacia abajo */
 }
 
 /* Cuando la tarjeta está visible, restaurar sus propiedades */
 .card:not(.form-hidden):not(.dashboard-hidden) {
-    height: auto; /* Devolver la altura a auto */
-    padding: 35px; /* Restaurar el padding */
-    margin-top: 30px; /* Restaurar el margen superior */
-    margin-bottom: 20px; /* Restaurar el margen inferior */
-    border: 1px solid rgba(255, 255, 255, 0.08); /* Restaurar el borde */
     opacity: 1;
-    transform: translateY(0);
+    visibility: visible;
+    transform: translateX(-50%) translateY(0); /* Animación de entrada sin desplazamiento vertical */
+    z-index: 3; /* Asegura que el formulario activo esté encima */
 }
 
 
@@ -285,6 +293,14 @@ input[data-tooltip]:hover::before {
     font-size: 1.05em;
     animation: slideInUp 0.6s ease-out forwards;
     opacity: 0; /* Empezar oculto para la animación */
+    /* Posicionar el mensaje para que no empuje el layout si es visible */
+    position: absolute;
+    bottom: -80px; /* Ajusta esto si el mensaje aparece muy abajo o se solapa */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 90px); /* Mismo ancho que los .card */
+    max-width: 480px;
+    z-index: 4; /* Para que esté siempre encima */
 }
 
 @keyframes slideInUp {
@@ -337,6 +353,7 @@ input[data-tooltip]:hover::before {
 #dashboard {
     text-align: left;
     padding: 35px;
+    /* Los ajustes de posición para #dashboard ya están cubiertos por .card */
 }
 
 #dashboard h2 {
@@ -360,6 +377,8 @@ input[data-tooltip]:hover::before {
     .container {
         padding: 30px;
         border-radius: 15px;
+        /* En móviles, podemos hacer que el container ocupe más altura para que todo quepa */
+        min-height: 85vh; /* Ajusta la altura mínima en móviles si aún no se ve bien */
     }
 
     h1 {
@@ -385,6 +404,12 @@ input[data-tooltip]:hover::before {
 
     .card {
         padding: 25px;
-        margin-top: 25px;
+        /* Ajustar la posición top si los elementos se superponen en móviles */
+        top: 100px; /* Podría ser necesario ajustar esto para pantallas más pequeñas */
+    }
+
+    /* Ajuste para el mensaje en móviles */
+    .message {
+        bottom: -60px; /* Sube el mensaje un poco en móviles si es necesario */
     }
 }
