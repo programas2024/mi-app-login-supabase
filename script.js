@@ -10,12 +10,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. Referencias a Elementos HTML ---
-// Se inicializarán dentro de DOMContentLoaded
 let signupEmail, signupPassword, registerBtn;
 let loginEmail, loginPassword, loginSubmitBtn;
 let logoutBtn, authMessage, userEmailSpan;
 let initialOptionsDiv, signupFormDiv, loginFormDiv, dashboardDiv;
 let showSignupBtn, showLoginBtn, backToOptionsFromSignup, backToOptionsFromLogin;
+let forgotPasswordLink; // Nueva referencia
 
 // --- 3. Funciones de Autenticación (se mantienen igual) ---
 
@@ -30,10 +30,9 @@ async function signUp() {
     } else {
         authMessage.textContent = '¡Registro exitoso! Por favor, verifica tu correo.';
         authMessage.style.color = 'green';
-        // Opcional: limpiar los campos después de un registro exitoso
         signupEmail.value = '';
         signupPassword.value = '';
-        hideAllFormsAndShowInitialOptions(); // Volver a las opciones iniciales
+        hideAllFormsAndShowInitialOptions();
     }
 }
 
@@ -48,10 +47,9 @@ async function signIn() {
     } else {
         authMessage.textContent = '¡Inicio de sesión exitoso!';
         authMessage.style.color = 'green';
-        // Opcional: limpiar los campos después de un login exitoso
         loginEmail.value = '';
         loginPassword.value = '';
-        checkUserSession(); // Mostrar el dashboard
+        checkUserSession();
     }
 }
 
@@ -63,7 +61,7 @@ async function signOut() {
     } else {
         authMessage.textContent = 'Sesión cerrada. ¡Hasta pronto!';
         authMessage.style.color = 'blue';
-        checkUserSession(); // Volver a mostrar las opciones de auth
+        checkUserSession();
     }
 }
 
@@ -71,17 +69,15 @@ async function checkUserSession() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-        // Si hay un usuario logueado
         initialOptionsDiv.classList.add('form-hidden');
         signupFormDiv.classList.add('form-hidden');
         loginFormDiv.classList.add('form-hidden');
-        dashboardDiv.classList.remove('dashboard-hidden'); // Mostrar dashboard
+        dashboardDiv.classList.remove('dashboard-hidden');
         userEmailSpan.textContent = user.email;
-        authMessage.textContent = ''; // Limpiar mensaje de auth
+        authMessage.textContent = '';
     } else {
-        // Si no hay usuario logueado
-        hideAllFormsAndShowInitialOptions(); // Asegurarse de que solo se vean las opciones iniciales
-        authMessage.textContent = ''; // Limpiar mensaje de auth
+        hideAllFormsAndShowInitialOptions();
+        authMessage.textContent = '';
     }
 }
 
@@ -96,13 +92,13 @@ function hideAllForms() {
 function showSignupForm() {
     hideAllForms();
     signupFormDiv.classList.remove('form-hidden');
-    authMessage.textContent = ''; // Limpiar mensaje al cambiar de formulario
+    authMessage.textContent = '';
 }
 
 function showLoginForm() {
     hideAllForms();
     loginFormDiv.classList.remove('form-hidden');
-    authMessage.textContent = ''; // Limpiar mensaje al cambiar de formulario
+    authMessage.textContent = '';
 }
 
 function hideAllFormsAndShowInitialOptions() {
@@ -115,17 +111,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar referencias a los elementos HTML
     signupEmail = document.getElementById('signup-email');
     signupPassword = document.getElementById('signup-password');
-    registerBtn = document.getElementById('register-btn'); // ID cambiado
+    registerBtn = document.getElementById('register-btn');
 
     loginEmail = document.getElementById('login-email');
     loginPassword = document.getElementById('login-password');
-    loginSubmitBtn = document.getElementById('login-submit-btn'); // ID cambiado
+    loginSubmitBtn = document.getElementById('login-submit-btn');
 
     logoutBtn = document.getElementById('logout-btn');
     authMessage = document.getElementById('auth-message');
     userEmailSpan = document.getElementById('user-email');
 
-    // Referencias a los nuevos divs y botones
     initialOptionsDiv = document.getElementById('initial-options');
     signupFormDiv = document.getElementById('signup-form');
     loginFormDiv = document.getElementById('login-form');
@@ -135,19 +130,25 @@ document.addEventListener('DOMContentLoaded', () => {
     showLoginBtn = document.getElementById('show-login-btn');
     backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
     backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
+    forgotPasswordLink = document.getElementById('forgot-password'); // Nueva referencia
 
     // --- 5. Event Listeners ---
-    registerBtn.addEventListener('click', signUp); // ID cambiado
-    loginSubmitBtn.addEventListener('click', signIn); // ID cambiado
+    registerBtn.addEventListener('click', signUp);
+    loginSubmitBtn.addEventListener('click', signIn);
     logoutBtn.addEventListener('click', signOut);
 
-    // Nuevos Event Listeners para mostrar/ocultar formularios
     showSignupBtn.addEventListener('click', showSignupForm);
     showLoginBtn.addEventListener('click', showLoginForm);
     backToOptionsFromSignup.addEventListener('click', hideAllFormsAndShowInitialOptions);
     backToOptionsFromLogin.addEventListener('click', hideAllFormsAndShowInitialOptions);
 
+    // Opcional: Event listener para "Olvidaste tu contraseña?"
+    // forgotPasswordLink.addEventListener('click', () => {
+    //     alert('Funcionalidad de recuperación de contraseña aún no implementada.');
+    //     // Aquí podrías llamar a una función de Supabase para enviar un email de reseteo:
+    //     // supabase.auth.resetPasswordForEmail(loginEmail.value, { redirectTo: 'URL_DE_RESETEO_EN_TU_APP' });
+    // });
 
     // --- 6. Ejecutar al cargar la página ---
-    checkUserSession(); // Verifica si ya hay una sesión activa al cargar la página
+    checkUserSession();
 });
