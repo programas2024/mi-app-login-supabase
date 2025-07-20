@@ -43,7 +43,7 @@
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    padding: 20px; /* Padding general para evitar que el contenido se pegue a los bordes en pantallas pequeñas */
+    padding: 10px; /* Padding general para evitar que el contenido se pegue a los bordes en pantallas pequeñas */
     display: flex;
     justify-content: center;
     align-items: center; /* Centra verticalmente el contenedor */
@@ -64,10 +64,10 @@ body {
     border-radius: 12px;
     box-shadow: 0 8px 25px var(--shadow-subtle); /* Sombra sutil */
     text-align: center;
-    max-width: 420px; /* Un poco más estrecho para un look más formal */
+    max-width: 620px; /* Un poco más estrecho para un look más formal */
     width: 100%; /* Asegura que ocupe el 100% del ancho disponible (con padding) */
     position: relative; /* Padre para elementos absolutos */
-    min-height: 450px; /* Altura mínima para asegurar espacio */
+    min-height: 550px; /* Altura mínima para asegurar espacio */
     box-sizing: border-box; /* Incluye padding en el cálculo del tamaño */
     animation: fadeInScale 0.7s ease-out forwards;
     display: flex; /* Usamos flexbox para centrar el contenido verticalmente */
