@@ -16,7 +16,7 @@
 
     /* Colores de acento */
     --accent-blue-light: #6a93cb; /* Azul suave, casi pastel */
-    --accent-blue-dark: #3d6a9a;  /* Azul un poco más profundo */
+    --accent-blue-dark: #8458a1;  /* Azul un poco más profundo */
 
     /* Degradados para botones - MUY SUTILES */
     --btn-primary-gradient: linear-gradient(135deg, var(--accent-blue-light) 0%, var(--accent-blue-dark) 100%);
@@ -64,7 +64,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 8px 25px var(--shadow-subtle); /* Sombra sutil */
     text-align: center;
-    max-width: 620px; /* Un poco más estrecho para un look más formal */
+    max-width: 520px; /* Un poco más estrecho para un look más formal */
     width: 100%; /* Asegura que ocupe el 100% del ancho disponible (con padding) */
     position: relative; /* Padre para elementos absolutos */
     min-height: 550px; /* Altura mínima para asegurar espacio */
@@ -74,6 +74,8 @@ body {
     flex-direction: column;
     justify-content: flex-start; /* Alinea los elementos al inicio, dejando espacio para el h1 */
     align-items: center;
+    border-color: #333d47;
+    border: #333d47 1px solid; /* Borde sutil para el contenedor */
 }
 
 @keyframes fadeInScale {
@@ -372,7 +374,7 @@ input[data-tooltip]:hover::before {
     .container {
         padding: 30px;
         border-radius: 10px;
-        min-height: 620px; /* Ajusta la altura mínima en móviles */
+        min-height: 520px; /* Ajusta la altura mínima en móviles */
     }
 
     h1 {
