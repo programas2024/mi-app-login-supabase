@@ -372,7 +372,7 @@ input[data-tooltip]:hover::before {
     .container {
         padding: 30px;
         border-radius: 10px;
-        min-height: 400px; /* Ajusta la altura mínima en móviles */
+        min-height: 620px; /* Ajusta la altura mínima en móviles */
     }
 
     h1 {
