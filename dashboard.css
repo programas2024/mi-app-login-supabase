@@ -1,4 +1,4 @@
-/* dashboard.css - Versión Premium y Refinada */
+/* dashboard.css - Versión Premium y Refinada (Con Contenedores de Moneda Horizontales y Estilizados) */
 
 /* --- Variables CSS Globales --- */
 :root {
@@ -232,10 +232,12 @@ body {
 /* Contenedor Flex para Oro y Diamantes */
 .currency-display-wrapper {
     display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
     justify-content: center;
     gap: 30px; /* Espacio entre las tarjetas de moneda */
     margin-bottom: 50px; /* Espacio debajo de los contadores */
     width: 100%; /* Para que ocupe el espacio disponible */
+    max-width: 600px; /* Limita el ancho para que no se extiendan demasiado en pantallas grandes */
 }
 
 /* Estilo individual para cada tarjeta de moneda */
@@ -249,9 +251,10 @@ body {
     box-shadow: var(--shadow-deep); /* Sombra más pronunciada */
     color: var(--text-color-light); /* Texto blanco para resaltar */
     flex: 1; /* Permite que las tarjetas se expandan */
-    max-width: 250px; /* Ancho máximo para cada tarjeta */
+    min-width: 200px; /* Ancho mínimo para cada tarjeta */
     text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra de texto para legibilidad */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default; /* Indica que no son interactivos */
 }
 
 .currency-card:hover {
@@ -312,10 +315,6 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.5px; /* Espaciado ajustado */
     outline: none;
-}
-
-.btn-play i {
-    font-size: 1.6em; /* Icono ajustado */
 }
 
 .btn-play:hover {
@@ -490,10 +489,12 @@ body {
     
     .currency-display-wrapper {
         gap: 20px;
+        max-width: 500px; /* Ajusta el max-width en pantallas medianas */
     }
     .currency-card {
         padding: 25px 30px;
-        max-width: 220px;
+        min-width: unset; /* Permite que flex decida el ancho */
+        flex: 1; /* Asegura que se distribuyan equitativamente */
     }
     .currency-card .currency-icon { font-size: 3em; }
     .currency-card .currency-value { font-size: 2.4em; }
@@ -575,10 +576,11 @@ body {
         flex-direction: column; /* Apila las tarjetas en móvil */
         align-items: center;
         gap: 15px;
+        max-width: 100%; /* Elimina el max-width en móvil para ocupar el espacio */
     }
     .currency-card {
         max-width: 280px; /* Ancho un poco más generoso en móvil */
-        width: 90%;
+        width: 90%; /* Ocupa casi todo el ancho disponible */
         padding: 20px 25px;
     }
     .currency-card .currency-icon { font-size: 2.8em; }
