@@ -663,3 +663,31 @@ body {
 
     .floating-logout-btn { width: 45px; height: 45px; font-size: 1.2em; margin-top: 15px; }
 }
+
+/* Ejemplo para dashboard.css */
+.sidebar-btn.btn-custom-action {
+    background-color: var(--button-bg-color); /* O el color que desees */
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    width: 100%; /* Ajustar al ancho de la sidebar */
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-btn.btn-custom-action:hover {
+    background-color: var(--button-hover-bg-color); /* Un color de hover */
+    transform: translateY(-2px);
+}
+
+/* Si quieres un color específico para el ícono de rango/copa */
+.sidebar-btn.btn-custom-action .fa-trophy,
+.sidebar-btn.btn-custom-action .fa-medal {
+    color: #FFD700; /* Color oro, o el que prefieras */
+}

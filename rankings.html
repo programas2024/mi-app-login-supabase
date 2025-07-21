@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rangos del Juego</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css"> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos básicos para la nueva página de rangos */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinea arriba para contenido más largo */
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .rankings-full-container {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+        }
+
+        .rankings-full-container h2 {
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .rankings-full-container h2 .fas {
+            font-size: 1.2em;
+        }
+
+        .rankings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .rankings-list li {
+            background-color: var(--input-bg-color);
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.1em;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .rankings-list li .fas {
+            font-size: 1.5em;
+            color: var(--primary-color); /* O un color específico para cada rango */
+        }
+        /* Colores específicos para iconos de rango (opcional) */
+        .rankings-list li .fa-chess-pawn { color: #8B4513; } /* Bronce */
+        .rankings-list li .fa-chess-knight { color: #C0C0C0; } /* Plata */
+        .rankings-list li .fa-chess-bishop { color: #DAA520; } /* Oro */
+        .rankings-list li .fa-chess-rook { color: #00BFFF; } /* Platino */
+        .rankings-list li .fa-chess-queen { color: #8A2BE2; } /* Diamante */
+        .rankings-list li .fa-chess-king { color: #FFD700; } /* Maestra */
+
+        /* Loader para esta página */
+        #loader-rankings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2em;
+            z-index: 1000;
+            border-radius: 12px;
+        }
+        #loader-rankings.loader-hidden {
+            display: none;
+        }
+        #loader-rankings .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="rankings-full-container">
+        <div id="loader-rankings" class="loader-hidden">
+            <div class="spinner"></div>
+            <p>Cargando rangos...</p>
+        </div>
+
+        <h2><i class="fas fa-medal"></i> Niveles y Rangos</h2>
+        <div id="ranks-list">
+            </div>
+        <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </button>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
