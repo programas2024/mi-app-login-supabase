@@ -1,4 +1,4 @@
-/* dashboard.css - Versión Premium e Impactante */
+/* dashboard.css - Versión Premium y Refinada */
 
 /* --- Variables CSS Globales --- */
 :root {
@@ -18,13 +18,16 @@
     --play-gradient-start: #00c6ff;    /* Azul cielo brillante */
     --play-gradient-end: #0072ff;      /* Azul más profundo */
 
-    --gold-color: #f7b731;             /* Dorado vivo */
-    --diamond-color: #3feee6;          /* Aguamarina brillante */
+    --gold-card-start: #fdd835;        /* Amarillo fuerte para oro */
+    --gold-card-end: #fb8c00;          /* Naranja para oro */
+    --diamond-card-start: #2196f3;     /* Azul brillante para diamante */
+    --diamond-card-end: #0d47a1;       /* Azul oscuro para diamante */
 
     --text-dark-primary: #2c3e50;      /* Gris azulado oscuro para el texto principal */
     --text-light-soft: #f0f4f8;        /* Blanco roto para el fondo */
     --text-color-light: #ffffff;       /* Blanco puro para texto sobre fondos oscuros */
     --text-muted: #7f8c8d;             /* Gris sutil para texto secundario */
+    --text-subtle-white: rgba(255, 255, 255, 0.9);
 
     --bg-main-subtle: #f8faff;         /* Fondo principal muy claro y brillante */
     --bg-card-vibrant: #ffffff;        /* Fondo de tarjetas blanco puro */
@@ -52,24 +55,57 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding: 40px; /* Más padding general */
+    padding: 40px;
     box-sizing: border-box;
 }
 
 .dashboard-main-content {
     display: grid;
-    grid-template-columns: 260px 1fr 320px; /* **ANCHO DEL CONTENEDOR MÁS GRANDE** */
-    gap: 50px; /* Mayor espacio entre columnas */
+    /* Ajuste de columnas para que el área central sea más prominente */
+    grid-template-columns: 260px 1fr 320px;
+    grid-template-areas:
+        ". welcome-area welcome-area" /* Nueva área para el mensaje de bienvenida */
+        "sidebar-left main-content-area sidebar-right"
+        ". . floating-logout-btn"; /* Coloca el botón de logout al final de la tercera columna */
+    gap: 50px;
     width: 100%;
-    max-width: 1600px; /* **AUMENTO SIGNIFICATIVO DEL ANCHO MÁXIMO** */
+    max-width: 1600px; /* **Mantenemos el ancho significativo** */
     background-color: var(--bg-card-vibrant);
     border-radius: var(--border-radius-large);
     box-shadow: var(--shadow-deep);
-    padding: 50px; /* Más padding interno */
+    padding: 50px;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.8); /* Borde blanco sutil para realzar */
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
+
+/* Posicionamiento del mensaje de bienvenida */
+.welcome-message {
+    grid-area: welcome-area; /* Asigna a la nueva área */
+    justify-self: end; /* Alinea a la derecha */
+    align-self: start; /* Alinea arriba */
+    font-size: 0.9em;
+    color: var(--text-muted);
+    padding: 10px 20px; /* Un poco de padding */
+    background-color: #eaf1f7; /* Fondo sutil para el mensaje */
+    border-radius: var(--border-radius-soft);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px; /* Espacio debajo del mensaje */
+    position: absolute; /* Para que no afecte el grid */
+    top: 20px;
+    right: 20px;
+    z-index: 20; /* Asegura que esté por encima */
+}
+
+.welcome-message span {
+    font-weight: 600;
+}
+
+#user-email {
+    color: var(--primary-gradient-end); /* Color del email para que destaque */
+    font-weight: 700;
+}
+
 
 /* --- Loader Styles --- */
 .loader-hidden {
@@ -82,7 +118,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* Más oscuro */
+    background-color: rgba(0, 0, 0, 0.85);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -95,9 +131,9 @@ body {
 
 .spinner {
     border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid var(--play-gradient-end); /* Color del spinner a juego */
+    border-top: 8px solid var(--play-gradient-end);
     border-radius: 50%;
-    width: 70px; /* Más grande */
+    width: 70px;
     height: 70px;
     animation: spin 1s linear infinite;
     margin-bottom: 25px;
@@ -110,42 +146,42 @@ body {
 
 /* --- Sidebar Izquierdo (Perfil, Tienda, VIP) --- */
 .sidebar-left {
+    grid-area: sidebar-left; /* Asigna al área del grid */
     padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Más espacio entre botones */
-    border-right: 1px solid rgba(0, 0, 0, 0.08); /* Borde más visible */
+    gap: 25px;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
     padding-right: 40px;
 }
 
 .sidebar-btn {
     color: var(--text-color-light);
     border: none;
-    border-radius: 12px; /* Bordes más redondeados */
-    padding: 20px 28px; /* Más padding */
-    font-size: 1.2em; /* Tamaño de fuente ligeramente mayor */
+    border-radius: 12px;
+    padding: 20px 28px;
+    font-size: 1.2em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     display: flex;
     align-items: center;
-    gap: 18px; /* Más espacio entre icono y texto */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Sombra más profunda */
+    gap: 18px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     text-align: left;
     overflow: hidden;
     position: relative;
     z-index: 1;
-    background-size: 200% auto; /* Para el efecto de degradado animado */
+    background-size: 200% auto;
 }
 
-/* Efecto hover general para sidebar-btn */
 .sidebar-btn:hover {
-    transform: translateY(-8px); /* Elevación más dramática */
-    box-shadow: var(--shadow-hover-glow); /* Sombra más brillante */
-    background-position: right center; /* Mueve el degradado */
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover-glow);
+    background-position: right center;
 }
 
-.sidebar-btn::before { /* Brillo al hover */
+.sidebar-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -162,11 +198,11 @@ body {
 }
 
 .sidebar-btn i {
-    font-size: 1.6em; /* Iconos más grandes y prominentes */
-    color: rgba(255, 255, 255, 0.95); /* Blanco casi puro para los iconos */
+    font-size: 1.6em;
+    color: rgba(255, 255, 255, 0.95);
 }
 
-/* COLORES ESPECÍFICOS PARA CADA BOTÓN */
+/* COLORES ESPECÍFICOS PARA CADA BOTÓN (mantienen los degradados únicos) */
 .btn-profile-custom {
     background-image: linear-gradient(135deg, var(--profile-gradient-start) 0%, var(--profile-gradient-end) 100%);
 }
@@ -178,144 +214,151 @@ body {
 }
 
 
-/* --- Contenido Central (Bienvenida, Oro/Diamantes, Jugar) --- */
+/* --- Contenido Central (Ahora enfocado en monedas y botón Jugar) --- */
 .main-content-area {
+    grid-area: main-content-area; /* Asigna al área del grid */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding-top: 30px;
+    padding-top: 30px; /* Reduce un poco el padding superior general de esta sección */
 }
 
+/* Ocultar el header-section original, ya que el mensaje de bienvenida se movió */
 .header-section {
-    margin-bottom: 60px; /* Más espacio */
+    display: none;
 }
 
-.header-section h2 {
-    font-size: 3.5em; /* Título más grande e imponente */
-    color: var(--text-dark-primary);
-    margin-bottom: 15px;
-    font-weight: 800;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* Sombra de texto más definida */
-}
-
-.header-section p {
-    font-size: 1.4em; /* Texto más grande */
-    color: var(--text-muted);
-}
-
-#user-email {
-    font-weight: 700;
-    color: var(--play-gradient-end); /* Azul brillante para el email */
-}
-
-/* Contenedor de Oro y Diamantes (Centrado y Estilizado) */
-.currency-display-container {
+/* Contenedor Flex para Oro y Diamantes */
+.currency-display-wrapper {
     display: flex;
     justify-content: center;
-    gap: 60px; /* Más espacio entre elementos */
-    margin-bottom: 70px; /* Más margen inferior */
-    padding: 35px 70px; /* Más padding */
-    background: linear-gradient(145deg, #e3f2fd, #bbdefb); /* Degradado de fondo vibrante */
-    border-radius: var(--border-radius-large);
-    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.1), var(--shadow-deep); /* Sombra interna y externa más pronunciada */
-    border: 1px solid rgba(255, 255, 255, 0.9); /* Borde blanco brillante */
+    gap: 30px; /* Espacio entre las tarjetas de moneda */
+    margin-bottom: 50px; /* Espacio debajo de los contadores */
+    width: 100%; /* Para que ocupe el espacio disponible */
 }
 
-.currency-item {
+/* Estilo individual para cada tarjeta de moneda */
+.currency-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px; /* Más espacio */
-    font-size: 2.2em; /* Texto más grande */
+    justify-content: center;
+    padding: 30px 40px; /* Ajusta el padding */
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-deep); /* Sombra más pronunciada */
+    color: var(--text-color-light); /* Texto blanco para resaltar */
+    flex: 1; /* Permite que las tarjetas se expandan */
+    max-width: 250px; /* Ancho máximo para cada tarjeta */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra de texto para legibilidad */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.currency-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.currency-card .currency-icon {
+    font-size: 3.5em; /* Iconos más grandes para impacto */
+    margin-bottom: 10px;
+    filter: none; /* Quitamos el filtro de sombra del icono individual para dejar la sombra del card */
+    color: var(--text-subtle-white); /* Color sutil para el icono dentro del card */
+}
+
+.currency-card .currency-value {
+    font-size: 2.8em; /* Valor numérico más grande */
+    font-weight: 900;
+    margin-bottom: 5px;
+    color: var(--text-color-light); /* El valor también blanco */
+}
+
+.currency-card .currency-name {
+    font-size: 1.2em;
     font-weight: 600;
-    color: var(--text-dark-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-subtle-white); /* Nombre de la moneda también sutilmente blanco */
 }
 
-.currency-icon {
-    font-size: 2.8em; /* Iconos más grandes y llamativos */
-    filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.25)); /* Sombra para iconos */
+/* Colores específicos para las tarjetas de Oro y Diamantes */
+.gold-card {
+    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.gold-icon {
-    color: var(--gold-color);
+.diamond-card {
+    background: linear-gradient(135deg, var(--diamond-card-start) 0%, var(--diamond-card-end) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.diamond-icon {
-    color: var(--diamond-color);
-}
 
-.currency-value {
-    font-size: 1.8em; /* Valor numérico más grande */
-    font-weight: 900; /* Extra bold */
-    color: var(--text-dark-primary); /* Valor numérico con color del texto oscuro */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Botón Jugar */
+/* Botón Jugar (Tamaño ajustado) */
 .btn-play {
-    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%); /* Degradado azul brillante */
+    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%);
     color: var(--text-color-light);
     border: none;
-    border-radius: 60px; /* Más ovalado/redondeado */
-    padding: 25px 55px; /* Más padding y tamaño */
-    font-size: 2.5em; /* Tamaño de fuente mucho más grande */
+    border-radius: 50px; /* Un poco menos ovalado */
+    padding: 20px 40px; /* Tamaño más moderado */
+    font-size: 2em; /* Tamaño de fuente reducido */
     font-weight: 700;
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     display: flex;
     align-items: center;
-    gap: 20px; /* Más espacio */
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35); /* Sombra más profunda y vibrante */
-    margin-top: 50px;
+    gap: 15px; /* Menos espacio */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra ligeramente menor */
+    margin-top: 40px; /* Espacio superior ajustado */
     text-transform: uppercase;
-    letter-spacing: 2px; /* Más espaciado entre letras */
-    outline: none; /* Elimina el contorno al hacer click */
+    letter-spacing: 1.5px; /* Espaciado ajustado */
+    outline: none;
 }
 
 .btn-play i {
-    font-size: 1.8em; /* Icono más grande */
+    font-size: 1.6em; /* Icono ajustado */
 }
 
 .btn-play:hover {
-    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%); /* Degradado invertido */
-    transform: translateY(-10px) scale(1.04); /* Elevación y escala más dramáticas */
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45); /* Sombra al hover aún más intensa */
+    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%);
+    transform: translateY(-8px) scale(1.03); /* Elevación y escala ajustadas */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
 }
 
 .btn-play:active {
-    transform: translateY(-4px) scale(1);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px) scale(1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .game-slogan {
-    font-size: 1.3em; /* Texto más grande */
+    font-size: 1.1em; /* Tamaño reducido */
     color: var(--text-muted);
-    margin-top: 50px;
+    margin-top: 30px; /* Espacio ajustado */
     font-style: italic;
     font-weight: 500;
 }
 
 /* --- Sidebar Derecho (Rango y Tabla) --- */
 .sidebar-right {
+    grid-area: sidebar-right; /* Asigna al área del grid */
     padding-top: 20px;
-    border-left: 1px solid rgba(0, 0, 0, 0.08); /* Borde más visible */
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
     padding-left: 40px;
     display: flex;
     flex-direction: column;
-    gap: 40px; /* Más espacio */
+    gap: 40px;
 }
 
 .ranking-section, .leaderboard-section {
     background-color: var(--bg-card-vibrant);
     border-radius: var(--border-radius-large);
-    padding: 35px; /* Más padding */
+    padding: 35px;
     box-shadow: var(--shadow-soft);
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .ranking-section h3, .leaderboard-section h3 {
-    font-size: 2em; /* Títulos más grandes */
+    font-size: 2em;
     color: var(--text-dark-primary);
     margin-bottom: 25px;
     display: flex;
@@ -327,13 +370,13 @@ body {
 }
 
 .ranking-section h3 i, .leaderboard-section h3 i {
-    color: var(--play-gradient-start); /* Íconos con el color del botón jugar */
+    color: var(--play-gradient-start);
 }
 
 .ranking-section p {
-    font-size: 1.6em; /* Texto más grande */
+    font-size: 1.6em;
     font-weight: 800;
-    color: var(--gold-color); /* Color dorado para el rango */
+    color: var(--gold-card-start); /* Usa el color del oro para el rango */
     margin-bottom: 15px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
 }
@@ -346,28 +389,28 @@ body {
 /* Tabla de Clasificación */
 .leaderboard-table-container {
     overflow-x: auto;
-    margin-top: 30px; /* Más margen */
+    margin-top: 30px;
 }
 
 .leaderboard-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 1.1em; /* Tamaño de fuente ligeramente mayor */
+    font-size: 1.1em;
     text-align: left;
     background-color: var(--bg-card-vibrant);
     border-radius: var(--border-radius-large);
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Sombra más notable para la tabla */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .leaderboard-table th, .leaderboard-table td {
-    padding: 18px 25px; /* Más padding */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Borde muy sutil */
+    padding: 18px 25px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .leaderboard-table thead th {
-    background: linear-gradient(90deg, #e3f2fd, #bbdefb); /* Degradado en la cabecera de la tabla */
+    background: linear-gradient(90deg, #e3f2fd, #bbdefb);
     color: var(--text-dark-primary);
     font-weight: 700;
     text-transform: uppercase;
@@ -375,21 +418,20 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra debajo de la cabecera */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* Bordes redondeados para la cabecera de la tabla */
 .leaderboard-table thead th:first-child { border-top-left-radius: var(--border-radius-large); }
 .leaderboard-table thead th:last-child { border-top-right-radius: var(--border-radius-large); }
 
 
 .leaderboard-table tbody tr:nth-child(even) {
-    background-color: #fefefe; /* Alternancia muy, muy sutil */
+    background-color: #fefefe;
 }
 
 .leaderboard-table tbody tr:hover {
-    background-color: #f0f8ff; /* Resaltar fila con un azul aún más suave */
-    transform: scale(1.005); /* Pequeño efecto de escala */
+    background-color: #f0f8ff;
+    transform: scale(1.005);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     z-index: 1;
@@ -397,34 +439,37 @@ body {
 
 .leaderboard-table td:first-child {
     font-weight: 800;
-    color: var(--play-gradient-end); /* Números de rango con color de jugar */
+    color: var(--play-gradient-end);
 }
 
 /* --- Botón Cerrar Sesión (Flotante y Elegante) --- */
 .floating-logout-btn {
-    position: absolute;
-    bottom: 35px;
-    right: 35px;
-    background: linear-gradient(45deg, #ff6b6b 0%, #ee5253 100%); /* Degradado rojo más vibrante */
+    grid-area: floating-logout-btn; /* Asigna al área del grid */
+    justify-self: end; /* Alinea a la derecha */
+    align-self: end; /* Alinea abajo */
+    position: static; /* Cambia a static para que grid lo posicione */
+    background: linear-gradient(45deg, #ff6b6b 0%, #ee5253 100%);
     color: var(--text-color-light);
     border: none;
     border-radius: 50%;
-    width: 65px; /* Tamaño ligeramente mayor */
+    width: 65px;
     height: 65px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.8em; /* Icono más grande */
+    font-size: 1.8em;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     z-index: 50;
     padding: 0;
+    margin-top: 30px; /* Añade un margen superior para separarlo de la tabla */
+    margin-right: 0; /* Asegura que no haya margen derecho adicional */
 }
 
 .floating-logout-btn:hover {
     background: linear-gradient(45deg, #ee5253 0%, #ff6b6b 100%);
-    transform: translateY(-6px) rotate(10deg); /* Efecto de elevación y rotación más notorio */
+    transform: translateY(-6px) rotate(10deg);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
@@ -442,12 +487,18 @@ body {
     .sidebar-left { padding-right: 30px; }
     .sidebar-right { padding-left: 30px; }
     .sidebar-btn { padding: 18px 25px; font-size: 1.1em; }
-    .currency-display-container {
-        gap: 40px;
-        padding: 30px 50px;
+    
+    .currency-display-wrapper {
+        gap: 20px;
     }
-    .currency-item { font-size: 1.8em; }
-    .currency-icon { font-size: 2.2em; }
+    .currency-card {
+        padding: 25px 30px;
+        max-width: 220px;
+    }
+    .currency-card .currency-icon { font-size: 3em; }
+    .currency-card .currency-value { font-size: 2.4em; }
+    .currency-card .currency-name { font-size: 1.1em; }
+
     .btn-play { font-size: 2em; padding: 20px 45px; }
     .ranking-section, .leaderboard-section { padding: 30px; }
     .ranking-section h3, .leaderboard-section h3 { font-size: 1.7em; }
@@ -458,16 +509,24 @@ body {
     .dashboard-main-content {
         grid-template-columns: 1fr;
         grid-template-areas:
-            "header"
-            "currency"
-            "play"
+            "welcome-area" /* La bienvenida ahora ocupa el ancho completo arriba */
             "sidebar-left"
+            "currency" /* Contadores primero en el flujo */
+            "play"
             "sidebar-right"
             "logout";
         gap: 35px;
         padding: 25px;
         box-shadow: none;
         border-radius: 0;
+    }
+
+    .welcome-message {
+        position: static; /* Vuelve a static para fluir con el grid */
+        margin: 0 0 20px 0; /* Ajusta márgenes */
+        justify-self: center; /* Centra el texto */
+        padding: 8px 15px;
+        font-size: 0.85em;
     }
 
     .sidebar-left, .sidebar-right {
@@ -487,13 +546,13 @@ body {
     }
     .sidebar-btn {
         width: 48%; /* Dos botones por fila en tablets */
-        min-width: unset; /* Elimina el min-width anterior */
+        min-width: unset;
         font-size: 1em;
-        padding: 15px 10px; /* Ajusta el padding para móviles */
+        padding: 15px 10px;
         text-align: center;
         flex-direction: column;
         gap: 8px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra más suave en móvil */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
     .sidebar-btn i {
         font-size: 1.4em;
@@ -508,37 +567,49 @@ body {
         position: static;
         margin: 35px auto 0 auto;
         box-shadow: var(--shadow-soft);
-        width: 70px; /* Un poco más grande para facilitar el toque */
+        width: 70px;
         height: 70px;
     }
 
-    .currency-display-container {
-        flex-direction: column;
+    .currency-display-wrapper {
+        flex-direction: column; /* Apila las tarjetas en móvil */
         align-items: center;
-        gap: 25px;
-        padding: 25px 35px;
+        gap: 15px;
     }
-    .currency-item { font-size: 1.6em; }
-    .currency-icon { font-size: 2em; }
-    .currency-value { font-size: 1.5em; }
+    .currency-card {
+        max-width: 280px; /* Ancho un poco más generoso en móvil */
+        width: 90%;
+        padding: 20px 25px;
+    }
+    .currency-card .currency-icon { font-size: 2.8em; }
+    .currency-card .currency-value { font-size: 2.2em; }
+    .currency-card .currency-name { font-size: 1em; }
 
-    .header-section h2 { font-size: 2.8em; }
-    .header-section p { font-size: 1.2em; }
-    .btn-play { font-size: 2em; padding: 20px 40px; }
+    .header-section { display: none; } /* Asegurarse de que no aparezca */
+
+    .btn-play { font-size: 1.8em; padding: 18px 35px; }
 }
 
 @media (max-width: 576px) {
     .dashboard-wrapper { padding: 10px; }
-    .dashboard-main-content { padding: 20px; gap: 20px; }
-    .header-section h2 { font-size: 2.2em; }
-    .header-section p { font-size: 1em; }
-    .currency-item { font-size: 1.4em; }
-    .currency-icon { font-size: 1.6em; }
-    .currency-value { font-size: 1.3em; }
-    .btn-play { font-size: 1.6em; padding: 18px 35px; }
-    .ranking-section, .leaderboard-section { padding: 20px; }
-    .ranking-section h3, .leaderboard-section h3 { font-size: 1.5em; }
+    .dashboard-main-content { padding: 15px; gap: 15px; }
+    .welcome-message { font-size: 0.8em; padding: 6px 10px; }
+    
+    .currency-card {
+        padding: 18px 20px;
+        max-width: unset;
+        width: 100%;
+    }
+    .currency-card .currency-icon { font-size: 2.5em; }
+    .currency-card .currency-value { font-size: 2em; }
+    .currency-card .currency-name { font-size: 0.9em; }
+
+    .btn-play { font-size: 1.5em; padding: 15px 30px; }
+    .ranking-section, .leaderboard-section { padding: 15px; }
+    .ranking-section h3, .leaderboard-section h3 { font-size: 1.3em; }
     .sidebar-btn {
-        width: 100%; /* Una columna en pantallas muy pequeñas */
+        width: 100%;
+        font-size: 0.9em;
+        padding: 12px 10px;
     }
 }
