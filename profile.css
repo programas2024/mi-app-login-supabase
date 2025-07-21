@@ -24,32 +24,11 @@
     transition: all 0.3s ease-in-out;
     position: relative; /* Necesario para posicionar elementos internos */
     overflow: hidden; /* Asegura que los elementos posicionados no se desborden */
+    /* Padding para dejar espacio a los botones posicionados */
+    padding-top: 80px; /* Suficiente espacio arriba para ambos botones */
 }
 
-/* Contenedor para los botones de la esquina superior derecha */
-.top-right-buttons {
-    position: absolute;
-    top: 20px; /* Ajusta la distancia desde arriba */
-    right: 20px; /* Ajusta la distancia desde la derecha */
-    display: flex;
-    flex-direction: column; /* Apila los botones verticalmente */
-    gap: 10px; /* Espacio entre los botones */
-    z-index: 10; /* Asegura que estén por encima del resto del contenido */
-}
-
-/* Ajustes a los botones dentro de este contenedor para que se vean bien */
-.top-right-buttons .btn {
-    padding: 8px 15px; /* Botones más compactos */
-    font-size: 0.9em; /* Fuente ligeramente más pequeña */
-    min-width: unset; /* Quita el min-width para que se ajusten al contenido */
-    margin: 0; /* Elimina márgenes extra */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra más suave */
-}
-.top-right-buttons .btn-logout {
-    margin-top: 0; /* Elimina el margen superior que tenía */
-}
-
-
+/* Títulos dentro de la tarjeta */
 #profile-card h2 {
     color: #333;
     margin-bottom: 25px;
@@ -68,6 +47,7 @@
     color: #007bff;
 }
 
+/* Contadores de oro y diamantes */
 .profile-info {
     display: flex;
     justify-content: space-around;
@@ -94,12 +74,14 @@
     font-size: 1.3em;
 }
 
+/* Separador */
 .separator {
     border: none;
     border-top: 1px solid #eee;
     margin: 35px 0;
 }
 
+/* Formulario de edición de perfil */
 .profile-edit-form {
     margin-bottom: 30px;
 }
@@ -128,9 +110,7 @@
     outline: none;
 }
 
-/* Botones Generales (si no están en styles.css, deben estar aquí) */
-/* Si ya tienes .btn en styles.css, estas reglas pueden ser redundantes o en conflicto.
-   Considera dejar solo las reglas específicas de profile.css para .btn y sus variantes. */
+/* Botones Generales */
 .btn {
     padding: 12px 25px;
     border: none;
@@ -140,9 +120,13 @@
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
     margin: 8px 5px;
     min-width: 150px;
+    display: inline-flex; /* Para alinear el icono y el texto */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre icono y texto */
 }
 
-.btn-action {
+.btn-action { /* Para guardar perfil */
     background-color: #007bff;
     color: white;
 }
@@ -153,37 +137,49 @@
     box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
 
-.btn-secondary {
-    background-color: #6c757d;
+/* Nuevo estilo para el botón "Regresar" */
+.btn-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #6c757d; /* Gris oscuro, similar a btn-secondary */
     color: white;
+    padding: 8px 15px; /* Más compacto */
+    font-size: 0.95em;
+    min-width: unset;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.btn-secondary:hover {
+.btn-back:hover {
     background-color: #5a6268;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
 }
 
-.btn-logout {
-    background-color: #dc3545;
-    color: white;
-    /* margin-top: 20px; --> Eliminado porque ahora está en .top-right-buttons */
+/* Nuevo estilo para el botón "Configurar" */
+.btn-configure {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #ffc107; /* Amarillo/naranja para configuración */
+    color: #333; /* Texto oscuro para contrastar */
+    padding: 8px 15px; /* Más compacto */
+    font-size: 0.95em;
+    min-width: unset;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.btn-logout:hover {
-    background-color: #c82333;
+.btn-configure:hover {
+    background-color: #e0a800;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
 }
 
-
-/* --- CORRECCIÓN y MEJORA del Loader --- */
-/* Regla de ocultamiento */
+/* --- Loader Styles (Mantenemos la corrección) --- */
 .loader-hidden {
-    display: none !important; /* !important para asegurar que sobrescribe cualquier display:flex */
+    display: none !important;
 }
 
-/* Estilos para el Loader */
 #loader {
     position: fixed;
     top: 0;
@@ -191,15 +187,14 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex; /* Asegura que se muestre como flex cuando es visible */
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     color: white;
     font-size: 1.2em;
-    /* No uses opacity/visibility si usas display: none/flex, a menos que sea para una transición suave */
-    transition: none; /* Elimina la transición de opacity si no la vas a usar para ocultar/mostrar */
+    transition: none;
 }
 
 .spinner {
@@ -217,38 +212,42 @@
     100% { transform: rotate(360deg); }
 }
 
-
 /* Responsividad básica */
-@media (max-width: 768px) { /* Ajustado breakpoint para una mejor vista en tablets */
+@media (max-width: 768px) {
     #profile-card {
         padding: 25px;
         margin: 10px;
+        padding-top: 100px; /* Más espacio si los botones se superponen en dispositivos pequeños */
     }
     .profile-info {
         flex-direction: column;
         align-items: center;
     }
     .btn {
-        width: 100%;
+        width: 100%; /* Los botones generales pueden ser de ancho completo */
         margin: 10px 0;
     }
-    .top-right-buttons {
-        position: static; /* Quita el posicionamiento absoluto en pantallas pequeñas */
-        flex-direction: row; /* Vuelve a ponerlos en fila */
-        justify-content: center; /* Centra los botones */
-        margin-top: 20px; /* Añade espacio con el contenido de arriba */
-        gap: 8px;
-    }
-    .top-right-buttons .btn {
+    /* Posicionamiento de botones en pantallas pequeñas */
+    .btn-back, .btn-configure {
+        position: static; /* Quita el posicionamiento absoluto */
         width: auto; /* Permite que el ancho sea automático */
         font-size: 1em; /* Restaura el tamaño de fuente normal */
         padding: 10px 20px;
+        margin-bottom: 10px; /* Espacio entre ellos si se apilan */
     }
+    /* Centrar ambos botones en una fila en la parte superior */
+    #profile-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .btn-back { order: 1; margin-right: auto; margin-left: auto; } /* Controla el orden */
+    .btn-configure { order: 2; margin-right: auto; margin-left: auto; }
 }
 
-/* Para pantallas aún más pequeñas, apilamos de nuevo los botones */
+/* Para pantallas aún más pequeñas */
 @media (max-width: 480px) {
-    .top-right-buttons {
-        flex-direction: column; /* Apila de nuevo los botones para móviles muy pequeños */
+    .btn-back, .btn-configure {
+        width: 90%; /* Ajuste para ocupar casi todo el ancho */
     }
 }

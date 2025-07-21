@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil</title>
-    
-    <link rel="stylesheet" href="profile.css"> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles.css">
+   
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container profile-page-container">
         <div id="profile-card" class="card dashboard-hidden">
-            <div class="top-right-buttons">
-                <button id="give-gold-btn" class="btn btn-action">Recibir 10 de Oro</button>
-                <button id="back-to-dashboard-btn" class="btn btn-secondary">Volver al Dashboard</button>
-                <button id="logout-btn-profile" class="btn btn-logout">Cerrar Sesión</button>
-            </div>
+            <button id="back-to-dashboard-btn" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Regresar
+            </button>
+
+            <button id="configure-btn" class="btn btn-configure">
+                <i class="fas fa-cog"></i> Configurar
+            </button>
 
             <h2>Tu Perfil</h2>
             <p>Correo electrónico: <span id="user-email-profile">Cargando...</span></p>
@@ -35,7 +39,6 @@
             </div>
 
             <hr class="separator">
-
             </div>
 
         <div id="loader" class="loader-hidden">

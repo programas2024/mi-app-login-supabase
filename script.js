@@ -5,7 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImexb3DSI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -19,7 +19,7 @@ const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document.getElementById('login-submit-btn');
+const loginSubmitBtn = document = document.getElementById('login-submit-btn');
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
@@ -40,22 +40,25 @@ const userEmailProfileSpan = document.getElementById('user-email-profile'); // U
 const usernameInputProfile = document.getElementById('edit-username');
 const countryInputProfile = document.getElementById('edit-country');
 const saveProfileBtn = document.getElementById('save-profile-btn');
-const giveGoldBtnProfile = document.getElementById('give-gold-btn');
-const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-const logoutBtnProfile = document.getElementById('logout-btn-profile');
+// const giveGoldBtnProfile = document.getElementById('give-gold-btn'); // ELIMINADO: ahora en SweetAlert
+const backToDashboardBtn = document.getElementById('back-to-dashboard-btn'); // Ahora un botón de regreso fijo
+// const logoutBtnProfile = document.getElementById('logout-btn-profile'); // ELIMINADO: ahora en SweetAlert
+const configureBtn = document.getElementById('configure-btn'); // Nuevo botón de configuración
 const goldDisplayProfile = document.getElementById('gold-display-profile');
 const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
 
 
 const loaderDiv = document.getElementById('loader'); // Loader global
-// const authMessage = document.getElementById('auth-message'); // No se usa con SweetAlert2
+const loaderText = loaderDiv ? loaderDiv.querySelector('p') : null; // Aseguramos que se obtenga el <p>
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
 
 function showLoader(message = 'Cargando...') {
     if (loaderDiv) {
-        loaderDiv.querySelector('p').textContent = message;
+        if (loaderText) {
+            loaderText.textContent = message;
+        }
         loaderDiv.classList.remove('loader-hidden');
     }
 }
@@ -76,6 +79,10 @@ function showSwal(icon, title, text) {
         showConfirmButton: !isAutoClose,
         timer: isAutoClose ? 3000 : undefined,
         timerProgressBar: isAutoClose,
+        customClass: {
+            popup: 'swal2-modern', // Agrega una clase personalizada para estilos CSS
+            confirmButton: 'swal2-confirm-btn'
+        }
     });
 }
 
@@ -84,7 +91,6 @@ function hideAllAuthForms() {
     if (initialOptionsDiv) initialOptionsDiv.classList.add('form-hidden');
     if (signupFormDiv) signupFormDiv.classList.add('form-hidden');
     if (loginFormDiv) loginFormDiv.classList.add('form-hidden');
-    // if (authMessage) authMessage.style.display = 'none';
 }
 
 function showSignupForm() {
@@ -177,42 +183,59 @@ async function signOut() {
 
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
-    const { data, error } = await supabase
-        .from('profiles')
-        .select('username, country, gold, diamonds')
-        .eq('id', userId)
-        .single();
 
-    hideLoader();
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('username, country, gold, diamonds')
+            .eq('id', userId)
+            .single();
 
-    if (error) {
-        console.error('Error al cargar perfil:', error);
-        showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
-        if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
-            console.log('Perfil no encontrado, intentando crear uno básico.');
-            const { error: insertError } = await supabase
-                .from('profiles')
-                .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
-            if (insertError) {
-                console.error('Error al crear perfil básico:', insertError);
-                showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta.');
-            } else {
-                showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
-                loadUserProfile(userId); // Recargar para mostrar los datos recién creados
+        if (error) {
+            console.error('Error al cargar perfil:', error);
+            showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
+
+            if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
+                console.log('Perfil no encontrado, intentando crear uno básico.');
+                const { error: insertError } = await supabase
+                    .from('profiles')
+                    .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
+                if (insertError) {
+                    console.error('Error al crear perfil básico:', insertError);
+                    showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta.');
+                } else {
+                    showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
+                    
+                    // Actualizamos manualmente los campos con los datos por defecto para evitar otra carga
+                    if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+                    if (usernameInputProfile) usernameInputProfile.value = 'Nuevo Jugador';
+                    if (countryInputProfile) countryInputProfile.value = 'Desconocido';
+                    if (goldDisplayProfile) goldDisplayProfile.textContent = '0';
+                    if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = '0';
+                }
             }
-        }
-    } else if (data) {
-        // Actualizar datos en el dashboard
-        if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
-        if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
-        if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
+        } else if (data) {
+            // Actualizar datos en el dashboard (si es la página actual)
+            if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
+            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
 
-        // Actualizar datos en la página de perfil
-        if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
-        if (usernameInputProfile) usernameInputProfile.value = data.username || '';
-        if (countryInputProfile) countryInputProfile.value = data.country || '';
-        if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
-        if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
+            // Actualizar datos en la página de perfil (si es la página actual)
+            if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            if (usernameInputProfile) usernameInputProfile.value = data.username || '';
+            if (countryInputProfile) countryInputProfile.value = data.country || '';
+            if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
+            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
+        }
+    } catch (e) {
+        console.error("Error inesperado en loadUserProfile:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
+    } finally {
+        hideLoader(); // Esto se ejecutará SIEMPRE.
+        // Aseguramos que la tarjeta de perfil sea visible DESPUÉS de ocultar el loader
+        if (profileCard) {
+            profileCard.classList.remove('dashboard-hidden');
+        }
     }
 }
 
@@ -287,9 +310,44 @@ async function giveGold() {
     }
 }
 
+// Función para mostrar el modal de configuración
+async function showConfigureOptions() {
+    Swal.fire({
+        title: '¿Qué deseas hacer?',
+        icon: 'question',
+        showCancelButton: true,
+        cancelButtonText: 'Cerrar',
+        confirmButtonText: 'Ok', // Este botón será invisible, solo para la estructura
+        showConfirmButton: false, // Escondemos el botón principal
+        allowOutsideClick: true,
+        html: `
+            <div class="swal-custom-buttons-container">
+                <button id="swal-give-gold" class="swal-custom-btn swal-btn-gold"><i class="fas fa-coins"></i> Recibir 10 de Oro</button>
+                <button id="swal-logout" class="swal-custom-btn swal-btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+            </div>
+        `,
+        didOpen: () => {
+            // Añadir event listeners a los botones personalizados dentro del SweetAlert
+            document.getElementById('swal-give-gold').addEventListener('click', async () => {
+                Swal.close(); // Cerrar el modal antes de ejecutar la acción
+                await giveGold();
+            });
+            document.getElementById('swal-logout').addEventListener('click', async () => {
+                Swal.close(); // Cerrar el modal antes de ejecutar la acción
+                await signOut();
+            });
+        },
+        customClass: {
+            popup: 'swal2-modern',
+            htmlContainer: 'swal2-html-container-no-padding' // Clases para personalizar el SweetAlert
+        },
+        buttonsStyling: false // Deshabilita los estilos por defecto de SweetAlert2 en los botones
+    });
+}
+
+
 // --- 6. Lógica de inicialización al cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // Comprobar la URL actual para determinar el comportamiento
     const currentPage = window.location.pathname.split('/').pop();
 
     // --- Lógica para index.html ---
@@ -365,7 +423,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (user) {
             if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden');
-            await loadUserProfile(user.id); // Cargar y mostrar datos del perfil/contadores
+            await loadUserProfile(user.id);
 
             if (profileBtnDashboard) {
                 profileBtnDashboard.addEventListener('click', () => {
@@ -393,15 +451,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            if (profileCard) profileCard.classList.remove('dashboard-hidden'); // Usa profile-card en profile.html
-            await loadUserProfile(user.id); // Cargar y mostrar datos del perfil para edición
+            // Eliminado: if (profileCard) profileCard.classList.remove('dashboard-hidden');
+            // Esto ahora se hace en el `finally` de `loadUserProfile`
+            await loadUserProfile(user.id);
 
             if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
-            if (giveGoldBtnProfile) giveGoldBtnProfile.addEventListener('click', giveGold);
+            // ELIMINADO: if (giveGoldBtnProfile) giveGoldBtnProfile.addEventListener('click', giveGold);
             if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
                 window.location.href = 'dashboard.html';
             });
-            if (logoutBtnProfile) logoutBtnProfile.addEventListener('click', signOut);
+            // ELIMINADO: if (logoutBtnProfile) logoutBtnProfile.addEventListener('click', signOut);
+            // Añadir event listener para el nuevo botón "Configurar"
+            if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
+
         } else {
             console.log('No hay usuario autenticado en profile.html. Redirigiendo a index.html');
             window.location.href = 'index.html';
