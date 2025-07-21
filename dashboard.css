@@ -1,56 +1,66 @@
-/* dashboard.css */
+/* dashboard.css - Versión Sutil y Elegante */
 
-/* --- Variables CSS Globales (Opcional, pero útil para consistencia) --- */
+/* --- Variables CSS Globales --- */
 :root {
-    --primary-color: #007bff; /* Azul vibrante */
-    --secondary-color: #6c757d; /* Gris para elementos secundarios */
-    --accent-color: #28a745; /* Verde para éxito/oro */
-    --danger-color: #dc3545; /* Rojo para advertencias/cerrar sesión */
-    --warning-color: #ffc107; /* Amarillo/Naranja para advertencias/config */
-    --bg-light: #f4f7f6; /* Fondo claro */
-    --bg-dark: #2c3e50; /* Fondo oscuro (ej. para sidebar si lo quieres oscuro) */
-    --text-color-dark: #343a40;
-    --text-color-light: #ffffff;
-    --card-bg: #ffffff;
-    --border-radius: 12px;
-    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
-    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+    /* Paleta de colores más suaves y profesionales */
+    --primary-light: #5a8dff;   /* Azul suave para acciones primarias */
+    --primary-dark: #3a6cd9;    /* Azul un poco más oscuro para hover */
+    --secondary-light: #9fa8da; /* Gris azulado suave */
+    --secondary-dark: #7b86c2;  /* Gris azulado más oscuro */
+    --accent-green-light: #6dd5ed; /* Verde azulado suave para oro/éxito */
+    --accent-green-dark: #2193b0; /* Verde azulado más oscuro para hover */
+    --accent-gold-light: #FFDC73; /* Dorado suave */
+    --accent-gold-dark: #F5B041;  /* Dorado más intenso */
+    --danger-light: #ef5350;    /* Rojo suave para cerrar sesión */
+    --danger-dark: #c62828;     /* Rojo más oscuro */
+    --bg-main: #eef2f7;         /* Fondo principal muy claro y ligeramente azulado */
+    --bg-card: #ffffff;         /* Fondo de tarjetas blanco puro */
+    --text-dark: #37474f;       /* Texto oscuro principal (azul grisáceo) */
+    --text-light: #ffffff;      /* Texto claro */
+    --border-subtle: #e0e0e0;   /* Borde muy sutil */
+
+    /* Estilos generales */
+    --border-radius-soft: 12px;
+    --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.07);
+    --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* --- Base y Contenedor Principal --- */
 body {
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Sugerencia de fuente más moderna */
     margin: 0;
     padding: 0;
-    background-color: var(--bg-light);
-    color: var(--text-color-dark);
+    background-color: var(--bg-main);
+    color: var(--text-dark);
     line-height: 1.6;
-    overflow-x: hidden; /* Evita scroll horizontal no deseado */
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 .dashboard-wrapper {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinea arriba para el sidebar */
+    align-items: flex-start;
     min-height: 100vh;
-    padding: 20px;
+    padding: 30px; /* Un poco más de padding general */
     box-sizing: border-box;
 }
 
 .dashboard-main-content {
     display: grid;
-    grid-template-columns: 220px 1fr 280px; /* Sidebar Izq, Contenido Central, Sidebar Der */
-    gap: 30px;
+    grid-template-columns: 240px 1fr 300px; /* Ajuste de anchos para más equilibrio */
+    gap: 40px; /* Más espacio entre columnas */
     width: 100%;
-    max-width: 1400px; /* Ancho máximo para el dashboard */
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-medium);
-    padding: 30px;
-    position: relative; /* Para posicionar el botón de logout flotante */
+    max-width: 1500px; /* Mayor ancho máximo */
+    background-color: var(--bg-card);
+    border-radius: var(--border-radius-soft);
+    box-shadow: var(--shadow-soft);
+    padding: 40px; /* Más padding interno */
+    position: relative;
+    overflow: hidden; /* Para contener los bordes redondeados */
 }
 
-/* --- Loader Styles --- */
+/* --- Loader Styles (sin cambios significativos en estética) --- */
 .loader-hidden {
     display: none !important;
 }
@@ -61,20 +71,20 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.7); /* Ligeramente más transparente */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    color: var(--text-color-light);
+    color: var(--text-light);
     font-size: 1.3em;
     transition: opacity 0.3s ease;
 }
 
 .spinner {
     border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid var(--primary-color);
+    border-top: 8px solid var(--primary-light); /* Color del spinner más suave */
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -89,381 +99,416 @@ body {
 
 /* --- Sidebar Izquierdo (Perfil, Tienda, VIP) --- */
 .sidebar-left {
-    padding-top: 20px; /* Espacio superior */
+    padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Espacio entre botones */
-    border-right: 1px solid #eee; /* Separador visual */
-    padding-right: 20px;
+    gap: 20px; /* Más espacio entre botones */
+    border-right: 1px solid var(--border-subtle); /* Borde más sutil */
+    padding-right: 30px;
 }
 
 .sidebar-btn {
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%); /* Degradado azul */
+    color: var(--text-light);
     border: none;
-    border-radius: 8px;
-    padding: 15px 20px;
-    font-size: 1.1em;
+    border-radius: 10px; /* Bordes ligeramente más suaves */
+    padding: 18px 25px; /* Más padding */
+    font-size: 1.15em; /* Tamaño de fuente ligeramente mayor */
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición más fluida */
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: var(--shadow-light);
-    text-align: left; /* Alinea el texto a la izquierda */
+    gap: 15px; /* Más espacio entre icono y texto */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    overflow: hidden; /* Asegura que el contenido no desborde el borde */
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-btn::before { /* Efecto hover elegante */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: -1;
+}
+
+.sidebar-btn:hover::before {
+    left: 100%;
 }
 
 .sidebar-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+    transform: translateY(-5px); /* Efecto de elevación más pronunciado */
+    box-shadow: var(--shadow-hover);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%); /* Degradado invertido o más oscuro al hover */
 }
 
 .sidebar-btn i {
-    font-size: 1.4em; /* Iconos más grandes */
+    font-size: 1.5em; /* Iconos más grandes */
+    color: rgba(255, 255, 255, 0.9); /* Icono un poco más sutil que el texto */
 }
 
 /* --- Contenido Central (Bienvenida, Oro/Diamantes, Jugar) --- */
 .main-content-area {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra el contenido horizontalmente */
+    align-items: center;
     text-align: center;
     padding-top: 20px;
 }
 
 .header-section {
-    margin-bottom: 40px;
+    margin-bottom: 50px; /* Más espacio */
 }
 
 .header-section h2 {
-    font-size: 2.8em;
-    color: var(--primary-color);
+    font-size: 3.2em; /* Título más grande y prominente */
+    color: var(--text-dark); /* Color más suave */
     margin-bottom: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    font-weight: 800; /* Más audaz */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
 }
 
 .header-section p {
-    font-size: 1.2em;
-    color: var(--secondary-color);
+    font-size: 1.3em; /* Texto más grande */
+    color: var(--secondary-dark); /* Color sutil */
 }
 
 #user-email {
     font-weight: 700;
-    color: #007bff;
+    color: var(--primary-dark);
 }
 
-/* Contenedor de Oro y Diamantes */
+/* Contenedor de Oro y Diamantes (Centrado y Estilizado) */
 .currency-display-container {
     display: flex;
     justify-content: center;
-    gap: 40px; /* Espacio entre oro y diamantes */
-    margin-bottom: 50px;
-    padding: 25px 40px;
-    background: linear-gradient(145deg, #f0f2f5, #e0e4e8); /* Degradado suave */
-    border-radius: var(--border-radius);
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0,0,0,0.1);
+    gap: 50px; /* Más espacio entre elementos */
+    margin-bottom: 60px; /* Más margen inferior */
+    padding: 30px 60px; /* Más padding */
+    background: linear-gradient(145deg, #f8fbff, #e9f0f7); /* Degradado de fondo muy sutil */
+    border-radius: var(--border-radius-soft);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05), var(--shadow-soft); /* Sombra interna y externa */
+    border: 1px solid rgba(255, 255, 255, 0.7); /* Borde suave blanco */
 }
 
 .currency-item {
     display: flex;
     align-items: center;
     gap: 15px;
-    font-size: 1.8em;
+    font-size: 2em; /* Texto más grande */
     font-weight: 600;
-    color: var(--text-color-dark);
+    color: var(--text-dark);
 }
 
 .currency-icon {
-    font-size: 2.2em; /* Iconos grandes */
-    filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.1));
+    font-size: 2.5em; /* Iconos grandes */
+    filter: drop-shadow(1px 1px 4px rgba(0,0,0,0.15));
 }
 
 .gold-icon {
-    color: #FFD700; /* Dorado */
+    color: var(--accent-gold-light); /* Dorado suave */
 }
 
 .diamond-icon {
-    color: #00BCD4; /* Turquesa/Azul de diamante */
+    color: #4dd0e1; /* Azul cielo sutil para diamante */
 }
 
 .currency-value {
-    font-size: 1.5em; /* Valor numérico más grande */
-    font-weight: 700;
-    color: var(--primary-color);
+    font-size: 1.6em; /* Valor numérico más grande */
+    font-weight: 800; /* Más audaz */
+    color: var(--primary-dark);
 }
 
 /* Botón Jugar */
 .btn-play {
-    background: linear-gradient(45deg, #28a745, #218838); /* Degradado verde */
-    color: var(--text-color-light);
+    background: linear-gradient(45deg, var(--accent-green-light) 0%, var(--accent-green-dark) 100%); /* Degradado verde azulado */
+    color: var(--text-light);
     border: none;
-    border-radius: 50px; /* Botón ovalado/redondo */
-    padding: 20px 40px;
-    font-size: 2em;
+    border-radius: 50px;
+    padding: 22px 45px; /* Más padding */
+    font-size: 2.2em; /* Tamaño de fuente más grande */
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición más fluida */
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-    margin-top: 30px;
+    gap: 18px; /* Más espacio */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+    margin-top: 40px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px; /* Más espaciado entre letras */
 }
 
 .btn-play i {
-    font-size: 1.5em; /* Icono más grande */
+    font-size: 1.6em; /* Icono más grande */
 }
 
 .btn-play:hover {
-    background: linear-gradient(45deg, #218838, #1e7e34);
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(45deg, var(--accent-green-dark) 0%, var(--accent-green-light) 100%); /* Degradado invertido o más oscuro */
+    transform: translateY(-7px) scale(1.03); /* Efecto de elevación y escala más pronunciado */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 .btn-play:active {
-    transform: translateY(-2px) scale(1);
-    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+    transform: translateY(-3px) scale(1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .game-slogan {
-    font-size: 1.1em;
-    color: #888;
-    margin-top: 30px;
+    font-size: 1.2em; /* Texto más grande */
+    color: var(--secondary-dark); /* Color más sutil */
+    margin-top: 40px;
     font-style: italic;
+    font-weight: 500;
 }
 
 /* --- Sidebar Derecho (Rango y Tabla) --- */
 .sidebar-right {
     padding-top: 20px;
-    border-left: 1px solid #eee; /* Separador visual */
-    padding-left: 20px;
+    border-left: 1px solid var(--border-subtle); /* Borde más sutil */
+    padding-left: 30px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 35px; /* Más espacio */
 }
 
 .ranking-section, .leaderboard-section {
-    background-color: var(--bg-light);
-    border-radius: var(--border-radius);
-    padding: 25px;
-    box-shadow: var(--shadow-light);
+    background-color: var(--bg-card); /* Fondo blanco para las secciones */
+    border-radius: var(--border-radius-soft);
+    padding: 30px; /* Más padding */
+    box-shadow: var(--shadow-soft);
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.7); /* Borde blanco sutil */
 }
 
 .ranking-section h3, .leaderboard-section h3 {
-    font-size: 1.6em;
-    color: var(--primary-color);
-    margin-bottom: 15px;
+    font-size: 1.8em; /* Títulos más grandes */
+    color: var(--text-dark);
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.ranking-section h3 i, .leaderboard-section h3 i {
+    color: var(--primary-light); /* Íconos con el color primario */
 }
 
 .ranking-section p {
-    font-size: 1.3em;
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-bottom: 10px;
+    font-size: 1.4em; /* Texto más grande */
+    font-weight: 800;
+    color: var(--accent-green-dark); /* Verde azulado para el rango */
+    margin-bottom: 12px;
 }
 
 .rank-description {
-    font-size: 0.95em;
-    color: var(--secondary-color);
+    font-size: 1em;
+    color: var(--secondary-dark);
 }
 
 /* Tabla de Clasificación */
 .leaderboard-table-container {
-    overflow-x: auto; /* Para tablas que se desbordan en móviles */
-    margin-top: 20px;
+    overflow-x: auto;
+    margin-top: 25px; /* Más margen */
 }
 
 .leaderboard-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 1em;
+    border-collapse: separate; /* Permite border-radius en th/td si se aplican */
+    border-spacing: 0; /* Elimina espacio entre celdas */
+    font-size: 1.05em; /* Tamaño de fuente ligeramente mayor */
     text-align: left;
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    overflow: hidden; /* Asegura bordes redondeados */
+    background-color: var(--bg-card);
+    border-radius: var(--border-radius-soft);
+    overflow: hidden; /* Muy importante para el redondeo de la tabla */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra sutil para la tabla */
 }
 
 .leaderboard-table th, .leaderboard-table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e9ecef;
+    padding: 15px 20px; /* Más padding */
+    border-bottom: 1px solid var(--border-subtle); /* Borde más sutil */
 }
 
 .leaderboard-table thead th {
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
+    background-color: var(--primary-light); /* Cabecera con color primario */
+    color: var(--text-light);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px;
+    position: sticky; /* Fija la cabecera al hacer scroll si hay muchas filas */
+    top: 0;
+    z-index: 10;
 }
 
+/* Bordes redondeados para la cabecera */
+.leaderboard-table thead th:first-child { border-top-left-radius: var(--border-radius-soft); }
+.leaderboard-table thead th:last-child { border-top-right-radius: var(--border-radius-soft); }
+
+
 .leaderboard-table tbody tr:nth-child(even) {
-    background-color: #f8f9fa; /* Color de fila alterno */
+    background-color: #fcfcfc; /* Alternancia muy sutil */
 }
 
 .leaderboard-table tbody tr:hover {
-    background-color: #e2f0fb; /* Resaltar fila al pasar el ratón */
+    background-color: #e6f3ff; /* Resaltar fila con un azul muy suave */
+    transform: scale(1.01); /* Pequeño efecto de escala */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1; /* Asegura que la sombra se vea sobre otras filas */
 }
 
 .leaderboard-table td:first-child {
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--primary-dark);
 }
 
-/* --- Botón Cerrar Sesión (Flotante) --- */
+/* --- Botón Cerrar Sesión (Flotante y Elegante) --- */
 .floating-logout-btn {
     position: absolute;
-    bottom: 25px; /* Ajusta la posición desde abajo */
-    right: 25px; /* Ajusta la posición desde la derecha */
-    background-color: var(--danger-color);
-    color: var(--text-color-light);
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(45deg, var(--danger-light) 0%, var(--danger-dark) 100%); /* Degradado rojo suave */
+    color: var(--text-light);
     border: none;
-    border-radius: 50%; /* Circular */
-    width: 55px; /* Tamaño del círculo */
-    height: 55px; /* Tamaño del círculo */
+    border-radius: 50%;
+    width: 60px; /* Tamaño ligeramente mayor */
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5em; /* Icono grande */
+    font-size: 1.6em; /* Icono un poco más grande */
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
-    transition: all 0.3s ease;
-    z-index: 50; /* Asegura que esté por encima de otros elementos */
-    padding: 0; /* Elimina padding interno si lo tiene .btn */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 50;
+    padding: 0;
 }
 
 .floating-logout-btn:hover {
-    background-color: #c82333;
-    transform: translateY(-3px) rotate(5deg); /* Pequeña rotación al hover */
-    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+    background: linear-gradient(45deg, var(--danger-dark) 0%, var(--danger-light) 100%);
+    transform: translateY(-5px) rotate(8deg); /* Efecto de elevación y rotación sutil */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .floating-logout-btn i {
-    color: var(--text-color-light); /* Asegura que el icono sea blanco */
+    color: var(--text-light);
 }
 
-
-/* --- Media Queries para Responsividad (Ajustes para pantallas más pequeñas) --- */
-@media (max-width: 1024px) {
+/* --- Media Queries para Responsividad (Ajustes refinados) --- */
+@media (max-width: 1200px) {
     .dashboard-main-content {
-        grid-template-columns: 180px 1fr 250px; /* Columnas ajustadas */
-        gap: 20px;
-        padding: 20px;
+        grid-template-columns: 200px 1fr 280px;
+        gap: 30px;
+        padding: 30px;
     }
-
+    .sidebar-left { padding-right: 20px; }
+    .sidebar-right { padding-left: 20px; }
+    .sidebar-btn { padding: 15px 20px; font-size: 1em; }
     .currency-display-container {
-        gap: 20px;
-        padding: 20px 30px;
+        gap: 30px;
+        padding: 25px 40px;
     }
-
-    .currency-item {
-        font-size: 1.5em;
-        gap: 10px;
-    }
-
-    .currency-icon {
-        font-size: 1.8em;
-    }
-
-    .btn-play {
-        font-size: 1.8em;
-        padding: 18px 35px;
-    }
-
-    .sidebar-btn {
-        padding: 12px 15px;
-        font-size: 1em;
-        gap: 10px;
-    }
-
-    .sidebar-btn i {
-        font-size: 1.2em;
-    }
+    .currency-item { font-size: 1.6em; }
+    .currency-icon { font-size: 2em; }
+    .btn-play { font-size: 1.8em; padding: 18px 35px; }
+    .ranking-section, .leaderboard-section { padding: 25px; }
+    .ranking-section h3, .leaderboard-section h3 { font-size: 1.5em; }
+    .leaderboard-table th, .leaderboard-table td { padding: 12px 15px; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .dashboard-main-content {
-        grid-template-columns: 1fr; /* Una sola columna para móviles */
+        grid-template-columns: 1fr; /* Una sola columna para tablets */
         grid-template-areas:
             "header"
             "currency"
             "play"
             "sidebar-left"
             "sidebar-right"
-            "logout"; /* Ordenamos las áreas */
-        gap: 25px;
-        padding: 15px;
+            "logout";
+        gap: 30px;
+        padding: 25px;
         box-shadow: none; /* Quitamos la sombra principal en pantallas pequeñas */
         border-radius: 0;
     }
 
-    .header-section { grid-area: header; margin-bottom: 20px; }
-    .currency-display-container { grid-area: currency; margin-bottom: 20px; }
-    .btn-play { grid-area: play; margin-top: 0; }
+    .sidebar-left, .sidebar-right {
+        border: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
     .sidebar-left {
-        grid-area: sidebar-left;
-        border-right: none;
-        padding-right: 0;
-        flex-direction: row; /* Botones de sidebar en fila en móviles */
+        flex-direction: row;
         justify-content: center;
-        flex-wrap: wrap; /* Permite que los botones salten de línea */
-        gap: 10px;
-        border-top: 1px solid #eee;
+        flex-wrap: wrap;
+        gap: 15px;
         padding-top: 20px;
+        border-top: 1px solid var(--border-subtle);
     }
+    .sidebar-btn {
+        width: auto; /* Permite que el ancho sea automático en línea */
+        min-width: 140px; /* Ancho mínimo para que se vean bien */
+        font-size: 0.95em;
+        padding: 12px 18px;
+        text-align: center; /* Centra el texto en móviles */
+        flex-direction: column; /* Icono arriba, texto abajo */
+        gap: 5px;
+    }
+    .sidebar-btn i {
+        font-size: 1.3em;
+    }
+
     .sidebar-right {
-        grid-area: sidebar-right;
-        border-left: none;
-        padding-left: 0;
-        border-top: 1px solid #eee;
         padding-top: 20px;
+        border-top: 1px solid var(--border-subtle);
     }
+
     .floating-logout-btn {
-        grid-area: logout;
-        position: static; /* No flotante en móviles */
-        margin: 20px auto 0 auto; /* Centrado abajo */
-        box-shadow: var(--shadow-light);
-        width: 60px; /* Un poco más grande para facilitar el toque */
-        height: 60px;
+        position: static;
+        margin: 30px auto 0 auto; /* Centrado en el flujo normal */
+        box-shadow: var(--shadow-soft);
+        width: 65px; /* Un poco más grande para facilitar el toque */
+        height: 65px;
     }
 
     .currency-display-container {
-        flex-direction: column; /* Apila oro y diamantes */
+        flex-direction: column;
         align-items: center;
-        gap: 15px;
+        gap: 20px;
+        padding: 20px 30px;
     }
+    .currency-item { font-size: 1.5em; }
+    .currency-icon { font-size: 1.8em; }
+    .currency-value { font-size: 1.4em; }
+
+    .header-section h2 { font-size: 2.5em; }
+    .header-section p { font-size: 1.1em; }
+    .btn-play { font-size: 1.8em; padding: 18px 35px; }
 }
 
-@media (max-width: 480px) {
-    .header-section h2 {
-        font-size: 2.2em;
-    }
-    .header-section p {
-        font-size: 1em;
-    }
-    .currency-item {
-        font-size: 1.4em;
-    }
-    .currency-icon {
-        font-size: 1.6em;
-    }
-    .btn-play {
-        font-size: 1.6em;
-        padding: 15px 30px;
-    }
-    .ranking-section, .leaderboard-section {
-        padding: 20px;
-    }
-    .leaderboard-table th, .leaderboard-table td {
-        padding: 10px 12px;
-        font-size: 0.9em;
+@media (max-width: 576px) {
+    .dashboard-wrapper { padding: 15px; }
+    .dashboard-main-content { padding: 20px; gap: 20px; }
+    .header-section h2 { font-size: 2em; }
+    .header-section p { font-size: 0.9em; }
+    .currency-item { font-size: 1.3em; }
+    .currency-icon { font-size: 1.5em; }
+    .currency-value { font-size: 1.2em; }
+    .btn-play { font-size: 1.5em; padding: 15px 30px; }
+    .ranking-section, .leaderboard-section { padding: 20px; }
+    .ranking-section h3, .leaderboard-section h3 { font-size: 1.4em; }
+    .sidebar-btn {
+        width: 48%; /* Dos botones por fila en pantallas muy pequeñas */
     }
 }
