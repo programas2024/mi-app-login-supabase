@@ -19,7 +19,8 @@ const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document = document.getElementById('login-submit-btn');
+// CORRECCIÓN: Eliminado '= document' que causaba el TypeError
+const loginSubmitBtn = document.getElementById('login-submit-btn');
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
@@ -40,9 +41,7 @@ const userEmailProfileSpan = document.getElementById('user-email-profile'); // U
 const usernameInputProfile = document.getElementById('edit-username');
 const countryInputProfile = document.getElementById('edit-country');
 const saveProfileBtn = document.getElementById('save-profile-btn');
-// const giveGoldBtnProfile = document.getElementById('give-gold-btn'); // ELIMINADO: ahora en SweetAlert
 const backToDashboardBtn = document.getElementById('back-to-dashboard-btn'); // Ahora un botón de regreso fijo
-// const logoutBtnProfile = document.getElementById('logout-btn-profile'); // ELIMINADO: ahora en SweetAlert
 const configureBtn = document.getElementById('configure-btn'); // Nuevo botón de configuración
 const goldDisplayProfile = document.getElementById('gold-display-profile');
 const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
@@ -451,16 +450,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            // Eliminado: if (profileCard) profileCard.classList.remove('dashboard-hidden');
             // Esto ahora se hace en el `finally` de `loadUserProfile`
             await loadUserProfile(user.id);
 
             if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
-            // ELIMINADO: if (giveGoldBtnProfile) giveGoldBtnProfile.addEventListener('click', giveGold);
             if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
                 window.location.href = 'dashboard.html';
             });
-            // ELIMINADO: if (logoutBtnProfile) logoutBtnProfile.addEventListener('click', signOut);
             // Añadir event listener para el nuevo botón "Configurar"
             if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
 
