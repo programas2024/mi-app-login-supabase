@@ -52,15 +52,17 @@ function hideLoader() {
     }
 }
 
-// Función para mostrar mensajes con SweetAlert2
+// Función para mostrar mensajes con SweetAlert2// Función para mostrar mensajes con SweetAlert2
 function showSwal(icon, title, text) {
+    const isAutoClose = (icon === 'success' || icon === 'info'); // Determina si se cierra automáticamente
+
     Swal.fire({
         icon: icon, // 'success', 'error', 'info', 'warning', 'question'
         title: title,
         text: text,
-        showConfirmButton: true, // Mostrar botón de confirmación
-        timer: (icon === 'success' || icon === 'info') ? 3000 : undefined, // Auto-cerrar si es éxito/info
-        timerProgressBar: (icon === 'success' || icon === 'info'),
+        showConfirmButton: !isAutoClose, // Mostrar botón SOLO si NO se cierra automáticamente
+        timer: isAutoClose ? 3000 : undefined, // Auto-cerrar después de 3 segundos si es éxito/info
+        timerProgressBar: isAutoClose, // Mostrar barra de progreso solo si se auto-cierra
         didOpen: () => {
             // Opcional: si quieres hacer algo cuando se abre el SweetAlert
         },
