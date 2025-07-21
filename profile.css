@@ -1,0 +1,213 @@
+/* profile.css */
+
+/* Contenedor específico de la página de perfil */
+.profile-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Asegura que ocupe toda la altura de la vista */
+    background-color: #f0f2f5; /* Un fondo suave */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Estilos de la tarjeta de perfil */
+#profile-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 500px; /* Limita el ancho máximo para mejor lectura */
+    text-align: center;
+    box-sizing: border-box;
+    transition: all 0.3s ease-in-out;
+}
+
+#profile-card h2 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+#profile-card p {
+    color: #555;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+/* Estilos para el correo electrónico del usuario */
+#user-email-profile {
+    font-weight: 600;
+    color: #007bff; /* Un color de acento */
+}
+
+/* Contadores de oro y diamantes */
+.profile-info {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin: 30px 0;
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.profile-info p {
+    margin: 0;
+    font-size: 1.2em;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-info span {
+    font-weight: 700;
+    color: #28a745; /* Oro */
+    font-size: 1.3em;
+}
+
+/* Iconos para los contadores (opcional, si usas FontAwesome u otros) */
+/* .profile-info p:nth-child(1)::before { content: '💰 '; } */
+/* .profile-info p:nth-child(2)::before { content: '💎 '; } */
+
+
+/* Separador */
+.separator {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 35px 0;
+}
+
+/* Formulario de edición de perfil */
+.profile-edit-form {
+    margin-bottom: 30px;
+}
+
+.profile-edit-form h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.6em;
+    font-weight: 600;
+}
+
+.profile-edit-form input[type="text"] {
+    width: calc(100% - 20px); /* Ajusta padding */
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1em;
+    color: #495057;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.profile-edit-form input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Botones */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05em;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+    margin: 8px 5px; /* Espaciado entre botones */
+    min-width: 150px;
+}
+
+.btn-action { /* Para guardar perfil y recibir oro */
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-action:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+.btn-secondary { /* Volver al Dashboard */
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+}
+
+.btn-logout {
+    background-color: #dc3545; /* Rojo para cerrar sesión */
+    color: white;
+    margin-top: 20px; /* Separar del resto de botones */
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
+}
+
+/* Estilos para el loader (si no los tienes ya en styles.css) */
+/* Si ya los tienes en styles.css, no es necesario duplicarlos aquí */
+.loader-hidden {
+    display: none;
+}
+
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#loader p {
+    margin-top: 15px;
+    color: #333;
+    font-size: 1.1em;
+}
+
+/* Responsividad básica */
+@media (max-width: 600px) {
+    #profile-card {
+        padding: 25px;
+        margin: 10px;
+    }
+    .profile-info {
+        flex-direction: column;
+        align-items: center;
+    }
+    .btn {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
