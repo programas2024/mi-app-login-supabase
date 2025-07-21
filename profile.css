@@ -1,83 +1,137 @@
-/* profile.css */
+/* profile.css - Versión Refinada y Consistente con Dashboard */
 
-/* Contenedor específico de la página de perfil */
+/* NOTA: Asegúrate de que las variables CSS (--primary-gradient-start, --gold-card-start, etc.)
+   estén definidas en tu archivo dashboard.css o en un archivo de variables global que este CSS pueda acceder. */
+
+/* --- Contenedor específico de la página de perfil --- */
 .profile-page-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f2f5;
+    background: linear-gradient(135deg, #e0f2f7, #f7f9fc); /* Fondo sutil, igual al del dashboard */
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Estilos de la tarjeta de perfil */
+/* --- Estilos de la tarjeta de perfil --- */
 #profile-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-card-vibrant); /* Fondo blanco vibrante */
+    border-radius: var(--border-radius-large); /* Bordes redondeados grandes */
+    box-shadow: var(--shadow-deep); /* Sombra profunda, igual al dashboard */
     padding: 40px;
     width: 100%;
-    max-width: 500px;
+    max-width: 550px; /* Un poco más grande para mejor presentación */
     text-align: center;
     box-sizing: border-box;
     transition: all 0.3s ease-in-out;
-    position: relative; /* Necesario para posicionar elementos internos */
-    overflow: hidden; /* Asegura que los elementos posicionados no se desborden */
-    /* Padding para dejar espacio a los botones posicionados */
+    position: relative;
+    overflow: hidden;
     padding-top: 80px; /* Suficiente espacio arriba para ambos botones */
+    border: 1px solid rgba(255, 255, 255, 0.8); /* Borde sutil */
 }
 
 /* Títulos dentro de la tarjeta */
 #profile-card h2 {
-    color: #333;
+    color: var(--text-dark-primary); /* Color de texto oscuro principal */
     margin-bottom: 25px;
-    font-size: 2em;
+    font-size: 2.2em; /* Un poco más grande para énfasis */
     font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.05); /* Sombra de texto sutil */
 }
 
 #profile-card p {
-    color: #555;
-    font-size: 1.1em;
+    color: var(--text-muted); /* Color de texto suave */
+    font-size: 1.05em; /* Ligeramente ajustado */
     margin-bottom: 10px;
 }
 
 #user-email-profile {
     font-weight: 600;
-    color: #007bff;
+    color: var(--primary-gradient-end); /* Azul eléctrico del dashboard */
 }
 
-/* Contadores de oro y diamantes */
+/* --- Contadores de oro y diamantes (¡Magia aquí!) --- */
 .profile-info {
     display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    margin: 30px 0;
-    padding: 15px;
-    background-color: #e9ecef;
-    border-radius: 8px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    justify-content: center; /* Centra los contenedores */
+    gap: 20px; /* Espacio entre ellos */
+    margin: 30px auto; /* Centra el contenedor completo */
+    padding: 0; /* Eliminamos el padding del wrapper para que las tarjetas lo definan */
+    background-color: transparent; /* Fondo transparente */
+    box-shadow: none; /* Sin sombra en el wrapper */
+    border-radius: 0; /* Sin borde redondeado en el wrapper */
+    max-width: 450px; /* Limita el ancho como en el dashboard */
+    flex-wrap: wrap; /* Permite que se envuelvan en pantallas pequeñas */
 }
 
-.profile-info p {
-    margin: 0;
-    font-size: 1.2em;
-    color: #444;
+/* Reutilizamos los estilos de .currency-card del dashboard para consistencia */
+.profile-info .currency-card {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: row; /* Icono y texto en fila */
+    align-items: center; /* Centra verticalmente el contenido */
+    justify-content: space-around; /* Distribuye espacio entre elementos */
+    padding: 12px 20px; /* Padding reducido para menor altura, consistente con dashboard */
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-deep);
+    color: var(--text-color-light);
+    flex: 1; /* Permite que las tarjetas se distribuyan equitativamente */
+    min-width: 160px; /* Ancho mínimo para cada tarjeta */
+    max-width: 230px; /* Ancho máximo para cada tarjeta */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    border: 1px solid rgba(255, 255, 255, 0.6); /* Borde claro para los cards */
 }
 
-.profile-info span {
-    font-weight: 700;
-    color: #28a745;
-    font-size: 1.3em;
+.profile-info .currency-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-/* Separador */
+.profile-info .currency-card .currency-icon {
+    font-size: 2.2em; /* Iconos más pequeños */
+    margin-right: 15px; /* Espacio a la derecha del icono */
+    margin-bottom: 0;
+    color: var(--text-subtle-white);
+}
+
+.profile-info .currency-card .currency-value-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinea el texto a la izquierda dentro del wrapper */
+}
+
+.profile-info .currency-card .currency-value {
+    font-size: 1.8em; /* Valor numérico más pequeño */
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    color: var(--text-color-light);
+}
+
+.profile-info .currency-card .currency-name {
+    font-size: 0.85em; /* Nombre de la moneda más pequeño */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-subtle-white);
+}
+
+/* Colores específicos para las tarjetas de Oro y Diamantes (¡exactamente los mismos!) */
+.profile-info .gold-card {
+    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
+}
+
+.profile-info .diamond-card {
+    background: linear-gradient(135deg, var(--diamond-card-start) 0%, var(--diamond-card-end) 100%);
+}
+
+
+/* Separador (Más sutil) */
 .separator {
     border: none;
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(0, 0, 0, 0.08); /* Color más suave */
     margin: 35px 0;
 }
 
@@ -87,95 +141,109 @@
 }
 
 .profile-edit-form h3 {
-    color: #333;
+    color: var(--text-dark-primary);
     margin-bottom: 20px;
-    font-size: 1.6em;
+    font-size: 1.8em; /* Ajustado */
     font-weight: 600;
 }
 
 .profile-edit-form input[type="text"] {
     width: calc(100% - 20px);
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 1em;
-    color: #495057;
+    padding: 14px; /* Un poco más de padding */
+    margin-bottom: 18px; /* Más espacio entre inputs */
+    border: 1px solid #dee2e6; /* Borde más suave */
+    border-radius: var(--border-radius-soft); /* Bordes suaves */
+    font-size: 1.05em;
+    color: var(--text-dark-primary);
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .profile-edit-form input[type="text"]:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--primary-gradient-end); /* Azul eléctrico al focus */
+    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25); /* Sombra de focus consistente */
     outline: none;
 }
 
-/* Botones Generales */
+/* Botones Generales (Alineados con el estilo del dashboard) */
 .btn {
-    padding: 12px 25px;
+    padding: 15px 30px; /* Buen tamaño para botones */
     border: none;
-    border-radius: 8px;
-    font-size: 1.05em;
+    border-radius: 10px; /* Bordes suaves */
+    font-size: 1.1em;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
-    margin: 8px 5px;
-    min-width: 150px;
-    display: inline-flex; /* Para alinear el icono y el texto */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave */
+    margin: 10px 8px; /* Margen ajustado */
+    min-width: 160px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Espacio entre icono y texto */
+    gap: 10px; /* Espacio entre icono y texto */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra por defecto */
+    text-transform: uppercase; /* Para darle un toque moderno */
+    letter-spacing: 0.8px;
+}
+
+.btn:hover {
+    transform: translateY(-4px); /* Efecto de elevación */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al hover */
 }
 
 .btn-action { /* Para guardar perfil */
-    background-color: #007bff;
-    color: white;
+    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%); /* Azul de jugar del dashboard */
+    color: var(--text-color-light);
 }
 
 .btn-action:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Nuevo estilo para el botón "Regresar" */
+/* Nuevo estilo para el botón "Regresar" (Consistente con los botones del sidebar) */
 .btn-back {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #6c757d; /* Gris oscuro, similar a btn-secondary */
-    color: white;
-    padding: 8px 15px; /* Más compacto */
+    top: 25px; /* Más espacio desde el borde superior */
+    left: 25px;
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%); /* Degradado de grises */
+    color: var(--text-color-light);
+    padding: 10px 20px; /* Un poco más de padding */
     font-size: 0.95em;
     min-width: unset;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .btn-back:hover {
-    background-color: #5a6268;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
 
-/* Nuevo estilo para el botón "Configurar" */
+/* Nuevo estilo para el botón "Configurar" (Consistente con los botones del sidebar VIP) */
 .btn-configure {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #ffc107; /* Amarillo/naranja para configuración */
-    color: #333; /* Texto oscuro para contrastar */
-    padding: 8px 15px; /* Más compacto */
+    top: 25px;
+    right: 25px;
+    background: linear-gradient(135deg, var(--vip-gradient-start) 0%, var(--vip-gradient-end) 100%); /* Dorado de VIP */
+    color: var(--text-dark-primary); /* Texto oscuro para contraste en dorado */
+    padding: 10px 20px;
     font-size: 0.95em;
     min-width: unset;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .btn-configure:hover {
-    background-color: #e0a800;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+    background: linear-gradient(135deg, var(--vip-gradient-end) 0%, var(--vip-gradient-start) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3);
 }
 
-/* --- Loader Styles (Mantenemos la corrección) --- */
+/* --- Loader Styles (Mantenemos la corrección y consistencia) --- */
 .loader-hidden {
     display: none !important;
 }
@@ -186,25 +254,25 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.85); /* Un poco más oscuro */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    color: white;
-    font-size: 1.2em;
-    transition: none;
+    color: var(--text-color-light); /* Texto blanco */
+    font-size: 1.4em; /* Tamaño de fuente consistente */
+    transition: opacity 0.3s ease;
 }
 
 .spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid var(--play-gradient-end); /* Color del spinner consistente */
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     animation: spin 1s linear infinite;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 @keyframes spin {
@@ -219,141 +287,205 @@
 /* Contenedor de botones dentro de SweetAlert */
 .swal-custom-buttons-container {
     display: flex;
-    flex-direction: column; /* Apilados verticalmente */
-    gap: 15px; /* Espacio entre botones */
-    margin-top: 25px; /* Espacio superior para separar del título/texto */
-    width: 100%; /* Ocupa el ancho completo del modal */
-    padding: 0 10px; /* Pequeño padding horizontal */
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 25px;
+    width: 100%;
+    padding: 0 10px;
     box-sizing: border-box;
 }
 
 /* Estilo base para los botones personalizados de SweetAlert */
 .swal-custom-btn {
-    background-color: #007bff; /* Color primario por defecto */
-    color: white;
+    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%); /* Degradado principal */
+    color: var(--text-color-light);
     border: none;
-    border-radius: 8px; /* Bordes más suaves */
-    padding: 15px 20px; /* Buen padding para un clic fácil */
-    font-size: 1.1em;
-    font-weight: 600;
+    border-radius: 10px; /* Más consistente */
+    padding: 16px 22px; /* Buen padding */
+    font-size: 1.15em; /* Ligeramente más grande */
+    font-weight: 700; /* Más audaz */
     cursor: pointer;
-    transition: all 0.3s ease; /* Transiciones suaves para hover */
-    display: flex; /* Para centrar contenido y usar iconos */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Espacio entre el ícono y el texto */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-    text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Sombra de texto suave */
+    gap: 12px; /* Más espacio para icono */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15); /* Sombra de texto suave */
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .swal-custom-btn:hover {
-    transform: translateY(-3px); /* Efecto 3D al pasar el ratón */
-    opacity: 0.95; /* Ligera transparencia */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+    transform: translateY(-4px);
+    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%); /* Degradado inverso al hover */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .swal-custom-btn:active {
-    transform: translateY(0); /* Al hacer clic, vuelve a la posición normal */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo específico para el botón de Oro */
+/* Estilo específico para el botón de Oro (para SweetAlert, si aplica) */
 .swal-btn-gold {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); /* Degradado dorado */
-    color: #333; /* Texto oscuro para contraste */
+    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
+    color: var(--text-dark-primary); /* Texto oscuro para contraste */
     text-shadow: none; /* Eliminar sombra de texto si el fondo es claro */
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
 }
 
 .swal-btn-gold:hover {
-    background: linear-gradient(135deg, #FFC107 0%, #FF8C00 100%); /* Degradado ligeramente más oscuro al hover */
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+    background: linear-gradient(135deg, var(--gold-card-end) 0%, var(--gold-card-start) 100%);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
 }
 
-/* Estilo específico para el botón de Cerrar Sesión */
+/* Estilo específico para el botón de Cerrar Sesión (para SweetAlert, si aplica) */
 .swal-btn-logout {
-    background: linear-gradient(135deg, #DC3545 0%, #C82333 100%); /* Degradado rojo */
-    color: white;
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+    color: var(--text-color-light);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
 }
 
 .swal-btn-logout:hover {
-    background: linear-gradient(135deg, #C82333 0%, #A71C2B 100%); /* Degradado ligeramente más oscuro al hover */
-    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+    background: linear-gradient(135deg, #C82333 0%, #A71C2B 100%);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
 }
 
 /* Estilos para el popup de SweetAlert en general (para un look moderno) */
-.swal2-popup.swal2-modern {
-    border-radius: 15px; /* Bordes más redondeados */
-    background: #fcfcfc; /* Un blanco roto para un look más suave */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
-    padding: 30px;
+.swal2-popup.swal2-modal { /* Aseguramos que sea el modal estándar */
+    border-radius: 18px; /* Bordes más redondeados y consistentes */
+    background: var(--bg-card-vibrant); /* Fondo consistente */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25); /* Sombra más profunda */
+    padding: 35px; /* Más padding interno */
+    border: 1px solid rgba(255, 255, 255, 0.9); /* Borde sutil */
 }
 
 .swal2-title {
-    color: #343a40 !important; /* Color de título oscuro */
-    font-weight: 700 !important;
-    margin-bottom: 15px !important;
-}
-
-.swal2-content {
-    color: #6c757d !important; /* Color de texto suave */
-    font-size: 1.05em !important;
-}
-
-.swal2-icon {
+    color: var(--text-dark-primary) !important;
+    font-weight: 800 !important; /* Más audaz */
+    font-size: 2.2em !important; /* Más grande */
     margin-bottom: 20px !important;
 }
 
+.swal2-html-container { /* Usar esta clase para el contenido, no .swal2-content */
+    color: var(--text-muted) !important;
+    font-size: 1.1em !important;
+    line-height: 1.5 !important;
+    margin: 0 !important; /* Asegura que no tenga márgenes predeterminados */
+    padding: 0 !important; /* Asegura que no tenga paddings predeterminados */
+}
+
+.swal2-icon {
+    margin-bottom: 25px !important;
+}
+
 /* Ajuste para que el HTML personalizado no tenga padding extra del swal2-html-container */
+/* Si usas swal2-html-container para tu contenido, no necesitas esto.
+   Si pones contenido HTML directamente y SweetAlert le añade padding, podrías necesitarlo.
+   Para los botones, usamos .swal-custom-buttons-container que ya maneja su padding. */
 .swal2-html-container-no-padding {
     padding: 0 !important;
     margin: 0 !important;
 }
 
 
-/* Responsividad básica */
-@media (max-width: 768px) {
+/* --- Responsividad --- */
+@media (max-width: 992px) {
     #profile-card {
-        padding: 25px;
-        margin: 10px;
-        padding-top: 100px; /* Más espacio si los botones se superponen en dispositivos pequeños */
+        padding: 30px;
+        max-width: 450px;
+        padding-top: 80px; /* Ajuste si los botones absolutos se acercan mucho */
     }
+    #profile-card h2 { font-size: 1.8em; }
+    #profile-card p { font-size: 1em; }
+
     .profile-info {
-        flex-direction: column;
+        flex-direction: column; /* Apila las tarjetas en pantallas medianas */
         align-items: center;
+        gap: 15px;
+        max-width: 100%; /* Ocupa el ancho completo */
     }
+    .profile-info .currency-card {
+        width: 80%; /* Ajusta el ancho para que queden bien apiladas */
+        max-width: 280px; /* Limita el ancho máximo */
+        padding: 10px 18px;
+        flex-direction: row; /* Mantén el diseño horizontal dentro de la tarjeta */
+        justify-content: space-around;
+    }
+    .profile-info .currency-card .currency-icon { font-size: 2em; margin-right: 12px; }
+    .profile-info .currency-card .currency-value { font-size: 1.6em; }
+    .profile-info .currency-card .currency-name { font-size: 0.8em; }
+
     .btn {
-        width: 100%; /* Los botones generales pueden ser de ancho completo */
-        margin: 10px 0;
+        padding: 12px 25px;
+        font-size: 1em;
+        margin: 8px 4px;
+        min-width: 140px;
     }
-    /* Posicionamiento de botones en pantallas pequeñas */
+
     .btn-back, .btn-configure {
         position: static; /* Quita el posicionamiento absoluto */
-        width: auto; /* Permite que el ancho sea automático */
-        font-size: 1em; /* Restaura el tamaño de fuente normal */
-        padding: 10px 20px;
-        margin-bottom: 10px; /* Espacio entre ellos si se apilan */
+        width: auto; /* Ancho automático */
+        margin: 10px auto; /* Centra y añade margen */
+        display: block; /* Ocupa su propia línea */
+        max-width: 200px; /* Limita el ancho en móviles */
+        padding: 10px 15px;
+        font-size: 0.9em;
     }
-    /* Centrar ambos botones en una fila en la parte superior */
-    #profile-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+
+    .swal-custom-btn {
+        font-size: 1em;
+        padding: 14px 18px;
+        gap: 8px;
     }
-    /* Aquí se requiere que en el HTML los botones estén dentro de un contenedor para poder ordenarlos con flexbox
-       o que el layout de la tarjeta sea flexbox para manejarlo.
-       Dejaremos los botones de "back" y "configure" como eran si no hay un contenedor específico para ellos.
-       Si quieres que se apilen en móviles, déjalos como `position: static` como están ahora. */
+    .swal2-popup.swal2-modal { padding: 25px; }
+    .swal2-title { font-size: 1.8em !important; }
+    .swal2-html-container { font-size: 1em !important; }
 }
 
-/* Para pantallas aún más pequeñas */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
+    .profile-page-container { padding: 10px; }
+    #profile-card {
+        padding: 20px;
+        padding-top: 70px;
+        border-radius: 10px;
+        margin: 0;
+    }
+    #profile-card h2 { font-size: 1.6em; }
+    #profile-card p { font-size: 0.9em; }
+
+    .profile-info .currency-card {
+        width: 95%; /* Ocupa casi todo el ancho */
+        max-width: unset; /* Sin límite de ancho */
+        padding: 8px 15px;
+        flex-direction: column; /* Apila contenido dentro de la tarjeta */
+        justify-content: center;
+        align-items: center;
+    }
+    .profile-info .currency-card .currency-icon { margin-right: 0; margin-bottom: 5px; font-size: 1.8em; }
+    .profile-info .currency-card .currency-value-wrapper { align-items: center; } /* Centra texto apilado */
+    .profile-info .currency-card .currency-value { font-size: 1.3em; }
+    .profile-info .currency-card .currency-name { font-size: 0.7em; }
+
+    .btn {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+
     .btn-back, .btn-configure {
-        width: 90%; /* Ajuste para ocupar casi todo el ancho */
+        margin: 5px auto;
+        padding: 8px 12px;
+        font-size: 0.85em;
     }
     .swal-custom-btn {
-        font-size: 1em; /* Ajustar tamaño de fuente de botones de SweetAlert en móviles */
-        padding: 12px 15px;
+        font-size: 0.95em;
+        padding: 10px 12px;
+        gap: 6px;
     }
+    .swal2-popup.swal2-modal { padding: 15px; border-radius: 12px; }
+    .swal2-title { font-size: 1.5em !important; }
+    .swal2-html-container { font-size: 0.9em !important; }
 }
