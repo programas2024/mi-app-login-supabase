@@ -19,7 +19,7 @@ const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document = document.getElementById('login-submit-btn');
+const loginSubmitBtn = document.getElementById('login-submit-btn');
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
