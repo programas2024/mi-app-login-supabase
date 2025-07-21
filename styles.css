@@ -414,3 +414,49 @@ input[data-tooltip]:hover::before {
         width: calc(100% - 60px);
     }
 }
+
+/* Estilos para el Loader */
+#loader {
+    position: fixed; /* O absolute, dependiendo del contexto */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    color: white;
+    font-size: 1.2em;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loader-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite; /* Animación de giro */
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Opcional: Estilos para el separador (si lo habías quitado) */
+.separator {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    margin: 20px 0;
+}

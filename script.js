@@ -7,12 +7,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- 2. Referencias a Elementos HTML (CONDICIONALES) ---
+// --- 2. Referencias a Elementos HTML (CONDICIONALES y ajustadas) ---
 // Intentar obtener elementos, sabiendo que no todos existirán en todas las páginas
 const initialOptionsDiv = document.getElementById('initial-options');
 const signupFormDiv = document.getElementById('signup-form');
 const loginFormDiv = document.getElementById('login-form');
-const dashboardDiv = document.getElementById('dashboard'); // Podría existir o no
+const dashboardDiv = document.getElementById('dashboard'); // Podría existir o no (en dashboard.html)
 
 const signupEmail = document.getElementById('signup-email');
 const signupPassword = document.getElementById('signup-password');
@@ -22,7 +22,8 @@ const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
 const loginSubmitBtn = document.getElementById('login-submit-btn');
 
-const authMessage = document.getElementById('auth-message'); // Puede existir en ambas, pero se usa más en index
+// authMessage ya no se usa directamente para mostrar mensajes, sino para limpiar
+const authMessage = document.getElementById('auth-message');
 
 const userEmailSpan = document.getElementById('user-email'); // Solo en dashboard.html
 const logoutBtn = document.getElementById('logout-btn');     // Solo en dashboard.html
@@ -33,137 +34,136 @@ const backToOptionsFromSignup = document.getElementById('back-to-options-from-si
 const backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
 const forgotPasswordLink = document.getElementById('forgot-password');
 
-const googleLoginBtn = document.getElementById('btn-google-login');
-const facebookLoginBtn = document.getElementById('btn-facebook-login');
+const loaderDiv = document.getElementById('loader'); // Referencia al loader
 
 
-// --- 3. Funciones de Utilidad (Ajustadas para la única página) ---
-function showMessage(msg, type = 'info') {
-    if (authMessage) { // Solo si el elemento de mensaje existe
-        authMessage.textContent = msg;
-        authMessage.style.display = 'block';
-        authMessage.style.color = ''; // Reset
-        authMessage.style.backgroundColor = ''; // Reset
+// --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
 
-        if (type === 'success') {
-            authMessage.style.color = 'green';
-        } else if (type === 'error') {
-            authMessage.style.color = 'red';
-        } else { // info
-            authMessage.style.color = 'blue';
-        }
-
-        setTimeout(() => {
-            if (authMessage) {
-                authMessage.style.display = 'none';
-                authMessage.textContent = '';
-            }
-        }, 4000);
-    } else {
-        console.log(`Mensaje (${type}): ${msg}`); // Fallback para consolas si no hay elemento
+function showLoader(message = 'Cargando...') {
+    if (loaderDiv) {
+        loaderDiv.querySelector('p').textContent = message;
+        loaderDiv.classList.remove('loader-hidden');
     }
 }
 
+function hideLoader() {
+    if (loaderDiv) {
+        loaderDiv.classList.add('loader-hidden');
+    }
+}
+
+// Función para mostrar mensajes con SweetAlert2
+function showSwal(icon, title, text) {
+    Swal.fire({
+        icon: icon, // 'success', 'error', 'info', 'warning', 'question'
+        title: title,
+        text: text,
+        showConfirmButton: true, // Mostrar botón de confirmación
+        timer: (icon === 'success' || icon === 'info') ? 3000 : undefined, // Auto-cerrar si es éxito/info
+        timerProgressBar: (icon === 'success' || icon === 'info'),
+        didOpen: () => {
+            // Opcional: si quieres hacer algo cuando se abre el SweetAlert
+        },
+        willClose: () => {
+            // Opcional: si quieres hacer algo cuando se cierra el SweetAlert
+        }
+    });
+}
+
 function hideAllForms() {
-    // Es crucial chequear si los elementos existen antes de manipularlos
     if (initialOptionsDiv) initialOptionsDiv.classList.add('form-hidden');
     if (signupFormDiv) signupFormDiv.classList.add('form-hidden');
     if (loginFormDiv) loginFormDiv.classList.add('form-hidden');
-    if (dashboardDiv) dashboardDiv.classList.add('dashboard-hidden'); // Para el caso de dashboard.html
+    if (dashboardDiv) dashboardDiv.classList.add('dashboard-hidden');
+    if (authMessage) authMessage.style.display = 'none'; // Asegurar que el fallback de mensaje esté oculto
 }
 
 function showSignupForm() {
     hideAllForms();
     if (signupFormDiv) signupFormDiv.classList.remove('form-hidden');
-    showMessage(''); // Limpiar mensaje al cambiar de form
 }
 
 function showLoginForm() {
     hideAllForms();
     if (loginFormDiv) loginFormDiv.classList.remove('form-hidden');
-    showMessage(''); // Limpiar mensaje al cambiar de form
 }
 
 function showInitialOptions() {
     hideAllForms();
     if (initialOptionsDiv) initialOptionsDiv.classList.remove('form-hidden');
-    showMessage(''); // Limpiar mensaje al volver
 }
 
 
-// --- 4. Funciones de Autenticación (con redirección condicional) ---
+// --- 4. Funciones de Autenticación (con redirección y SweetAlert2) ---
 
 async function signUp() {
     const email = signupEmail.value;
     const password = signupPassword.value;
+
+    if (!email || password.length < 6) {
+        showSwal('warning', 'Datos incompletos', 'Por favor, ingresa un correo válido y una contraseña de al menos 6 caracteres.');
+        return;
+    }
+
+    showLoader('Registrando...');
     const { data, error } = await supabase.auth.signUp({ email, password });
+    hideLoader();
 
     if (error) {
-        showMessage('Error al registrarse: ' + error.message, 'error');
-    } else {
-        showMessage('¡Registro exitoso! Por favor, verifica tu correo.', 'success');
-        if (loginFormDiv) { // Si estamos en index.html, mostramos el login
-            showLoginForm();
-        } else { // Si estamos en otra página (un improbable dashboard.html sin login), redirigimos
-            window.location.href = 'index.html';
+        let errorMessage = 'Error al registrarse. Inténtalo de nuevo.';
+        if (error.message.includes('User already registered')) {
+            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+        } else if (error.message.includes('AuthApiError: Password should be at least 6 characters')) {
+            errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
         }
+        showSwal('error', 'Fallo en Registro', errorMessage);
+    } else {
+        showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
+        signupEmail.value = '';
+        signupPassword.value = '';
+        showLoginForm(); // Después de registrar, mostramos el formulario de login.
     }
 }
 
 async function signIn() {
     const email = loginEmail.value;
     const password = loginPassword.value;
+
+    if (!email || !password) {
+        showSwal('warning', 'Datos incompletos', 'Por favor, ingresa tu correo y contraseña.');
+        return;
+    }
+
+    showLoader('Iniciando sesión...');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    hideLoader();
 
     if (error) {
-        showMessage('Error al iniciar sesión: ' + error.message, 'error');
+        let errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
+        if (error.message.includes('Invalid login credentials')) {
+            errorMessage = 'Correo o contraseña incorrectos.';
+        } else if (error.message.includes('Email not confirmed')) {
+            errorMessage = 'Tu cuenta aún no ha sido verificada. Revisa tu correo.';
+        }
+        showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
     } else {
-        showMessage('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
+        showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
         // Redirigir siempre al dashboard
         window.location.href = 'dashboard.html';
     }
 }
 
 async function signOut() {
+    showLoader('Cerrando sesión...');
     const { error } = await supabase.auth.signOut();
+    hideLoader();
+
     if (error) {
-        showMessage('Error al cerrar sesión: ' + error.message, 'error');
+        showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
     } else {
-        showMessage('Sesión cerrada. ¡Hasta pronto!', 'blue');
+        showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
         // Redirigir a la página de inicio después de cerrar sesión
         window.location.href = 'index.html';
-    }
-}
-
-async function signInWithGoogle() {
-    try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin + '/dashboard.html',
-            }
-        });
-        if (error) throw error;
-        showMessage('Redirigiendo a Google para iniciar sesión...', 'info');
-    } catch (error) {
-        console.error('Error al iniciar sesión con Google:', error);
-        showMessage('Error al iniciar sesión con Google: ' + error.message, 'error');
-    }
-}
-
-async function signInWithFacebook() {
-    try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'facebook',
-            options: {
-                redirectTo: window.location.origin + '/dashboard.html',
-            }
-        });
-        if (error) throw error;
-        showMessage('Redirigiendo a Facebook para iniciar sesión...', 'info');
-    } catch (error) {
-        console.error('Error al iniciar sesión con Facebook:', error);
-        showMessage('Error al iniciar sesión con Facebook: ' + error.message, 'error');
     }
 }
 
@@ -184,15 +184,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
         if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
         if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-        if (googleLoginBtn) googleLoginBtn.addEventListener('click', signInWithGoogle);
-        if (facebookLoginBtn) facebookLoginBtn.addEventListener('click', signInWithFacebook);
+        // Botones de social login REMOVIDOS
+        // if (googleLoginBtn) googleLoginBtn.addEventListener('click', signInWithGoogle);
+        // if (facebookLoginBtn) facebookLoginBtn.addEventListener('click', signInWithFacebook);
+
         if (forgotPasswordLink) {
-            forgotPasswordLink.addEventListener('click', (e) => {
+            forgotPasswordLink.addEventListener('click', async (e) => {
                 e.preventDefault();
-                alert('Funcionalidad de recuperación de contraseña aún no implementada.');
-                // supabase.auth.resetPasswordForEmail(...)
+                const { value: emailToReset } = await Swal.fire({
+                    title: 'Restablecer Contraseña',
+                    input: 'email',
+                    inputLabel: 'Ingresa tu correo electrónico',
+                    inputPlaceholder: 'ejemplo@correo.com',
+                    showCancelButton: true,
+                    confirmButtonText: 'Enviar enlace',
+                    cancelButtonText: 'Cancelar',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '¡Necesitas ingresar un correo electrónico!';
+                        }
+                        return null; // Válido
+                    }
+                });
+
+                if (emailToReset) {
+                    showLoader('Enviando enlace de recuperación...');
+                    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+                        redirectTo: window.location.origin + '/reset-password.html' // O tu página de reset si la tienes
+                    });
+                    hideLoader();
+
+                    if (error) {
+                        showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
+                    } else {
+                        showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                    }
+                }
             });
         }
+
 
         // Observador de estado de autenticación para index.html: redirigir si ya está logueado
         supabase.auth.onAuthStateChange((event, session) => {

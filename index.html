@@ -6,6 +6,7 @@
     <title>Acceso al Juego</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -16,15 +17,7 @@
             <button id="show-signup-btn" class="btn btn-register">Registrarse</button>
             <button id="show-login-btn" class="btn btn-login">Iniciar Sesión</button>
 
-            <hr class="separator"> <button class="btn btn-google" id="btn-google-login">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon">
-                Iniciar Sesión con Google
-            </button>
-            <button class="btn btn-facebook" id="btn-facebook-login">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg" alt="Facebook icon">
-                Iniciar Sesión con Facebook
-            </button>
-        </div>
+            </div>
 
         <div id="signup-form" class="card form-hidden">
             <h2>Registro de Nuevo Jugador</h2>
@@ -47,7 +40,12 @@
             <p class="forgot-password-link" id="forgot-password">¿Olvidaste tu contraseña?</p>
         </div>
 
-        <p id="auth-message" class="message"></p>
+        <p id="auth-message" class="message" style="display: none;"></p>
+
+        <div id="loader" class="loader-hidden">
+            <div class="spinner"></div>
+            <p>Cargando...</p>
+        </div>
 
         </div>
 

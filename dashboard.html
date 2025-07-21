@@ -6,6 +6,7 @@
     <title>Dashboard del Juego</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container dashboard-container">
@@ -15,7 +16,11 @@
             <p>¡Aquí iría el contenido principal de tu juego o aplicación!</p>
             <button id="logout-btn" class="btn btn-logout">Cerrar Sesión</button>
         </div>
+        <div id="loader" class="loader-hidden">
+            <div class="spinner"></div>
+            <p>Cerrando sesión...</p>
         </div>
+    </div>
 
     <script type="module" src="script.js"></script>
 </body>
