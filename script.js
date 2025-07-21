@@ -323,8 +323,11 @@ async function showConfigureOptions() {
     Swal.fire({
         title: '¿Qué deseas hacer?',
         icon: 'question',
-        showCancelButton: true,
-        cancelButtonText: 'Cerrar',
+        // Cambios aquí:
+        showCloseButton: true, // Habilita el botón de cerrar (la 'X')
+        showCancelButton: false, // Deshabilita el botón de "Cancelar" o "Cerrar"
+        // cancelButtonText: 'Cerrar', // Ya no es necesario
+        
         confirmButtonText: 'Ok', // Este botón será invisible, solo para la estructura
         showConfirmButton: false, // Escondemos el botón principal
         allowOutsideClick: true,
@@ -352,7 +355,6 @@ async function showConfigureOptions() {
         buttonsStyling: false // Deshabilita los estilos por defecto de SweetAlert2 en los botones
     });
 }
-
 
 // --- 6. Lógica de inicialización al cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
