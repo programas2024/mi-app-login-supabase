@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso al Juego</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="container">
@@ -14,6 +15,15 @@
             <p>Bienvenido. Por favor, selecciona una opción:</p>
             <button id="show-signup-btn" class="btn btn-register">Registrarse</button>
             <button id="show-login-btn" class="btn btn-login">Iniciar Sesión</button>
+
+            <hr class="separator"> <button class="btn btn-google" id="btn-google-login">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon">
+                Iniciar Sesión con Google
+            </button>
+            <button class="btn btn-facebook" id="btn-facebook-login">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/facebook.svg" alt="Facebook icon">
+                Iniciar Sesión con Facebook
+            </button>
         </div>
 
         <div id="signup-form" class="card form-hidden">
@@ -39,12 +49,7 @@
 
         <p id="auth-message" class="message"></p>
 
-        <div id="dashboard" class="card dashboard-hidden">
-            <h2>¡Bienvenido al Juego!</h2>
-            <p>Has iniciado sesión como: <span id="user-email"></span></p>
-            <button id="logout-btn" class="btn btn-logout">Cerrar Sesión</button>
         </div>
-    </div>
 
     <script type="module" src="script.js"></script>
 </body>
