@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container profile-page-container">
+        <div id="profile-card" class="card dashboard-hidden">
+            <h2>Tu Perfil</h2>
+            <p>Correo electrónico: <span id="user-email-profile">Cargando...</span></p>
+
+            <div class="profile-info">
+                <p>Oro actual: <span id="gold-display-profile">0</span></p>
+                <p>Diamantes actuales: <span id="diamonds-display-profile">0</span></p>
+            </div>
+
+            <hr class="separator">
+
+            <div class="profile-edit-form">
+                <h3>Editar Datos</h3>
+                <input type="text" id="edit-username" placeholder="Nuevo Nombre de Jugador">
+                <input type="text" id="edit-country" placeholder="Tu País">
+                <button id="save-profile-btn" class="btn btn-action">Guardar Cambios</button>
+            </div>
+
+            <hr class="separator">
+
+            <button id="give-gold-btn" class="btn btn-action">Recibir 10 de Oro</button>
+
+            <button id="back-to-dashboard-btn" class="btn btn-secondary">Volver al Dashboard</button>
+            <button id="logout-btn-profile" class="btn btn-logout">Cerrar Sesión</button>
+        </div>
+
+        <div id="loader" class="loader-hidden">
+            <div class="spinner"></div>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+// script.js
+
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
@@ -7,34 +9,46 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- 2. Referencias a Elementos HTML (CONDICIONALES y ajustadas) ---
-// Intentar obtener elementos, sabiendo que no todos existirán en todas las páginas
+// --- 2. Referencias a Elementos HTML (CONDICIONALES para todas las páginas) ---
+// Elementos de autenticación (index.html)
 const initialOptionsDiv = document.getElementById('initial-options');
 const signupFormDiv = document.getElementById('signup-form');
 const loginFormDiv = document.getElementById('login-form');
-const dashboardDiv = document.getElementById('dashboard'); // Podría existir o no (en dashboard.html)
-
 const signupEmail = document.getElementById('signup-email');
 const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
-
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
 const loginSubmitBtn = document.getElementById('login-submit-btn');
-
-// authMessage ya no se usa directamente para mostrar mensajes, sino para limpiar
-const authMessage = document.getElementById('auth-message');
-
-const userEmailSpan = document.getElementById('user-email'); // Solo en dashboard.html
-const logoutBtn = document.getElementById('logout-btn');     // Solo en dashboard.html
-
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
 const backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
 const forgotPasswordLink = document.getElementById('forgot-password');
 
-const loaderDiv = document.getElementById('loader'); // Referencia al loader
+// Elementos del Dashboard (dashboard.html)
+const dashboardDiv = document.getElementById('dashboard');
+const userEmailDashboardSpan = document.getElementById('user-email'); // Usado en dashboard
+const goldDisplayDashboard = document.getElementById('gold-display');
+const diamondsDisplayDashboard = document.getElementById('diamonds-display');
+const profileBtnDashboard = document.getElementById('profile-btn');
+const logoutBtnDashboard = document.getElementById('logout-btn');
+
+// Elementos del Perfil (profile.html)
+const profileCard = document.getElementById('profile-card'); // Contenedor principal del perfil
+const userEmailProfileSpan = document.getElementById('user-email-profile'); // Usado en profile
+const usernameInputProfile = document.getElementById('edit-username');
+const countryInputProfile = document.getElementById('edit-country');
+const saveProfileBtn = document.getElementById('save-profile-btn');
+const giveGoldBtnProfile = document.getElementById('give-gold-btn');
+const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+const logoutBtnProfile = document.getElementById('logout-btn-profile');
+const goldDisplayProfile = document.getElementById('gold-display-profile');
+const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+
+
+const loaderDiv = document.getElementById('loader'); // Loader global
+// const authMessage = document.getElementById('auth-message'); // No se usa con SweetAlert2
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
@@ -52,51 +66,43 @@ function hideLoader() {
     }
 }
 
-// Función para mostrar mensajes con SweetAlert2// Función para mostrar mensajes con SweetAlert2
 function showSwal(icon, title, text) {
-    const isAutoClose = (icon === 'success' || icon === 'info'); // Determina si se cierra automáticamente
+    const isAutoClose = (icon === 'success' || icon === 'info');
 
     Swal.fire({
-        icon: icon, // 'success', 'error', 'info', 'warning', 'question'
+        icon: icon,
         title: title,
         text: text,
-        showConfirmButton: !isAutoClose, // Mostrar botón SOLO si NO se cierra automáticamente
-        timer: isAutoClose ? 3000 : undefined, // Auto-cerrar después de 3 segundos si es éxito/info
-        timerProgressBar: isAutoClose, // Mostrar barra de progreso solo si se auto-cierra
-        didOpen: () => {
-            // Opcional: si quieres hacer algo cuando se abre el SweetAlert
-        },
-        willClose: () => {
-            // Opcional: si quieres hacer algo cuando se cierra el SweetAlert
-        }
+        showConfirmButton: !isAutoClose,
+        timer: isAutoClose ? 3000 : undefined,
+        timerProgressBar: isAutoClose,
     });
 }
 
-function hideAllForms() {
+// Funciones para alternar formularios en index.html
+function hideAllAuthForms() {
     if (initialOptionsDiv) initialOptionsDiv.classList.add('form-hidden');
     if (signupFormDiv) signupFormDiv.classList.add('form-hidden');
     if (loginFormDiv) loginFormDiv.classList.add('form-hidden');
-    if (dashboardDiv) dashboardDiv.classList.add('dashboard-hidden');
-    if (authMessage) authMessage.style.display = 'none'; // Asegurar que el fallback de mensaje esté oculto
+    // if (authMessage) authMessage.style.display = 'none';
 }
 
 function showSignupForm() {
-    hideAllForms();
+    hideAllAuthForms();
     if (signupFormDiv) signupFormDiv.classList.remove('form-hidden');
 }
 
 function showLoginForm() {
-    hideAllForms();
+    hideAllAuthForms();
     if (loginFormDiv) loginFormDiv.classList.remove('form-hidden');
 }
 
 function showInitialOptions() {
-    hideAllForms();
+    hideAllAuthForms();
     if (initialOptionsDiv) initialOptionsDiv.classList.remove('form-hidden');
 }
 
-
-// --- 4. Funciones de Autenticación (con redirección y SweetAlert2) ---
+// --- 4. Funciones de Autenticación ---
 
 async function signUp() {
     const email = signupEmail.value;
@@ -123,7 +129,7 @@ async function signUp() {
         showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
         signupEmail.value = '';
         signupPassword.value = '';
-        showLoginForm(); // Después de registrar, mostramos el formulario de login.
+        showLoginForm();
     }
 }
 
@@ -150,7 +156,6 @@ async function signIn() {
         showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
     } else {
         showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
-        // Redirigir siempre al dashboard
         window.location.href = 'dashboard.html';
     }
 }
@@ -164,32 +169,140 @@ async function signOut() {
         showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
     } else {
         showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
-        // Redirigir a la página de inicio después de cerrar sesión
         window.location.href = 'index.html';
     }
 }
 
+// --- 5. Funciones de Gestión de Perfil (usadas en dashboard.html y profile.html) ---
 
-// --- 5. Lógica de inicialización al cargar el DOM ---
+async function loadUserProfile(userId) {
+    showLoader('Cargando perfil...');
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('username, country, gold, diamonds')
+        .eq('id', userId)
+        .single();
+
+    hideLoader();
+
+    if (error) {
+        console.error('Error al cargar perfil:', error);
+        showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
+        if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
+            console.log('Perfil no encontrado, intentando crear uno básico.');
+            const { error: insertError } = await supabase
+                .from('profiles')
+                .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
+            if (insertError) {
+                console.error('Error al crear perfil básico:', insertError);
+                showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta.');
+            } else {
+                showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
+                loadUserProfile(userId); // Recargar para mostrar los datos recién creados
+            }
+        }
+    } else if (data) {
+        // Actualizar datos en el dashboard
+        if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
+        if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
+
+        // Actualizar datos en la página de perfil
+        if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+        if (usernameInputProfile) usernameInputProfile.value = data.username || '';
+        if (countryInputProfile) countryInputProfile.value = data.country || '';
+        if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
+        if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
+    }
+}
+
+async function saveProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        showSwal('error', 'Error', 'No hay sesión activa para guardar el perfil.');
+        return;
+    }
+
+    const newUsername = usernameInputProfile ? usernameInputProfile.value.trim() : '';
+    const newCountry = countryInputProfile ? countryInputProfile.value.trim() : '';
+
+    if (!newUsername) {
+        showSwal('warning', 'Nombre de Usuario', 'Por favor, ingresa un nombre de jugador.');
+        return;
+    }
+
+    showLoader('Guardando perfil...');
+    const { error } = await supabase
+        .from('profiles')
+        .update({ username: newUsername, country: newCountry })
+        .eq('id', user.id);
+    
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
+    } else {
+        showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
+        await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
+    }
+}
+
+async function giveGold() {
+    showLoader('Dando oro...');
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        showSwal('error', 'Error', 'No hay sesión activa.');
+        hideLoader();
+        return;
+    }
+
+    const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('gold')
+        .eq('id', user.id)
+        .single();
+
+    if (fetchError) {
+        showSwal('error', 'Error', 'No se pudo obtener el oro actual.');
+        hideLoader();
+        return;
+    }
+
+    const newGold = (currentProfile.gold || 0) + 10;
+
+    const { error } = await supabase
+        .from('profiles')
+        .update({ gold: newGold })
+        .eq('id', user.id);
+
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
+    } else {
+        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
+        showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
+    }
+}
+
+// --- 6. Lógica de inicialización al cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
     // Comprobar la URL actual para determinar el comportamiento
     const currentPage = window.location.pathname.split('/').pop();
 
+    // --- Lógica para index.html ---
     if (currentPage === 'index.html' || currentPage === '') {
-        // Lógica para index.html (Autenticación y Redirección)
-        console.log('Cargando script en index.html');
+        console.log('Cargando lógica de index.html');
 
-        // Asignar event listeners solo si los elementos existen en esta página
         if (registerBtn) registerBtn.addEventListener('click', signUp);
         if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
         if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
         if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
         if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
         if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-        // Botones de social login REMOVIDOS
-        // if (googleLoginBtn) googleLoginBtn.addEventListener('click', signInWithGoogle);
-        // if (facebookLoginBtn) facebookLoginBtn.addEventListener('click', signInWithFacebook);
-
+        
         if (forgotPasswordLink) {
             forgotPasswordLink.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -205,14 +318,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                         if (!value) {
                             return '¡Necesitas ingresar un correo electrónico!';
                         }
-                        return null; // Válido
+                        return null;
                     }
                 });
 
                 if (emailToReset) {
                     showLoader('Enviando enlace de recuperación...');
                     const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-                        redirectTo: window.location.origin + '/reset-password.html' // O tu página de reset si la tienes
+                        redirectTo: window.location.origin + '/reset-password.html'
                     });
                     hideLoader();
 
@@ -225,51 +338,79 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-
-        // Observador de estado de autenticación para index.html: redirigir si ya está logueado
         supabase.auth.onAuthStateChange((event, session) => {
             console.log('Auth event in index.html:', event, 'Session:', session);
             if (session && session.user) {
                 console.log('Usuario autenticado. Redirigiendo a dashboard.html');
                 window.location.href = 'dashboard.html';
             } else {
-                showInitialOptions(); // Asegurarse de mostrar las opciones si no hay sesión
+                showInitialOptions();
             }
         });
 
-        // Al cargar index.html, comprobar si hay sesión para redirigir
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
             console.log('Usuario ya logueado al cargar index.html. Redirigiendo...');
             window.location.href = 'dashboard.html';
         } else {
-            showInitialOptions(); // Mostrar opciones de login/registro por defecto
+            showInitialOptions();
         }
 
-    } else if (currentPage === 'dashboard.html') {
-        // Lógica para dashboard.html (Mostrar info de usuario y cerrar sesión)
-        console.log('Cargando script en dashboard.html');
+    } 
+    // --- Lógica para dashboard.html ---
+    else if (currentPage === 'dashboard.html') {
+        console.log('Cargando lógica de dashboard.html');
 
-        // Asegurarse de que el usuario esté logueado para ver el dashboard
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            if (dashboardDiv && userEmailSpan) {
-                dashboardDiv.classList.remove('dashboard-hidden');
-                userEmailSpan.textContent = user.email || user.user_metadata?.full_name || 'Usuario';
+            if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden');
+            await loadUserProfile(user.id); // Cargar y mostrar datos del perfil/contadores
+
+            if (profileBtnDashboard) {
+                profileBtnDashboard.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
+                });
             }
-            if (logoutBtn) logoutBtn.addEventListener('click', signOut);
+            if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
         } else {
-            // Si no hay usuario, redirigir a index.html
             console.log('No hay usuario autenticado en dashboard.html. Redirigiendo a index.html');
             window.location.href = 'index.html';
         }
 
-        // Observador de estado de autenticación para dashboard.html: redirigir si la sesión termina
         supabase.auth.onAuthStateChange((event, session) => {
             console.log('Auth event in dashboard.html:', event, 'Session:', session);
             if (event === 'SIGNED_OUT' || !session) {
                 console.log('Sesión terminada en dashboard.html. Redirigiendo a index.html.');
+                window.location.href = 'index.html';
+            }
+        });
+    } 
+    // --- Lógica para profile.html ---
+    else if (currentPage === 'profile.html') {
+        console.log('Cargando lógica de profile.html');
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            if (profileCard) profileCard.classList.remove('dashboard-hidden'); // Usa profile-card en profile.html
+            await loadUserProfile(user.id); // Cargar y mostrar datos del perfil para edición
+
+            if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+            if (giveGoldBtnProfile) giveGoldBtnProfile.addEventListener('click', giveGold);
+            if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+            if (logoutBtnProfile) logoutBtnProfile.addEventListener('click', signOut);
+        } else {
+            console.log('No hay usuario autenticado en profile.html. Redirigiendo a index.html');
+            window.location.href = 'index.html';
+        }
+
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event in profile.html:', event, 'Session:', session);
+            if (event === 'SIGNED_OUT' || !session) {
+                console.log('Sesión terminada en profile.html. Redirigiendo a index.html.');
                 window.location.href = 'index.html';
             }
         });
