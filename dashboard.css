@@ -1,0 +1,469 @@
+/* dashboard.css */
+
+/* --- Variables CSS Globales (Opcional, pero útil para consistencia) --- */
+:root {
+    --primary-color: #007bff; /* Azul vibrante */
+    --secondary-color: #6c757d; /* Gris para elementos secundarios */
+    --accent-color: #28a745; /* Verde para éxito/oro */
+    --danger-color: #dc3545; /* Rojo para advertencias/cerrar sesión */
+    --warning-color: #ffc107; /* Amarillo/Naranja para advertencias/config */
+    --bg-light: #f4f7f6; /* Fondo claro */
+    --bg-dark: #2c3e50; /* Fondo oscuro (ej. para sidebar si lo quieres oscuro) */
+    --text-color-dark: #343a40;
+    --text-color-light: #ffffff;
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Base y Contenedor Principal --- */
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-light);
+    color: var(--text-color-dark);
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita scroll horizontal no deseado */
+}
+
+.dashboard-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinea arriba para el sidebar */
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.dashboard-main-content {
+    display: grid;
+    grid-template-columns: 220px 1fr 280px; /* Sidebar Izq, Contenido Central, Sidebar Der */
+    gap: 30px;
+    width: 100%;
+    max-width: 1400px; /* Ancho máximo para el dashboard */
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    padding: 30px;
+    position: relative; /* Para posicionar el botón de logout flotante */
+}
+
+/* --- Loader Styles --- */
+.loader-hidden {
+    display: none !important;
+}
+
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: var(--text-color-light);
+    font-size: 1.3em;
+    transition: opacity 0.3s ease;
+}
+
+.spinner {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Sidebar Izquierdo (Perfil, Tienda, VIP) --- */
+.sidebar-left {
+    padding-top: 20px; /* Espacio superior */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre botones */
+    border-right: 1px solid #eee; /* Separador visual */
+    padding-right: 20px;
+}
+
+.sidebar-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+    border: none;
+    border-radius: 8px;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-light);
+    text-align: left; /* Alinea el texto a la izquierda */
+}
+
+.sidebar-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+}
+
+.sidebar-btn i {
+    font-size: 1.4em; /* Iconos más grandes */
+}
+
+/* --- Contenido Central (Bienvenida, Oro/Diamantes, Jugar) --- */
+.main-content-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    text-align: center;
+    padding-top: 20px;
+}
+
+.header-section {
+    margin-bottom: 40px;
+}
+
+.header-section h2 {
+    font-size: 2.8em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+.header-section p {
+    font-size: 1.2em;
+    color: var(--secondary-color);
+}
+
+#user-email {
+    font-weight: 700;
+    color: #007bff;
+}
+
+/* Contenedor de Oro y Diamantes */
+.currency-display-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px; /* Espacio entre oro y diamantes */
+    margin-bottom: 50px;
+    padding: 25px 40px;
+    background: linear-gradient(145deg, #f0f2f5, #e0e4e8); /* Degradado suave */
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.currency-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.8em;
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.currency-icon {
+    font-size: 2.2em; /* Iconos grandes */
+    filter: drop-shadow(1px 1px 3px rgba(0,0,0,0.1));
+}
+
+.gold-icon {
+    color: #FFD700; /* Dorado */
+}
+
+.diamond-icon {
+    color: #00BCD4; /* Turquesa/Azul de diamante */
+}
+
+.currency-value {
+    font-size: 1.5em; /* Valor numérico más grande */
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Botón Jugar */
+.btn-play {
+    background: linear-gradient(45deg, #28a745, #218838); /* Degradado verde */
+    color: var(--text-color-light);
+    border: none;
+    border-radius: 50px; /* Botón ovalado/redondo */
+    padding: 20px 40px;
+    font-size: 2em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    margin-top: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-play i {
+    font-size: 1.5em; /* Icono más grande */
+}
+
+.btn-play:hover {
+    background: linear-gradient(45deg, #218838, #1e7e34);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(40, 167, 69, 0.4);
+}
+
+.btn-play:active {
+    transform: translateY(-2px) scale(1);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.game-slogan {
+    font-size: 1.1em;
+    color: #888;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+/* --- Sidebar Derecho (Rango y Tabla) --- */
+.sidebar-right {
+    padding-top: 20px;
+    border-left: 1px solid #eee; /* Separador visual */
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.ranking-section, .leaderboard-section {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--shadow-light);
+    text-align: center;
+}
+
+.ranking-section h3, .leaderboard-section h3 {
+    font-size: 1.6em;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.ranking-section p {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+}
+
+.rank-description {
+    font-size: 0.95em;
+    color: var(--secondary-color);
+}
+
+/* Tabla de Clasificación */
+.leaderboard-table-container {
+    overflow-x: auto; /* Para tablas que se desbordan en móviles */
+    margin-top: 20px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1em;
+    text-align: left;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden; /* Asegura bordes redondeados */
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.leaderboard-table thead th {
+    background-color: var(--primary-color);
+    color: var(--text-color-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.leaderboard-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Color de fila alterno */
+}
+
+.leaderboard-table tbody tr:hover {
+    background-color: #e2f0fb; /* Resaltar fila al pasar el ratón */
+}
+
+.leaderboard-table td:first-child {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- Botón Cerrar Sesión (Flotante) --- */
+.floating-logout-btn {
+    position: absolute;
+    bottom: 25px; /* Ajusta la posición desde abajo */
+    right: 25px; /* Ajusta la posición desde la derecha */
+    background-color: var(--danger-color);
+    color: var(--text-color-light);
+    border: none;
+    border-radius: 50%; /* Circular */
+    width: 55px; /* Tamaño del círculo */
+    height: 55px; /* Tamaño del círculo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em; /* Icono grande */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    transition: all 0.3s ease;
+    z-index: 50; /* Asegura que esté por encima de otros elementos */
+    padding: 0; /* Elimina padding interno si lo tiene .btn */
+}
+
+.floating-logout-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-3px) rotate(5deg); /* Pequeña rotación al hover */
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+.floating-logout-btn i {
+    color: var(--text-color-light); /* Asegura que el icono sea blanco */
+}
+
+
+/* --- Media Queries para Responsividad (Ajustes para pantallas más pequeñas) --- */
+@media (max-width: 1024px) {
+    .dashboard-main-content {
+        grid-template-columns: 180px 1fr 250px; /* Columnas ajustadas */
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .currency-display-container {
+        gap: 20px;
+        padding: 20px 30px;
+    }
+
+    .currency-item {
+        font-size: 1.5em;
+        gap: 10px;
+    }
+
+    .currency-icon {
+        font-size: 1.8em;
+    }
+
+    .btn-play {
+        font-size: 1.8em;
+        padding: 18px 35px;
+    }
+
+    .sidebar-btn {
+        padding: 12px 15px;
+        font-size: 1em;
+        gap: 10px;
+    }
+
+    .sidebar-btn i {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-main-content {
+        grid-template-columns: 1fr; /* Una sola columna para móviles */
+        grid-template-areas:
+            "header"
+            "currency"
+            "play"
+            "sidebar-left"
+            "sidebar-right"
+            "logout"; /* Ordenamos las áreas */
+        gap: 25px;
+        padding: 15px;
+        box-shadow: none; /* Quitamos la sombra principal en pantallas pequeñas */
+        border-radius: 0;
+    }
+
+    .header-section { grid-area: header; margin-bottom: 20px; }
+    .currency-display-container { grid-area: currency; margin-bottom: 20px; }
+    .btn-play { grid-area: play; margin-top: 0; }
+    .sidebar-left {
+        grid-area: sidebar-left;
+        border-right: none;
+        padding-right: 0;
+        flex-direction: row; /* Botones de sidebar en fila en móviles */
+        justify-content: center;
+        flex-wrap: wrap; /* Permite que los botones salten de línea */
+        gap: 10px;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
+    .sidebar-right {
+        grid-area: sidebar-right;
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
+    .floating-logout-btn {
+        grid-area: logout;
+        position: static; /* No flotante en móviles */
+        margin: 20px auto 0 auto; /* Centrado abajo */
+        box-shadow: var(--shadow-light);
+        width: 60px; /* Un poco más grande para facilitar el toque */
+        height: 60px;
+    }
+
+    .currency-display-container {
+        flex-direction: column; /* Apila oro y diamantes */
+        align-items: center;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-section h2 {
+        font-size: 2.2em;
+    }
+    .header-section p {
+        font-size: 1em;
+    }
+    .currency-item {
+        font-size: 1.4em;
+    }
+    .currency-icon {
+        font-size: 1.6em;
+    }
+    .btn-play {
+        font-size: 1.6em;
+        padding: 15px 30px;
+    }
+    .ranking-section, .leaderboard-section {
+        padding: 20px;
+    }
+    .leaderboard-table th, .leaderboard-table td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+}
