@@ -3,6 +3,9 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
+// ¡NUEVA LÍNEA! Importa la función loadLeaderboard desde tu archivo leaderboard.js
+import { loadLeaderboard } from './leaderboard.js'; // Asegúrate de que la ruta sea correcta
+
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
@@ -217,7 +220,7 @@ async function loadUserProfile(userId) {
                     if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = '0';
                 }
             } else { // Si es otro tipo de error al cargar el perfil
-                 showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
+                    showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
         } else if (data) {
             // Actualizar datos en el dashboard (si es la página actual)
@@ -441,6 +444,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             await loadUserProfile(user.id);
 
             if (currentPage === 'dashboard.html') {
+                // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
+                await loadLeaderboard(supabase); // Llama a la función para cargar la tabla de clasificación
+
                 if (profileBtnDashboard) {
                     profileBtnDashboard.addEventListener('click', () => {
                         window.location.href = 'profile.html';
