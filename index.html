@@ -3,43 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Registro</title>
+    <title>Acceso al Juego</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <div class="container login-container">
+    <div class="container">
+        <h1>Acceso al Juego</h1>
+
         <div id="initial-options" class="card">
-            <h2>Bienvenido</h2>
-            <button id="show-signup-btn" class="btn btn-primary">Registrarse</button>
-            <button id="show-login-btn" class="btn btn-secondary">Iniciar Sesión</button>
-        </div>
+            <p>Bienvenido. Por favor, selecciona una opción:</p>
+            <button id="show-signup-btn" class="btn btn-register">Registrarse</button>
+            <button id="show-login-btn" class="btn btn-login">Iniciar Sesión</button>
+
+            </div>
 
         <div id="signup-form" class="card form-hidden">
-            <h2>Registrarse</h2>
-            <input type="email" id="signup-email" placeholder="Correo electrónico">
-            <input type="password" id="signup-password" placeholder="Contraseña (mínimo 6 caracteres)">
-            <button id="register-btn" class="btn btn-primary">Registrarme</button>
-            <button id="back-to-options-from-signup" class="btn btn-secondary">Volver</button>
+            <h2>Registro de Nuevo Jugador</h2>
+            <input type="email" id="signup-email" placeholder="Tu correo electrónico" autocomplete="new-password"
+                   data-tooltip="Usa un correo válido para verificar tu cuenta.">
+            <input type="password" id="signup-password" placeholder="Crea una contraseña segura" autocomplete="new-password"
+                   data-tooltip="Mínimo 6 caracteres, combina letras y números.">
+            <button id="register-btn" class="btn btn-register-action">Crear Cuenta</button>
+            <p class="back-link" id="back-to-options-from-signup">← Volver</p>
         </div>
 
         <div id="login-form" class="card form-hidden">
             <h2>Iniciar Sesión</h2>
-            <input type="email" id="login-email" placeholder="Correo electrónico">
-            <input type="password" id="login-password" placeholder="Contraseña">
-            <button id="login-submit-btn" class="btn btn-primary">Iniciar Sesión</button>
-            <button id="back-to-options-from-login" class="btn btn-secondary">Volver</button>
-            <a href="#" id="forgot-password" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
+            <input type="email" id="login-email" placeholder="Tu correo electrónico" autocomplete="email"
+                   data-tooltip="El correo con el que te registraste.">
+            <input type="password" id="login-password" placeholder="Tu contraseña" autocomplete="current-password"
+                   data-tooltip="La contraseña de tu cuenta.">
+            <button id="login-submit-btn" class="btn btn-login-action">Entrar al Juego</button>
+            <p class="back-link" id="back-to-options-from-login">← Volver</p>
+            <p class="forgot-password-link" id="forgot-password">¿Olvidaste tu contraseña?</p>
         </div>
+
+        <p id="auth-message" class="message" style="display: none;"></p>
 
         <div id="loader" class="loader-hidden">
             <div class="spinner"></div>
             <p>Cargando...</p>
         </div>
-    </div>
 
-    <script type="module" src=".js\main.js"></script>
-    <script type="module" src=".js\index.js"></script>
+        </div>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>

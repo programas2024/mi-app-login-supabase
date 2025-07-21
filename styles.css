@@ -607,3 +607,7 @@ input[data-tooltip]:hover::before {
 .btn-logout:hover {
     background-color: #c82333;
 }
+
+.form-hidden, .dashboard-hidden {
+    display: none !important;
+}
