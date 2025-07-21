@@ -5,7 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImexb3DSI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -19,8 +19,7 @@ const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
-// CORRECCIÓN: Eliminado '= document' que causaba el TypeError
-const loginSubmitBtn = document.getElementById('login-submit-btn');
+const loginSubmitBtn = document.getElementById('login-submit-btn'); // CORRECCIÓN APLICADA AQUÍ
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
@@ -41,7 +40,7 @@ const userEmailProfileSpan = document.getElementById('user-email-profile'); // U
 const usernameInputProfile = document.getElementById('edit-username');
 const countryInputProfile = document.getElementById('edit-country');
 const saveProfileBtn = document.getElementById('save-profile-btn');
-const backToDashboardBtn = document.getElementById('back-to-dashboard-btn'); // Ahora un botón de regreso fijo
+const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
 const configureBtn = document.getElementById('configure-btn'); // Nuevo botón de configuración
 const goldDisplayProfile = document.getElementById('gold-display-profile');
 const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
@@ -192,7 +191,8 @@ async function loadUserProfile(userId) {
 
         if (error) {
             console.error('Error al cargar perfil:', error);
-            showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
+            // No mostrar un error Swall si es solo que el perfil no existe, se creará uno.
+            // showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
 
             if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
                 console.log('Perfil no encontrado, intentando crear uno básico.');
@@ -211,7 +211,13 @@ async function loadUserProfile(userId) {
                     if (countryInputProfile) countryInputProfile.value = 'Desconocido';
                     if (goldDisplayProfile) goldDisplayProfile.textContent = '0';
                     if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = '0';
+
+                    // Si estamos en dashboard, actualizamos también allí
+                    if (goldDisplayDashboard) goldDisplayDashboard.textContent = '0';
+                    if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = '0';
                 }
+            } else { // Si es otro tipo de error al cargar el perfil
+                 showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
         } else if (data) {
             // Actualizar datos en el dashboard (si es la página actual)
@@ -234,6 +240,9 @@ async function loadUserProfile(userId) {
         // Aseguramos que la tarjeta de perfil sea visible DESPUÉS de ocultar el loader
         if (profileCard) {
             profileCard.classList.remove('dashboard-hidden');
+        }
+        if (dashboardDiv) { // También para el dashboard
+            dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
 }
@@ -353,124 +362,110 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentPage === 'index.html' || currentPage === '') {
         console.log('Cargando lógica de index.html');
 
-        if (registerBtn) registerBtn.addEventListener('click', signUp);
-        if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
-        if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
-        if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
-        if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
-        if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-        
-        if (forgotPasswordLink) {
-            forgotPasswordLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const { value: emailToReset } = await Swal.fire({
-                    title: 'Restablecer Contraseña',
-                    input: 'email',
-                    inputLabel: 'Ingresa tu correo electrónico',
-                    inputPlaceholder: 'ejemplo@correo.com',
-                    showCancelButton: true,
-                    confirmButtonText: 'Enviar enlace',
-                    cancelButtonText: 'Cancelar',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '¡Necesitas ingresar un correo electrónico!';
+        // Primero, verifica si el usuario ya está autenticado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            console.log('Usuario ya logueado al cargar index.html. Redirigiendo a dashboard.html...');
+            window.location.href = 'dashboard.html';
+            return; // Detener la ejecución del resto de la lógica de index.html
+        } else {
+            // Si no hay usuario, muestra las opciones de inicio/registro
+            showInitialOptions();
+
+            // Configura los event listeners solo si los elementos existen (estamos en index.html)
+            if (registerBtn) registerBtn.addEventListener('click', signUp);
+            if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
+            if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
+            if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
+            if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
+            if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
+            
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const { value: emailToReset } = await Swal.fire({
+                        title: 'Restablecer Contraseña',
+                        input: 'email',
+                        inputLabel: 'Ingresa tu correo electrónico',
+                        inputPlaceholder: 'ejemplo@correo.com',
+                        showCancelButton: true,
+                        confirmButtonText: 'Enviar enlace',
+                        cancelButtonText: 'Cancelar',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return '¡Necesitas ingresar un correo electrónico!';
+                            }
+                            return null;
                         }
-                        return null;
+                    });
+
+                    if (emailToReset) {
+                        showLoader('Enviando enlace de recuperación...');
+                        const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+                            redirectTo: window.location.origin + '/reset-password.html'
+                        });
+                        hideLoader();
+
+                        if (error) {
+                            showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
+                        } else {
+                            showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                        }
                     }
                 });
+            }
 
-                if (emailToReset) {
-                    showLoader('Enviando enlace de recuperación...');
-                    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-                        redirectTo: window.location.origin + '/reset-password.html'
-                    });
-                    hideLoader();
-
-                    if (error) {
-                        showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
-                    } else {
-                        showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
-                    }
+            // Opcional: Para manejar cambios de estado de sesión *después* de que la página ya cargó en index.html
+            // y si por alguna razón el usuario se loguea en otra pestaña o su sesión se activa.
+            // Es menos crítico aquí ya que la redirección inicial ya lo maneja.
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('Auth event in index.html:', event, 'Session:', session);
+                if (session && session.user && currentPage === 'index.html') {
+                    console.log('Usuario autenticado. Redirigiendo a dashboard.html desde onAuthStateChange...');
+                    window.location.href = 'dashboard.html';
                 }
             });
         }
-
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('Auth event in index.html:', event, 'Session:', session);
-            if (session && session.user) {
-                console.log('Usuario autenticado. Redirigiendo a dashboard.html');
-                window.location.href = 'dashboard.html';
-            } else {
-                showInitialOptions();
-            }
-        });
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            console.log('Usuario ya logueado al cargar index.html. Redirigiendo...');
-            window.location.href = 'dashboard.html';
-        } else {
-            showInitialOptions();
-        }
-
     } 
-    // --- Lógica para dashboard.html ---
-    else if (currentPage === 'dashboard.html') {
-        console.log('Cargando lógica de dashboard.html');
+    // --- Lógica para dashboard.html y profile.html ---
+    else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
+        console.log(`Cargando lógica de ${currentPage}`);
 
+        // Siempre verifica la sesión al cargar estas páginas
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden');
+            // Usuario autenticado: Cargar perfil y mostrar contenido
             await loadUserProfile(user.id);
 
-            if (profileBtnDashboard) {
-                profileBtnDashboard.addEventListener('click', () => {
-                    window.location.href = 'profile.html';
+            if (currentPage === 'dashboard.html') {
+                if (profileBtnDashboard) {
+                    profileBtnDashboard.addEventListener('click', () => {
+                        window.location.href = 'profile.html';
+                    });
+                }
+                if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+            } else if (currentPage === 'profile.html') {
+                if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+                if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
+                    window.location.href = 'dashboard.html';
                 });
+                if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
             }
-            if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
-        } else {
-            console.log('No hay usuario autenticado en dashboard.html. Redirigiendo a index.html');
-            window.location.href = 'index.html';
-        }
 
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('Auth event in dashboard.html:', event, 'Session:', session);
-            if (event === 'SIGNED_OUT' || !session) {
-                console.log('Sesión terminada en dashboard.html. Redirigiendo a index.html.');
-                window.location.href = 'index.html';
-            }
-        });
-    } 
-    // --- Lógica para profile.html ---
-    else if (currentPage === 'profile.html') {
-        console.log('Cargando lógica de profile.html');
-
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            // Esto ahora se hace en el `finally` de `loadUserProfile`
-            await loadUserProfile(user.id);
-
-            if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
-            if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
-                window.location.href = 'dashboard.html';
+            // Listener para cerrar sesión desde cualquier página autenticada
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log(`Auth event in ${currentPage}:`, event, 'Session:', session);
+                if (event === 'SIGNED_OUT' || !session) {
+                    console.log(`Sesión terminada en ${currentPage}. Redirigiendo a index.html.`);
+                    window.location.href = 'index.html';
+                }
             });
-            // Añadir event listener para el nuevo botón "Configurar"
-            if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
 
         } else {
-            console.log('No hay usuario autenticado en profile.html. Redirigiendo a index.html');
+            // No hay usuario autenticado: Redirigir a la página de inicio
+            console.log(`No hay usuario autenticado en ${currentPage}. Redirigiendo a index.html`);
             window.location.href = 'index.html';
         }
-
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('Auth event in profile.html:', event, 'Session:', session);
-            if (event === 'SIGNED_OUT' || !session) {
-                console.log('Sesión terminada en profile.html. Redirigiendo a index.html.');
-                window.location.href = 'index.html';
-            }
-        });
     }
 });
