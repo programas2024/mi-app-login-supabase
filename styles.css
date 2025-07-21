@@ -460,3 +460,150 @@ input[data-tooltip]:hover::before {
     background: #ccc;
     margin: 20px 0;
 }
+
+/* Estilos para el botón de perfil en la esquina superior derecha */
+.btn-profile {
+    position: absolute; /* Permite posicionarlo con top/right */
+    top: 15px;
+    right: 15px;
+    background-color: #007bff; /* Azul */
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    z-index: 10; /* Asegura que esté por encima de otros elementos */
+}
+
+.btn-profile:hover {
+    background-color: #0056b3;
+}
+
+/* Contenedor de los contadores de juego */
+.game-counters {
+    display: flex; /* Para poner oro y diamantes en línea */
+    justify-content: center; /* Centrar horizontalmente */
+    gap: 30px; /* Espacio entre ellos */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4CAF50; /* Color para el oro */
+}
+
+.game-counters p {
+    margin: 0; /* Eliminar margen predeterminado de los párrafos */
+}
+
+.game-counters #diamonds-display {
+    color: #00BCD4; /* Color para los diamantes */
+}
+
+/* Estilos para la página de perfil (profile.html) */
+.profile-page-container .card {
+    padding: 30px; /* Más padding para la página de perfil */
+}
+
+.profile-page-container .profile-info {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.profile-page-container .profile-info p {
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.profile-page-container .profile-info span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.profile-page-container .profile-edit-form {
+    margin-top: 25px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.profile-page-container .profile-edit-form h3 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.profile-page-container .profile-edit-form input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+/* Separador */
+.separator {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+    margin: 30px 0;
+}
+
+/* Botón secundario (para "Volver") */
+.btn-secondary {
+    background-color: #6c757d; /* Gris */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    margin-right: 10px; /* Espacio si hay varios botones */
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Asegúrate de que .btn-action y .btn-logout también estén definidos */
+.btn-action {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-action:hover {
+    background-color: #218838;
+}
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #c82333;
+}

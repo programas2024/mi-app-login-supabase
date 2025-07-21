@@ -11,14 +11,24 @@
 <body>
     <div class="container dashboard-container">
         <div id="dashboard" class="card">
+            <button id="profile-btn" class="btn btn-profile">Perfil</button>
+
             <h2>¡Bienvenido al Juego!</h2>
             <p>Has iniciado sesión como: <span id="user-email">Cargando...</span></p>
+
+            <div class="game-counters">
+                <p>Oro: <span id="gold-display">0</span></p>
+                <p>Diamantes: <span id="diamonds-display">0</span></p>
+            </div>
+
             <p>¡Aquí iría el contenido principal de tu juego o aplicación!</p>
+            
             <button id="logout-btn" class="btn btn-logout">Cerrar Sesión</button>
         </div>
+
         <div id="loader" class="loader-hidden">
             <div class="spinner"></div>
-            <p>Cerrando sesión...</p>
+            <p>Cargando...</p>
         </div>
     </div>
 

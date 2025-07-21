@@ -1,102 +1,98 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-// --- 1. Configuración de Supabase ---
-const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Referencias a elementos comunes
+const loader = document.getElementById('loader');
+const userEmailSpan = document.getElementById('user-email'); // Para dashboard.html
+const userEmailProfileSpan = document.getElementById('user-email-profile'); // Para profile.html
 
-// --- 2. Referencias a Elementos HTML (CONDICIONALES y ajustadas) ---
-// Intentar obtener elementos, sabiendo que no todos existirán en todas las páginas
-const initialOptionsDiv = document.getElementById('initial-options');
-const signupFormDiv = document.getElementById('signup-form');
-const loginFormDiv = document.getElementById('login-form');
-const dashboardDiv = document.getElementById('dashboard'); // Podría existir o no (en dashboard.html)
-
-const signupEmail = document.getElementById('signup-email');
-const signupPassword = document.getElementById('signup-password');
-const registerBtn = document.getElementById('register-btn');
-
-const loginEmail = document.getElementById('login-email');
-const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document.getElementById('login-submit-btn');
-
-// authMessage ya no se usa directamente para mostrar mensajes, sino para limpiar
-const authMessage = document.getElementById('auth-message');
-
-const userEmailSpan = document.getElementById('user-email'); // Solo en dashboard.html
-const logoutBtn = document.getElementById('logout-btn');     // Solo en dashboard.html
-
-const showSignupBtn = document.getElementById('show-signup-btn');
-const showLoginBtn = document.getElementById('show-login-btn');
-const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
-const backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
-const forgotPasswordLink = document.getElementById('forgot-password');
-
-const loaderDiv = document.getElementById('loader'); // Referencia al loader
-
-
-// --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
-
+// Funciones de utilidad
 function showLoader(message = 'Cargando...') {
-    if (loaderDiv) {
-        loaderDiv.querySelector('p').textContent = message;
-        loaderDiv.classList.remove('loader-hidden');
+    if (loader) {
+        loader.classList.remove('loader-hidden');
+        loader.querySelector('p').textContent = message;
     }
 }
 
 function hideLoader() {
-    if (loaderDiv) {
-        loaderDiv.classList.add('loader-hidden');
+    if (loader) {
+        loader.classList.add('loader-hidden');
     }
 }
 
-// Función para mostrar mensajes con SweetAlert2// Función para mostrar mensajes con SweetAlert2
+// Función para mostrar mensajes con SweetAlert2
 function showSwal(icon, title, text) {
-    const isAutoClose = (icon === 'success' || icon === 'info'); // Determina si se cierra automáticamente
-
+    const isAutoClose = (icon === 'success' || icon === 'info');
     Swal.fire({
-        icon: icon, // 'success', 'error', 'info', 'warning', 'question'
+        icon: icon,
         title: title,
         text: text,
-        showConfirmButton: !isAutoClose, // Mostrar botón SOLO si NO se cierra automáticamente
-        timer: isAutoClose ? 3000 : undefined, // Auto-cerrar después de 3 segundos si es éxito/info
-        timerProgressBar: isAutoClose, // Mostrar barra de progreso solo si se auto-cierra
-        didOpen: () => {
-            // Opcional: si quieres hacer algo cuando se abre el SweetAlert
-        },
-        willClose: () => {
-            // Opcional: si quieres hacer algo cuando se cierra el SweetAlert
-        }
+        showConfirmButton: !isAutoClose,
+        timer: isAutoClose ? 3000 : undefined,
+        timerProgressBar: isAutoClose,
     });
 }
 
-function hideAllForms() {
-    if (initialOptionsDiv) initialOptionsDiv.classList.add('form-hidden');
-    if (signupFormDiv) signupFormDiv.classList.add('form-hidden');
-    if (loginFormDiv) loginFormDiv.classList.add('form-hidden');
-    if (dashboardDiv) dashboardDiv.classList.add('dashboard-hidden');
-    if (authMessage) authMessage.style.display = 'none'; // Asegurar que el fallback de mensaje esté oculto
+// Función para cerrar sesión
+async function signOut() {
+    showLoader('Cerrando sesión...');
+    const { error } = await supabase.auth.signOut();
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Error al cerrar sesión', error.message);
+    } else {
+        showSwal('success', '¡Hasta pronto!', 'Has cerrado sesión correctamente.');
+        setTimeout(() => {
+            window.location.href = 'index.html'; // Redirigir a la página de inicio
+        }, 1500); // Dar tiempo para ver el SweetAlert
+    }
+}
+
+// --- Lógica de Autenticación (index.html) ---
+const loginForm = document.getElementById('login-form');
+const signupForm = document.getElementById('signup-form');
+const showSignupBtn = document.getElementById('show-signup-btn');
+const showLoginBtn = document.getElementById('show-login-btn');
+const signupEmail = document.getElementById('signup-email');
+const signupPassword = document.getElementById('signup-password');
+const loginEmail = document.getElementById('login-email');
+const loginPassword = document.getElementById('login-password');
+
+function showLoginForm() {
+    if (loginForm) loginForm.classList.remove('hidden');
+    if (signupForm) signupForm.classList.add('hidden');
 }
 
 function showSignupForm() {
-    hideAllForms();
-    if (signupFormDiv) signupFormDiv.classList.remove('form-hidden');
+    if (loginForm) loginForm.classList.add('hidden');
+    if (signupForm) signupForm.classList.remove('hidden');
 }
 
-function showLoginForm() {
-    hideAllForms();
-    if (loginFormDiv) loginFormDiv.classList.remove('form-hidden');
+async function signIn() {
+    const email = loginEmail.value;
+    const password = loginPassword.value;
+
+    if (!email || !password) {
+        showSwal('warning', 'Datos incompletos', 'Por favor, ingresa tu correo y contraseña.');
+        return;
+    }
+
+    showLoader('Iniciando sesión...');
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Fallo en Inicio de Sesión', error.message);
+    } else {
+        showSwal('success', '¡Bienvenido!', 'Has iniciado sesión correctamente.');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html'; // Redirigir al dashboard
+        }, 1500);
+    }
 }
-
-function showInitialOptions() {
-    hideAllForms();
-    if (initialOptionsDiv) initialOptionsDiv.classList.remove('form-hidden');
-}
-
-
-// --- 4. Funciones de Autenticación (con redirección y SweetAlert2) ---
 
 async function signUp() {
     const email = signupEmail.value;
@@ -120,6 +116,7 @@ async function signUp() {
         }
         showSwal('error', 'Fallo en Registro', errorMessage);
     } else {
+        // La fila en 'profiles' se creará automáticamente gracias a auth.uid() en la columna id y la política INSERT.
         showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
         signupEmail.value = '';
         signupPassword.value = '';
@@ -127,140 +124,179 @@ async function signUp() {
     }
 }
 
-async function signIn() {
-    const email = loginEmail.value;
-    const password = loginPassword.value;
+// --- Lógica del Dashboard y Perfil (dashboard.html y profile.html) ---
 
-    if (!email || !password) {
-        showSwal('warning', 'Datos incompletos', 'Por favor, ingresa tu correo y contraseña.');
+// Referencias a elementos específicos del dashboard
+let goldDisplayDashboard, diamondsDisplayDashboard;
+let profileBtnDashboard, logoutBtnDashboard;
+
+// Referencias a elementos específicos de la página de perfil
+let usernameInputProfile, countryInputProfile, saveProfileBtn, giveGoldBtnProfile, backToDashboardBtn, logoutBtnProfile;
+let goldDisplayProfile, diamondsDisplayProfile;
+
+
+// Función para cargar y mostrar los datos del perfil
+async function loadUserProfile(userId) {
+    showLoader('Cargando perfil...');
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('username, country, gold, diamonds')
+        .eq('id', userId)
+        .single();
+
+    hideLoader();
+
+    if (error) {
+        console.error('Error al cargar perfil:', error);
+        showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
+        // Considerar crear un perfil básico si no existe (aunque auth.uid() debería manejarlo)
+        if (error.code === 'PGRST116') { // Código para "no rows found"
+            console.log('Perfil no encontrado, intentando crear uno básico.');
+            const { error: insertError } = await supabase
+                .from('profiles')
+                .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
+            if (insertError) {
+                console.error('Error al crear perfil básico:', insertError);
+            } else {
+                showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos!');
+                // Recargar para mostrar los datos recién creados
+                loadUserProfile(userId);
+            }
+        }
+    } else if (data) {
+        // Actualizar el email del usuario (en ambas páginas si el span existe)
+        const { data: { user } } = await supabase.auth.getUser();
+        if (userEmailSpan && user) userEmailSpan.textContent = user.email;
+        if (userEmailProfileSpan && user) userEmailProfileSpan.textContent = user.email;
+
+        // Actualizar contadores en dashboard.html
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
+        if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
+
+        // Actualizar campos y contadores en profile.html
+        if (usernameInputProfile) usernameInputProfile.value = data.username || '';
+        if (countryInputProfile) countryInputProfile.value = data.country || '';
+        if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
+        if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
+    }
+}
+
+// Función para guardar los cambios del perfil
+async function saveProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        showSwal('error', 'Error', 'No hay sesión activa para guardar el perfil.');
         return;
     }
 
-    showLoader('Iniciando sesión...');
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const newUsername = usernameInputProfile ? usernameInputProfile.value.trim() : '';
+    const newCountry = countryInputProfile ? countryInputProfile.value.trim() : '';
+
+    if (!newUsername) {
+        showSwal('warning', 'Nombre de Usuario', 'Por favor, ingresa un nombre de jugador.');
+        return;
+    }
+
+    showLoader('Guardando perfil...');
+    const { error } = await supabase
+        .from('profiles')
+        .update({ username: newUsername, country: newCountry })
+        .eq('id', user.id);
+    
     hideLoader();
 
     if (error) {
-        let errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
-        if (error.message.includes('Invalid login credentials')) {
-            errorMessage = 'Correo o contraseña incorrectos.';
-        } else if (error.message.includes('Email not confirmed')) {
-            errorMessage = 'Tu cuenta aún no ha sido verificada. Revisa tu correo.';
-        }
-        showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
+        showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
     } else {
-        showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
-        // Redirigir siempre al dashboard
-        window.location.href = 'dashboard.html';
+        showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
+        // Recargar el perfil para actualizar los spans mostrados
+        await loadUserProfile(user.id);
     }
 }
 
-async function signOut() {
-    showLoader('Cerrando sesión...');
-    const { error } = await supabase.auth.signOut();
+// Función de ejemplo para dar oro
+async function giveGold() {
+    showLoader('Dando oro...');
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        showSwal('error', 'Error', 'No hay sesión activa.');
+        hideLoader();
+        return;
+    }
+
+    const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('gold')
+        .eq('id', user.id)
+        .single();
+
+    if (fetchError) {
+        showSwal('error', 'Error', 'No se pudo obtener el oro actual.');
+        hideLoader();
+        return;
+    }
+
+    const newGold = (currentProfile.gold || 0) + 10; // Sumar 10 de oro
+
+    const { error } = await supabase
+        .from('profiles')
+        .update({ gold: newGold })
+        .eq('id', user.id);
+
     hideLoader();
 
     if (error) {
-        showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
+        showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
     } else {
-        showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
-        // Redirigir a la página de inicio después de cerrar sesión
-        window.location.href = 'index.html';
+        // Actualizar los displays en ambas páginas si existen
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold;
+        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold;
+        showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
     }
 }
 
 
-// --- 5. Lógica de inicialización al cargar el DOM ---
+// --- Inicialización al cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // Comprobar la URL actual para determinar el comportamiento
     const currentPage = window.location.pathname.split('/').pop();
+    console.log('Cargando script en:', currentPage);
 
-    if (currentPage === 'index.html' || currentPage === '') {
-        // Lógica para index.html (Autenticación y Redirección)
-        console.log('Cargando script en index.html');
-
-        // Asignar event listeners solo si los elementos existen en esta página
-        if (registerBtn) registerBtn.addEventListener('click', signUp);
-        if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
+    // Lógica para index.html (Login/Signup)
+    if (currentPage === 'index.html') {
         if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
         if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
-        if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
-        if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-        // Botones de social login REMOVIDOS
-        // if (googleLoginBtn) googleLoginBtn.addEventListener('click', signInWithGoogle);
-        // if (facebookLoginBtn) facebookLoginBtn.addEventListener('click', signInWithFacebook);
+        if (document.getElementById('login-btn')) document.getElementById('login-btn').addEventListener('click', signIn);
+        if (document.getElementById('signup-btn')) document.getElementById('signup-btn').addEventListener('click', signUp);
 
-        if (forgotPasswordLink) {
-            forgotPasswordLink.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const { value: emailToReset } = await Swal.fire({
-                    title: 'Restablecer Contraseña',
-                    input: 'email',
-                    inputLabel: 'Ingresa tu correo electrónico',
-                    inputPlaceholder: 'ejemplo@correo.com',
-                    showCancelButton: true,
-                    confirmButtonText: 'Enviar enlace',
-                    cancelButtonText: 'Cancelar',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return '¡Necesitas ingresar un correo electrónico!';
-                        }
-                        return null; // Válido
-                    }
-                });
-
-                if (emailToReset) {
-                    showLoader('Enviando enlace de recuperación...');
-                    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-                        redirectTo: window.location.origin + '/reset-password.html' // O tu página de reset si la tienes
-                    });
-                    hideLoader();
-
-                    if (error) {
-                        showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
-                    } else {
-                        showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
-                    }
-                }
-            });
-        }
-
-
-        // Observador de estado de autenticación para index.html: redirigir si ya está logueado
+        // Observador de estado de autenticación para index.html: redirigir si ya hay sesión
         supabase.auth.onAuthStateChange((event, session) => {
             console.log('Auth event in index.html:', event, 'Session:', session);
-            if (session && session.user) {
-                console.log('Usuario autenticado. Redirigiendo a dashboard.html');
+            if (session) {
+                console.log('Sesión activa en index.html. Redirigiendo a dashboard.html.');
                 window.location.href = 'dashboard.html';
-            } else {
-                showInitialOptions(); // Asegurarse de mostrar las opciones si no hay sesión
             }
         });
 
-        // Al cargar index.html, comprobar si hay sesión para redirigir
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            console.log('Usuario ya logueado al cargar index.html. Redirigiendo...');
-            window.location.href = 'dashboard.html';
-        } else {
-            showInitialOptions(); // Mostrar opciones de login/registro por defecto
-        }
-
     } else if (currentPage === 'dashboard.html') {
-        // Lógica para dashboard.html (Mostrar info de usuario y cerrar sesión)
-        console.log('Cargando script en dashboard.html');
+        // Referencias para dashboard.html
+        profileBtnDashboard = document.getElementById('profile-btn');
+        logoutBtnDashboard = document.getElementById('logout-btn');
+        goldDisplayDashboard = document.getElementById('gold-display');
+        diamondsDisplayDashboard = document.getElementById('diamonds-display');
 
         // Asegurarse de que el usuario esté logueado para ver el dashboard
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            if (dashboardDiv && userEmailSpan) {
-                dashboardDiv.classList.remove('dashboard-hidden');
-                userEmailSpan.textContent = user.email || user.user_metadata?.full_name || 'Usuario';
-            }
-            if (logoutBtn) logoutBtn.addEventListener('click', signOut);
+            document.getElementById('dashboard').classList.remove('dashboard-hidden');
+            await loadUserProfile(user.id); // Cargar datos del perfil
+
+            if (profileBtnDashboard) profileBtnDashboard.addEventListener('click', () => {
+                window.location.href = 'profile.html'; // Navegar a la página de perfil
+            });
+            if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
         } else {
-            // Si no hay usuario, redirigir a index.html
             console.log('No hay usuario autenticado en dashboard.html. Redirigiendo a index.html');
             window.location.href = 'index.html';
         }
@@ -270,6 +306,45 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('Auth event in dashboard.html:', event, 'Session:', session);
             if (event === 'SIGNED_OUT' || !session) {
                 console.log('Sesión terminada en dashboard.html. Redirigiendo a index.html.');
+                window.location.href = 'index.html';
+            }
+        });
+
+    } else if (currentPage === 'profile.html') {
+        // Referencias para profile.html
+        usernameInputProfile = document.getElementById('edit-username');
+        countryInputProfile = document.getElementById('edit-country');
+        saveProfileBtn = document.getElementById('save-profile-btn');
+        giveGoldBtnProfile = document.getElementById('give-gold-btn');
+        backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        logoutBtnProfile = document.getElementById('logout-btn-profile');
+        goldDisplayProfile = document.getElementById('gold-display-profile');
+        diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+
+        // Asegurarse de que el usuario esté logueado para ver el perfil
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            document.getElementById('profile-card').classList.remove('dashboard-hidden'); // Reutilizando la clase para ocultar/mostrar
+            await loadUserProfile(user.id); // Cargar datos del perfil
+
+            if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+            if (giveGoldBtnProfile) giveGoldBtnProfile.addEventListener('click', giveGold);
+            if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html'; // Volver al dashboard
+            });
+            if (logoutBtnProfile) logoutBtnProfile.addEventListener('click', signOut);
+
+        } else {
+            console.log('No hay usuario autenticado en profile.html. Redirigiendo a index.html');
+            window.location.href = 'index.html';
+        }
+
+        // Observador de estado de autenticación para profile.html: redirigir si la sesión termina
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event in profile.html:', event, 'Session:', session);
+            if (event === 'SIGNED_OUT' || !session) {
+                console.log('Sesión terminada en profile.html. Redirigiendo a index.html.');
                 window.location.href = 'index.html';
             }
         });
