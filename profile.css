@@ -212,6 +212,106 @@
     100% { transform: rotate(360deg); }
 }
 
+/* ----------------------------------------------- */
+/* --- ESTILOS MEJORADOS PARA SWEETALERT2 --- */
+/* ----------------------------------------------- */
+
+/* Contenedor de botones dentro de SweetAlert */
+.swal-custom-buttons-container {
+    display: flex;
+    flex-direction: column; /* Apilados verticalmente */
+    gap: 15px; /* Espacio entre botones */
+    margin-top: 25px; /* Espacio superior para separar del título/texto */
+    width: 100%; /* Ocupa el ancho completo del modal */
+    padding: 0 10px; /* Pequeño padding horizontal */
+    box-sizing: border-box;
+}
+
+/* Estilo base para los botones personalizados de SweetAlert */
+.swal-custom-btn {
+    background-color: #007bff; /* Color primario por defecto */
+    color: white;
+    border: none;
+    border-radius: 8px; /* Bordes más suaves */
+    padding: 15px 20px; /* Buen padding para un clic fácil */
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transiciones suaves para hover */
+    display: flex; /* Para centrar contenido y usar iconos */
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espacio entre el ícono y el texto */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Sombra de texto suave */
+}
+
+.swal-custom-btn:hover {
+    transform: translateY(-3px); /* Efecto 3D al pasar el ratón */
+    opacity: 0.95; /* Ligera transparencia */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+}
+
+.swal-custom-btn:active {
+    transform: translateY(0); /* Al hacer clic, vuelve a la posición normal */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo específico para el botón de Oro */
+.swal-btn-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); /* Degradado dorado */
+    color: #333; /* Texto oscuro para contraste */
+    text-shadow: none; /* Eliminar sombra de texto si el fondo es claro */
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.swal-btn-gold:hover {
+    background: linear-gradient(135deg, #FFC107 0%, #FF8C00 100%); /* Degradado ligeramente más oscuro al hover */
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+}
+
+/* Estilo específico para el botón de Cerrar Sesión */
+.swal-btn-logout {
+    background: linear-gradient(135deg, #DC3545 0%, #C82333 100%); /* Degradado rojo */
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+.swal-btn-logout:hover {
+    background: linear-gradient(135deg, #C82333 0%, #A71C2B 100%); /* Degradado ligeramente más oscuro al hover */
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+/* Estilos para el popup de SweetAlert en general (para un look moderno) */
+.swal2-popup.swal2-modern {
+    border-radius: 15px; /* Bordes más redondeados */
+    background: #fcfcfc; /* Un blanco roto para un look más suave */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Sombra más profunda */
+    padding: 30px;
+}
+
+.swal2-title {
+    color: #343a40 !important; /* Color de título oscuro */
+    font-weight: 700 !important;
+    margin-bottom: 15px !important;
+}
+
+.swal2-content {
+    color: #6c757d !important; /* Color de texto suave */
+    font-size: 1.05em !important;
+}
+
+.swal2-icon {
+    margin-bottom: 20px !important;
+}
+
+/* Ajuste para que el HTML personalizado no tenga padding extra del swal2-html-container */
+.swal2-html-container-no-padding {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+
 /* Responsividad básica */
 @media (max-width: 768px) {
     #profile-card {
@@ -241,13 +341,19 @@
         flex-direction: column;
         align-items: center;
     }
-    .btn-back { order: 1; margin-right: auto; margin-left: auto; } /* Controla el orden */
-    .btn-configure { order: 2; margin-right: auto; margin-left: auto; }
+    /* Aquí se requiere que en el HTML los botones estén dentro de un contenedor para poder ordenarlos con flexbox
+       o que el layout de la tarjeta sea flexbox para manejarlo.
+       Dejaremos los botones de "back" y "configure" como eran si no hay un contenedor específico para ellos.
+       Si quieres que se apilen en móviles, déjalos como `position: static` como están ahora. */
 }
 
 /* Para pantallas aún más pequeñas */
 @media (max-width: 480px) {
     .btn-back, .btn-configure {
         width: 90%; /* Ajuste para ocupar casi todo el ancho */
+    }
+    .swal-custom-btn {
+        font-size: 1em; /* Ajustar tamaño de fuente de botones de SweetAlert en móviles */
+        padding: 12px 15px;
     }
 }
