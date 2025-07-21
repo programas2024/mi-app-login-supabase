@@ -5,8 +5,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Asegura que ocupe toda la altura de la vista */
-    background-color: #f0f2f5; /* Un fondo suave */
+    min-height: 100vh;
+    background-color: #f0f2f5;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -18,11 +18,37 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     padding: 40px;
     width: 100%;
-    max-width: 500px; /* Limita el ancho máximo para mejor lectura */
+    max-width: 500px;
     text-align: center;
     box-sizing: border-box;
     transition: all 0.3s ease-in-out;
+    position: relative; /* Necesario para posicionar elementos internos */
+    overflow: hidden; /* Asegura que los elementos posicionados no se desborden */
 }
+
+/* Contenedor para los botones de la esquina superior derecha */
+.top-right-buttons {
+    position: absolute;
+    top: 20px; /* Ajusta la distancia desde arriba */
+    right: 20px; /* Ajusta la distancia desde la derecha */
+    display: flex;
+    flex-direction: column; /* Apila los botones verticalmente */
+    gap: 10px; /* Espacio entre los botones */
+    z-index: 10; /* Asegura que estén por encima del resto del contenido */
+}
+
+/* Ajustes a los botones dentro de este contenedor para que se vean bien */
+.top-right-buttons .btn {
+    padding: 8px 15px; /* Botones más compactos */
+    font-size: 0.9em; /* Fuente ligeramente más pequeña */
+    min-width: unset; /* Quita el min-width para que se ajusten al contenido */
+    margin: 0; /* Elimina márgenes extra */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra más suave */
+}
+.top-right-buttons .btn-logout {
+    margin-top: 0; /* Elimina el margen superior que tenía */
+}
+
 
 #profile-card h2 {
     color: #333;
@@ -37,13 +63,11 @@
     margin-bottom: 10px;
 }
 
-/* Estilos para el correo electrónico del usuario */
 #user-email-profile {
     font-weight: 600;
-    color: #007bff; /* Un color de acento */
+    color: #007bff;
 }
 
-/* Contadores de oro y diamantes */
 .profile-info {
     display: flex;
     justify-content: space-around;
@@ -66,23 +90,16 @@
 
 .profile-info span {
     font-weight: 700;
-    color: #28a745; /* Oro */
+    color: #28a745;
     font-size: 1.3em;
 }
 
-/* Iconos para los contadores (opcional, si usas FontAwesome u otros) */
-/* .profile-info p:nth-child(1)::before { content: '💰 '; } */
-/* .profile-info p:nth-child(2)::before { content: '💎 '; } */
-
-
-/* Separador */
 .separator {
     border: none;
     border-top: 1px solid #eee;
     margin: 35px 0;
 }
 
-/* Formulario de edición de perfil */
 .profile-edit-form {
     margin-bottom: 30px;
 }
@@ -95,7 +112,7 @@
 }
 
 .profile-edit-form input[type="text"] {
-    width: calc(100% - 20px); /* Ajusta padding */
+    width: calc(100% - 20px);
     padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #ced4da;
@@ -111,7 +128,9 @@
     outline: none;
 }
 
-/* Botones */
+/* Botones Generales (si no están en styles.css, deben estar aquí) */
+/* Si ya tienes .btn en styles.css, estas reglas pueden ser redundantes o en conflicto.
+   Considera dejar solo las reglas específicas de profile.css para .btn y sus variantes. */
 .btn {
     padding: 12px 25px;
     border: none;
@@ -119,11 +138,11 @@
     font-size: 1.05em;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
-    margin: 8px 5px; /* Espaciado entre botones */
+    margin: 8px 5px;
     min-width: 150px;
 }
 
-.btn-action { /* Para guardar perfil y recibir oro */
+.btn-action {
     background-color: #007bff;
     color: white;
 }
@@ -134,7 +153,7 @@
     box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
 
-.btn-secondary { /* Volver al Dashboard */
+.btn-secondary {
     background-color: #6c757d;
     color: white;
 }
@@ -146,9 +165,9 @@
 }
 
 .btn-logout {
-    background-color: #dc3545; /* Rojo para cerrar sesión */
+    background-color: #dc3545;
     color: white;
-    margin-top: 20px; /* Separar del resto de botones */
+    /* margin-top: 20px; --> Eliminado porque ahora está en .top-right-buttons */
 }
 
 .btn-logout:hover {
@@ -157,42 +176,39 @@
     box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2);
 }
 
-/* Estilos para el loader (si no los tienes ya en styles.css) */
-/* Si ya los tienes en styles.css, no es necesario duplicarlos aquí */
+
+/* --- CORRECCIÓN y MEJORA del Loader --- */
+/* Regla de ocultamiento */
 .loader-hidden {
-    display: none;
+    display: none !important; /* !important para asegurar que sobrescribe cualquier display:flex */
 }
 
 /* Estilos para el Loader */
 #loader {
-    position: fixed; /* O absolute, dependiendo del contexto */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente */
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex; /* Asegura que se muestre como flex cuando es visible */
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Asegura que esté por encima de todo */
+    z-index: 1000;
     color: white;
     font-size: 1.2em;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.loader-hidden {
-    opacity: 0;
-    visibility: hidden;
+    /* No uses opacity/visibility si usas display: none/flex, a menos que sea para una transición suave */
+    transition: none; /* Elimina la transición de opacity si no la vas a usar para ocultar/mostrar */
 }
 
 .spinner {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
     border-radius: 50%;
     width: 60px;
     height: 60px;
-    animation: spin 1s linear infinite; /* Animación de giro */
+    animation: spin 1s linear infinite;
     margin-bottom: 20px;
 }
 
@@ -201,8 +217,9 @@
     100% { transform: rotate(360deg); }
 }
 
+
 /* Responsividad básica */
-@media (max-width: 600px) {
+@media (max-width: 768px) { /* Ajustado breakpoint para una mejor vista en tablets */
     #profile-card {
         padding: 25px;
         margin: 10px;
@@ -214,5 +231,24 @@
     .btn {
         width: 100%;
         margin: 10px 0;
+    }
+    .top-right-buttons {
+        position: static; /* Quita el posicionamiento absoluto en pantallas pequeñas */
+        flex-direction: row; /* Vuelve a ponerlos en fila */
+        justify-content: center; /* Centra los botones */
+        margin-top: 20px; /* Añade espacio con el contenido de arriba */
+        gap: 8px;
+    }
+    .top-right-buttons .btn {
+        width: auto; /* Permite que el ancho sea automático */
+        font-size: 1em; /* Restaura el tamaño de fuente normal */
+        padding: 10px 20px;
+    }
+}
+
+/* Para pantallas aún más pequeñas, apilamos de nuevo los botones */
+@media (max-width: 480px) {
+    .top-right-buttons {
+        flex-direction: column; /* Apila de nuevo los botones para móviles muy pequeños */
     }
 }
