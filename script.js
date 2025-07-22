@@ -436,32 +436,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
         console.log(`Cargando lógica de ${currentPage}`);
 
-        // Siempre verifica la sesión al cargar estas páginas
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            // Usuario autenticado: Cargar perfil y mostrar contenido
-            await loadUserProfile(user.id);
+            await loadUserProfile(user.id); // Carga el perfil en cualquier página autenticada
 
             if (currentPage === 'dashboard.html') {
-                // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
-                await loadLeaderboard(supabase); // Llama a la función para cargar la tabla de clasificación
-
-                if (profileBtnDashboard) {
-                    profileBtnDashboard.addEventListener('click', () => {
-                        window.location.href = 'profile.html';
-                    });
-                }
+                // Configura los nuevos botones del dashboard
+                if (showRankingsBtn) showRankingsBtn.addEventListener('click', loadRankingsPage);
+                if (showLeaderboardBtn) showLeaderboardBtn.addEventListener('click', loadFullLeaderboardPage);
+                if (profileBtnDashboard) profileBtnDashboard.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
+                });
                 if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+
+                // IMPORTANTE: LA LÍNEA 'await loadLeaderboard(supabase);' DEBE HABER SIDO REMOVIDA DE AQUÍ
+                // Si la tienes, bórrala o coméntala, ya que la tabla se carga en leaderboard-full.html
+                // Ejemplo de cómo NO debe verse:
+                // await loadLeaderboard(supabase); // <--- ¡Esta línea NO debe estar aquí!
+                
             } else if (currentPage === 'profile.html') {
                 if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
                 if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
                     window.location.href = 'dashboard.html';
                 });
                 if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
+            } else if (currentPage === 'leaderboard-full.html') {
+                // La lógica de carga de la tabla de clasificación ahora se encuentra
+                // en el script inline dentro de leaderboard-full.html, que importa
+                // y llama directamente a loadLeaderboard.
+                // Aquí en script.js solo se asegura que la página está cargada por un usuario.
+            } else if (currentPage === 'rankings.html') {
+                // Aquí cargamos los rangos. Por ahora, es estático, pero podría ser dinámico.
+                // Ejemplo de carga estática/simple para la página de rangos:
+                if (ranksListDiv) {
+                    // Puedes hacer una llamada a Supabase aquí para obtener rangos dinámicos
+                    // Por simplicidad, aquí un ejemplo estático:
+                    ranksListDiv.innerHTML = `
+                        <h2>Todos los Rangos</h2>
+                        <ul class="rankings-list">
+                            <li><i class="fas fa-chess-pawn"></i> Novato (0 - 99 puntos)</li>
+                            <li><i class="fas fa-chess-knight"></i> Bronce (100 - 499 puntos)</li>
+                            <li><i class="fas fa-chess-bishop"></i> Plata (500 - 999 puntos)</li>
+                            <li><i class="fas fa-chess-rook"></i> Oro (1000 - 1999 puntos)</li>
+                            <li><i class="fas fa-chess-queen"></i> Platino (2000 - 4999 puntos)</li>
+                            <li><i class="fas fa-chess-king"></i> Diamante (5000+ puntos)</li>
+                            </ul>
+                        <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </button>
+                    `;
+                     document.getElementById('back-to-dashboard-from-rankings').addEventListener('click', () => {
+                        window.location.href = 'dashboard.html';
+                    });
+                }
             }
 
-            // Listener para cerrar sesión desde cualquier página autenticada
+            // Manejo de cambios de estado de autenticación para todas las páginas autenticadas
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log(`Auth event in ${currentPage}:`, event, 'Session:', session);
                 if (event === 'SIGNED_OUT' || !session) {
@@ -471,7 +502,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
         } else {
-            // No hay usuario autenticado: Redirigir a la página de inicio
+            // No hay usuario autenticado: redirigir al inicio de sesión
             console.log(`No hay usuario autenticado en ${currentPage}. Redirigiendo a index.html`);
             window.location.href = 'index.html';
         }
