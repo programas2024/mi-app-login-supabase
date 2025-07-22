@@ -10,54 +10,72 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos básicos para la nueva página de rangos */
+        /* Estilos generales del cuerpo y contenedor principal */
         body {
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Alinea arriba para contenido más largo */
+            align-items: flex-start;
             min-height: 100vh;
             background-color: var(--background-color);
             color: var(--text-color);
             font-family: 'Poppins', sans-serif;
             padding: 20px;
             box-sizing: border-box;
-            overflow-x: hidden; /* Evitar scroll horizontal en el body */
+            overflow-x: hidden;
         }
 
         .rankings-full-container {
-            background-color: var(--card-bg-color, #ffffff); /* Fondo blanco para el contenedor principal */
-            border-radius: 16px; /* Bordes más suaves */
-            padding: 40px; /* Mayor padding para más espacio */
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave */
+            background-color: var(--card-bg-color, #ffffff); /* Contenedor principal blanco o color de tarjeta */
+            border-radius: 18px; /* Bordes más suaves */
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
             width: 100%;
-            max-width: 900px; /* Ancho ajustado para la disposición horizontal */
+            max-width: 950px; /* Un poco más ancho para los rangos horizontales */
             text-align: center;
             position: relative;
-            overflow: hidden; /* Para contener el loader */
+            overflow: hidden;
         }
 
         .rankings-full-container h2 {
-            font-size: 2.5em;
+            font-size: 2.8em; /* Título más grande */
             color: var(--primary-color);
-            margin-bottom: 30px;
+            margin-bottom: 35px; /* Más espacio */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            font-weight: 700;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            gap: 15px;
+            font-weight: 800; /* Extra bold */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* Sombra de texto más fuerte */
         }
 
         .rankings-full-container h2 .fas {
-            font-size: 1.5em;
+            font-size: 1.8em; /* Icono del título más grande */
+            color: var(--accent-color, #ffd700); /* Color acento para el icono */
         }
 
         /* Contenedor de la lista de rangos para scroll horizontal */
         .ranks-list-outer-wrapper {
             overflow-x: auto; /* Habilitar scroll horizontal */
-            padding-bottom: 15px; /* Espacio para la barra de scroll */
-            margin-bottom: 30px;
+            padding-bottom: 20px; /* Espacio para la barra de scroll */
+            margin-bottom: 40px; /* Más espacio antes del botón */
             -webkit-overflow-scrolling: touch; /* Suavizar el scroll en iOS */
+            /* Estilo de la barra de scroll */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--primary-color) #f0f0f0; /* Color de scroll Firefox */
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar {
+            height: 8px; /* Altura de la barra de scroll */
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-track {
+            background: #f0f0f0; /* Fondo de la barra de scroll */
+            border-radius: 10px;
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-color); /* Color del "pulgar" de la barra de scroll */
+            border-radius: 10px;
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--button-hover-bg-color);
         }
 
         /* Lista de rangos con Flexbox para disposición horizontal */
@@ -65,24 +83,23 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            display: flex; /* <-- CLAVE: Disposición horizontal */
-            gap: 20px; /* Espacio entre los elementos de rango */
-            flex-wrap: nowrap; /* Evitar que los ítems salten de línea */
-            justify-content: flex-start; /* Alinear al inicio */
-            min-width: fit-content; /* Asegurar que la lista no se comprima */
+            display: flex;
+            gap: 25px; /* Más espacio entre los elementos de rango */
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            min-width: fit-content;
         }
 
-        /* Estilos para cada elemento de rango (las "tarjetas" de rango) */
+        /* Estilos base para cada tarjeta de rango */
         .rank-item {
-            flex-shrink: 0; /* Evitar que los ítems se encojan */
-            width: 180px; /* Ancho fijo para cada tarjeta de rango */
-            background: linear-gradient(145deg, #f0f0f0, #e0e0e0); /* Degradado gris claro para fondo base */
-            border-radius: 15px; /* Bordes más redondeados */
-            padding: 20px;
+            flex-shrink: 0;
+            width: 200px; /* Ancho fijo más generoso para cada tarjeta */
+            border-radius: 18px; /* Bordes más redondeados */
+            padding: 25px 20px; /* Más padding */
             text-align: center;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Sombra más suave */
-            border: 2px solid #bbbbbb; /* Borde suave */
-            transition: all 0.3s ease; /* Transición para efectos de hover y current */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); /* Sombra base */
+            border: 3px solid transparent; /* Borde transparente por defecto, se define por clases de rango */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave para todos los cambios */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -90,230 +107,280 @@
         }
 
         .rank-item:hover:not(.current-user-rank) {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary-color); /* Borde primario al pasar el ratón */
+            transform: translateY(-8px); /* Elevación más pronunciada al pasar el ratón */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            /* El borde y fondo específicos del hover se definirán con el color de cada rango */
         }
 
         .rank-item-icon {
-            font-size: 3em; /* Iconos más grandes para el centro */
-            margin-bottom: 15px;
-            line-height: 1; /* Eliminar espacio extra */
+            font-size: 3.8em; /* Iconos más grandes y impactantes */
+            margin-bottom: 20px;
+            line-height: 1;
+            transition: color 0.4s ease; /* Transición para el color del icono */
         }
 
         .rank-item-title {
-            font-weight: 800; /* Más audaz */
-            font-size: 1.3em;
-            margin-bottom: 8px;
-            color: var(--text-color); /* Color de texto general */
+            font-weight: 800;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #ffffff; /* Por defecto blanco para contrastar con degradados oscuros */
         }
 
         .rank-item-threshold {
-            font-size: 0.9em;
-            color: var(--text-color-light, #666);
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.8); /* Blanco transparente para el umbral */
         }
 
-        /* Estilos específicos para iconos y fondos de rango */
-        .rank-bronze-icon { color: #CD7F32; }
-        .rank-silver-icon { color: #A8A8A8; } /* Ajuste de color plata */
-        .rank-gold-icon { color: #FFC400; } /* Ajuste de color oro */
-        .rank-mystic-icon {
-            /* Degradado más intenso para el ícono místico */
-            background: linear-gradient(45deg, #a300e8, #ff66d1); /* Morado vibrante a fucsia */
+        /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
+
+        /* Bronce */
+        .rank-bronze-bg {
+            background: linear-gradient(135deg, #8B4513, #CD853F); /* SaddleBrown a Peru */
+            border-color: #5A2C0A; /* Marrón oscuro para el borde */
+        }
+        .rank-bronze-bg .rank-item-icon { color: #FFDAB9; } /* Melocotón para el icono */
+        .rank-bronze-bg:hover {
+            background: linear-gradient(135deg, #a0522d, #deb887); /* Un poco más claro al hover */
+            border-color: #6a3a1b;
+        }
+
+
+        /* Plata */
+        .rank-silver-bg {
+            background: linear-gradient(135deg, #A9A9A9, #C0C0C0); /* DarkGray a Silver */
+            border-color: #708090; /* SlateGray para el borde */
+        }
+        .rank-silver-bg .rank-item-icon { color: #E6E6FA; } /* Lavanda para el icono */
+        .rank-silver-bg:hover {
+            background: linear-gradient(135deg, #B0C4DE, #DCDCDC); /* LightSteelBlue a Gainsboro al hover */
+            border-color: #8395A3;
+        }
+
+
+        /* Oro */
+        .rank-gold-bg {
+            background: linear-gradient(135deg, #FFD700, #DAA520); /* Gold a Goldenrod */
+            border-color: #B8860B; /* DarkGoldenrod para el borde */
+        }
+        .rank-gold-bg .rank-item-icon { color: #FFFACD; } /* LemonChiffon para el icono */
+        .rank-gold-bg:hover {
+            background: linear-gradient(135deg, #FFEA00, #F0C420); /* Dorado más brillante al hover */
+            border-color: #D4AF37;
+        }
+
+
+        /* Místico - ¡Magia Pura! */
+        .rank-mystic-bg {
+            background: linear-gradient(135deg, #8A2BE2, #C71585); /* BlueViolet a MediumVioletRed */
+            border: 3px solid #FFD700; /* Borde dorado resplandeciente */
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.7), 0 0 40px rgba(255, 215, 0, 0.5); /* Sombra con glow morado y dorado */
+        }
+        /* Icono Místico con degradado */
+        .rank-mystic-bg .rank-item-icon {
+            background: linear-gradient(45deg, #E0BBE4, #957DAD); /* Degradado más suave para el icono sobre fondo oscuro */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 3.5em; /* Un poco más grande para el místico */
+            font-size: 4.5em; /* Icono Místico aún más grande */
+        }
+        .rank-mystic-bg .rank-item-title,
+        .rank-mystic-bg .rank-item-threshold {
+            color: #ffffff; /* Texto blanco en Místico */
+        }
+        .rank-mystic-bg:hover {
+            background: linear-gradient(135deg, #9932CC, #DA70D6); /* DarkOrchid a Orchid al hover */
+            box-shadow: 0 0 35px rgba(153, 50, 204, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
         }
 
-        /* Estilo para el rango actual del usuario - ¡Más Bonito! */
+        /* --- Estilo para el RANGO ACTUAL del usuario (Resaltado Potente) --- */
         .rank-item.current-user-rank {
-            /* Degradado de fondo para el rango actual */
-            background: linear-gradient(135deg, #6a5acd, #4a90e2) !important; /* Azul-morado a azul */
-            color: #ffffff !important; /* Texto blanco */
-            border: 3px solid #ffd700 !important; /* Borde dorado brillante */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 20px #ffd700; /* Sombra con glow dorado */
-            transform: scale(1.08) !important; /* Efecto "pop" más pronunciado */
+            /* Degradado de fondo para el rango actual - puede ser un color neutro brillante o un degradado específico */
+            background: linear-gradient(135deg, var(--primary-color, #4a90e2), var(--button-hover-bg-color, #6a5acd)) !important;
+            color: #ffffff !important; /* Texto blanco para contraste */
+            border: 5px solid #FFD700 !important; /* ¡Borde dorado muy grueso y llamativo! */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3) !important; /* Sombra con fuerte glow dorado */
+            transform: scale(1.12) !important; /* Efecto "pop" MUCHO más pronunciado */
             position: relative;
-            z-index: 3; /* Asegura que esté al frente */
-            animation: pulseGlow 1.5s infinite alternate; /* Animación de pulsación */
+            z-index: 5; /* Asegura que esté muy al frente */
+            animation: currentRankPulse 2s infinite alternate ease-in-out; /* Animación de pulsación más elegante */
         }
 
         /* Animación para el rango actual */
-        @keyframes pulseGlow {
-            0% { transform: scale(1.08); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 20px #ffd700; }
-            100% { transform: scale(1.1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 30px #ffe54c; }
+        @keyframes currentRankPulse {
+            0% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
+            50% { transform: scale(1.15); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 40px #FFFA00, 0 0 80px rgba(255, 240, 0, 0.5); }
+            100% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
         }
 
+        /* Asegurar colores de texto e icono para el rango actual */
         .rank-item.current-user-rank .rank-item-title,
         .rank-item.current-user-rank .rank-item-threshold {
-            color: #ffffff !important; /* Asegura que el texto en el rango actual sea blanco */
+            color: #ffffff !important; /* Texto blanco en el rango resaltado */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* Sombra de texto para mejorar legibilidad */
         }
         .rank-item.current-user-rank .rank-item-icon {
-            color: #ffffff !important; /* Iconos blancos */
-            /* Ajuste para el ícono místico en el rango actual */
-            background: none !important; /* Elimina el degradado del ícono para que sea blanco */
+            color: #ffffff !important; /* Icono blanco en el rango resaltado */
+            background: none !important; /* Elimina el degradado del ícono místico para que sea blanco */
             -webkit-text-fill-color: #ffffff !important;
-        }
-
-        /* Estilo para el display del rango actual del usuario arriba de la lista */
-        #current-user-rank-display {
-            margin-bottom: 30px;
-        }
-        #current-user-rank-display .rank-item {
-            width: 100%; /* Ocupa todo el ancho */
-            max-width: 350px; /* Pero con un ancho máximo más controlado */
-            margin: 0 auto; /* Centrarlo */
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            animation: none; /* No aplicar la animación de pulsación aquí */
-            transform: none; /* No aplicar la escala aquí */
-        }
-        #current-user-rank-display .rank-item .rank-item-icon {
-            font-size: 3.5em; /* Un poco más grande aquí */
-        }
-        #current-user-rank-display .rank-item .rank-item-title {
-            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para el icono */
         }
 
 
-        /* Loader para esta página */
+        /* Loader para esta página (sin cambios significativos) */
         #loader-rankings {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Más oscuro */
+            background: rgba(0, 0, 0, 0.88); /* Más oscuro */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: #f0f0f0;
-            font-size: 1.3em;
+            font-size: 1.4em;
             z-index: 1000;
-            border-radius: 16px; /* Coincide con el contenedor padre */
+            border-radius: 18px; /* Coincide con el contenedor padre */
             transition: opacity 0.3s ease;
         }
         #loader-rankings.loader-hidden {
             opacity: 0;
             pointer-events: none;
-            display: flex; /* Mantenemos flex para que la transición de opacidad funcione */
+            display: flex;
         }
         #loader-rankings .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-top: 5px solid #4a90e2; /* Color de tu tema */
+            border: 6px solid rgba(255, 255, 255, 0.25);
+            border-top: 6px solid var(--primary-color);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Botón de Volver */
+        /* Botón de Volver (sin cambios significativos) */
         .btn-back-dashboard {
             background-color: var(--button-bg-color);
             color: var(--button-text-color);
             border: none;
-            border-radius: 10px;
-            padding: 12px 25px;
-            margin-top: 30px;
+            border-radius: 12px; /* Bordes más redondeados */
+            padding: 15px 30px; /* Más padding */
+            margin-top: 40px; /* Más espacio */
             cursor: pointer;
-            font-size: 1.1em;
-            font-weight: 600;
+            font-size: 1.2em;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
         }
 
         .btn-back-dashboard:hover {
             background-color: var(--button-hover-bg-color);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px); /* Efecto de "levantar" más pronunciado */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
         }
 
         .btn-back-dashboard .fas {
-            font-size: 1.1em;
+            font-size: 1.2em;
         }
 
-        /* Media Queries para responsividad */
+        /* Media Queries para responsividad (ajustadas) */
         @media (max-width: 768px) {
             .rankings-full-container {
                 padding: 25px;
-                border-radius: 12px;
+                border-radius: 15px;
             }
             .rankings-full-container h2 {
-                font-size: 1.8em;
-                margin-bottom: 20px;
+                font-size: 2.2em;
+                margin-bottom: 25px;
+            }
+            .ranks-list-outer-wrapper {
+                padding-bottom: 15px;
+                margin-bottom: 30px;
             }
             .rankings-list {
-                gap: 15px;
+                gap: 20px;
             }
             .rank-item {
-                width: 150px;
-                padding: 15px;
+                width: 170px;
+                padding: 20px 15px;
             }
             .rank-item-icon {
-                font-size: 2.5em;
+                font-size: 3.2em;
+            }
+            .rank-mystic-bg .rank-item-icon {
+                font-size: 4em;
             }
             .rank-item-title {
-                font-size: 1.1em;
+                font-size: 1.2em;
             }
             .rank-item-threshold {
-                font-size: 0.8em;
+                font-size: 0.9em;
+            }
+            .rank-item.current-user-rank {
+                transform: scale(1.1) !important;
+            }
+            @keyframes currentRankPulse {
+                0% { transform: scale(1.1); }
+                50% { transform: scale(1.12); }
+                100% { transform: scale(1.1); }
             }
             .btn-back-dashboard {
-                padding: 10px 20px;
-                font-size: 1em;
-                margin-top: 20px;
+                padding: 12px 25px;
+                font-size: 1.1em;
+                margin-top: 30px;
             }
         }
 
         @media (max-width: 480px) {
             .rankings-full-container {
                 padding: 15px;
+                border-radius: 12px;
             }
             .rankings-full-container h2 {
-                font-size: 1.5em;
-                gap: 8px;
+                font-size: 1.8em;
+                gap: 10px;
+                margin-bottom: 20px;
             }
             .ranks-list-outer-wrapper {
+                padding-bottom: 10px;
                 margin-bottom: 20px;
             }
             .rankings-list {
-                gap: 10px;
+                gap: 15px;
             }
             .rank-item {
-                width: 120px; /* Aún más pequeños en pantallas muy chicas */
-                padding: 10px;
+                width: 140px; /* Ajuste para pantallas muy pequeñas */
+                padding: 15px 10px;
             }
             .rank-item-icon {
-                font-size: 2em;
+                font-size: 2.8em;
+                margin-bottom: 15px;
+            }
+            .rank-mystic-bg .rank-item-icon {
+                font-size: 3.5em;
             }
             .rank-item-title {
-                font-size: 1em;
+                font-size: 1.1em;
+                margin-bottom: 5px;
             }
             .rank-item-threshold {
-                font-size: 0.75em;
+                font-size: 0.8em;
             }
-            #current-user-rank-display .rank-item {
-                padding: 15px;
+            .rank-item.current-user-rank {
+                transform: scale(1.08) !important;
+                border-width: 4px !important;
             }
-            #current-user-rank-display .rank-item .rank-item-icon {
-                font-size: 2.5em;
-            }
-            #current-user-rank-display .rank-item .rank-item-title {
-                font-size: 1.2em;
+            @keyframes currentRankPulse {
+                0% { transform: scale(1.08); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1.08); }
             }
             .btn-back-dashboard {
-                font-size: 0.9em;
-                padding: 8px 15px;
+                font-size: 1em;
+                padding: 10px 20px;
+                margin-top: 25px;
             }
         }
     </style>
@@ -326,7 +393,6 @@
         </div>
 
         <h2><i class="fas fa-medal"></i> Niveles y Rangos</h2>
-        <div id="current-user-rank-display"></div>
 
         <div class="ranks-list-outer-wrapper">
             <ul class="rankings-list" id="ranks-list">
@@ -346,18 +412,18 @@
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- Definición de los rangos ---
+        // --- Definición de los rangos con nuevas clases de color y fondo ---
         const RANGOS = [
-            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", colorClass: "rank-bronze-icon" },
-            { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", colorClass: "rank-bronze-icon" },
-            { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", colorClass: "rank-bronze-icon" },
-            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", colorClass: "rank-silver-icon" },
-            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", colorClass: "rank-silver-icon" },
-            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", colorClass: "rank-silver-icon" },
-            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", colorClass: "rank-silver-icon" },
-            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", colorClass: "rank-gold-icon" },
-            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", colorClass: "rank-gold-icon" },
-            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", colorClass: "rank-mystic-icon" }
+            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg" },
+            { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg" },
+            { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg" },
+            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg" },
+            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg" },
+            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg" },
+            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg" },
+            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg" },
+            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg" },
+            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", iconClass: "rank-mystic-icon", bgClass: "rank-mystic-bg" }
         ];
 
         // --- Función para obtener el rango de un jugador basado en sus diamantes ---
@@ -368,13 +434,12 @@
                     return rango;
                 }
             }
-            return null; // Si no se encuentra ningún rango (debería cubrirse por Infinity)
+            return null;
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const loaderElement = document.getElementById('loader-rankings');
             const ranksListContainer = document.getElementById('ranks-list');
-            const currentUserRankDisplay = document.getElementById('current-user-rank-display');
 
             // Mostrar loader
             loaderElement.classList.remove('loader-hidden');
@@ -409,27 +474,13 @@
                 const currentUserDiamonds = userProfile ? userProfile.diamonds || 0 : 0;
                 const currentUserRank = getPlayerRank(currentUserDiamonds);
 
-                // --- Mostrar el rango actual del usuario arriba de la lista ---
-                if (currentUserRank && currentUserRankDisplay) {
-                    currentUserRankDisplay.innerHTML = `
-                        <div class="rank-item current-user-rank-top-display"> <div class="rank-item-icon">
-                                <i class="fas ${currentUserRank.icon} ${currentUserRank.colorClass}"></i>
-                            </div>
-                            <div class="rank-item-info">
-                                <div class="rank-item-title">Tu Rango Actual: ${currentUserRank.name}</div>
-                                <div class="rank-item-threshold">Diamantes: ${currentUserDiamonds}</div>
-                            </div>
-                        </div>
-                    `;
-                }
-
                 // --- Mostrar la lista completa de rangos ---
                 ranksListContainer.innerHTML = ''; // Limpiar lista
-                // La UL ya existe con id="ranks-list" y clase "rankings-list"
 
                 RANGOS.forEach(rank => {
                     const li = document.createElement('li');
                     li.classList.add('rank-item');
+                    li.classList.add(rank.bgClass); // Añadir la clase de fondo/borde específica del rango
 
                     // Si este es el rango del usuario actual, añadir la clase de resaltado
                     if (currentUserRank && rank.name === currentUserRank.name) {
@@ -442,15 +493,25 @@
 
                     li.innerHTML = `
                         <div class="rank-item-icon">
-                            <i class="fas ${rank.icon} ${rank.colorClass}"></i>
+                            <i class="fas ${rank.icon} ${rank.iconClass}"></i>
                         </div>
                         <div class="rank-item-info">
                             <div class="rank-item-title">${rank.name}</div>
                             <div class="rank-item-threshold">${thresholdText}</div>
                         </div>
                     `;
-                    ranksListContainer.appendChild(li); // Añadir a la UL
+                    ranksListContainer.appendChild(li);
                 });
+
+                // Opcional: Desplazar la vista hacia el rango actual si es visible
+                if (currentUserRank) {
+                    setTimeout(() => {
+                        const currentRankElement = document.querySelector('.rank-item.current-user-rank');
+                        if (currentRankElement) {
+                            currentRankElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                        }
+                    }, 500); // Pequeño retraso para asegurar que el renderizado se complete
+                }
 
             } catch (error) {
                 console.error('Error al cargar los rangos:', error.message);
