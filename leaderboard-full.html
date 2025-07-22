@@ -9,132 +9,225 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos básicos para la nueva página de clasificación */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: var(--background-color); /* Usa la variable de tu CSS */
-            color: var(--text-color);
-            font-family: 'Poppins', sans-serif;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+       /* Estilos básicos para la nueva página de clasificación */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background-color); /* Usa la variable de tu CSS, excelente punto de partida */
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Evita barras de desplazamiento horizontales innecesarias */
+}
 
-        .leaderboard-full-container {
-            background-color: var(--card-bg-color); /* Un color de fondo para el contenedor */
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 800px;
-            text-align: center;
-            position: relative; /* Para posicionar el botón de volver */
-        }
+.leaderboard-full-container {
+    background-color: var(--card-bg-color); /* Un color de fondo para el contenedor */
+    border-radius: 16px; /* Bordes más suaves */
+    padding: 40px; /* Mayor padding para más espacio */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada y suave */
+    width: 100%;
+    max-width: 900px; /* Un poco más ancha para tablas grandes */
+    text-align: center;
+    position: relative;
+    overflow: hidden; /* Para contener el loader dentro del contenedor */
+    animation: fadeIn 0.8s ease-out; /* Animación de entrada suave */
+}
 
-        .leaderboard-full-container h2 {
-            font-size: 2.2em;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .leaderboard-full-container h2 .fas {
-            font-size: 1.2em;
-        }
+.leaderboard-full-container h2 {
+    font-size: 2.5em; /* Título más grande */
+    color: var(--primary-color); /* Color primario de tu tema */
+    margin-bottom: 30px; /* Más espacio debajo del título */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Mayor espacio entre icono y texto */
+    font-weight: 700; /* Más audaz */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Sombra de texto sutil */
+}
 
-        .leaderboard-full-table-container {
-            overflow-x: auto; /* Para tablas que pueden ser anchas en móviles */
-        }
+.leaderboard-full-container h2 .fas {
+    font-size: 1.5em; /* Icono un poco más grande */
+    color: var(--accent-color, #ffd700); /* Color acento, ej. un dorado para el trofeo */
+}
 
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+.leaderboard-full-table-container {
+    overflow-x: auto;
+    margin-bottom: 25px; /* Espacio antes del botón de volver */
+}
 
-        .leaderboard-table th, .leaderboard-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color); /* Color de línea de tu CSS */
-            text-align: left;
-        }
+.leaderboard-table {
+    width: 100%;
+    border-collapse: separate; /* Permite border-spacing */
+    border-spacing: 0 8px; /* Espacio entre filas */
+    margin-top: 20px;
+    background-color: var(--secondary-bg-color); /* Fondo ligero para la tabla */
+    border-radius: 10px; /* Bordes redondeados para la tabla */
+    overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
+}
 
-        .leaderboard-table th {
-            background-color: var(--secondary-bg-color); /* Fondo para encabezados */
-            font-weight: 600;
-            color: var(--primary-color);
-            text-transform: uppercase;
-        }
+.leaderboard-table th, .leaderboard-table td {
+    padding: 15px 20px; /* Más padding en celdas */
+    text-align: left;
+    /* Eliminamos border-bottom directo aquí para usar el efecto de separación con border-spacing */
+}
 
-        .leaderboard-table tbody tr:last-child td {
-            border-bottom: none;
-        }
+.leaderboard-table th {
+    background-color: var(--primary-color); /* Fondo del encabezado con color primario */
+    color: #ffffff; /* Texto blanco para contrastar */
+    font-weight: 700; /* Más audaz */
+    text-transform: uppercase;
+    font-size: 0.95em;
+    letter-spacing: 0.5px;
+    border-bottom: none; /* No queremos borde inferior aquí */
+    padding: 18px 20px; /* Más padding para los encabezados */
+}
 
-        .leaderboard-table tbody tr:nth-child(even) {
-            background-color: var(--input-bg-color); /* Color de fila par */
-        }
+.leaderboard-table th:first-child { border-top-left-radius: 10px; }
+.leaderboard-table th:last-child { border-top-right-radius: 10px; }
 
-        .leaderboard-table tbody tr:hover {
-            background-color: var(--button-hover-bg-color); /* Hover en filas */
-        }
-        
-        .btn-back-dashboard {
-            background-color: #555; /* Un gris oscuro */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            margin-top: 25px;
-            cursor: pointer;
-            font-size: 1em;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
+.leaderboard-table tbody tr {
+    background-color: var(--card-bg-color); /* Color de fondo base para filas */
+    border-radius: 8px; /* Bordes redondeados para cada fila */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil para cada fila */
+}
 
-        .btn-back-dashboard:hover {
-            background-color: #777;
-            transform: translateY(-2px);
-        }
+.leaderboard-table tbody tr:nth-child(even) {
+    background-color: var(--input-bg-color); /* Un tono ligeramente diferente para filas pares */
+}
 
-        /* Loader para esta página */
-        #loader-leaderboard {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 1.2em;
-            z-index: 1000;
-            border-radius: 12px; /* Coincide con el contenedor padre */
-        }
-        #loader-leaderboard.loader-hidden {
-            display: none;
-        }
-        #loader-leaderboard .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+.leaderboard-table tbody tr:hover {
+    transform: translateY(-3px); /* Efecto flotante al pasar el ratón */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* Sombra más fuerte al pasar el ratón */
+    background-color: var(--button-hover-bg-color); /* Color de fondo al pasar el ratón */
+}
+
+.leaderboard-table tbody td {
+    border-bottom: none; /* Quitamos los bordes internos de las celdas */
+    color: var(--text-color);
+}
+
+.leaderboard-table tbody tr td:first-child { border-bottom-left-radius: 8px; border-top-left-radius: 8px; }
+.leaderboard-table tbody tr td:last-child { border-bottom-right-radius: 8px; border-top-right-radius: 8px; }
+
+
+/* Estilos para las celdas de la tabla (opcional, para diferenciar) */
+.leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--primary-color); } /* Ranking number bold */
+.leaderboard-table td:nth-child(2) { font-weight: 600; } /* Username slightly bolder */
+.leaderboard-table td:nth-child(3) { color: var(--gold-color, #ffd700); font-weight: 700; } /* Gold color for points */
+
+
+/* Botón de Volver */
+.btn-back-dashboard {
+    background-color: var(--button-bg-color); /* Usa el color de botón de tu tema */
+    color: var(--button-text-color); /* Color de texto de botón de tu tema */
+    border: none;
+    border-radius: 10px; /* Bordes más redondeados */
+    padding: 12px 25px; /* Más padding */
+    margin-top: 30px; /* Más espacio */
+    cursor: pointer;
+    font-size: 1.1em; /* Texto un poco más grande */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* Más espacio entre icono y texto */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-back-dashboard:hover {
+    background-color: var(--button-hover-bg-color); /* Color de hover de tu tema */
+    transform: translateY(-4px); /* Efecto de "levantar" más pronunciado */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.btn-back-dashboard .fas {
+    font-size: 1.1em; /* Icono del botón un poco más grande */
+}
+
+/* Loader para esta página */
+#loader-leaderboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Fondo más oscuro para el loader */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #f0f0f0; /* Color de texto del loader */
+    font-size: 1.3em; /* Tamaño de fuente del loader */
+    z-index: 1000;
+    border-radius: 16px; /* Coincide con el contenedor padre */
+    transition: opacity 0.3s ease; /* Transición para ocultar/mostrar */
+}
+#loader-leaderboard.loader-hidden {
+    opacity: 0;
+    pointer-events: none; /* Permite interacciones cuando está oculto */
+    display: flex; /* Mantenemos flex para que la transición de opacidad funcione */
+}
+#loader-leaderboard .spinner {
+    border: 5px solid rgba(255, 255, 255, 0.2); /* Borde más suave */
+    border-top: 5px solid var(--primary-color); /* Color del spinner de tu tema */
+    border-radius: 50%;
+    width: 50px; /* Spinner un poco más grande */
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px; /* Más espacio */
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Media Queries para responsividad */
+@media (max-width: 768px) {
+    .leaderboard-full-container {
+        padding: 25px;
+        border-radius: 12px;
+    }
+    .leaderboard-full-container h2 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    .leaderboard-table th, .leaderboard-table td {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+    .btn-back-dashboard {
+        padding: 10px 20px;
+        font-size: 1em;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .leaderboard-full-container {
+        padding: 15px;
+    }
+    .leaderboard-full-container h2 {
+        font-size: 1.5em;
+        gap: 8px;
+    }
+    .leaderboard-table th, .leaderboard-table td {
+        padding: 8px 10px;
+        font-size: 0.8em;
+    }
+    .btn-back-dashboard {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+}
     </style>
 </head>
 <body>
