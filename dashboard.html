@@ -16,8 +16,8 @@
 /* Ejemplo de estilo para el botón del cofre */
         ./* --- Estilos para el botón del cofre --- */
 .btn-chest-custom {
-    background: linear-gradient(to right, #4682B4, #8A2BE2); /* Azul Acero a Azul Violeta */
-    border: 2px solid #6495ED; /* Borde Azul Cornflower */
+    background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
+    border: 2px solid #00FA9A; /* Verde Primavera Medio */
     color: #fff;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Sombra más pronunciada */
     transition: all 0.3s ease;
@@ -25,31 +25,31 @@
 }
 
 .btn-chest-custom:hover {
-    background: linear-gradient(to right, #8A2BE2, #9370DB); /* Degradado más claro al pasar el ratón */
+    background: linear-gradient(to right, #00CED1, #00BFFF); /* Turquesa Oscuro a Azul Profundo */
     transform: translateY(-4px) scale(1.02); /* Efecto de "levantarse" y agrandarse ligeramente */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); /* Sombra más grande al pasar el ratón */
-    border-color: #ADD8E6; /* Azul Claro en hover */
+    border-color: #7FFFD4; /* Aguamarina en hover */
 }
 
-/* --- Estilos para la SweetAlert del cofre (¡Más azul y morada!) --- */
+/* --- Estilos para la SweetAlert del cofre (¡Más impactante y con blancos!) --- */
 .swal2-chest-popup {
     background: linear-gradient(145deg, #191970, #4B0082) !important; /* Degradado de Azul Marino a Índigo */
-    color: #ecf0f1 !important;
+    color: #fff !important; /* ¡Cambiado a BLANCO para todo el texto principal del popup! */
     border-radius: 25px !important; /* Bordes más redondeados */
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 5px #00BFFF !important; /* Doble sombra: profunda y un halo Azul Turquesa */
-    border: none !important; /* Quitamos el borde sólido para usar el halo de sombra */
-    overflow: hidden; /* Asegura que el contenido no desborde */
+    border: none !important;
+    overflow: hidden;
 }
 
-.swal2-chest-popup::before { /* Elemento decorativo para el fondo */
+.swal2-chest-popup::before {
     content: '';
     position: absolute;
     top: -50px;
     left: -50px;
     right: -50px;
     bottom: -50px;
-    background: radial-gradient(circle at center, rgba(173, 216, 230, 0.05) 0%, transparent 70%); /* Azul claro sutil */
-    animation: pulseBackgroundBlue 3s infinite alternate; /* Animación sutil de brillo azul en el fondo */
+    background: radial-gradient(circle at center, rgba(173, 216, 230, 0.08) 0%, transparent 70%); /* Azul claro sutil */
+    animation: pulseBackgroundBlue 3s infinite alternate;
     z-index: -1;
 }
 
@@ -58,18 +58,17 @@
     100% { transform: scale(1.2); opacity: 1; }
 }
 
-
 .swal2-chest-popup .swal2-title {
-    color: #87CEFA !important; /* Título Azul Cielo claro */
-    font-weight: 900 !important; /* Más negrita */
-    text-shadow: 0 0 15px #87CEFA, 0 0 30px #ADD8E6 !important; /* Brillo azul intenso */
-    letter-spacing: 1px; /* Espaciado entre letras */
-    padding-bottom: 10px; /* Espacio debajo del título */
-    border-bottom: 1px solid rgba(173, 216, 230, 0.3); /* Línea divisoria sutil azul claro */
+    color: #87CEFA !important; /* Título Azul Cielo claro (puedes ajustarlo a blanco puro si lo prefieres) */
+    font-weight: 900 !important;
+    text-shadow: 0 0 15px #87CEFA, 0 0 30px #ADD8E6 !important;
+    letter-spacing: 1px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(173, 216, 230, 0.3);
 }
 
 .swal2-chest-popup .swal2-html-container {
-    color: #f0f0f0 !important; /* Texto un poco más claro */
+    color: #fff !important; /* ¡Cambiado a BLANCO! */
     font-size: 1.1em;
 }
 
@@ -78,16 +77,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 25px; /* Más espacio superior */
-    padding: 0 20px; /* Relleno lateral */
+    margin-top: 25px;
+    padding: 0 20px;
 }
 
 .swal2-chest-icon {
-    font-size: 6em; /* Icono de cofre aún más grande */
-    color: #9370DB; /* Morado Medio */
-    margin-bottom: 25px; /* Más espacio debajo del icono */
-    animation: fadeInScale 0.8s ease-out, shakeWobble 0.8s ease-out 0.8s; /* Animación de entrada y luego un pequeño bamboleo */
-    text-shadow: 0 0 25px #9370DB, 0 0 50px #DDA0DD, 0 0 80px #E6E6FA; /* Brillo morado */
+    font-size: 6em;
+    color: #FFFFFF !important; /* ¡Cambiado a BLANCO! */
+    margin-bottom: 25px;
+    animation: fadeInScale 0.8s ease-out, shakeWobble 0.8s ease-out 0.8s;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 255, 255, 0.5), 0 0 80px rgba(255, 255, 255, 0.3); /* Brillo blanco */
     position: relative;
     z-index: 1;
 }
@@ -102,21 +101,21 @@
 .swal2-reward-item {
     display: flex;
     align-items: center;
-    font-size: 1.5em; /* Texto de recompensa más grande */
-    margin: 8px 0; /* Más espacio entre ítems */
-    color: #FFF; /* Blanco puro para contraste */
-    font-weight: 700; /* Más negrita */
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Sombra para el texto */
-    background: rgba(0, 0, 0, 0.3); /* Fondo sutil para el item */
+    font-size: 1.5em;
+    margin: 8px 0;
+    color: #FFF; /* Mantiene blanco para los ítems de recompensa */
+    font-weight: 700;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
     padding: 8px 15px;
     border-radius: 10px;
-    width: 80%; /* Ancho fijo para los ítems */
-    justify-content: center; /* Centrar contenido */
-    animation: slideInFromLeft 0.5s ease-out forwards; /* Animación de entrada */
-    opacity: 0; /* Inicialmente invisible para la animación */
+    width: 80%;
+    justify-content: center;
+    animation: slideInFromLeft 0.5s ease-out forwards;
+    opacity: 0;
 }
-.swal2-reward-item:nth-child(1) { animation-delay: 0.2s; } /* Retraso para el primer ítem */
-.swal2-reward-item:nth-child(2) { animation-delay: 0.4s; } /* Retraso para el segundo ítem */
+.swal2-reward-item:nth-child(1) { animation-delay: 0.2s; }
+.swal2-reward-item:nth-child(2) { animation-delay: 0.4s; }
 
 @keyframes slideInFromLeft {
     0% { transform: translateX(-50px); opacity: 0; }
@@ -125,11 +124,11 @@
 
 
 .swal2-reward-item .currency-icon {
-    font-size: 1.3em; /* Icono de moneda más grande */
+    font-size: 1.3em;
     margin-right: 12px;
 }
 
-.swal2-reward-item .fa-coins { color: #FFD700; } /* El oro puede mantener un toque dorado para reconocerlo */
+.swal2-reward-item .fa-coins { color: #FFD700; } /* El oro sigue siendo dorado para su identidad visual */
 .swal2-reward-item .fa-gem { color: #ADD8E6; } /* Diamantes en azul claro */
 
 @keyframes fadeInScale {
@@ -141,18 +140,18 @@
 .swal2-chest-popup .swal2-confirm-button {
     background: linear-gradient(to right, #4682B4, #6A5ACD) !important; /* Degradado de Azul Acero a Azul Pizarra Medio */
     color: white !important;
-    border-radius: 12px !important; /* Más redondeado */
-    padding: 12px 25px !important; /* Más grande */
-    font-size: 1.2em !important; /* Texto más grande */
+    border-radius: 12px !important;
+    padding: 12px 25px !important;
+    font-size: 1.2em !important;
     transition: all 0.3s ease !important;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;
     border: none !important;
-    margin-top: 25px !important; /* Más espacio arriba */
+    margin-top: 25px !important;
 }
 
 .swal2-chest-popup .swal2-confirm-button:hover {
     background: linear-gradient(to right, #6A5ACD, #8FBC8F) !important; /* Un toque verdoso al hacer hover para indicar "ok" */
-    transform: translateY(-3px) scale(1.05) !important; /* Efecto de "pop" */
+    transform: translateY(-3px) scale(1.05) !important;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
 }
 </style>
