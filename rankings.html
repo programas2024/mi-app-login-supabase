@@ -21,110 +21,161 @@
             font-family: 'Poppins', sans-serif;
             padding: 20px;
             box-sizing: border-box;
+            overflow-x: hidden; /* Evitar scroll horizontal en el body */
         }
 
         .rankings-full-container {
-            background-color: var(--card-bg-color);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            background-color: var(--card-bg-color, #ffffff); /* Fondo blanco para el contenedor principal */
+            border-radius: 16px; /* Bordes más suaves */
+            padding: 40px; /* Mayor padding para más espacio */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave */
             width: 100%;
-            max-width: 600px;
+            max-width: 900px; /* Ancho ajustado para la disposición horizontal */
             text-align: center;
             position: relative;
+            overflow: hidden; /* Para contener el loader */
         }
 
         .rankings-full-container h2 {
-            font-size: 2.2em;
+            font-size: 2.5em;
             color: var(--primary-color);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .rankings-full-container h2 .fas {
-            font-size: 1.2em;
+            font-size: 1.5em;
         }
 
-        /* Estilos para la lista de rangos */
-        .rank-item { /* Nueva clase para cada item de rango */
-            background-color: var(--input-bg-color, #f0f0f0); /* Color de fondo sutil */
-            border-radius: 10px; /* Bordes más suaves */
-            padding: 15px 20px;
-            margin-bottom: 12px; /* Más espacio entre rangos */
+        /* Contenedor de la lista de rangos para scroll horizontal */
+        .ranks-list-outer-wrapper {
+            overflow-x: auto; /* Habilitar scroll horizontal */
+            padding-bottom: 15px; /* Espacio para la barra de scroll */
+            margin-bottom: 30px;
+            -webkit-overflow-scrolling: touch; /* Suavizar el scroll en iOS */
+        }
+
+        /* Lista de rangos con Flexbox para disposición horizontal */
+        .rankings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex; /* <-- CLAVE: Disposición horizontal */
+            gap: 20px; /* Espacio entre los elementos de rango */
+            flex-wrap: nowrap; /* Evitar que los ítems salten de línea */
+            justify-content: flex-start; /* Alinear al inicio */
+            min-width: fit-content; /* Asegurar que la lista no se comprima */
+        }
+
+        /* Estilos para cada elemento de rango (las "tarjetas" de rango) */
+        .rank-item {
+            flex-shrink: 0; /* Evitar que los ítems se encojan */
+            width: 180px; /* Ancho fijo para cada tarjeta de rango */
+            background: linear-gradient(145deg, #f0f0f0, #e0e0e0); /* Degradado gris claro para fondo base */
+            border-radius: 15px; /* Bordes más redondeados */
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Sombra más suave */
+            border: 2px solid #bbbbbb; /* Borde suave */
+            transition: all 0.3s ease; /* Transición para efectos de hover y current */
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 15px;
-            font-size: 1.1em;
-            text-align: left;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra más definida */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid var(--border-color, #ddd); /* Borde sutil */
+            justify-content: space-between;
         }
 
-        .rank-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        .rank-item:hover:not(.current-user-rank) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color); /* Borde primario al pasar el ratón */
         }
 
         .rank-item-icon {
-            font-size: 2em; /* Iconos más grandes */
-            width: 40px; /* Ancho fijo para alinear iconos */
-            text-align: center;
-            display: flex; /* Para centrar el contenido del icono */
-            justify-content: center;
-            align-items: center;
-        }
-
-        .rank-item-info {
-            flex-grow: 1; /* Ocupa el espacio restante */
+            font-size: 3em; /* Iconos más grandes para el centro */
+            margin-bottom: 15px;
+            line-height: 1; /* Eliminar espacio extra */
         }
 
         .rank-item-title {
-            font-weight: 700;
-            font-size: 1.2em;
-            color: var(--primary-color); /* Color primario para el título del rango */
-            margin-bottom: 5px;
+            font-weight: 800; /* Más audaz */
+            font-size: 1.3em;
+            margin-bottom: 8px;
+            color: var(--text-color); /* Color de texto general */
         }
 
         .rank-item-threshold {
             font-size: 0.9em;
-            color: var(--text-color-light, #666); /* Color más claro para el umbral */
+            color: var(--text-color-light, #666);
         }
 
-        /* Estilos específicos para iconos de rango (ajustados a tus nuevos rangos y colores) */
-        .rank-bronze-icon { color: #CD7F32; } /* Bronce */
-        .rank-silver-icon { color: #C0C0C0; } /* Plata */
-        .rank-gold-icon { color: #FFD700; } /* Oro */
+        /* Estilos específicos para iconos y fondos de rango */
+        .rank-bronze-icon { color: #CD7F32; }
+        .rank-silver-icon { color: #A8A8A8; } /* Ajuste de color plata */
+        .rank-gold-icon { color: #FFC400; } /* Ajuste de color oro */
         .rank-mystic-icon {
-            background: linear-gradient(45deg, #8A2BE2, #FFD700); /* Degradado morado a dorado */
+            /* Degradado más intenso para el ícono místico */
+            background: linear-gradient(45deg, #a300e8, #ff66d1); /* Morado vibrante a fucsia */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 2.2em; /* Más grande para destacar */
+            font-size: 3.5em; /* Un poco más grande para el místico */
         }
 
-        /* Estilo para el rango actual del usuario */
+        /* Estilo para el rango actual del usuario - ¡Más Bonito! */
         .rank-item.current-user-rank {
-            background: linear-gradient(to right, #4a90e2, #6a5acd) !important; /* Degradado azul para el fondo */
-            color: #ffffff !important; /* Texto blanco para asegurar legibilidad */
-            border: 2px solid #2980b9 !important; /* Borde azul oscuro para definir */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important; /* Sombra más fuerte */
-            transform: scale(1.03) !important;
+            /* Degradado de fondo para el rango actual */
+            background: linear-gradient(135deg, #6a5acd, #4a90e2) !important; /* Azul-morado a azul */
+            color: #ffffff !important; /* Texto blanco */
+            border: 3px solid #ffd700 !important; /* Borde dorado brillante */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 20px #ffd700; /* Sombra con glow dorado */
+            transform: scale(1.08) !important; /* Efecto "pop" más pronunciado */
             position: relative;
-            z-index: 2;
+            z-index: 3; /* Asegura que esté al frente */
+            animation: pulseGlow 1.5s infinite alternate; /* Animación de pulsación */
         }
+
+        /* Animación para el rango actual */
+        @keyframes pulseGlow {
+            0% { transform: scale(1.08); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 20px #ffd700; }
+            100% { transform: scale(1.1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 30px #ffe54c; }
+        }
+
         .rank-item.current-user-rank .rank-item-title,
         .rank-item.current-user-rank .rank-item-threshold {
-            color: #ffffff !important; /* Asegura que el texto dentro del rango actual sea blanco */
+            color: #ffffff !important; /* Asegura que el texto en el rango actual sea blanco */
         }
         .rank-item.current-user-rank .rank-item-icon {
-             /* El color del icono en la fila destacada puede ser blanco o un color brillante */
-            color: #ffffff !important;
-            /* Si es el místico, el degradado puede necesitar un ajuste para ser visible sobre el azul */
-            -webkit-text-fill-color: #ffffff; /* Fuerza el color para el místico sobre fondo azul */
+            color: #ffffff !important; /* Iconos blancos */
+            /* Ajuste para el ícono místico en el rango actual */
+            background: none !important; /* Elimina el degradado del ícono para que sea blanco */
+            -webkit-text-fill-color: #ffffff !important;
         }
+
+        /* Estilo para el display del rango actual del usuario arriba de la lista */
+        #current-user-rank-display {
+            margin-bottom: 30px;
+        }
+        #current-user-rank-display .rank-item {
+            width: 100%; /* Ocupa todo el ancho */
+            max-width: 350px; /* Pero con un ancho máximo más controlado */
+            margin: 0 auto; /* Centrarlo */
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            animation: none; /* No aplicar la animación de pulsación aquí */
+            transform: none; /* No aplicar la escala aquí */
+        }
+        #current-user-rank-display .rank-item .rank-item-icon {
+            font-size: 3.5em; /* Un poco más grande aquí */
+        }
+        #current-user-rank-display .rank-item .rank-item-title {
+            font-size: 1.5em;
+        }
+
 
         /* Loader para esta página */
         #loader-rankings {
@@ -133,46 +184,138 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85); /* Más oscuro */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
-            font-size: 1.2em;
+            color: #f0f0f0;
+            font-size: 1.3em;
             z-index: 1000;
-            border-radius: 12px;
+            border-radius: 16px; /* Coincide con el contenedor padre */
+            transition: opacity 0.3s ease;
         }
         #loader-rankings.loader-hidden {
-            display: none;
+            opacity: 0;
+            pointer-events: none;
+            display: flex; /* Mantenemos flex para que la transición de opacidad funcione */
         }
         #loader-rankings .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-top: 5px solid #4a90e2; /* Color de tu tema */
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Variables CSS (asegúrate de que estas estén definidas en dashboard.css o en un :root) */
-        /*
-        :root {
-            --background-color: #f0f2f5;
-            --card-bg-color: #ffffff;
-            --primary-color: #4a90e2;
-            --text-color: #333333;
-            --input-bg-color: #f8f8f8;
-            --border-color: #e0e0e0;
-            --button-bg-color: #4CAF50;
-            --button-text-color: #ffffff;
+        /* Botón de Volver */
+        .btn-back-dashboard {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            margin-top: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        */
+
+        .btn-back-dashboard:hover {
+            background-color: var(--button-hover-bg-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-back-dashboard .fas {
+            font-size: 1.1em;
+        }
+
+        /* Media Queries para responsividad */
+        @media (max-width: 768px) {
+            .rankings-full-container {
+                padding: 25px;
+                border-radius: 12px;
+            }
+            .rankings-full-container h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+            .rankings-list {
+                gap: 15px;
+            }
+            .rank-item {
+                width: 150px;
+                padding: 15px;
+            }
+            .rank-item-icon {
+                font-size: 2.5em;
+            }
+            .rank-item-title {
+                font-size: 1.1em;
+            }
+            .rank-item-threshold {
+                font-size: 0.8em;
+            }
+            .btn-back-dashboard {
+                padding: 10px 20px;
+                font-size: 1em;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .rankings-full-container {
+                padding: 15px;
+            }
+            .rankings-full-container h2 {
+                font-size: 1.5em;
+                gap: 8px;
+            }
+            .ranks-list-outer-wrapper {
+                margin-bottom: 20px;
+            }
+            .rankings-list {
+                gap: 10px;
+            }
+            .rank-item {
+                width: 120px; /* Aún más pequeños en pantallas muy chicas */
+                padding: 10px;
+            }
+            .rank-item-icon {
+                font-size: 2em;
+            }
+            .rank-item-title {
+                font-size: 1em;
+            }
+            .rank-item-threshold {
+                font-size: 0.75em;
+            }
+            #current-user-rank-display .rank-item {
+                padding: 15px;
+            }
+            #current-user-rank-display .rank-item .rank-item-icon {
+                font-size: 2.5em;
+            }
+            #current-user-rank-display .rank-item .rank-item-title {
+                font-size: 1.2em;
+            }
+            .btn-back-dashboard {
+                font-size: 0.9em;
+                padding: 8px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -183,10 +326,12 @@
         </div>
 
         <h2><i class="fas fa-medal"></i> Niveles y Rangos</h2>
-        <div id="current-user-rank-display" style="margin-bottom: 20px;"></div>
+        <div id="current-user-rank-display"></div>
 
-        <div id="ranks-list">
-            </div>
+        <div class="ranks-list-outer-wrapper">
+            <ul class="rankings-list" id="ranks-list">
+                </ul>
+        </div>
 
         <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
             <i class="fas fa-arrow-left"></i> Volver al Dashboard
@@ -203,16 +348,16 @@
 
         // --- Definición de los rangos ---
         const RANGOS = [
-            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-chess-pawn", colorClass: "rank-bronze-icon" },
-            { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-chess-pawn", colorClass: "rank-bronze-icon" },
-            { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-chess-pawn", colorClass: "rank-bronze-icon" },
-            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-chess-knight", colorClass: "rank-silver-icon" },
-            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-chess-knight", colorClass: "rank-silver-icon" },
-            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-chess-knight", colorClass: "rank-silver-icon" },
-            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-chess-knight", colorClass: "rank-silver-icon" },
-            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-chess-king", colorClass: "rank-gold-icon" }, // Usamos rey para Oro I
-            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-chess-king", colorClass: "rank-gold-icon" }, // Usamos rey para Oro II
-            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", colorClass: "rank-mystic-icon" } // Místico con estrella
+            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", colorClass: "rank-bronze-icon" },
+            { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", colorClass: "rank-bronze-icon" },
+            { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", colorClass: "rank-bronze-icon" },
+            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", colorClass: "rank-silver-icon" },
+            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", colorClass: "rank-silver-icon" },
+            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", colorClass: "rank-silver-icon" },
+            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", colorClass: "rank-silver-icon" },
+            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", colorClass: "rank-gold-icon" },
+            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", colorClass: "rank-gold-icon" },
+            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", colorClass: "rank-mystic-icon" }
         ];
 
         // --- Función para obtener el rango de un jugador basado en sus diamantes ---
@@ -223,7 +368,7 @@
                     return rango;
                 }
             }
-            return null; // Si no se encuentra ningún rango (aunque no debería pasar con Infinity)
+            return null; // Si no se encuentra ningún rango (debería cubrirse por Infinity)
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -264,11 +409,10 @@
                 const currentUserDiamonds = userProfile ? userProfile.diamonds || 0 : 0;
                 const currentUserRank = getPlayerRank(currentUserDiamonds);
 
-                // --- Mostrar el rango actual del usuario ---
+                // --- Mostrar el rango actual del usuario arriba de la lista ---
                 if (currentUserRank && currentUserRankDisplay) {
                     currentUserRankDisplay.innerHTML = `
-                        <div class="rank-item current-user-rank">
-                            <div class="rank-item-icon">
+                        <div class="rank-item current-user-rank-top-display"> <div class="rank-item-icon">
                                 <i class="fas ${currentUserRank.icon} ${currentUserRank.colorClass}"></i>
                             </div>
                             <div class="rank-item-info">
@@ -281,14 +425,17 @@
 
                 // --- Mostrar la lista completa de rangos ---
                 ranksListContainer.innerHTML = ''; // Limpiar lista
-                const ul = document.createElement('ul');
-                ul.classList.add('rankings-list'); // Clase para la lista completa
+                // La UL ya existe con id="ranks-list" y clase "rankings-list"
 
                 RANGOS.forEach(rank => {
                     const li = document.createElement('li');
                     li.classList.add('rank-item');
 
-                    // Definir el umbral de diamantes
+                    // Si este es el rango del usuario actual, añadir la clase de resaltado
+                    if (currentUserRank && rank.name === currentUserRank.name) {
+                        li.classList.add('current-user-rank');
+                    }
+
                     const thresholdText = rank.maxDiamonds === Infinity
                         ? `${rank.minDiamonds}+ Diamantes`
                         : `${rank.minDiamonds} - ${rank.maxDiamonds} Diamantes`;
@@ -302,9 +449,8 @@
                             <div class="rank-item-threshold">${thresholdText}</div>
                         </div>
                     `;
-                    ul.appendChild(li);
+                    ranksListContainer.appendChild(li); // Añadir a la UL
                 });
-                ranksListContainer.appendChild(ul);
 
             } catch (error) {
                 console.error('Error al cargar los rangos:', error.message);
