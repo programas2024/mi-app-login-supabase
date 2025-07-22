@@ -16,9 +16,10 @@
     background-color: #ffffff !important; /* Fondo blanco para la fila resaltada */
     color: var(--text-color, #000000) !important; /* Texto negro o tu color de texto principal */
     font-weight: bold !important;
-    border: 2px solid var(--primary-color, #4a90e2) !important; /* Un borde distintivo (ej. azul primario) */
+    border: 2px solid #000000 !important; /* ¡Borde negro para la fila! */
+    border-radius: 8px; /* Mantener los bordes redondeados para la fila */
     transform: scale(1.02); /* Un ligero "pop" para resaltarlo */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Sombra ligeramente ajustada */
     z-index: 1; /* Asegura que esté por encima de otras filas si hay hover */
     position: relative; /* Necesario para z-index */
 }
@@ -27,7 +28,7 @@
 .leaderboard-table tbody tr.current-user-row:hover {
     background-color: #f8f8f8 !important; /* Un blanco un poco más oscuro al pasar el ratón */
     transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra más fuerte al pasar el ratón */
 }
 
 /* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
