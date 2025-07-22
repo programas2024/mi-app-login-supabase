@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificación Global</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css"> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="dashboard.css"> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Estilos básicos para la nueva página de clasificación */
@@ -163,18 +163,31 @@
         </button>
     </div>
 
-    <script type="module" src="script.js"></script> 
     <script type="module">
-        import { loadLeaderboard } from './leaderboard.js';
+        // Importa la función loadLeaderboard desde tu archivo leaderboard.js
+        import { loadLeaderboard } from './leaderboard.js'; // Asegúrate que la ruta sea correcta
+
+        // Importa createClient directamente de la URL del CDN de Supabase
         import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-        // Re-inicializa Supabase para esta página. Esto es necesario si no es una SPA.
-        // Asegúrate de que estas URL y KEY son las mismas que en script.js
+        // --- Configuración de Supabase para esta página ---
+        // Estas claves DEBEN COINCIDIR con las de tu script.js y tu proyecto Supabase.
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpohxcklboshIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo';
+        // ¡CLAVE CORREGIDA! Asegúrate de que esta sea exactamente la misma que en script.js
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // Opcional: Verificar si el usuario está autenticado antes de cargar la clasificación
+            // Esto es buena práctica, pero si siempre se accede desde el dashboard (autenticado), podría simplificarse.
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                console.log('No hay usuario autenticado. Redirigiendo a index.html.');
+                window.location.href = 'index.html';
+                return;
+            }
+
             const backBtn = document.getElementById('back-to-dashboard-from-leaderboard');
             if (backBtn) {
                 backBtn.addEventListener('click', () => {
