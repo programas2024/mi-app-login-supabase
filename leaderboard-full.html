@@ -11,27 +11,29 @@
     <style>
        /* Estilos básicos para la nueva página de clasificación */
 
-        .current-user-row {
-            background-color: var(--primary-color) !important; /* Usa el color primario de tu tema */
-            color: #ffffff !important; /* Texto blanco para contrastar */
-            font-weight: bold !important;
-            border: 2px solid var(--accent-color, #ffd700) !important; /* Un borde de color de acento */
-            transform: scale(1.02); /* Un ligero "pop" para resaltarlo */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-            z-index: 1; /* Asegura que esté por encima de otras filas si hay hover */
-            position: relative; /* Necesario para z-index */
-        }
+       /* Estilos para resaltar la fila del usuario actual */
+.current-user-row {
+    background-color: #ffffff !important; /* Fondo blanco para la fila resaltada */
+    color: var(--text-color, #000000) !important; /* Texto negro o tu color de texto principal */
+    font-weight: bold !important;
+    border: 2px solid var(--primary-color, #4a90e2) !important; /* Un borde distintivo (ej. azul primario) */
+    transform: scale(1.02); /* Un ligero "pop" para resaltarlo */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    z-index: 1; /* Asegura que esté por encima de otras filas si hay hover */
+    position: relative; /* Necesario para z-index */
+}
 
-        /* Ajustar el hover para que no opaque el resaltado */
-        .leaderboard-table tbody tr.current-user-row:hover {
-            background-color: var(--primary-color) !important; /* Mantener el color primario */
-            transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
+/* Ajustar el hover para que no opaque el resaltado */
+.leaderboard-table tbody tr.current-user-row:hover {
+    background-color: #f8f8f8 !important; /* Un blanco un poco más oscuro al pasar el ratón */
+    transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
 
-        .leaderboard-table tbody tr.current-user-row td {
-            color: #ffffff !important; /* Asegura que el texto dentro de las celdas sea blanco */
-        }
+/* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
+.leaderboard-table tbody tr.current-user-row td {
+    color: var(--text-color, #000000) !important; /* El color de texto principal de tu tema, o negro por defecto */
+}
 body {
     display: flex;
     justify-content: center;
