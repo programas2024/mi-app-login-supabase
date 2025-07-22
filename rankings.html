@@ -505,6 +505,136 @@
                 margin-top: 25px;
             }
         }
+
+        /* --- NUEVOS ESTILOS PARA EL EFECTO DE DIAMANTES EN LA ALERTA (SweetAlert) --- */
+        .swal2-diamond-burst {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em; /* Icono grande */
+            color: #ffd700; /* Color oro */
+            margin-bottom: 20px;
+            position: relative;
+            animation: bounceIn 0.8s ease-out; /* Animación de entrada */
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.4); /* Brillo */
+        }
+
+        /* Animación para el icono de diamantes */
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        /* Pequeñas partículas de diamante que "explotan" desde el icono principal */
+        .swal2-diamond-burst::before,
+        .swal2-diamond-burst::after {
+            content: '\f219'; /* Código del icono de diamante (fa-gem) de Font Awesome */
+            font-family: 'Font Awesome 6 Free'; /* Asegúrate de que Font Awesome esté cargado */
+            font-weight: 900; /* Para el icono sólido */
+            position: absolute;
+            font-size: 0.5em; /* Más pequeño que el icono principal */
+            opacity: 0; /* Inicialmente invisible */
+            animation: diamondExplode 1.5s ease-out forwards; /* Animación de explosión */
+        }
+
+        .swal2-diamond-burst::before {
+            color: #ADD8E6; /* LightBlue para contraste */
+            transform: translate(-30px, -20px); /* Posición inicial */
+            animation-delay: 0.1s; /* Retraso para que aparezcan en momentos diferentes */
+            --dx: -60px; /* Desplazamiento final X */
+            --dy: -40px; /* Desplazamiento final Y */
+        }
+
+        .swal2-diamond-burst::after {
+            color: #FFB6C1; /* Pink */
+            transform: translate(30px, 20px); /* Posición inicial */
+            animation-delay: 0.2s; /* Retraso */
+            --dx: 60px; /* Desplazamiento final X */
+            --dy: 40px; /* Desplazamiento final Y */
+        }
+
+        @keyframes diamondExplode {
+            0% { opacity: 1; transform: translate(0,0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); } /* Se encogen y se desvanecen */
+        }
+
+        /* Estilos para el pop-up de SweetAlert en modo oscuro */
+        .swal2-dark-mode {
+            background: #2c3e50 !important; /* Un gris oscuro/azul para el fondo del pop-up */
+            color: #ecf0f1 !important; /* Texto blanco/gris claro */
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; /* Sombra más profunda */
+            border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Borde sutil */
+        }
+
+        .swal2-dark-mode .swal2-title {
+            color: #ecf0f1 !important;
+            font-weight: 700 !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .swal2-dark-mode .swal2-html-container {
+            color: #bdc3c7 !important; /* Color para el texto del mensaje */
+        }
+
+        .swal2-confirm-button {
+            background-color: #3498db !important; /* Azul atractivo para el botón */
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
+            font-size: 1.1em !important;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .swal2-confirm-button:hover {
+            background-color: #2980b9 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Oculta el icono por defecto de SweetAlert ya que usaremos uno personalizado en el HTML */
+        .swal2-popup .swal2-icon {
+            display: none !important;
+        }
+
+        /* Estilos para el botón de reclamar en la lista de rangos */
+        .claim-reward-btn {
+            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px; /* Espacio entre icono y texto */
+            margin-top: 10px;
+            width: fit-content; /* Se ajusta al contenido */
+        }
+
+        .claim-reward-btn:hover:not([disabled]) {
+            background: linear-gradient(to right, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .claim-reward-btn[disabled] {
+            background: #cccccc; /* Gris para deshabilitado */
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .claim-reward-btn[disabled]:hover {
+            transform: none; /* Evita cualquier transformación al hacer hover cuando está deshabilitado */
+        }
     </style>
 </head>
 <body>
@@ -527,25 +657,27 @@
     </div>
 
     <script type="module">
+        // Importación de Supabase y Confetti
         import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+        import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm'; // Importación correcta para Confetti.js en módulos ES
 
+        // --- Configuración de Supabase ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- Definición de los rangos con recompensas ---
         const RANGOS = [
-            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 20 }, // Bronce I no da recompensa de ascenso
+            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 0 }, // Bronce I no da recompensa de ascenso
             { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 50 },
             { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 80 },
-            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 200 }, // Primera recompensa: 200 diamantes
-            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 300 }, // +100 = 300
-            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 400 }, // +100 = 400
-            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 500 }, // +100 = 500
-            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 600 }, // +100 = 600
-            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 700 }, // +100 = 700
-            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", iconClass: "rank-mystic-icon", bgClass: "rank-mystic-bg", rewardDiamonds: 1000 } // +100 = 800, pero vamos a darle 1000 por Místico
+            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 200 },
+            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 300 },
+            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 400 },
+            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 500 },
+            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 600 },
+            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 700 },
+            { name: "Místico", minDiamonds: 1301, maxDiamonds: Infinity, icon: "fa-star", iconClass: "rank-mystic-icon", bgClass: "rank-mystic-bg", rewardDiamonds: 1000 }
         ];
 
         // Función para obtener el rango de un jugador basado en sus diamantes
@@ -624,8 +756,6 @@
                     let rewardSection = ''; // Inicializamos vacío
 
                     // Lógica para mostrar el botón de recompensa
-                    // La recompensa solo se ofrece para rangos *anteriores* o el rango *actual* si el usuario lo acaba de alcanzar
-                    // y aún no ha reclamado la recompensa de ese rango.
                     const isRankReached = currentUserDiamonds >= rank.minDiamonds;
                     const hasReward = rank.rewardDiamonds > 0;
                     const isRewardClaimed = claimedRankNames.includes(rank.name);
@@ -695,66 +825,63 @@
                                 throw updateError;
                             }
 
-                           Swal.fire({
-        // icon: 'success', // Ya no usaremos el icono 'success' por defecto
-        title: '¡Recompensa Reclamada!',
-        html: `
-            <div class="swal2-diamond-burst">
-                <i class="fas fa-gem"></i>
-            </div>
-            <p style="font-size: 1.1em; margin-top: 10px; color: #bdc3c7;">
-                ¡Felicidades! Has recibido <strong style="color: #ffd700;">${rewardAmount} diamantes</strong>
-                por alcanzar el rango <strong style="color: #62c3e8;">${rankName}</strong>.
-            </p>
-        `,
-        confirmButtonText: '¡Asombroso!',
-        customClass: {
-            popup: 'swal2-dark-mode',
-            confirmButton: 'swal2-confirm-button'
-        },
-        willOpen: () => { // Esto se ejecuta justo antes de que se muestre la alerta
-            // Ejecutar el efecto de confeti
-            confetti({
-                particleCount: 150, // Más partículas
-                spread: 120, // Más dispersión
-                origin: { y: 0.6 }, // Desde la mitad de la pantalla hacia arriba
-                colors: ['#ffd700', '#ffffff', '#62c3e8', '#bb7aff'], // Colores de oro, blanco, azul, morado
-                shapes: ['star', 'circle', 'square'], // Formas de las partículas
-                scalar: 1.2, // Tamaño de las partículas
-            });
+                            // --- SWEETALERT CON EFECTOS DE DIAMANTES Y CONFETI ---
+                            Swal.fire({
+                                title: '¡Recompensa Reclamada!',
+                                html: `
+                                    <div class="swal2-diamond-burst">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                    <p style="font-size: 1.1em; margin-top: 10px; color: #bdc3c7;">
+                                        ¡Felicidades! Has recibido <strong style="color: #ffd700;">${rewardAmount} diamantes</strong>
+                                        por alcanzar el rango <strong style="color: #62c3e8;">${rankName}</strong>.
+                                    </p>
+                                `,
+                                confirmButtonText: '¡Asombroso!',
+                                customClass: {
+                                    popup: 'swal2-dark-mode',
+                                    confirmButton: 'swal2-confirm-button'
+                                },
+                                willOpen: () => { // Se ejecuta justo antes de que se muestre la alerta
+                                    // Ejecutar el efecto de confeti
+                                    confetti({
+                                        particleCount: 150, // Más partículas
+                                        spread: 120, // Más dispersión
+                                        origin: { y: 0.6 }, // Desde la mitad de la pantalla hacia arriba
+                                        colors: ['#ffd700', '#ffffff', '#62c3e8', '#bb7aff'], // Colores de oro, blanco, azul, morado
+                                        shapes: ['star', 'circle', 'square'], // Formas de las partículas
+                                        scalar: 1.2, // Tamaño de las partículas
+                                    });
+                                }
+                            });
 
-            // Para un efecto de explosión de diamantes más controlado (opcional, si quieres más que solo confetti)
-            // Esto es más avanzado y requeriría una librería de partículas más robusta o CSS/JS complejo
-            // Por ahora, el confeti y los :before/:after del CSS son suficientes.
-        }
-    });
+                            // Actualizar el botón a "Reclamado"
+                            btn.innerHTML = `<i class="fas fa-check-circle"></i> Reclamado`;
+                            btn.style.background = '#cccccc'; // Estilo de deshabilitado permanente
+                            btn.style.cursor = 'not-allowed'; // Asegurarse que no se vea clickeable
 
-    // Actualizar el botón a "Reclamado"
-    btn.innerHTML = `<i class="fas fa-check-circle"></i> Reclamado`;
-    btn.style.background = '#cccccc'; // Estilo de deshabilitado permanente
-    btn.style.cursor = 'not-allowed'; // Asegurarse que no se vea clickeable
+                            // Opcional: Si quieres recargar la página para que los diamantes se actualicen en el dashboard,
+                            // puedes descomentar la siguiente línea. Ten en cuenta que esto cerraría SweetAlert.
+                            // window.location.reload(); 
 
-    // Opcional: Si quieres recargar la página para que los diamantes se actualicen en el dashboard,
-    // descomenta la siguiente línea, pero SweetAlert se cerraría.
-    // window.location.reload(); 
-
-} catch (error) {
-    console.error('Error al reclamar recompensa:', error.message);
-    Swal.fire({
-        icon: 'error',
-        title: 'Error al Reclamar',
-        text: 'Hubo un problema al procesar tu recompensa. Intenta de nuevo. Detalles: ' + error.message, // Mostrar el error para depuración
-        confirmButtonText: 'Entendido',
-        customClass: {
-            popup: 'swal2-dark-mode',
-            confirmButton: 'swal2-confirm-button'
-        }
-    });
-    btn.disabled = false; // Habilitar de nuevo si hubo error
-    btn.innerHTML = `<i class="fas fa-gem"></i> Reclamar ${rewardAmount} Diamantes`;
-    btn.style.background = 'linear-gradient(to right, #28a745, #218838)'; // Restaurar el color
-    btn.style.cursor = 'pointer';
-}
+                        } catch (error) {
+                            console.error('Error al reclamar recompensa:', error.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al Reclamar',
+                                text: 'Hubo un problema al procesar tu recompensa. Intenta de nuevo. Detalles: ' + error.message, // Mostrar el error para depuración
+                                confirmButtonText: 'Entendido',
+                                customClass: {
+                                    popup: 'swal2-dark-mode',
+                                    confirmButton: 'swal2-confirm-button'
+                                }
+                            });
+                            // Revertir el estado del botón si hubo un error
+                            btn.disabled = false;
+                            btn.innerHTML = `<i class="fas fa-gem"></i> Reclamar ${rewardAmount} Diamantes`;
+                            btn.style.background = 'linear-gradient(to right, #28a745, #218838)'; // Restaurar el color
+                            btn.style.cursor = 'pointer';
+                        }
                     });
                 });
 
