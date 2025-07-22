@@ -13,27 +13,28 @@
 
        /* Estilos para resaltar la fila del usuario actual */
 .current-user-row {
-    background-color: #ffffff !important; /* Fondo blanco para la fila resaltada */
-    color: var(--text-color, #000000) !important; /* Texto negro o tu color de texto principal */
+    /* Degradado dorado para el fondo */
+    background: linear-gradient(to right, #ffd700, #ffae00) !important; /* Dorado claro a dorado oscuro */
+    color: #000000 !important; /* Texto negro para asegurar legibilidad sobre el dorado */
     font-weight: bold !important;
-    border: 2px solid #000000 !important; /* ¡Borde negro para la fila! */
-    border-radius: 8px; /* Mantener los bordes redondeados para la fila */
-    transform: scale(1.02); /* Un ligero "pop" para resaltarlo */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Sombra ligeramente ajustada */
-    z-index: 1; /* Asegura que esté por encima de otras filas si hay hover */
+    border: 2px solid #a37b00 !important; /* Borde marrón oscuro o dorado más oscuro para definir */
+    border-radius: 8px; /* Bordes redondeados */
+    transform: scale(1.02); /* Un ligero "pop" */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra pronunciada */
+    z-index: 1; /* Asegura que esté por encima */
     position: relative; /* Necesario para z-index */
 }
 
-/* Ajustar el hover para que no opaque el resaltado */
+/* Ajustar el hover para que la fila resaltada siga viéndose bien */
 .leaderboard-table tbody tr.current-user-row:hover {
-    background-color: #f8f8f8 !important; /* Un blanco un poco más oscuro al pasar el ratón */
+    background: linear-gradient(to right, #ffe54c, #ffbf00) !important; /* Dorado un poco más claro al pasar el ratón */
     transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra más fuerte al pasar el ratón */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); /* Sombra más fuerte al pasar el ratón */
 }
 
 /* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
 .leaderboard-table tbody tr.current-user-row td {
-    color: var(--text-color, #000000) !important; /* El color de texto principal de tu tema, o negro por defecto */
+    color: #000000 !important; /* Asegura que el texto en la fila dorada sea negro */
 }
 body {
     display: flex;
