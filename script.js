@@ -3,12 +3,12 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-// ¡IMPORTANTE! Eliminamos la importación de leaderboard.js aquí.
-// import { loadLeaderboard } from './leaderboard.js'; // <-- ¡Esta línea SE ELIMINA!
+// ¡NUEVA LÍNEA! Importa la función loadLeaderboard desde tu archivo leaderboard.js
+import { loadLeaderboard } from './leaderboard.js'; // Asegúrate de que la ruta sea correcta
 
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpohxcklboshIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -22,7 +22,7 @@ const signupPassword = document.getElementById('signup-password');
 const registerBtn = document.getElementById('register-btn');
 const loginEmail = document.getElementById('login-email');
 const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document.getElementById('login-submit-btn');
+const loginSubmitBtn = document.getElementById('login-submit-btn'); // CORRECCIÓN APLICADA AQUÍ
 const showSignupBtn = document.getElementById('show-signup-btn');
 const showLoginBtn = document.getElementById('show-login-btn');
 const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
@@ -31,35 +31,26 @@ const forgotPasswordLink = document.getElementById('forgot-password');
 
 // Elementos del Dashboard (dashboard.html)
 const dashboardDiv = document.getElementById('dashboard');
-const userEmailDashboardSpan = document.getElementById('user-email');
+const userEmailDashboardSpan = document.getElementById('user-email'); // Usado en dashboard
 const goldDisplayDashboard = document.getElementById('gold-display');
 const diamondsDisplayDashboard = document.getElementById('diamonds-display');
 const profileBtnDashboard = document.getElementById('profile-btn');
 const logoutBtnDashboard = document.getElementById('logout-btn');
-const showRankingsBtn = document.getElementById('show-rankings-btn'); // ¡NUEVA REFERENCIA!
-const showLeaderboardBtn = document.getElementById('show-leaderboard-btn'); // ¡NUEVA REFERENCIA!
-
 
 // Elementos del Perfil (profile.html)
-const profileCard = document.getElementById('profile-card');
-const userEmailProfileSpan = document.getElementById('user-email-profile');
+const profileCard = document.getElementById('profile-card'); // Contenedor principal del perfil
+const userEmailProfileSpan = document.getElementById('user-email-profile'); // Usado en profile
 const usernameInputProfile = document.getElementById('edit-username');
 const countryInputProfile = document.getElementById('edit-country');
 const saveProfileBtn = document.getElementById('save-profile-btn');
 const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-const configureBtn = document.getElementById('configure-btn');
+const configureBtn = document.getElementById('configure-btn'); // Nuevo botón de configuración
 const goldDisplayProfile = document.getElementById('gold-display-profile');
 const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
 
-// Elementos de la página de Clasificación Completa (leaderboard-full.html)
-// No es necesario referenciarlos aquí directamente ya que leaderboard.js los manejará.
 
-// Elementos de la página de Rangos (rankings.html)
-const ranksListDiv = document.getElementById('ranks-list'); // Por ejemplo, si los rangos se muestran en una lista
-
-
-const loaderDiv = document.getElementById('loader');
-const loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
+const loaderDiv = document.getElementById('loader'); // Loader global
+const loaderText = loaderDiv ? loaderDiv.querySelector('p') : null; // Aseguramos que se obtenga el <p>
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
@@ -90,7 +81,7 @@ function showSwal(icon, title, text) {
         timer: isAutoClose ? 3000 : undefined,
         timerProgressBar: isAutoClose,
         customClass: {
-            popup: 'swal2-modern',
+            popup: 'swal2-modern', // Agrega una clase personalizada para estilos CSS
             confirmButton: 'swal2-confirm-btn'
         }
     });
@@ -203,6 +194,9 @@ async function loadUserProfile(userId) {
 
         if (error) {
             console.error('Error al cargar perfil:', error);
+            // No mostrar un error Swall si es solo que el perfil no existe, se creará uno.
+            // showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
+
             if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
                 console.log('Perfil no encontrado, intentando crear uno básico.');
                 const { error: insertError } = await supabase
@@ -214,23 +208,27 @@ async function loadUserProfile(userId) {
                 } else {
                     showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
                     
+                    // Actualizamos manualmente los campos con los datos por defecto para evitar otra carga
                     if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
                     if (usernameInputProfile) usernameInputProfile.value = 'Nuevo Jugador';
                     if (countryInputProfile) countryInputProfile.value = 'Desconocido';
                     if (goldDisplayProfile) goldDisplayProfile.textContent = '0';
                     if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = '0';
 
+                    // Si estamos en dashboard, actualizamos también allí
                     if (goldDisplayDashboard) goldDisplayDashboard.textContent = '0';
                     if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = '0';
                 }
-            } else {
+            } else { // Si es otro tipo de error al cargar el perfil
                     showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
         } else if (data) {
+            // Actualizar datos en el dashboard (si es la página actual)
             if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
             if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
             if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
 
+            // Actualizar datos en la página de perfil (si es la página actual)
             if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
             if (usernameInputProfile) usernameInputProfile.value = data.username || '';
             if (countryInputProfile) countryInputProfile.value = data.country || '';
@@ -241,11 +239,12 @@ async function loadUserProfile(userId) {
         console.error("Error inesperado en loadUserProfile:", e);
         showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
     } finally {
-        hideLoader();
+        hideLoader(); // Esto se ejecutará SIEMPRE.
+        // Aseguramos que la tarjeta de perfil sea visible DESPUÉS de ocultar el loader
         if (profileCard) {
             profileCard.classList.remove('dashboard-hidden');
         }
-        if (dashboardDiv) {
+        if (dashboardDiv) { // También para el dashboard
             dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
@@ -278,7 +277,7 @@ async function saveProfile() {
         showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
     } else {
         showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
-        await loadUserProfile(user.id);
+        await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
     }
 }
 
@@ -316,8 +315,8 @@ async function giveGold() {
     if (error) {
         showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
     } else {
-        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold;
-        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold;
+        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
         showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
     }
 }
@@ -327,10 +326,13 @@ async function showConfigureOptions() {
     Swal.fire({
         title: '¿Qué deseas hacer?',
         icon: 'question',
-        showCloseButton: true,
-        showCancelButton: false,
-        confirmButtonText: 'Ok',
-        showConfirmButton: false,
+        // Cambios aquí:
+        showCloseButton: true, // Habilita el botón de cerrar (la 'X')
+        showCancelButton: false, // Deshabilita el botón de "Cancelar" o "Cerrar"
+        // cancelButtonText: 'Cerrar', // Ya no es necesario
+        
+        confirmButtonText: 'Ok', // Este botón será invisible, solo para la estructura
+        showConfirmButton: false, // Escondemos el botón principal
         allowOutsideClick: true,
         html: `
             <div class="swal-custom-buttons-container">
@@ -339,35 +341,22 @@ async function showConfigureOptions() {
             </div>
         `,
         didOpen: () => {
+            // Añadir event listeners a los botones personalizados dentro del SweetAlert
             document.getElementById('swal-give-gold').addEventListener('click', async () => {
-                Swal.close();
+                Swal.close(); // Cerrar el modal antes de ejecutar la acción
                 await giveGold();
             });
             document.getElementById('swal-logout').addEventListener('click', async () => {
-                Swal.close();
+                Swal.close(); // Cerrar el modal antes de ejecutar la acción
                 await signOut();
             });
         },
         customClass: {
             popup: 'swal2-modern',
-            htmlContainer: 'swal2-html-container-no-padding'
+            htmlContainer: 'swal2-html-container-no-padding' // Clases para personalizar el SweetAlert
         },
-        buttonsStyling: false
+        buttonsStyling: false // Deshabilita los estilos por defecto de SweetAlert2 en los botones
     });
-}
-
-// --- NUEVAS FUNCIONES PARA CARGAR PÁGINAS ESPECÍFICAS ---
-
-async function loadFullLeaderboardPage() {
-    showLoader('Cargando clasificación...');
-    // No necesitamos cargar datos aquí, la nueva página (leaderboard-full.html) lo hará
-    window.location.href = 'leaderboard-full.html';
-}
-
-async function loadRankingsPage() {
-    showLoader('Cargando rangos...');
-    // No necesitamos cargar datos aquí, la nueva página (rankings.html) lo hará
-    window.location.href = 'rankings.html';
 }
 
 // --- 6. Lógica de inicialización al cargar el DOM ---
@@ -378,14 +367,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentPage === 'index.html' || currentPage === '') {
         console.log('Cargando lógica de index.html');
 
+        // Primero, verifica si el usuario ya está autenticado
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
             console.log('Usuario ya logueado al cargar index.html. Redirigiendo a dashboard.html...');
             window.location.href = 'dashboard.html';
-            return;
+            return; // Detener la ejecución del resto de la lógica de index.html
         } else {
+            // Si no hay usuario, muestra las opciones de inicio/registro
             showInitialOptions();
 
+            // Configura los event listeners solo si los elementos existen (estamos en index.html)
             if (registerBtn) registerBtn.addEventListener('click', signUp);
             if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
             if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
@@ -428,6 +420,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
+            // Opcional: Para manejar cambios de estado de sesión *después* de que la página ya cargó en index.html
+            // y si por alguna razón el usuario se loguea en otra pestaña o su sesión se activa.
+            // Es menos crítico aquí ya que la redirección inicial ya lo maneja.
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log('Auth event in index.html:', event, 'Session:', session);
                 if (session && session.user && currentPage === 'index.html') {
@@ -437,63 +432,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
     } 
-    // --- Lógica para dashboard.html, profile.html, leaderboard-full.html, rankings.html ---
-    else if (currentPage === 'dashboard.html' || currentPage === 'profile.html' || currentPage === 'leaderboard-full.html' || currentPage === 'rankings.html') {
+    // --- Lógica para dashboard.html y profile.html ---
+    else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
         console.log(`Cargando lógica de ${currentPage}`);
 
+        // Siempre verifica la sesión al cargar estas páginas
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-            await loadUserProfile(user.id); // Carga el perfil en cualquier página autenticada
+            // Usuario autenticado: Cargar perfil y mostrar contenido
+            await loadUserProfile(user.id);
 
             if (currentPage === 'dashboard.html') {
-                // Configura los nuevos botones del dashboard
-                if (showRankingsBtn) showRankingsBtn.addEventListener('click', loadRankingsPage);
-                if (showLeaderboardBtn) showLeaderboardBtn.addEventListener('click', loadFullLeaderboardPage);
-                if (profileBtnDashboard) profileBtnDashboard.addEventListener('click', () => {
-                    window.location.href = 'profile.html';
-                });
-                if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+                // ¡AQUÍ ESTÁ LA LÍNEA MÁGICA QUE FALTABA!
+                await loadLeaderboard(supabase); // Llama a la función para cargar la tabla de clasificación
 
-                // ¡IMPORTANTE! Eliminamos la llamada directa a loadLeaderboard aquí.
-                // loadLeaderboard(supabase); // <-- Esta línea SE ELIMINA!
-                
+                if (profileBtnDashboard) {
+                    profileBtnDashboard.addEventListener('click', () => {
+                        window.location.href = 'profile.html';
+                    });
+                }
+                if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
             } else if (currentPage === 'profile.html') {
                 if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
                 if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
                     window.location.href = 'dashboard.html';
                 });
                 if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
-            } else if (currentPage === 'leaderboard-full.html') {
-                // Aquí es donde se ejecutará la lógica de leaderboard.js
-                // Se encargará de cargar la tabla al importar leaderboard.js directamente en este HTML.
-                // No hay llamadas directas aquí, solo se asegura que la página está cargada por un usuario.
-            } else if (currentPage === 'rankings.html') {
-                // Aquí cargamos los rangos. Por ahora, es estático, pero podría ser dinámico.
-                // Ejemplo de carga estática/simple para la página de rangos:
-                if (ranksListDiv) {
-                    // Puedes hacer una llamada a Supabase aquí para obtener rangos dinámicos
-                    // Por simplicidad, aquí un ejemplo estático:
-                    ranksListDiv.innerHTML = `
-                        <h2>Todos los Rangos</h2>
-                        <ul>
-                            <li><i class="fas fa-chess-pawn"></i> Novato (0 - 99 puntos)</li>
-                            <li><i class="fas fa-chess-knight"></i> Bronce (100 - 499 puntos)</li>
-                            <li><i class="fas fa-chess-bishop"></i> Plata (500 - 999 puntos)</li>
-                            <li><i class="fas fa-chess-rook"></i> Oro (1000 - 1999 puntos)</li>
-                            <li><i class="fas fa-chess-queen"></i> Platino (2000 - 4999 puntos)</li>
-                            <li><i class="fas fa-chess-king"></i> Diamante (5000+ puntos)</li>
-                            </ul>
-                        <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
-                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                        </button>
-                    `;
-                     document.getElementById('back-to-dashboard-from-rankings').addEventListener('click', () => {
-                        window.location.href = 'dashboard.html';
-                    });
-                }
             }
 
+            // Listener para cerrar sesión desde cualquier página autenticada
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log(`Auth event in ${currentPage}:`, event, 'Session:', session);
                 if (event === 'SIGNED_OUT' || !session) {
@@ -503,6 +471,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
         } else {
+            // No hay usuario autenticado: Redirigir a la página de inicio
             console.log(`No hay usuario autenticado en ${currentPage}. Redirigiendo a index.html`);
             window.location.href = 'index.html';
         }
