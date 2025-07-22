@@ -15,7 +15,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: var(--background-color); /* Usa la variable de tu CSS, excelente punto de partida */
+    background-color: var(--background-color); /* Mantener el fondo general del tema */
     color: var(--text-color);
     font-family: 'Poppins', sans-serif;
     padding: 20px;
@@ -24,10 +24,10 @@ body {
 }
 
 .leaderboard-full-container {
-    background-color: var(--card-bg-color); /* Un color de fondo para el contenedor */
+    background-color: #ffffff; /* Contenedor principal blanco */
     border-radius: 16px; /* Bordes más suaves */
     padding: 40px; /* Mayor padding para más espacio */
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada y suave */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave para el blanco */
     width: 100%;
     max-width: 900px; /* Un poco más ancha para tablas grandes */
     text-align: center;
@@ -43,14 +43,14 @@ body {
 
 .leaderboard-full-container h2 {
     font-size: 2.5em; /* Título más grande */
-    color: var(--primary-color); /* Color primario de tu tema */
+    color: var(--primary-color); /* Mantener el color primario para el título */
     margin-bottom: 30px; /* Más espacio debajo del título */
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px; /* Mayor espacio entre icono y texto */
     font-weight: 700; /* Más audaz */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Sombra de texto sutil */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra de texto sutil */
 }
 
 .leaderboard-full-container h2 .fas {
@@ -65,10 +65,10 @@ body {
 
 .leaderboard-table {
     width: 100%;
-    border-collapse: separate; /* Permite border-spacing */
-    border-spacing: 0 8px; /* Espacio entre filas */
+    border-collapse: collapse; /* Volvemos a collapse para los bordes negros */
     margin-top: 20px;
-    background-color: var(--secondary-bg-color); /* Fondo ligero para la tabla */
+    background-color: #ffffff; /* Fondo de la tabla blanco */
+    border: 1px solid #000000; /* Borde negro para la tabla */
     border-radius: 10px; /* Bordes redondeados para la tabla */
     overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
 }
@@ -76,53 +76,40 @@ body {
 .leaderboard-table th, .leaderboard-table td {
     padding: 15px 20px; /* Más padding en celdas */
     text-align: left;
-    /* Eliminamos border-bottom directo aquí para usar el efecto de separación con border-spacing */
+    border: 1px solid #000000; /* Bordes negros para todas las celdas */
 }
 
 .leaderboard-table th {
-    background-color: var(--primary-color); /* Fondo del encabezado con color primario */
+    /* Degradado azul para los encabezados */
+    background: linear-gradient(to right, #4a90e2, #6a5acd); /* Azul claro a un morado azulado */
     color: #ffffff; /* Texto blanco para contrastar */
     font-weight: 700; /* Más audaz */
     text-transform: uppercase;
     font-size: 0.95em;
     letter-spacing: 0.5px;
-    border-bottom: none; /* No queremos borde inferior aquí */
     padding: 18px 20px; /* Más padding para los encabezados */
 }
 
-.leaderboard-table th:first-child { border-top-left-radius: 10px; }
-.leaderboard-table th:last-child { border-top-right-radius: 10px; }
-
 .leaderboard-table tbody tr {
-    background-color: var(--card-bg-color); /* Color de fondo base para filas */
-    border-radius: 8px; /* Bordes redondeados para cada fila */
+    background-color: #ffffff; /* Fondo de fila blanco */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil para cada fila */
+    /* Eliminamos la sombra de las filas para un look más limpio con bordes */
 }
 
 .leaderboard-table tbody tr:nth-child(even) {
-    background-color: var(--input-bg-color); /* Un tono ligeramente diferente para filas pares */
+    background-color: #f0f0f0; /* Un tono gris muy claro para filas pares */
 }
 
 .leaderboard-table tbody tr:hover {
     transform: translateY(-3px); /* Efecto flotante al pasar el ratón */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* Sombra más fuerte al pasar el ratón */
-    background-color: var(--button-hover-bg-color); /* Color de fondo al pasar el ratón */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil al pasar el ratón */
+    background-color: #e0e0e0; /* Un gris claro al pasar el ratón */
 }
-
-.leaderboard-table tbody td {
-    border-bottom: none; /* Quitamos los bordes internos de las celdas */
-    color: var(--text-color);
-}
-
-.leaderboard-table tbody tr td:first-child { border-bottom-left-radius: 8px; border-top-left-radius: 8px; }
-.leaderboard-table tbody tr td:last-child { border-bottom-right-radius: 8px; border-top-right-radius: 8px; }
-
 
 /* Estilos para las celdas de la tabla (opcional, para diferenciar) */
 .leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--primary-color); } /* Ranking number bold */
 .leaderboard-table td:nth-child(2) { font-weight: 600; } /* Username slightly bolder */
-.leaderboard-table td:nth-child(3) { color: var(--gold-color, #ffd700); font-weight: 700; } /* Gold color for points */
+.leaderboard-table td:nth-child(3) { color: #000000; font-weight: 700; } /* Puntos en negro */
 
 
 /* Botón de Volver */
@@ -178,7 +165,7 @@ body {
 }
 #loader-leaderboard .spinner {
     border: 5px solid rgba(255, 255, 255, 0.2); /* Borde más suave */
-    border-top: 5px solid var(--primary-color); /* Color del spinner de tu tema */
+    border-top: 5px solid #4a90e2; /* Color del spinner de tu tema (un azul del degradado) */
     border-radius: 50%;
     width: 50px; /* Spinner un poco más grande */
     height: 50px;
