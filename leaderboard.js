@@ -4,8 +4,9 @@
  * Función para cargar y mostrar la tabla de clasificación desde Supabase.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {HTMLElement} [loaderElement=null] - Opcional: El elemento loader específico de la página.
+ * @param {string} [currentUserId=null] - Opcional: El ID del usuario actualmente logueado para resaltarlo.
  */
-export async function loadLeaderboard(supabase, loaderElement = null) {
+export async function loadLeaderboard(supabase, loaderElement = null, currentUserId = null) { // <-- Añadido currentUserId
     const leaderboardTableBody = document.querySelector('.leaderboard-table tbody');
     if (!leaderboardTableBody) {
         console.error("No se encontró el cuerpo de la tabla de clasificación (.leaderboard-table tbody).");
@@ -20,12 +21,10 @@ export async function loadLeaderboard(supabase, loaderElement = null) {
     }
 
     try {
-        // Asegúrate de seleccionar todos los campos que quieres mostrar en el modal:
-        // 'username', 'gold', 'country', 'diamonds', 'id' (para el perfil específico)
         const { data: users, error } = await supabase
             .from('profiles')
-            .select('id, username, gold, country, diamonds') // Añadido 'id', 'country', 'diamonds'
-            .order('gold', { ascending: false }); // Orden de mayor a menor por oro
+            .select('id, username, gold, country, diamonds')
+            .order('gold', { ascending: false });
 
         if (error) {
             throw error;
@@ -36,8 +35,12 @@ export async function loadLeaderboard(supabase, loaderElement = null) {
         if (users && users.length > 0) {
             users.forEach((user, index) => {
                 const row = leaderboardTableBody.insertRow();
-                // Añadimos un atributo data-user-id a la fila para facilitar la selección
-                // y una clase 'player-name-cell' a la celda del nombre para el evento clic
+                // Determina si esta fila es la del usuario actual
+                const isCurrentUser = currentUserId && user.id === currentUserId;
+                if (isCurrentUser) {
+                    row.classList.add('current-user-row'); // Añade la clase de resaltado
+                }
+
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td class="player-name-cell" data-user-id="${user.id}">${user.username || 'Desconocido'}</td>
@@ -45,11 +48,18 @@ export async function loadLeaderboard(supabase, loaderElement = null) {
                 `;
             });
 
-            // --- NUEVO: Añadir evento click a cada nombre de jugador ---
+            // Añadir evento click a cada nombre de jugador
             document.querySelectorAll('.player-name-cell').forEach(cell => {
-                cell.style.cursor = 'pointer'; // Indicador visual de que es clickeable
-                cell.style.fontWeight = 'bold'; // Hacer el nombre más destacado
-                cell.style.color = 'var(--primary-color)'; // Usar el color primario de tu tema
+                cell.style.cursor = 'pointer';
+                cell.style.fontWeight = 'bold';
+                // Solo aplicar primary-color si no es la fila del usuario actual,
+                // ya que el current-user-row ya define su propio color de texto
+                if (!cell.parentElement.classList.contains('current-user-row')) {
+                    cell.style.color = 'var(--primary-color)';
+                } else {
+                    cell.style.color = 'inherit'; // Deja que el color de la fila prevalezca
+                }
+
                 cell.addEventListener('click', async (event) => {
                     const userId = event.target.dataset.userId;
                     if (userId) {
@@ -68,13 +78,11 @@ export async function loadLeaderboard(supabase, loaderElement = null) {
         const row = leaderboardTableBody.insertRow();
         row.innerHTML = `<td colspan="3">Error al cargar la clasificación: ${error.message}</td>`;
     } finally {
-        // Oculta el loader una vez que los datos se han cargado (o si hubo un error)
         if (loaderElement) {
             loaderElement.classList.add('loader-hidden');
         }
     }
 }
-
 
 /**
  * Función para mostrar los detalles de un jugador en un SweetAlert2 modal.
@@ -94,8 +102,8 @@ async function showPlayerDetails(supabase, userId) {
         const { data: userProfile, error } = await supabase
             .from('profiles')
             .select('username, country, diamonds, gold')
-            .eq('id', userId) // Filtrar por el ID del usuario
-            .single(); // Esperar un solo resultado
+            .eq('id', userId)
+            .single();
 
         if (error) {
             throw error;
@@ -111,7 +119,6 @@ async function showPlayerDetails(supabase, userId) {
             return;
         }
 
-        // Determinar el icono de país (ejemplo básico, podrías expandirlo)
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
         Swal.fire({
@@ -124,7 +131,7 @@ async function showPlayerDetails(supabase, userId) {
                 </div>
             `,
             icon: 'info',
-            iconHtml: '<i class="fas fa-user" style="color: var(--primary-color);"></i>', // Icono grande del modal
+            iconHtml: '<i class="fas fa-user" style="color: var(--primary-color);"></i>',
             showCloseButton: true,
             confirmButtonText: '¡Entendido!',
             customClass: {
@@ -133,7 +140,7 @@ async function showPlayerDetails(supabase, userId) {
                 htmlContainer: 'swal2-profile-html',
                 confirmButton: 'swal2-profile-confirm-button'
             },
-            buttonsStyling: false, // Permitir estilos CSS personalizados para el botón
+            buttonsStyling: false,
         });
 
     } catch (error) {
@@ -147,10 +154,8 @@ async function showPlayerDetails(supabase, userId) {
     }
 }
 
-// Función auxiliar para obtener un emoji de bandera (ejemplo muy básico)
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
-    // Aquí puedes expandir con más banderas o usar una librería
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
@@ -160,5 +165,5 @@ function getCountryFlagEmoji(countryName) {
         'Canada': '🇨🇦'
         // Añade más países según necesites
     };
-    return flags[countryName] || ''; // Devuelve la bandera o vacío si no se encuentra
+    return flags[countryName] || '';
 }

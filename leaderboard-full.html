@@ -10,6 +10,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
        /* Estilos básicos para la nueva página de clasificación */
+
+        .current-user-row {
+            background-color: var(--primary-color) !important; /* Usa el color primario de tu tema */
+            color: #ffffff !important; /* Texto blanco para contrastar */
+            font-weight: bold !important;
+            border: 2px solid var(--accent-color, #ffd700) !important; /* Un borde de color de acento */
+            transform: scale(1.02); /* Un ligero "pop" para resaltarlo */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+            z-index: 1; /* Asegura que esté por encima de otras filas si hay hover */
+            position: relative; /* Necesario para z-index */
+        }
+
+        /* Ajustar el hover para que no opaque el resaltado */
+        .leaderboard-table tbody tr.current-user-row:hover {
+            background-color: var(--primary-color) !important; /* Mantener el color primario */
+            transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .leaderboard-table tbody tr.current-user-row td {
+            color: #ffffff !important; /* Asegura que el texto dentro de las celdas sea blanco */
+        }
 body {
     display: flex;
     justify-content: center;
@@ -322,9 +344,9 @@ body {
                 });
             }
 
-            // Llama a loadLeaderboard con el loader específico de esta página
-            const loaderLeaderboard = document.getElementById('loader-leaderboard');
-            await loadLeaderboard(supabase, loaderLeaderboard);
+              const loaderLeaderboard = document.getElementById('loader-leaderboard');
+            // Pasamos el ID del usuario actual a loadLeaderboard
+            await loadLeaderboard(supabase, loaderLeaderboard, user.id);
         });
     </script>
 </body>
