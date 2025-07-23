@@ -30,7 +30,7 @@
                 <thead>
                     <tr>
                         <th>Nivel</th>
-                        <th>Recompensa 1</th> <th>Recompensa 2 (Oro y Perla)</th> </tr>
+                        <th>Recompensa 1</th> <th>Recompensa 2 (Oro y Esmeralda)</th> </tr>
                 </thead>
                 <tbody>
                     </tbody>
@@ -58,7 +58,7 @@
         for (let i = 1; i <= 20; i++) {
             let reward1 = {}; // Recompensa 1 (solo oro O solo diamante)
             let reward2Gold = 0; // Oro para la recompensa 2
-            let reward2Perla = 0; // Perla para la recompensa 2
+            let reward2Esmeralda = 0; // Esmeralda para la recompensa 2
 
             // Definir Recompensa 1 (alternando entre oro y diamante)
             if (i % 2 !== 0) { // Niveles impares: Oro
@@ -67,9 +67,9 @@
                 reward1 = { type: 'diamond', amount: 8 + (i * 2) };
             }
 
-            // Definir Recompensa 2 (Oro y Perla juntos)
+            // Definir Recompensa 2 (Oro y Esmeralda juntos)
             reward2Gold = 30 + (i * 5); // Oro en recompensa 2, aumenta con el nivel
-            reward2Perla = 1 + Math.floor(i / 4); // Perlas aumentan cada 4 niveles, desde 1
+            reward2Esmeralda = 1 + Math.floor(i / 4); // Esmeraldas aumentan cada 4 niveles, desde 1
 
             // Añadir bonificaciones en ciertos hitos
             if (i % 5 === 0) {
@@ -79,14 +79,14 @@
             if (i % 10 === 0) {
                 reward1.amount += 25; // Gran extra para Recompensa 1
                 reward2Gold += 40;    // Gran extra oro en Recompensa 2
-                reward2Perla += 2;    // Extra perlas en Recompensa 2
+                reward2Esmeralda += 2;    // Extra esmeraldas en Recompensa 2
             }
 
             rewardsData.push({
                 level: i,
                 reward1: reward1,
                 reward2Gold: reward2Gold,
-                reward2Perla: reward2Perla
+                reward2Esmeralda: reward2Esmeralda
             });
         }
 
@@ -99,17 +99,16 @@
             const cell1 = row.insertCell();
             cell1.classList.add('reward-amount');
             const iconClass1 = item.reward1.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
-            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores específicos
+            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
             cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
 
-            // Columna Recompensa 2 (Oro y Perla)
+            // Columna Recompensa 2 (Oro y Esmeralda)
             const cell2 = row.insertCell();
             cell2.classList.add('reward-amount');
             cell2.innerHTML = `
                 <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
-                <span style="font-size: 0.9em; margin: 0 5px;">&</span> <i class="fas fa-circle pearl-icon"></i> ${item.reward2Perla}
-            `;
-            // Agregué un "&" para mejorar la legibilidad entre Oro y Perla
+                <span style="font-size: 0.9em; margin: 0 5px;">&</span> <i class="fas fa-gem" style="color: #3CB371;"></i> ${item.reward2Esmeralda} `;
+            // ¡Importante! Aquí usamos 'fa-gem' de nuevo, pero con un color verde para que parezca esmeralda.
         });
     </script>
 </body>

@@ -523,14 +523,7 @@ body {
     color: #E0E0E0; /* Color claro para el ícono dentro del botón dorado */
 }
 
-/* --- Estilos específicos para el ícono de Perla en la tabla --- */
-.vip-rewards-table .reward-amount .pearl-icon {
-    color: #FFF0F5; /* Blanco rosado suave, como una perla */
-    text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.5); /* Brillo más pronunciado */
-    font-size: 0.8em; /* Un poco más pequeño que las monedas/gemas */
-    vertical-align: middle;
-    margin-left: 10px; /* Espacio para separarlo del oro */
-}
+
 
 /* Mantener consistencia para los otros íconos en la tabla */
 .vip-rewards-table .reward-amount .fas.fa-coins,
