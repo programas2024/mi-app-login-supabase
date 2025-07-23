@@ -61,65 +61,63 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* --- ESTILOS PRINCIPALES DEL CUERPO Y CONTENEDOR DEL JUEGO --- */
-
         body {
-            background-color: #212F3D; /* Azul muy oscuro, casi negro, de tu paleta SweetAlert */
+            background-color: #E6EBF0; /* Un gris azulado muy claro, agradable a la vista */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Poppins', sans-serif; /* Fuente más moderna y suave */
+            font-family: 'Poppins', sans-serif;
             flex-direction: column;
             padding: 20px;
-            color: #E0E0E0; /* Texto claro para contraste sobre fondo oscuro */
+            color: #333333; /* Texto oscuro para buen contraste sobre fondo claro */
         }
 
         .orcado-container {
-            background: linear-gradient(145deg, #2C3E50, #34495E); /* Degradado de azules oscuros */
-            border-radius: 25px; /* Bordes más suaves */
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5); /* Sombra más profunda y elegante */
-            padding: 45px; /* Un poco más de padding */
+            background-color: #FFFFFF; /* Fondo completamente blanco para el contenedor principal */
+            border-radius: 25px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15); /* Sombra más sutil y menos oscura */
+            padding: 45px;
             width: 90%;
-            max-width: 850px; /* Un poco más ancho si lo prefieres */
+            max-width: 850px;
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 2px solid #5D3FD3; /* Borde morado sutil para un toque premium */
+            border: 1px solid #DCDCDC; /* Borde muy sutil para definición */
         }
 
         .orcado-container::before {
             content: '';
             position: absolute;
-            top: -70px; /* Expande más el efecto */
+            top: -70px;
             left: -70px;
             right: -70px;
             bottom: -70px;
-            background: radial-gradient(circle at center, rgba(123, 104, 238, 0.08) 0%, transparent 60%); /* Pulso morado suave */
-            animation: pulseSubtle 5s infinite alternate ease-in-out; /* Animación más lenta y suave */
+            background: radial-gradient(circle at center, rgba(123, 104, 238, 0.05) 0%, transparent 60%); /* Pulso morado aún más sutil */
+            animation: pulseSubtle 5s infinite alternate ease-in-out;
             z-index: 0;
-            border-radius: 50%; /* Asegura que el gradiente circular se vea bien */
+            border-radius: 50%;
         }
 
         @keyframes pulseSubtle {
-            0% { transform: scale(1); opacity: 0.7; }
-            100% { transform: scale(1.05); opacity: 1; }
+            0% { transform: scale(1); opacity: 0.6; } /* Opacidad inicial reducida */
+            100% { transform: scale(1.05); opacity: 0.9; } /* Opacidad final también reducida */
         }
 
         .orcado-container h1 {
             font-family: 'Montserrat', sans-serif;
-            color: #ADD8E6; /* Azul claro de tus títulos de SweetAlert */
-            font-size: 3.8em; /* Un poco más grande para el título principal */
+            color: #4A4A4A; /* Un gris oscuro para el título, elegante y legible */
+            font-size: 3.8em;
             margin-bottom: 20px;
             font-weight: 800;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Sombra más pronunciada */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Sombra de texto más ligera */
             position: relative;
             z-index: 1;
         }
 
         .orcado-description {
-            color: #B0B0B0; /* Gris medio para la descripción */
+            color: #666666; /* Gris medio oscuro para la descripción */
             font-size: 1.2em;
             margin-bottom: 30px;
             line-height: 1.7;
@@ -134,138 +132,194 @@
             margin-bottom: 30px;
             font-size: 1.3em;
             font-weight: 600;
-            color: #E0E0E0; /* Texto claro para los info boxes */
+            color: #4A4A4A; /* Texto oscuro para los info boxes */
             position: relative;
             z-index: 1;
-            gap: 20px; /* Espacio entre los elementos de info */
-            flex-wrap: wrap; /* Para pantallas pequeñas */
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .game-info span {
             padding: 10px 20px;
-            background-color: #3B4E61; /* Azul oscuro más claro que el fondo principal */
+            background-color: #F5F5F5; /* Gris muy claro para las tarjetas de info */
             border-radius: 10px;
-            box-shadow: inset 0 3px 8px rgba(0,0,0,0.3); /* Sombra interna para profundidad */
-            border: 1px solid #4F637A; /* Borde sutil */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Sombra interna sutil */
+            border: 1px solid #E0E0E0; /* Borde muy claro */
         }
 
-        /* Colores específicos para los displays de info, ahora más acordes */
+        /* Colores específicos para los displays de info (mantenemos contrastes sutiles) */
         .game-info #timer-display {
-            background-color: #A93226; /* Rojo ladrillo oscuro de tu Game Over */
-            color: #FFF;
-            box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
-            border: 1px solid #E74C3C;
+            background-color: #FFE0B2; /* Naranja muy pálido para el tiempo */
+            color: #D35400; /* Naranja oscuro para el texto del tiempo */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+            border: 1px solid #FFCC80;
         }
 
         .game-info #level-display {
-            background-color: #5D3FD3; /* Morado profundo de tus botones */
-            color: #FFF;
-            box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
-            border: 1px solid #7B68EE;
+            background-color: #CFD8DC; /* Azul grisáceo muy pálido para el nivel */
+            color: #455A64; /* Azul grisáceo oscuro para el texto del nivel */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+            border: 1px solid #B0BEC5;
         }
 
         .game-area {
-            background-color: #3B4E61; /* Mismo azul oscuro claro que los info boxes */
-            border: 1px solid #4F637A;
-            border-radius: 20px; /* Bordes más suaves */
-            padding: 35px; /* Un poco más de padding */
+            background-color: #FDFDFD; /* Fondo casi blanco para el área de juego */
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            padding: 35px;
             margin-bottom: 35px;
-            box-shadow: inset 0 7px 20px rgba(0,0,0,0.15); /* Sombra interna más notable */
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
             position: relative;
             z-index: 1;
         }
 
         .word-display {
             font-family: 'Montserrat', sans-serif;
-            font-size: 4em; /* Más grande para impacto */
-            letter-spacing: 10px; /* Más espacio entre letras */
+            font-size: 4em;
+            letter-spacing: 10px;
             margin-bottom: 35px;
-            color: #ADD8E6; /* Usamos el azul claro elegante para la palabra a adivinar */
+            color: #5D3FD3; /* Morado profundo para la palabra a adivinar */
             font-weight: 700;
-            text-shadow: 3px 3px 8px rgba(0,0,0,0.4); /* Sombra más fuerte */
-            animation: pulseWord 1.8s infinite alternate ease-in-out; /* Animación más lenta y suave */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Sombra de texto ligera */
+            animation: pulseWord 1.8s infinite alternate ease-in-out;
         }
 
         @keyframes pulseWord {
-            0% { transform: scale(1); opacity: 0.9; }
+            0% { transform: scale(1); opacity: 0.95; }
             100% { transform: scale(1.03); opacity: 1; }
         }
 
         .letters-used {
             font-size: 1.2em;
-            color: #B0B0B0; /* Gris medio para las letras usadas */
+            color: #777777; /* Gris medio para las letras usadas */
             margin-top: 20px;
             min-height: 30px;
             font-weight: 600;
             letter-spacing: 1px;
         }
         .letters-used strong {
-            color: #E74C3C; /* Rojo suave para letras incorrectas */
+            color: #E74C3C; /* Rojo suave para letras incorrectas (manteniendo el tono de alerta) */
             font-weight: bold;
         }
         .letters-used span {
-            margin: 0 4px; /* Un poco más de espacio */
+            margin: 0 4px;
             font-weight: bold;
-            color: #7B68EE; /* Morado medio para letras correctas (no rojas) */
+            color: #5D3FD3; /* Morado profundo para letras correctas */
         }
 
         .guess-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px; /* Más espacio entre input y botón */
+            gap: 20px;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
         }
 
         .guess-input {
-            padding: 18px 25px; /* Más padding */
-            font-size: 1.8em; /* Tamaño de fuente más grande */
+            padding: 18px 25px;
+            font-size: 1.8em;
             text-align: center;
-            width: 120px; /* Un poco más ancho */
-            border: 2px solid #7B68EE; /* Borde morado medio */
-            border-radius: 12px; /* Bordes más suaves */
+            width: 120px;
+            border: 2px solid #DCDCDC; /* Borde muy claro */
+            border-radius: 12px;
             outline: none;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background-color: #4F637A; /* Fondo del input que combine */
-            color: #FFF; /* Texto blanco en el input */
-            box-shadow: 0 0 15px rgba(0,0,0,0.2); /* Sombra sutil */
+            background-color: #FFFFFF; /* Fondo blanco para el input */
+            color: #333333; /* Texto oscuro en el input */
+            box-shadow: 0 0 10px rgba(0,0,0,0.08); /* Sombra sutil */
         }
 
         .guess-input:focus {
-            border-color: #ADD8E6; /* Azul claro al enfocar */
-            box-shadow: 0 0 15px rgba(173, 216, 230, 0.6); /* Resplandor azul claro */
+            border-color: #5D3FD3; /* Morado profundo al enfocar */
+            box-shadow: 0 0 15px rgba(93, 63, 211, 0.4); /* Resplandor morado al enfocar */
         }
 
         .submit-button {
             background-color: #5D3FD3; /* Morado profundo de tus botones de SweetAlert */
             color: white;
             border: none;
-            padding: 18px 35px; /* Más padding */
-            border-radius: 12px; /* Bordes más suaves */
-            font-size: 1.3em; /* Más grande */
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-size: 1.3em;
             font-weight: 700;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Sombra más ligera para fondos claros */
         }
 
         .submit-button:hover {
-            background-color: #6E5DD3; /* Tono morado un poco más claro al pasar el ratón */
-            transform: translateY(-3px); /* Efecto de elevación más notable */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background-color: #6E5DD3;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .message {
-            font-size: 1.4em; /* Más grande para el mensaje */
+            font-size: 1.4em;
             margin-top: 30px;
             min-height: 35px;
             font-weight: 600;
-            color: #E74C3C; /* Rojo suave para mensajes de error/info */
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra para mejor contraste */
+            color: #E74C3C; /* Rojo suave para mensajes de error/info (contrasta bien) */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Sombra de texto muy sutil */
             position: relative;
             z-index: 1;
+        }
+
+        /* Responsive adjustments (mantener y ajustar si es necesario) */
+        @media (max-width: 768px) {
+            .orcado-container {
+                padding: 30px;
+                width: 95%;
+            }
+            .orcado-container h1 {
+                font-size: 2.5em;
+            }
+            .word-display {
+                font-size: 2.8em;
+                letter-spacing: 6px;
+            }
+            .guess-input {
+                width: 80px;
+                font-size: 1.5em;
+            }
+            .submit-button {
+                padding: 15px 25px;
+                font-size: 1.1em;
+            }
+            .game-info span {
+                font-size: 1.1em;
+                padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .orcado-container {
+                padding: 20px;
+            }
+            .orcado-container h1 {
+                font-size: 2em;
+            }
+            .word-display {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .guess-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .guess-input {
+                width: 100%;
+                max-width: 150px;
+            }
+            .submit-button {
+                width: 100%;
+                max-width: 150px;
+            }
         }
 
         .back-button {
