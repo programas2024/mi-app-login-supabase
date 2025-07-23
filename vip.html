@@ -6,15 +6,12 @@
     <title>🌟 VIP Elite Rewards 🌟</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style2.css"> <!-- ¡Asegúrate de que este archivo CSS esté enlazado! -->
-</head>
+    <link rel="stylesheet" href="style2.css"> </head>
 <body>
     <div class="vip-container">
-        <!-- Sección Principal de Recompensas -->
         <main class="rewards-main-content">
             <h2 class="rewards-title">Tabla de Recompensas Elite</h2>
 
-            <!-- Display de Balance del Usuario -->
             <div class="user-balance-display">
                 <div class="balance-item">
                     <i class="fas fa-diamond diamond-icon"></i>
@@ -35,29 +32,22 @@
                             <th>Nivel VIP</th>
                             <th>Recompensa Exclusiva</th>
                             <th>Tesoro Doble (Oro + Esmeralda)</th>
-                            <th>Desbloquear / Reclamar</th> <!-- Nueva columna para acciones -->
-                        </tr>
+                            <th>Desbloquear / Reclamar</th> </tr>
                     </thead>
                     <tbody>
-                        <!-- Las filas se generarán con JavaScript -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
-            <!-- Botón para cargar más niveles -->
             <button id="load-more-levels" class="load-more-btn">Cargar Más Niveles <i class="fas fa-arrow-down"></i></button>
         </main>
     </div>
 
-    <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <!-- Cargamos Supabase y Confetti como librerías globales -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-    <!-- Todo el JavaScript de la lógica de la página VIP -->
     <script>
         // --- Configuración de Supabase ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -149,7 +139,7 @@
                         .single();
                     if (createError) {
                         console.error("Error creating user profile:", createError.message);
-                        Swal.fire({
+                        window.Swal.fire({ // Usar window.Swal
                             icon: 'error',
                             title: 'Error Crítico',
                             text: 'No pudimos crear tu perfil de jugador. Por favor, contacta soporte.',
@@ -159,7 +149,7 @@
                     }
                     profile = newProfile;
                 } else {
-                    Swal.fire({
+                    window.Swal.fire({ // Usar window.Swal
                         icon: 'error',
                         title: 'Error de Perfil',
                         text: 'No pudimos cargar tu perfil. Intenta recargar la página.',
@@ -186,7 +176,7 @@
 
             if (error) {
                 console.error("Error updating user profile:", error.message);
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'error',
                     title: 'Error al Guardar',
                     text: 'No pudimos guardar los cambios en tu perfil. Intenta de nuevo.',
@@ -311,7 +301,7 @@
          */
         async function handleUnlockLevel(level) {
             if (!currentUser) {
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'info',
                     title: 'Necesitas Iniciar Sesión',
                     text: 'Por favor, inicia sesión para desbloquear niveles VIP.',
@@ -326,7 +316,7 @@
             const unlockCost = levelData.unlockCost;
 
             if (userProfile.diamonds < unlockCost) {
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'error',
                     title: 'Diamantes Insuficientes',
                     text: `Necesitas ${unlockCost} diamantes para desbloquear el Nivel ${level}.`,
@@ -346,12 +336,12 @@
 
             if (success) {
                 updateBalanceDisplay();
-                confetti({
+                window.confetti({ // Usar window.confetti
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'success',
                     title: '¡Nivel Desbloqueado!',
                     text: `¡Has desbloqueado el Nivel ${level} VIP! Ahora puedes reclamar sus recompensas.`,
@@ -367,7 +357,7 @@
          */
         async function handleClaimReward(level) {
             if (!currentUser) {
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'info',
                     title: 'Necesitas Iniciar Sesión',
                     text: 'Por favor, inicia sesión para reclamar recompensas VIP.',
@@ -380,7 +370,7 @@
             if (!levelData) return;
 
             if (userProfile.claimed_levels.includes(level)) {
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'info',
                     title: 'Recompensa Ya Reclamada',
                     text: `Ya has reclamado las recompensas del Nivel ${level}.`,
@@ -405,12 +395,12 @@
 
             if (success) {
                 updateBalanceDisplay();
-                confetti({
+                window.confetti({ // Usar window.confetti
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'success',
                     title: '¡Recompensa Reclamada!',
                     html: `¡Has reclamado las recompensas del Nivel ${level}!<br>Disfruta de tu nuevo oro y diamantes.`,
@@ -483,6 +473,7 @@
         // --- Inicialización y Event Listeners Globales ---
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializamos el cliente Supabase aquí, después de que la librería global esté cargada
+            // Usamos 'window.supabase' para asegurarnos de acceder a la variable global
             if (window.supabase && typeof window.supabase.createClient === 'function') {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log("Supabase client initialized in DOMContentLoaded.");
@@ -491,8 +482,8 @@
                 console.log("Type of supabase.auth.onAuthStateChanged:", typeof supabase.auth.onAuthStateChanged);
                 console.log("Properties of supabase.auth:", Object.keys(supabase.auth));
             } else {
-                console.error("Error: window.supabase o createClient no están disponibles.");
-                Swal.fire({
+                console.error("Error: window.supabase o createClient no están disponibles. Revisa la carga del CDN.");
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'error',
                     title: 'Error Crítico',
                     text: 'La librería de Supabase no pudo cargarse correctamente. Por favor, recarga la página.',
@@ -520,7 +511,7 @@
                             currentUser = null;
                             userProfile = { gold: 0, diamonds: 0, unlocked_levels: [], claimed_levels: [] };
                             updateBalanceDisplay();
-                            Swal.fire({
+                            window.Swal.fire({ // Usar window.Swal
                                 icon: 'info',
                                 title: 'No Autenticado',
                                 text: 'Inicia sesión para ver y reclamar tus recompensas VIP. Se mostrarán los niveles, pero no podrás interactuar con ellos.',
@@ -532,11 +523,12 @@
                         }
                     });
                 } else {
+                    // Si llegamos aquí, a pesar de las comprobaciones previas, onAuthStateChanged no es una función
                     throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función después de la inicialización.");
                 }
             } catch (e) {
                 console.error("Error al inicializar el listener de autenticación de Supabase (catch principal):", e);
-                Swal.fire({
+                window.Swal.fire({ // Usar window.Swal
                     icon: 'error',
                     title: 'Error de Inicialización Crítico',
                     text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página o intenta más tarde.',
