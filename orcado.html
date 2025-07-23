@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orcado - El Juego de la Palabra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css"> <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5; /* Fondo claro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .orcado-container {
+            background-color: #ffffff; /* Contenedor principal blanco */
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+        }
+
+        .orcado-container h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            font-size: 3em;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .orcado-description {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .game-area {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .word-display {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3em;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            color: #4CAF50; /* Verde para la palabra oculta */
+            font-weight: 700;
+        }
+
+        .guess-input {
+            padding: 15px 20px;
+            font-size: 1.5em;
+            text-align: center;
+            width: 150px;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .guess-input:focus {
+            border-color: #2980b9;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+        }
+
+        .submit-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .message {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #e74c3c; /* Rojo para mensajes de error */
+            font-weight: 600;
+        }
+
+        /* Estilos del botón de regreso (copiado de games.html para consistencia) */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #f39c12; /* Naranja brillante */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Media queries para responsividad */
+        @media (max-width: 768px) {
+            .orcado-container {
+                padding: 20px;
+                width: 95%;
+            }
+            .orcado-container h1 {
+                font-size: 2.2em;
+                margin-bottom: 15px;
+            }
+            .orcado-description {
+                font-size: 0.95em;
+            }
+            .word-display {
+                font-size: 2em;
+            }
+            .guess-input {
+                width: 100px;
+                font-size: 1.2em;
+            }
+            .submit-button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orcado-container">
+        <button class="back-button" onclick="window.location.href='games.html'">
+            <i class="fas fa-arrow-left"></i> Volver a Juegos
+        </button>
+
+        <h1>Juego de Orcado</h1>
+        <p class="orcado-description">¡Adivina la palabra oculta letra por letra! Cada error te acerca al final.</p>
+
+        <div class="game-area">
+            <div class="word-display" id="word-display">_ _ _ _ _</div>
+            <input type="text" id="guess-input" class="guess-input" maxlength="1" placeholder="Letra">
+            <button id="submit-guess" class="submit-button">Adivinar</button>
+            <p id="message" class="message"></p>
+        </div>
+
+        <script>
+            // Lógica de JavaScript para el juego "Orcado" (Ahorcado)
+            const words = ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "INTELIGENCIA", "ARTIFICIAL", "TECNOLOGIA", "APRENDIZAJE"];
+            let selectedWord = "";
+            let guessedWord = [];
+            let wrongGuesses = 0;
+            const maxWrongGuesses = 6; // Por ejemplo, 6 intentos para el ahorcado
+
+            const wordDisplay = document.getElementById('word-display');
+            const guessInput = document.getElementById('guess-input');
+            const submitButton = document.getElementById('submit-guess');
+            const messageDisplay = document.getElementById('message');
+
+            function initializeGame() {
+                selectedWord = words[Math.floor(Math.random() * words.length)].toUpperCase();
+                guessedWord = Array(selectedWord.length).fill('_');
+                wrongGuesses = 0;
+                messageDisplay.textContent = "";
+                guessInput.value = "";
+                updateDisplay();
+                guessInput.focus();
+            }
+
+            function updateDisplay() {
+                wordDisplay.textContent = guessedWord.join(' ');
+            }
+
+            function checkGuess() {
+                const guess = guessInput.value.toUpperCase();
+                guessInput.value = ""; // Limpiar el input
+
+                if (guess.length !== 1 || !/[A-Z]/.test(guess)) {
+                    messageDisplay.textContent = "Por favor, ingresa una sola letra válida.";
+                    return;
+                }
+
+                if (guessedWord.includes(guess) || selectedWord.indexOf(guess) === -1 && wrongGuesses < maxWrongGuesses) {
+                    messageDisplay.textContent = `Ya adivinaste la letra '${guess}' o no está en la palabra.`;
+                    if (selectedWord.indexOf(guess) === -1) {
+                         // Solo cuenta como error si la letra no está y no es repetida (ya fue "adivinada" incorrectamente)
+                         messageDisplay.textContent = `La letra '${guess}' no está en la palabra.`;
+                    }
+                    return;
+                }
+
+
+                if (selectedWord.includes(guess)) {
+                    for (let i = 0; i < selectedWord.length; i++) {
+                        if (selectedWord[i] === guess) {
+                            guessedWord[i] = guess;
+                        }
+                    }
+                    messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
+                } else {
+                    wrongGuesses++;
+                    messageDisplay.textContent = `Incorrecto. Te quedan ${maxWrongGuesses - wrongGuesses} intentos.`;
+                    // Aquí podrías añadir lógica para dibujar el ahorcado, etc.
+                }
+
+                updateDisplay();
+                checkGameEnd();
+            }
+
+            function checkGameEnd() {
+                if (guessedWord.join('') === selectedWord) {
+                    messageDisplay.textContent = "¡Felicidades! Has adivinado la palabra: " + selectedWord;
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Ganaste!',
+                        text: `Has adivinado la palabra: ${selectedWord}`,
+                        confirmButtonText: 'Jugar de nuevo',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            initializeGame();
+                        }
+                    });
+                } else if (wrongGuesses >= maxWrongGuesses) {
+                    messageDisplay.textContent = `¡Game Over! La palabra era: ${selectedWord}`;
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Perdiste!',
+                        text: `La palabra era: ${selectedWord}`,
+                        confirmButtonText: 'Intentar de nuevo',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            initializeGame();
+                        }
+                    });
+                }
+            }
+
+            // Event Listeners
+            submitButton.addEventListener('click', checkGuess);
+            guessInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    checkGuess();
+                }
+            });
+
+            // Inicializar el juego al cargar la página
+            document.addEventListener('DOMContentLoaded', initializeGame);
+        </script>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

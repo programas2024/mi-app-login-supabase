@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juegos - Tu Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css"> <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Estilos específicos para la página de juegos */
         body {
@@ -144,7 +145,7 @@
                 margin-bottom: 20px;
             }
             .game-card {
-                width: 90%; /* Las tarjetas ocupan más ancho en móviles */
+                width: 90%;
                 max-width: 350px;
             }
             .back-button {
@@ -166,38 +167,14 @@
 
         <div class="game-card-wrapper">
             <div class="game-card" id="spelling-game-card">
-                <i class="fas fa-spell-check game-card-icon"></i>
-                <h3>Ortografía</h3>
+                <i class="fas fa-gavel game-card-icon"></i> <h3>Orcado</h3>
                 <p>¡Demuestra tu dominio del lenguaje! Encuentra la palabra correcta y gana.</p>
-                <button onclick="playGame('spelling')">Jugar Ahora</button>
+                <button onclick="window.location.href='orcado.html'">Jugar Ahora</button>
             </div>
 
             </div>
     </div>
 
-    <script>
-        // Función para manejar el clic en el botón "Jugar Ahora"
-        function playGame(gameId) {
-            // Aquí puedes redirigir a la página de cada juego o mostrar un SweetAlert
-            if (gameId === 'spelling') {
-                Swal.fire({
-                    icon: 'info',
-                    title: '¡Juego de Ortografía!',
-                    text: '¡Prepárate para afinar tu puntería léxica!',
-                    confirmButtonText: 'Entendido'
-                });
-                // En un futuro, podrías redirigir a una página específica:
-                // window.location.href = 'spellingGame.html';
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Juego Próximamente',
-                    text: `El juego '${gameId}' estará disponible pronto. ¡Vuelve más tarde!`,
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
