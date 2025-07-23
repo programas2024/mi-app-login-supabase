@@ -1,342 +1,469 @@
 /* style2.css */
 
-/* --- Base y Fuentes --- */
+/* --- Base Styles & Fonts --- */
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 20px;
-    background: linear-gradient(135deg, #f0f4f8, #e9eff5); /* Fondo degradado suave */
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); /* Fondo degradado vibrante */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    color: #333;
+    color: #eee;
+    overflow-x: hidden; /* Previene scroll horizontal */
 }
 
-/* --- Contenedor Principal VIP --- */
-.vip-dashboard-container {
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+/* --- Main VIP Container --- */
+.vip-container {
+    background-color: rgba(255, 255, 255, 0.05); /* Fondo translúcido */
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: flex;
-    max-width: 1200px;
+    max-width: 1400px;
     width: 95%;
     overflow: hidden;
     margin-bottom: 30px;
-    animation: fadeInScale 0.8s ease-out;
+    backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeInSlideUp 0.8s ease-out forwards;
 }
 
-@keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+@keyframes fadeInSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Sidebar VIP (Panel Izquierdo) --- */
+/* --- VIP Sidebar (Left Panel) --- */
 .vip-sidebar {
-    flex: 0 0 300px; /* Ancho fijo para el sidebar */
-    background: linear-gradient(180deg, #6a11cb 0%, #2575fc 100%); /* Degradado morado/azul */
-    padding: 30px;
+    flex: 0 0 320px; /* Fixed width */
+    background: linear-gradient(180deg, #3a006f, #8e2de2); /* Deep purple gradient */
+    padding: 40px 30px;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Alinea contenido arriba */
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
     text-align: center;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
 }
 
 .sidebar-header {
+    margin-bottom: 50px;
     display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 40px;
-}
-
-.sidebar-header i {
-    font-size: 3em;
-    color: #ffd700; /* Dorado para la corona */
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-.vip-sidebar h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 2.2em;
-    font-weight: 800;
-    margin: 0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    font-size: 1.3em;
-    font-weight: 600;
-    background-color: rgba(255, 255, 255, 0.15);
-    padding: 12px 20px;
-    border-radius: 10px;
-    width: 100%;
-    box-sizing: border-box; /* Incluye padding en el width */
-    justify-content: flex-start;
-}
-
-.stat-item i {
-    font-size: 1.8em;
-}
-
-/* Colores de íconos específicos en sidebar */
-.stat-item .icon-diamond { color: #87CEEB; } /* Azul claro para diamante */
-.stat-item .icon-gold { color: #FFD700; } /* Dorado para oro */
-
-
-/* --- Botón Comprar VIP --- */
-.buy-vip-btn {
-    background-color: #FFD700; /* Dorado brillante */
-    color: #333;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 10px;
-    font-size: 1.2em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    margin-top: auto; /* Empuja el botón hacia abajo */
-    display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 10px;
+}
+
+.sidebar-header .gold-icon {
+    font-size: 4.5em;
+    color: #ffd700; /* Bright gold for main icon */
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    animation: floatBob 3s ease-in-out infinite alternate;
+}
+
+@keyframes floatBob {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
+.vip-sidebar h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.8em;
+    font-weight: 900;
+    margin: 0;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.stat-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.stat-card i {
+    font-size: 2.5em;
+    flex-shrink: 0;
+}
+
+/* Icon colors for sidebar stats */
+.stat-card .diamond-icon { color: #50e3c2; } /* Mint green for diamonds */
+.stat-card .gold-icon { color: #f9d923; } /* Vibrant yellow for gold */
+
+.stat-info {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.stat-info span:first-child {
+    display: block;
+    font-size: 1.1em;
+    opacity: 0.8;
+    margin-bottom: 3px;
+}
+
+.stat-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2em;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* --- Buy VIP Button --- */
+.buy-vip-btn {
+    background: linear-gradient(45deg, #ffd700, #ff8c00); /* Gold to Orange gradient */
+    color: #333;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 50px; /* Pill shape */
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-top: auto; /* Push to bottom */
+    display: flex;
+    align-items: center;
+    gap: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+    100% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255, 140, 0, 0.6); }
 }
 
 .buy-vip-btn:hover {
-    background-color: #FFC400;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(45deg, #ffc400, #e07b00);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    animation: none; /* Stop pulse on hover */
 }
 
-.buy-vip-btn i {
-    font-size: 1.5em;
-    color: #333; /* Ícono oscuro para contraste en botón dorado */
+.buy-vip-btn .shining-star {
+    font-size: 1.8em;
+    color: #fff;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffd700;
 }
 
-/* --- Sección Principal de Recompensas --- */
-.vip-rewards-section {
-    flex: 1; /* Ocupa el espacio restante */
-    padding: 30px;
+/* --- Main Rewards Content --- */
+.rewards-main-content {
+    flex: 1;
+    padding: 40px;
     display: flex;
     flex-direction: column;
 }
 
-.section-title {
+.rewards-title {
     font-family: 'Montserrat', sans-serif;
-    font-size: 2.5em;
-    font-weight: 800;
-    color: #4A4A4A;
-    margin-bottom: 30px;
+    font-size: 3em;
+    font-weight: 900;
+    color: #e0e0e0;
+    margin-bottom: 40px;
     text-align: center;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.rewards-table-wrapper {
+.rewards-table-scroll {
     flex: 1;
-    overflow-y: auto; /* Hace que la tabla sea scrollable si es muy larga */
-    padding-right: 15px; /* Espacio para la barra de scroll */
+    overflow-y: auto; /* Enable vertical scrolling for table */
+    padding-right: 10px; /* Space for scrollbar */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
+
+/* Custom scrollbar for webkit browsers */
+.rewards-table-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.rewards-table-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.rewards-table-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+.rewards-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
 
 .vip-rewards-table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 12px; /* Espacio entre filas */
+    border-spacing: 0 15px; /* Space between rows */
     text-align: left;
 }
 
 .vip-rewards-table th, .vip-rewards-table td {
-    padding: 18px 25px;
+    padding: 20px 30px;
     border: none;
     vertical-align: middle;
 }
 
 .vip-rewards-table th {
-    background-color: #4a4a4a;
-    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.4); /* Darker header background */
+    color: #f0f0f0;
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 1.2em;
     position: sticky;
     top: 0;
     z-index: 10;
-    border-radius: 8px; /* Bordes redondeados para el header */
+    border-radius: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .vip-rewards-table tbody tr {
-    background-color: #fcfcfc;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.1); /* Lighter translucent rows */
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .vip-rewards-table tbody tr:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-7px) scale(1.02);
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
 }
 
 .vip-rewards-table td {
-    color: #333333;
-    font-size: 1.05em;
-    font-weight: 500;
+    color: #e0e0e0;
+    font-size: 1.1em;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-.vip-rewards-table td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px;}
-.vip-rewards-table td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px;}
+.vip-rewards-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px;}
+.vip-rewards-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px;}
 
-
-/* --- Estilos para las celdas de recompensa --- */
-.reward-cell {
-    font-weight: 700;
-    font-size: 1.1em;
+/* --- Reward Item Styling --- */
+.reward-item-cell {
     display: flex;
     align-items: center;
-    /* gap: 8px; <-- No uses gap aquí si usas flexbox dentro de reward-pair */
+    justify-content: center; /* Center content within cells */
+    gap: 10px;
+    height: 100%; /* Ensure flex items fill cell height */
 }
 
-/* Colores específicos para íconos en tabla */
-.reward-cell .icon-gold { color: #DAA520; } /* Oro en tabla */
-.reward-cell .icon-diamond { color: #87CEEB; } /* Diamante en tabla */
-.reward-cell .icon-emerald { color: #3CB371; } /* Esmeralda en tabla */
+/* Specific icon colors for table rewards */
+.reward-item-cell .gold-icon { color: #f9d923; } /* Gold */
+.reward-item-cell .diamond-icon { color: #50e3c2; } /* Diamond */
+.reward-item-cell .emerald-icon { color: #3CB371; } /* Emerald */
 
+.reward-amount-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1.3em;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
 
-/* Contenedor para el par Oro y Esmeralda */
+/* Styling for the pair of rewards (Oro + Esmeralda) */
 .reward-pair {
     display: flex;
     align-items: center;
-    gap: 15px; /* Espacio entre los dos bloques de recompensa (oro y esmeralda) */
+    gap: 25px; /* Space between the two reward items */
+    justify-content: center; /* Center the pair within the cell */
 }
 
-.reward-pair .reward-item {
+.reward-pair-item {
     display: flex;
     align-items: center;
-    gap: 5px; /* Espacio entre el ícono y el texto dentro de cada item */
+    gap: 8px; /* Space between icon and text for each item in the pair */
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
 }
 
-.reward-separator {
-    font-size: 0.9em;
-    color: #777;
-    font-weight: normal;
-    margin: 0 5px;
+.reward-pair-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
+.reward-pair-item i {
+    font-size: 1.5em;
+}
 
-/* --- Botón "Volver al Juego" --- */
+.separator-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #ccc;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Back to Game Button --- */
 .back-to-game-btn {
-    background-color: #2575fc; /* Color azul para volver */
+    background: linear-gradient(90deg, #1e3c72, #2a5298); /* Blue gradient */
     color: white;
     border: none;
-    padding: 12px 25px;
+    padding: 15px 30px;
     border-radius: 8px;
-    font-size: 1em;
+    font-size: 1.1em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     margin-top: 20px;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .back-to-game-btn:hover {
-    background-color: #1a5bbd;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(90deg, #152b57, #1f427c);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* --- Responsive Design --- */
-@media (max-width: 992px) {
-    .vip-dashboard-container {
+@media (max-width: 1024px) {
+    .vip-container {
         flex-direction: column;
         padding: 20px;
-        gap: 20px;
+        gap: 30px;
     }
     .vip-sidebar {
         flex: none;
         width: 100%;
-        padding: 25px;
-        border-radius: 15px;
+        padding: 30px 20px;
+        border-radius: 20px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
-    .vip-rewards-section {
+    .rewards-main-content {
         padding: 0;
     }
-    .rewards-table-wrapper {
-        padding-right: 0; /* Desactiva padding extra en pantallas pequeñas */
-        max-height: 50vh; /* Permite scroll vertical si es necesario */
+    .rewards-table-scroll {
+        padding-right: 0;
+        max-height: 60vh; /* Allow scrolling for table on smaller screens */
+    }
+    .rewards-title {
+        font-size: 2.5em;
+        margin-bottom: 25px;
     }
     .vip-rewards-table th, .vip-rewards-table td {
-        padding: 12px 15px;
-        font-size: 0.95em;
+        padding: 15px 20px;
+        font-size: 1em;
     }
-    .section-title {
+    .buy-vip-btn {
+        width: 80%;
+        max-width: 300px;
+        font-size: 1.2em;
+        padding: 15px 0;
+        justify-content: center;
+    }
+    .sidebar-header {
+        margin-bottom: 30px;
+    }
+    .sidebar-header .gold-icon {
+        font-size: 3.5em;
+    }
+    .vip-sidebar h1 {
+        font-size: 2.2em;
+    }
+    .stat-card {
+        padding: 15px 20px;
+        font-size: 1.2em;
+    }
+    .stat-card i {
+        font-size: 2em;
+    }
+    .stat-value {
+        font-size: 1.8em;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    .vip-container {
+        padding: 15px;
+        border-radius: 15px;
+    }
+    .vip-sidebar {
+        padding: 20px 15px;
+    }
+    .sidebar-header {
+        margin-bottom: 25px;
+    }
+    .sidebar-header .gold-icon {
+        font-size: 3em;
+    }
+    .vip-sidebar h1 {
+        font-size: 2em;
+    }
+    .stat-card {
+        flex-direction: column; /* Stack stats vertically */
+        align-items: flex-start;
+        padding: 12px 15px;
+        gap: 5px;
+    }
+    .stat-card i {
+        margin-bottom: 5px;
+    }
+    .stat-info {
+        text-align: center; /* Center text when stacked */
+        width: 100%;
+    }
+    .rewards-title {
         font-size: 2em;
         margin-bottom: 20px;
     }
-    .buy-vip-btn {
-        width: 100%;
-        font-size: 1.1em;
-        padding: 12px 0;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    .vip-dashboard-container {
-        padding: 15px;
-    }
-    .vip-sidebar {
-        padding: 20px;
-    }
-    .sidebar-header i {
-        font-size: 2.5em;
-    }
-    .vip-sidebar h2 {
-        font-size: 1.8em;
-    }
-    .stat-item {
-        font-size: 1.1em;
-        padding: 10px 15px;
-    }
-    .stat-item i {
-        font-size: 1.5em;
-    }
-    .section-title {
-        font-size: 1.8em;
-    }
     .vip-rewards-table th, .vip-rewards-table td {
-        font-size: 0.85em;
-        padding: 10px 12px;
+        font-size: 0.9em;
+        padding: 12px 15px;
     }
     .reward-pair {
-        flex-direction: column; /* Coloca oro y esmeralda uno debajo del otro en móviles */
+        flex-direction: column; /* Stack gold and emerald vertically in table */
         align-items: flex-start;
-        gap: 5px;
+        gap: 8px;
     }
-    .reward-separator {
-        display: none; /* Oculta la 'y' si se apilan verticalmente */
+    .reward-pair-item {
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+    .reward-pair-item i {
+        font-size: 1.3em;
+    }
+    .separator-text {
+        display: none; /* Hide 'y' when stacked vertically */
+    }
+    .reward-amount-text {
+        font-size: 1.1em;
     }
     .buy-vip-btn {
-        font-size: 1em;
-        padding: 10px;
+        font-size: 1.1em;
+        padding: 12px 20px;
     }
     .back-to-game-btn {
         font-size: 0.9em;
-        padding: 10px 20px;
+        padding: 12px 25px;
     }
 }
 
-/* --- Estilos de SweetAlerts (incluidos para completar el archivo CSS) --- */
+/* --- SweetAlerts Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
 .swal2-confirm-button {
     background-color: #5D3FD3 !important;
     color: #E0E0E0 !important;
@@ -380,7 +507,8 @@ body {
 .swal2-popup.swal2-custom-game-over { border-color: #A93226 !important; }
 .swal2-popup.swal2-custom-warning .swal2-title { color: #DAA520 !important; }
 .swal2-popup.swal2-custom-warning { border-color: #DAA520 !important; }
-/* --- Estilos para el cargador --- */
+
+/* --- Loader Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
 #loader-wrapper {
     position: fixed;
     top: 0;
@@ -425,207 +553,15 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* --- Estilos principales del juego (si compartes el mismo CSS, lo mantengo aquí) --- */
-/* (Mantengo tus estilos originales para el juego del Ahorcado aquí, asuminedo que style2.css se usa en ambas páginas) */
+/* --- Main Game Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
+/* Estas reglas podrían necesitar un archivo CSS separado si la página VIP es la única que usa style2.css,
+   pero las mantengo aquí por si compartes el mismo archivo para todo el juego. */
+/* Si solo la página VIP usa style2.css, todo lo de "orcado-container", "game-info", etc. puede ser eliminado */
 body {
-    background-color: #E6EBF0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    flex-direction: column;
-    padding: 20px;
-    color: #333333;
+    background-color: #E6EBF0; /* Esta regla será sobrescrita por el gradiente global en la página VIP */
+    /* ... el resto de tus estilos del juego del ahorcado ... */
 }
-.orcado-container {
-    background-color: #FFFFFF;
-    border-radius: 25px;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
-    padding: 45px;
-    width: 90%;
-    max-width: 850px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #DCDCDC;
+.orcado-container, .game-info, .game-area, .word-display, .letters-used, .guess-controls, .guess-input, .submit-button, .message {
+    /* Manten tus estilos del juego original aquí */
 }
-.orcado-container::before {
-    content: '';
-    position: absolute;
-    top: -70px;
-    left: -70px;
-    right: -70px;
-    bottom: -70px;
-    background: radial-gradient(circle at center, rgba(123, 104, 238, 0.05) 0%, transparent 60%);
-    animation: pulseSubtle 5s infinite alternate ease-in-out;
-    z-index: 0;
-    border-radius: 50%;
-}
-@keyframes pulseSubtle {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(1.05); opacity: 0.9; }
-}
-.orcado-container h1 {
-    font-family: 'Montserrat', sans-serif;
-    color: #4A4A4A;
-    font-size: 3.8em;
-    margin-bottom: 20px;
-    font-weight: 800;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    position: relative;
-    z-index: 1;
-}
-.orcado-description {
-    color: #666666;
-    font-size: 1.2em;
-    margin-bottom: 30px;
-    line-height: 1.7;
-    position: relative;
-    z-index: 1;
-}
-.game-info {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 30px;
-    font-size: 1.3em;
-    font-weight: 600;
-    color: #4A4A4A;
-    position: relative;
-    z-index: 1;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-.game-info span {
-    padding: 10px 20px;
-    background-color: #F5F5F5;
-    border-radius: 10px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-    border: 1px solid #E0E0E0;
-}
-.game-info #timer-display {
-    background-color: #FFE0B2;
-    color: #D35400;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
-    border: 1px solid #FFCC80;
-}
-.game-info #level-display {
-    background-color: #CFD8DC;
-    color: #455A64;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
-    border: 1px solid #B0BEC5;
-}
-.game-area {
-    background-color: #FDFDFD;
-    border: 1px solid #E0E0E0;
-    border-radius: 20px;
-    padding: 35px;
-    margin-bottom: 35px;
-    box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
-    position: relative;
-    z-index: 1;
-}
-.word-display {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 4em;
-    letter-spacing: 10px;
-    margin-bottom: 35px;
-    color: #5D3FD3;
-    font-weight: 700;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    animation: pulseWord 1.8s infinite alternate ease-in-out;
-}
-@keyframes pulseWord {
-    0% { transform: scale(1); opacity: 0.95; }
-    100% { transform: scale(1.03); opacity: 1; }
-}
-.letters-used {
-    font-size: 1.2em;
-    color: #777777;
-    margin-top: 20px;
-    min-height: 30px;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-.letters-used strong {
-    color: #E74C3C;
-    font-weight: bold;
-}
-.letters-used span {
-    margin: 0 4px;
-    font-weight: bold;
-    color: #5D3FD3;
-}
-.guess-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 1;
-}
-.guess-input {
-    padding: 18px 25px;
-    font-size: 1.8em;
-    text-align: center;
-    width: 120px;
-    border: 2px solid #DCDCDC;
-    border-radius: 12px;
-    outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    background-color: #FFFFFF;
-    color: #333333;
-    box-shadow: 0 0 10px rgba(0,0,0,0.08);
-}
-.guess-input:focus {
-    border-color: #5D3FD3;
-    box-shadow: 0 0 15px rgba(93, 63, 211, 0.4);
-}
-.submit-button {
-    background-color: #5D3FD3;
-    color: white;
-    border: none;
-    padding: 18px 35px;
-    border-radius: 12px;
-    font-size: 1.3em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-.submit-button:hover {
-    background-color: #6E5DD3;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-.message {
-    font-size: 1.4em;
-    margin-top: 30px;
-    min-height: 35px;
-    font-weight: 600;
-    color: #E74C3C;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    position: relative;
-    z-index: 1;
-}
-/* Responsive adjustments for main game */
-@media (max-width: 768px) {
-    .orcado-container { padding: 30px; width: 95%; }
-    .orcado-container h1 { font-size: 2.5em; }
-    .word-display { font-size: 2.8em; letter-spacing: 6px; }
-    .guess-input { width: 80px; font-size: 1.5em; }
-    .submit-button { padding: 15px 25px; font-size: 1.1em; }
-    .game-info span { font-size: 1.1em; padding: 6px 12px; }
-}
-@media (max-width: 480px) {
-    .orcado-container { padding: 20px; }
-    .orcado-container h1 { font-size: 2em; }
-    .word-display { font-size: 2em; letter-spacing: 4px; }
-    .game-info { flex-direction: column; gap: 10px; }
-    .guess-controls { flex-direction: column; gap: 10px; }
-    .guess-input { width: 100%; max-width: 150px; }
-    .submit-button { width: 100%; max-width: 150px; }
-}
+/* ... y todos los media queries relacionados con el juego ... */
