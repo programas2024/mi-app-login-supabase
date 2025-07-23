@@ -22,318 +22,139 @@ body {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column; /* Ahora es una columna principal */
-    max-width: 1000px; /* Ancho ajustado para una sola columna */
+    max-width: 900px; /* Ancho ajustado para los dos contenedores */
     width: 95%;
+    min-height: 500px; /* Altura mínima para el contenedor principal */
+    height: auto; /* Altura automática para que se expanda con el contenido */
     overflow: hidden;
     margin-bottom: 30px;
     backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
     border: 1px solid rgba(255, 255, 255, 0.1);
-    animation: fadeInSlideUp 0.8s ease-out forwards;
-    min-height: 80vh; /* Altura mínima para el contenedor */
-    height: auto; /* Altura automática para que se expanda con el contenido */
+    animation: fadeInScale 0.8s ease-out forwards; /* Nueva animación */
 }
 
-@keyframes fadeInSlideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-/* --- REMOVED: VIP Sidebar styles --- */
-/* .vip-sidebar, .sidebar-header, .stat-card, .buy-vip-btn styles are removed from here */
-
-
-/* --- Main Rewards Content (Ahora ocupa todo el ancho) --- */
-.rewards-main-content {
+/* --- Main VIP Content --- */
+.vip-content {
     flex: 1;
     padding: 40px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Permite que el contenido principal scrollee */
-    height: auto; /* Asegura que el contenido se expanda */
-}
-
-.rewards-title {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 3em;
-    font-weight: 900;
-    color: #e0e0e0;
-    margin-bottom: 30px; /* Ajustado */
+    align-items: center; /* Centrar contenido */
+    justify-content: center; /* Centrar contenido verticalmente */
     text-align: center;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* --- User Balance Display --- */
-.user-balance-display {
+.vip-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5em; /* Tamaño de título más grande */
+    font-weight: 900;
+    color: #ffd700; /* Color dorado para el título */
+    margin-bottom: 50px; /* Más espacio debajo del título */
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 2px 2px 5px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+}
+
+/* --- Currency Vault (Contenedor de Oro y Diamantes) --- */
+.currency-vault {
     display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    gap: 40px; /* Espacio entre los contenedores de moneda */
     justify-content: center;
-    gap: 30px;
-    margin-bottom: 40px;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.2); /* Fondo sutil */
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.balance-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4em;
-    font-weight: 600;
-    color: #f0f0f0;
-}
-
-.balance-item i {
-    font-size: 2em;
-}
-
-.balance-item .balance-value {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 1.8em;
-    font-weight: 800;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-/* Icon colors for balance display */
-.balance-item .diamond-icon { color: #50e3c2; } /* Mint green for diamonds */
-.balance-item .gold-icon { color: #f9d923; } /* Vibrant yellow for gold */
-
-
-.rewards-table-scroll {
-    flex: 1;
-    overflow-y: auto; /* Enable vertical scrolling for table */
-    padding-right: 10px; /* Space for scrollbar */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-/* Custom scrollbar for webkit browsers for main content */
-.rewards-table-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-.rewards-table-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-}
-.rewards-table-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-}
-.rewards-table-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-
-.vip-rewards-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 15px; /* Space between rows */
-    text-align: left;
+    max-width: 800px; /* Limita el ancho del grupo de contenedores */
 }
 
-.vip-rewards-table th, .vip-rewards-table td {
-    padding: 20px 25px; /* Ajustado padding */
-    border: none;
-    vertical-align: middle;
-}
-
-.vip-rewards-table th {
-    background-color: rgba(0, 0, 0, 0.4); /* Darker header background */
-    color: #f0f0f0;
-    font-weight: 700;
-    font-size: 1.2em;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-radius: 10px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.vip-rewards-table tbody tr {
-    background-color: rgba(255, 255, 255, 0.1); /* Lighter translucent rows */
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.vip-rewards-table tbody tr:hover {
-    transform: translateY(-7px) scale(1.02);
-    background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-}
-
-/* --- Level Locked State --- */
-.vip-rewards-table tbody tr.level-locked {
-    opacity: 0.6;
-    filter: grayscale(80%);
-    pointer-events: none; /* Deshabilita clics en la fila bloqueada */
-}
-
-.vip-rewards-table tbody tr.level-locked:hover {
-    transform: none; /* No animar si está bloqueado */
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-
-.vip-rewards-table td {
-    color: #e0e0e0;
-    font-size: 1.1em;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.vip-rewards-table td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px;}
-.vip-rewards-table td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px;}
-
-/* --- Reward Item Styling --- */
-.reward-item-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center content within cells */
-    gap: 10px;
-    height: 100%; /* Ensure flex items fill cell height */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay espacio */
-}
-
-/* Specific icon colors for table rewards */
-.reward-item-cell .gold-icon { color: #f9d923; } /* Gold */
-.reward-item-cell .diamond-icon { color: #50e3c2; } /* Diamond */
-.reward-item-cell .emerald-icon { color: #3CB371; } /* Emerald */
-
-.reward-amount-text {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 1.3em;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Styling for the pair of rewards (Oro + Esmeralda) */
-.reward-pair {
-    display: flex;
-    align-items: center;
-    gap: 25px; /* Space between the two reward items */
-    justify-content: center; /* Center the pair within the cell */
-}
-
-.reward-pair-item {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* Space between icon and text for each item in the pair */
-    background-color: rgba(255, 255, 255, 0.08);
-    padding: 10px 15px;
-    border-radius: 8px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s ease;
-}
-
-.reward-pair-item:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.reward-pair-item i {
-    font-size: 1.5em;
-}
-
-.separator-text {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1.1em;
-    color: #ccc;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-/* --- Action Buttons (Unlock/Claim) --- */
-.action-buttons-container {
+.gold-vault, .diamond-vault {
+    flex: 1; /* Permite que crezcan y se encojan */
+    min-width: 300px; /* Ancho mínimo para cada contenedor */
+    padding: 35px 30px;
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; /* Espacio entre el botón y el texto de costo */
-    width: 100%; /* Ocupa el ancho de la celda */
-}
-
-.unlock-btn, .claim-btn, .claimed-btn {
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 0.95em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    width: 100%; /* Ocupa todo el ancho disponible en la celda */
-    max-width: 150px; /* Limita el ancho máximo del botón */
-    display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 5px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative; /* Para pseudo-elementos o efectos */
+    overflow: hidden; /* Para que los efectos de fondo no se salgan */
 }
 
-.unlock-btn {
-    background: linear-gradient(45deg, #ff6a00, #ee0979); /* Naranja a Rosa */
-    color: white;
-}
-.unlock-btn:hover {
-    background: linear-gradient(45deg, #e05e00, #d4076f);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+.gold-vault:hover, .diamond-vault:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
 }
 
-.claim-btn {
-    background: linear-gradient(45deg, #00c6ff, #0072ff); /* Azul claro a azul oscuro */
-    color: white;
+/* Estilos específicos para el contenedor de Oro */
+.gold-vault {
+    background: linear-gradient(145deg, #FFD700, #DAA520, #B8860B); /* Degradado dorado */
+    color: #333;
+    border: 2px solid #FFEC8B;
 }
-.claim-btn:hover {
-    background: linear-gradient(45deg, #00aaff, #0056e0);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.claimed-btn {
-    background-color: #555; /* Gris oscuro para reclamado */
-    color: #bbb;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.unlock-cost-text {
-    font-size: 0.85em;
-    color: #ccc;
-    display: flex;
-    align-items: center;
-    gap: 3px;
-}
-.unlock-cost-text .fas.fa-diamond {
-    color: #50e3c2; /* Color del diamante */
+.gold-vault::before { /* Efecto de brillo sutil */
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    animation: shine 5s infinite linear;
+    opacity: 0.5;
 }
 
+/* Estilos específicos para el contenedor de Diamantes */
+.diamond-vault {
+    background: linear-gradient(145deg, #62c3e8, #3498db, #2980b9); /* Degradado azul/diamante */
+    color: #fff;
+    border: 2px solid #a0eaff;
+}
+.diamond-vault::before { /* Efecto de brillo sutil */
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    transform: rotate(45deg);
+    animation: shine 5s infinite linear;
+    opacity: 0.5;
+}
 
-/* --- Load More Button --- */
-.load-more-btn {
-    background: linear-gradient(90deg, #ff6a00, #ee0979); /* Naranja a Rosa */
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1em;
+@keyframes shine {
+    0% { transform: rotate(45deg) translate(-100%, -100%); }
+    100% { transform: rotate(45deg) translate(100%, 100%); }
+}
+
+
+.currency-icon {
+    font-size: 5em; /* Iconos grandes */
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+.gold-icon { color: #f9d923; } /* Oro */
+.diamond-icon { color: #e0f2f7; } /* Diamante (más claro para contraste en azul) */
+
+
+.currency-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6em;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    margin-top: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-    width: fit-content;
-    align-self: center; /* Centra el botón en el contenedor flex */
+    margin-bottom: 10px;
+    opacity: 0.9;
 }
 
-.load-more-btn:hover {
-    background: linear-gradient(90deg, #e05e00, #d4076f);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+.currency-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3.5em; /* Valor de moneda muy grande */
+    font-weight: 900;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* --- Back to Game Button --- */
@@ -362,95 +183,61 @@ body {
 }
 
 /* --- Responsive Design --- */
-@media (max-width: 1024px) {
-    .vip-container {
-        flex-direction: column;
-        height: auto; /* Altura automática en móviles */
-        min-height: 90vh; /* Asegura un mínimo */
-    }
-    .rewards-main-content {
-        padding: 20px;
-        height: auto;
-        overflow-y: visible;
-    }
-    .rewards-title {
-        font-size: 2.5em;
-        margin-bottom: 25px;
-    }
-    .vip-rewards-table th, .vip-rewards-table td {
-        padding: 15px 20px;
-        font-size: 1em;
-    }
-    .user-balance-display {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-    }
-    .balance-item {
-        justify-content: center;
-    }
-    .load-more-btn {
-        margin-top: 20px;
-        padding: 12px 25px;
-        font-size: 1em;
-    }
-}
-
 @media (max-width: 768px) {
     body {
-        padding: 10px;
-    }
-    .vip-container {
-        padding: 10px;
-        border-radius: 10px;
-        width: 100%;
-    }
-    .rewards-main-content {
         padding: 15px;
     }
-    .rewards-title {
-        font-size: 2em;
-        margin-bottom: 15px;
+    .vip-container {
+        padding: 15px;
+        border-radius: 15px;
+        min-height: 400px;
     }
-    .vip-rewards-table th, .vip-rewards-table td {
-        font-size: 0.9em;
-        padding: 10px 12px;
+    .vip-content {
+        padding: 25px;
     }
-    .reward-item-cell {
-        gap: 5px;
+    .vip-title {
+        font-size: 2.5em;
+        margin-bottom: 30px;
     }
-    .reward-pair {
-        flex-direction: column; /* Stack gold and emerald vertically in table */
-        align-items: center; /* Centrar items apilados */
-        gap: 5px;
+    .currency-vault {
+        flex-direction: column; /* Apilar en pantallas pequeñas */
+        gap: 25px;
     }
-    .reward-pair-item {
-        padding: 6px 10px;
-        font-size: 0.95em;
+    .gold-vault, .diamond-vault {
+        min-width: unset; /* Eliminar ancho mínimo */
+        width: 100%; /* Ocupar todo el ancho disponible */
+        padding: 25px 20px;
     }
-    .reward-pair-item i {
-        font-size: 1.2em;
+    .currency-icon {
+        font-size: 4em;
     }
-    .separator-text {
-        display: none; /* Hide 'y' when stacked vertically */
+    .currency-label {
+        font-size: 1.4em;
     }
-    .reward-amount-text {
-        font-size: 1em;
-    }
-    .unlock-btn, .claim-btn, .claimed-btn {
-        font-size: 0.8em;
-        padding: 8px 10px;
-        max-width: 120px;
-    }
-    .unlock-cost-text {
-        font-size: 0.75em;
+    .currency-value {
+        font-size: 3em;
     }
     .back-to-game-btn {
-        font-size: 0.85em;
-        padding: 10px 20px;
+        font-size: 1em;
+        padding: 12px 25px;
     }
 }
 
+@media (max-width: 480px) {
+    .vip-title {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    .currency-icon {
+        font-size: 3.5em;
+    }
+    .currency-label {
+        font-size: 1.2em;
+    }
+    .currency-value {
+        font-size: 2.5em;
+    }
+}
 
 /* --- SweetAlerts Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
 .swal2-confirm-button { background-color: #5D3FD3 !important; color: #E0E0E0 !important; border-radius: 8px !important; font-size: 1.1em !important; padding: 10px 20px !important; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
