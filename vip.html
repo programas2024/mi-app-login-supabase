@@ -68,6 +68,7 @@
         // Importaciones necesarias para este módulo: Supabase y Confetti
         import { createClient } from 'https://esm.sh/@supabase/supabase-js';
         import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
+        // No importamos Swal aquí porque ya está cargado globalmente por la etiqueta <script>
 
         // --- Configuración de Supabase (¡CLAVE API IDÉNTICA A TU SCRIPT.JS!) ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -105,15 +106,23 @@
          * @param {string} cooldownKey - La clave de localStorage para el cooldown de este botón.
          */
         function updateButtonCooldown(button, cooldownKey) {
-            const lastClaimTime = parseInt(localStorage.getItem(cooldownKey) || '0');
+            console.log(`DEBUG COOLDOWN: Checking cooldown for button with key: ${cooldownKey}`);
+            const lastClaimTimeStr = localStorage.getItem(cooldownKey);
+            const lastClaimTime = parseInt(lastClaimTimeStr || '0');
             const now = Date.now();
             const elapsedTime = now - lastClaimTime;
             const remainingTime = COOLDOWN_SECONDS * 1000 - elapsedTime;
+
+            console.log(`DEBUG COOLDOWN: lastClaimTime (raw): ${lastClaimTimeStr}, parsed: ${lastClaimTime} (${new Date(lastClaimTime).toLocaleString()})`);
+            console.log(`DEBUG COOLDOWN: now: ${now} (${new Date(now).toLocaleString()})`);
+            console.log(`DEBUG COOLDOWN: elapsedTime: ${elapsedTime}ms, remainingTime: ${remainingTime}ms`);
 
             if (remainingTime > 0) {
                 button.disabled = true;
                 const secondsLeft = Math.ceil(remainingTime / 1000);
                 button.innerHTML = `<i class="fas fa-hourglass-half"></i> ${secondsLeft}s`;
+                console.log(`DEBUG COOLDOWN: Button ${cooldownKey} disabled. Remaining: ${secondsLeft}s. Setting setTimeout.`);
+                // Solo establece el setTimeout si el botón aún está deshabilitado
                 setTimeout(() => updateButtonCooldown(button, cooldownKey), 1000); // Revisa cada segundo
             } else {
                 button.disabled = false;
@@ -124,6 +133,7 @@
                                      button.classList.contains('diamond-only-btn') ? 'Recibir Diamantes VIP' :
                                      'Recibir Recompensas VIP';
                 button.innerHTML = `<i class="${originalIcon}"></i> ${originalText}`;
+                console.log(`DEBUG COOLDOWN: Button ${cooldownKey} enabled.`);
             }
         }
 
@@ -134,7 +144,8 @@
          */
         function startCooldown(button, cooldownKey) {
             localStorage.setItem(cooldownKey, Date.now().toString());
-            updateButtonCooldown(button, cooldownKey);
+            console.log(`DEBUG COOLDOWN: Cooldown started for ${cooldownKey} at ${new Date(Date.now()).toLocaleString()}`);
+            updateButtonCooldown(button, cooldownKey); // Actualiza inmediatamente el estado del botón
         }
 
         // --- Funciones de Supabase ---
@@ -223,12 +234,10 @@
                 return;
             }
 
-            // Verificar cooldown antes de deshabilitar
+            // Doble verificación del cooldown (aunque el botón debería estar deshabilitado)
             const lastClaimTime = parseInt(localStorage.getItem(cooldownKey) || '0');
             const now = Date.now();
             if (now - lastClaimTime < COOLDOWN_SECONDS * 1000) {
-                // Esto no debería ocurrir si el botón está deshabilitado por el cooldown,
-                // pero es una capa de seguridad.
                 Swal.fire({ icon: 'info', title: 'Espera un momento', text: 'Este botón aún está en tiempo de recarga.', customClass: { popup: 'swal2-custom-warning' } });
                 return;
             }
@@ -324,8 +333,7 @@
                     customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
                 });
             } finally {
-                // El botón se re-habilitará automáticamente por updateButtonCooldown
-                // si el cooldown ya terminó, o se actualizará para mostrar el tiempo restante.
+                // El botón se re-habilitará o actualizará automáticamente por updateButtonCooldown
                 // No lo habilitamos directamente aquí para no interferir con el cooldown.
             }
         }
@@ -382,18 +390,18 @@
                 });
             }
 
-            // Asignar event listeners a los botones de recompensa
+            // Asignar event listeners a los botones de recompensa y actualizar su estado de cooldown
             if (grantRewardsBtn) {
                 grantRewardsBtn.addEventListener('click', () => grantRewards('all', grantRewardsBtn));
-                updateButtonCooldown(grantRewardsBtn, COOLDOWN_KEYS.allRewards);
+                updateButtonCooldown(grantRewardsBtn, COOLDOWN_KEYS.allRewards); // Initial check for persistence
             }
             if (grantGoldBtn) {
                 grantGoldBtn.addEventListener('click', () => grantRewards('gold', grantGoldBtn));
-                updateButtonCooldown(grantGoldBtn, COOLDOWN_KEYS.goldRewards);
+                updateButtonCooldown(grantGoldBtn, COOLDOWN_KEYS.goldRewards); // Initial check for persistence
             }
             if (grantDiamondsBtn) {
                 grantDiamondsBtn.addEventListener('click', () => grantRewards('diamonds', grantDiamondsBtn));
-                updateButtonCooldown(grantDiamondsBtn, COOLDOWN_KEYS.diamondRewards);
+                updateButtonCooldown(grantDiamondsBtn, COOLDOWN_KEYS.diamondRewards); // Initial check for persistence
             }
         });
     </script>
