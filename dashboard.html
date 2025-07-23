@@ -26,8 +26,8 @@
     box-sizing: border-box;
 }
 
-/* --- Estilos para el botón del cofre (combinando las clases existentes) --- */
-/* Apuntamos a la clase 'btn-chest-custom' y/o 'sidebar-btn' para mayor especificidad */
+/* --- Estilos base para el botón del cofre --- */
+/* Apuntamos a la combinación de clases para alta especificidad */
 .sidebar-btn.btn-chest-custom {
     background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
     border: 2px solid #00FA9A; /* Verde Primavera Medio */
@@ -36,7 +36,7 @@
     transition: all 0.3s ease;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Sombra de texto sutil */
     
-    /* --- Ajustes para responsividad y layout --- */
+    /* --- Ajustes para responsividad y layout (base) --- */
     width: 100%; /* Asegura que ocupe el 100% del ancho de su contenedor */
     max-width: 100%; /* Previene que se desborde si el contenido es demasiado ancho */
     padding: 15px 25px; /* Padding por defecto */
@@ -52,7 +52,7 @@
      */
     flex-grow: 1; 
     flex-shrink: 1;
-    flex-basis: auto; 
+    flex-basis: auto; /* Permite que el elemento determine su tamaño base */
 }
 
 .sidebar-btn.btn-chest-custom:hover {
@@ -62,17 +62,31 @@
     border-color: #7FFFD4; /* Aguamarina en hover */
 }
 
-/* Media queries para ajustar el tamaño en pantallas más pequeñas */
-@media (max-width: 768px) {
+/* --- Media queries para asegurar el ancho completo en pantallas pequeñas --- */
+
+/* Para pantallas medianas (ej. tablets en vertical, laptops pequeñas) */
+@media (max-width: 992px) {
     .sidebar-btn.btn-chest-custom {
-        padding: 14px 22px; /* Ligeramente menos padding en pantallas medianas/pequeñas */
+        /*
+         * Sobrescribe cualquier 'width' o 'flex-basis' de '.sidebar-btn'
+         * para asegurar que este botón específico ocupe el 100% del ancho
+         * disponible en su contenedor flex.
+         */
+        width: 100% !important; /* ¡Forzamos el 100% de ancho! */
+        flex-basis: 100% !important; /* Asegura que tome toda la base del flex item */
+        max-width: 100% !important; /* Previene desbordamientos */
+        padding: 14px 22px; /* Ligeramente menos padding */
         font-size: 1.05em; /* Ligeramente más pequeño */
     }
 }
 
-@media (max-width: 480px) {
+/* Para pantallas de móvil (más pequeñas aún) */
+@media (max-width: 576px) {
     .sidebar-btn.btn-chest-custom {
-        padding: 12px 20px; /* Un poco menos de padding en pantallas muy pequeñas */
+        width: 100% !important; /* ¡Forzamos el 100% de ancho de nuevo! */
+        flex-basis: 100% !important; /* Asegura que tome toda la base del flex item */
+        max-width: 100% !important; /* Previene desbordamientos */
+        padding: 12px 20px; /* Un poco menos de padding */
         font-size: 1em; /* Fuente un poco más pequeña */
     }
 }
@@ -224,9 +238,9 @@
                 </button>
                 <div class="game-actions">
    
-                 <button id="chest-btn" class="sidebar-btn btn-chest-custom" title="Abre un cofre para obtener recompensas.">
-                    <i class="fas fa-box-open"></i> Cofre
-                </button>
+                <button id="chest-btn" class="sidebar-btn btn-chest-custom" title="Abre un cofre para obtener recompensas.">
+    <i class="fas fa-box-open"></i> Cofre Gratis
+</button>
             </aside>
 
             <main class="main-content-area">
