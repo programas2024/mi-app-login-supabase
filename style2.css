@@ -1,4 +1,3 @@
-
 /* style2.css */
 
 /* --- Base Styles & Fonts --- */
@@ -21,15 +20,17 @@ body {
     background-color: rgba(255, 255, 255, 0.05); /* Fondo translúcido */
     border-radius: 25px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    display: flex;
-    max-width: 1400px;
+    display: flex; /* Mantenemos flex para el layout interno si se añade algo más */
+    flex-direction: column; /* Ahora es una columna principal */
+    max-width: 1000px; /* Ancho ajustado para una sola columna */
     width: 95%;
-    overflow: hidden; /* Importante para los bordes redondeados y el sticky */
+    overflow: hidden;
     margin-bottom: 30px;
     backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
     border: 1px solid rgba(255, 255, 255, 0.1);
     animation: fadeInSlideUp 0.8s ease-out forwards;
-    height: 90vh; /* Establece una altura fija para que el contenido principal scrolle */
+    min-height: 80vh; /* Altura mínima para el contenedor */
+    height: auto; /* Altura automática para que se expanda con el contenido */
 }
 
 @keyframes fadeInSlideUp {
@@ -37,151 +38,18 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- VIP Sidebar (Panel Izquierdo - Ahora Sticky) --- */
-.vip-sidebar {
-    flex: 0 0 320px; /* Ancho fijo para el sidebar */
-    background: linear-gradient(180deg, #3a006f, #8e2de2); /* Degradado morado/azul */
-    padding: 40px 30px;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
-    border-top-left-radius: 25px;
-    border-bottom-left-radius: 25px;
-    /* --- Hacemos el sidebar sticky --- */
-    position: sticky; /* O 'fixed' si quieres que esté siempre en pantalla */
-    top: 0;
-    height: 100%; /* Ocupa la altura de su contenedor flex */
-    overflow-y: auto; /* Permite scroll si el contenido es demasiado largo */
-    align-self: flex-start; /* Alinea al inicio del contenedor flex */
-}
+/* --- REMOVED: VIP Sidebar styles --- */
+/* .vip-sidebar, .sidebar-header, .stat-card, .buy-vip-btn styles are removed from here */
 
-.sidebar-header {
-    margin-bottom: 30px; /* Reducido para hacer espacio */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
 
-.sidebar-header .gold-icon {
-    font-size: 4.5em;
-    color: #ffd700; /* Bright gold for main icon */
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-    animation: floatBob 3s ease-in-out infinite alternate;
-}
-
-@keyframes floatBob {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-10px); }
-}
-
-.vip-sidebar h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 2.8em;
-    font-weight: 900;
-    margin: 0;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    letter-spacing: 1px;
-}
-
-/* --- Botón "Obtén VIP Ahora!" --- */
-.buy-vip-btn {
-    background: linear-gradient(45deg, #ffd700, #ff8c00); /* Gold to Orange gradient */
-    color: #333;
-    border: none;
-    padding: 18px 35px;
-    border-radius: 50px; /* Pill shape */
-    font-size: 1.4em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    margin-bottom: 40px; /* Espacio debajo del botón */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    animation: pulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-    0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
-    100% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255, 140, 0, 0.6); }
-}
-
-.buy-vip-btn:hover {
-    background: linear-gradient(45deg, #ffc400, #e07b00);
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-    animation: none; /* Stop pulse on hover */
-}
-
-.buy-vip-btn .shining-star {
-    font-size: 1.8em;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffd700;
-}
-
-.stat-card {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 20px 25px;
-    margin-bottom: 25px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.stat-card i {
-    font-size: 2.5em;
-    flex-shrink: 0;
-}
-
-/* Icon colors for sidebar stats */
-.stat-card .diamond-icon { color: #50e3c2; } /* Mint green for diamonds */
-.stat-card .gold-icon { color: #f9d923; } /* Vibrant yellow for gold */
-
-.stat-info {
-    text-align: left;
-    flex-grow: 1;
-}
-
-.stat-info span:first-child {
-    display: block;
-    font-size: 1.1em;
-    opacity: 0.8;
-    margin-bottom: 3px;
-}
-
-.stat-value {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 2em;
-    font-weight: 800;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-/* --- Main Rewards Content --- */
+/* --- Main Rewards Content (Ahora ocupa todo el ancho) --- */
 .rewards-main-content {
     flex: 1;
     padding: 40px;
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Permite que el contenido principal scrollee */
-    height: 100%; /* Ocupa la altura disponible en el flex container */
+    height: auto; /* Asegura que el contenido se expanda */
 }
 
 .rewards-title {
@@ -189,29 +57,70 @@ body {
     font-size: 3em;
     font-weight: 900;
     color: #e0e0e0;
-    margin-bottom: 40px;
+    margin-bottom: 30px; /* Ajustado */
     text-align: center;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* --- User Balance Display --- */
+.user-balance-display {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.2); /* Fondo sutil */
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.balance-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.balance-item i {
+    font-size: 2em;
+}
+
+.balance-item .balance-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Icon colors for balance display */
+.balance-item .diamond-icon { color: #50e3c2; } /* Mint green for diamonds */
+.balance-item .gold-icon { color: #f9d923; } /* Vibrant yellow for gold */
+
+
 .rewards-table-scroll {
-    /* Eliminamos el overflow-y y padding-right aquí, ya lo controla rewards-main-content */
-    /* La tabla se expandirá con los niveles que se carguen */
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling for table */
+    padding-right: 10px; /* Space for scrollbar */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 /* Custom scrollbar for webkit browsers for main content */
-.rewards-main-content::-webkit-scrollbar {
+.rewards-table-scroll::-webkit-scrollbar {
     width: 8px;
 }
-.rewards-main-content::-webkit-scrollbar-track {
+.rewards-table-scroll::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
-.rewards-main-content::-webkit-scrollbar-thumb {
+.rewards-table-scroll::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
 }
-.rewards-main-content::-webkit-scrollbar-thumb:hover {
+.rewards-table-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -224,7 +133,7 @@ body {
 }
 
 .vip-rewards-table th, .vip-rewards-table td {
-    padding: 20px 30px;
+    padding: 20px 25px; /* Ajustado padding */
     border: none;
     vertical-align: middle;
 }
@@ -254,6 +163,20 @@ body {
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
 }
 
+/* --- Level Locked State --- */
+.vip-rewards-table tbody tr.level-locked {
+    opacity: 0.6;
+    filter: grayscale(80%);
+    pointer-events: none; /* Deshabilita clics en la fila bloqueada */
+}
+
+.vip-rewards-table tbody tr.level-locked:hover {
+    transform: none; /* No animar si está bloqueado */
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+
 .vip-rewards-table td {
     color: #e0e0e0;
     font-size: 1.1em;
@@ -271,6 +194,7 @@ body {
     justify-content: center; /* Center content within cells */
     gap: 10px;
     height: 100%; /* Ensure flex items fill cell height */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay espacio */
 }
 
 /* Specific icon colors for table rewards */
@@ -319,6 +243,71 @@ body {
     color: #ccc;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
+
+/* --- Action Buttons (Unlock/Claim) --- */
+.action-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Espacio entre el botón y el texto de costo */
+    width: 100%; /* Ocupa el ancho de la celda */
+}
+
+.unlock-btn, .claim-btn, .claimed-btn {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: 100%; /* Ocupa todo el ancho disponible en la celda */
+    max-width: 150px; /* Limita el ancho máximo del botón */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.unlock-btn {
+    background: linear-gradient(45deg, #ff6a00, #ee0979); /* Naranja a Rosa */
+    color: white;
+}
+.unlock-btn:hover {
+    background: linear-gradient(45deg, #e05e00, #d4076f);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.claim-btn {
+    background: linear-gradient(45deg, #00c6ff, #0072ff); /* Azul claro a azul oscuro */
+    color: white;
+}
+.claim-btn:hover {
+    background: linear-gradient(45deg, #00aaff, #0056e0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.claimed-btn {
+    background-color: #555; /* Gris oscuro para reclamado */
+    color: #bbb;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.unlock-cost-text {
+    font-size: 0.85em;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.unlock-cost-text .fas.fa-diamond {
+    color: #50e3c2; /* Color del diamante */
+}
+
 
 /* --- Load More Button --- */
 .load-more-btn {
@@ -379,18 +368,18 @@ body {
         height: auto; /* Altura automática en móviles */
         min-height: 90vh; /* Asegura un mínimo */
     }
-    .vip-sidebar {
-        position: static; /* No sticky en pantallas pequeñas */
+    .vip-sidebar { /* Ya no existe, pero si se reutilizan clases, precaución */
+        position: static;
         width: 100%;
         height: auto;
-        border-radius: 20px 20px 0 0; /* Bordes redondeados solo arriba */
-        overflow-y: visible; /* No scroll en sidebar en móvil */
-        padding-bottom: 20px; /* Reduce padding si es necesario */
+        border-radius: 20px 20px 0 0;
+        overflow-y: visible;
+        padding-bottom: 20px;
     }
     .rewards-main-content {
-        padding: 20px; /* Reduce padding */
-        height: auto; /* Altura automática */
-        overflow-y: visible; /* El scroll lo maneja el body si es muy largo */
+        padding: 20px;
+        height: auto;
+        overflow-y: visible;
     }
     .rewards-title {
         font-size: 2.5em;
@@ -400,31 +389,20 @@ body {
         padding: 15px 20px;
         font-size: 1em;
     }
-    .buy-vip-btn {
+    .buy-vip-btn { /* Ya no existe en este layout, pero si se reutilizan clases, precaución */
         width: 80%;
         max-width: 300px;
         font-size: 1.2em;
         padding: 15px 0;
         justify-content: center;
     }
-    .sidebar-header {
-        margin-bottom: 30px;
+    .user-balance-display {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
     }
-    .sidebar-header .gold-icon {
-        font-size: 3.5em;
-    }
-    .vip-sidebar h1 {
-        font-size: 2.2em;
-    }
-    .stat-card {
-        padding: 15px 20px;
-        font-size: 1.2em;
-    }
-    .stat-card i {
-        font-size: 2em;
-    }
-    .stat-value {
-        font-size: 1.8em;
+    .balance-item {
+        justify-content: center;
     }
     .load-more-btn {
         margin-top: 20px;
@@ -440,43 +418,17 @@ body {
     .vip-container {
         padding: 10px;
         border-radius: 10px;
-        width: 100%; /* Ocupa todo el ancho */
+        width: 100%;
     }
-    .vip-sidebar {
-        padding: 15px 10px;
-    }
-    .sidebar-header {
-        margin-bottom: 20px;
-    }
-    .sidebar-header .gold-icon {
-        font-size: 2.8em;
-    }
-    .vip-sidebar h1 {
-        font-size: 1.8em;
-    }
-    .stat-card {
-        flex-direction: row; /* Mantener horizontal en móviles, si es posible */
-        flex-wrap: wrap; /* Permite que el contenido se envuelva */
-        justify-content: center;
-        text-align: center;
-        font-size: 1em;
-        padding: 10px 15px;
-    }
-    .stat-card i {
-        font-size: 1.8em;
-    }
-    .stat-info span:first-child {
-        font-size: 0.9em;
-    }
-    .stat-value {
-        font-size: 1.5em;
+    .rewards-main-content {
+        padding: 15px;
     }
     .rewards-title {
-        font-size: 1.8em;
+        font-size: 2em;
         margin-bottom: 15px;
     }
     .vip-rewards-table th, .vip-rewards-table td {
-        font-size: 0.8em;
+        font-size: 0.9em;
         padding: 10px 12px;
     }
     .reward-item-cell {
@@ -489,7 +441,7 @@ body {
     }
     .reward-pair-item {
         padding: 6px 10px;
-        font-size: 0.9em;
+        font-size: 0.95em;
     }
     .reward-pair-item i {
         font-size: 1.2em;
@@ -500,9 +452,13 @@ body {
     .reward-amount-text {
         font-size: 1em;
     }
-    .buy-vip-btn {
-        font-size: 1em;
-        padding: 10px 15px;
+    .unlock-btn, .claim-btn, .claimed-btn {
+        font-size: 0.8em;
+        padding: 8px 10px;
+        max-width: 120px;
+    }
+    .unlock-cost-text {
+        font-size: 0.75em;
     }
     .back-to-game-btn {
         font-size: 0.85em;
