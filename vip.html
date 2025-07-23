@@ -56,8 +56,8 @@
     <!-- Todo el JavaScript incrustado aquí -->
     <script type="module">
         // Importaciones necesarias para este módulo: Supabase y Confetti
-        // ¡CAMBIO CLAVE AQUÍ: Usamos jsDelivr para Supabase!
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+        // ¡CAMBIO CLAVE AQUÍ: Usamos jsDelivr con una versión específica y estable de Supabase!
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/+esm';
         import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
 
         // --- Configuración de Supabase ---
@@ -289,7 +289,6 @@
          * Se llama después de cada renderizado de niveles.
          */
         function attachButtonListeners() {
-            // Eliminar listeners antiguos para evitar duplicados
             tbody.querySelectorAll('.unlock-btn').forEach(button => {
                 button.onclick = null;
                 button.onclick = async (event) => {
@@ -482,57 +481,65 @@
             console.log("DOM Content Loaded. Initializing Supabase auth listener.");
             console.log("Supabase client object:", supabase);
             console.log("Supabase auth object:", supabase.auth);
+            console.log("Type of supabase.auth.onAuthStateChanged (before setTimeout):", typeof supabase.auth.onAuthStateChanged);
+            console.log("Properties of supabase.auth (before setTimeout):", Object.keys(supabase.auth));
 
-            // Intentamos inicializar el listener directamente.
-            // Si el problema persiste, la consola nos dará más pistas sobre 'supabase.auth'.
-            try {
-                if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChanged === 'function') {
-                    supabase.auth.onAuthStateChanged(async (event, session) => {
-                        console.log("Auth state changed:", event, session);
-                        if (session && session.user) {
-                            currentUser = session.user;
-                            console.log("Usuario autenticado:", currentUser.id);
-                            userProfile = await fetchUserProfile(currentUser.id);
-                            if (userProfile) {
+
+            // Retrasar la inicialización del listener de autenticación
+            // Esto le da a Supabase un momento extra para inicializar completamente
+            setTimeout(() => {
+                try {
+                    console.log("Inside setTimeout. Type of supabase.auth.onAuthStateChanged:", typeof supabase.auth.onAuthStateChanged);
+                    console.log("Properties of supabase.auth (inside setTimeout):", Object.keys(supabase.auth));
+
+                    if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChanged === 'function') {
+                        supabase.auth.onAuthStateChanged(async (event, session) => {
+                            console.log("Auth state changed:", event, session);
+                            if (session && session.user) {
+                                currentUser = session.user;
+                                console.log("Usuario autenticado:", currentUser.id);
+                                userProfile = await fetchUserProfile(currentUser.id);
+                                if (userProfile) {
+                                    updateBalanceDisplay();
+                                    tbody.innerHTML = '';
+                                    currentLoadedLevels = 0;
+                                    renderLevels(0, levelsToShowInitially);
+                                }
+                            } else {
+                                currentUser = null;
+                                userProfile = { gold: 0, diamonds: 0, unlocked_levels: [], claimed_levels: [] };
                                 updateBalanceDisplay();
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'No Autenticado',
+                                    text: 'Inicia sesión para ver y reclamar tus recompensas VIP. Se mostrarán los niveles, pero no podrás interactuar con ellos.',
+                                    customClass: { popup: 'swal2-custom-warning' }
+                                });
                                 tbody.innerHTML = '';
                                 currentLoadedLevels = 0;
                                 renderLevels(0, levelsToShowInitially);
                             }
-                        } else {
-                            currentUser = null;
-                            userProfile = { gold: 0, diamonds: 0, unlocked_levels: [], claimed_levels: [] };
-                            updateBalanceDisplay();
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'No Autenticado',
-                                text: 'Inicia sesión para ver y reclamar tus recompensas VIP. Se mostrarán los niveles, pero no podrás interactuar con ellos.',
-                                customClass: { popup: 'swal2-custom-warning' }
-                            });
-                            tbody.innerHTML = '';
-                            currentLoadedLevels = 0;
-                            renderLevels(0, levelsToShowInitially);
-                        }
+                        });
+                    } else {
+                        // Si llegamos aquí, significa que supabase.auth.onAuthStateChanged no es una función
+                        throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función.");
+                    }
+                } catch (e) {
+                    console.error("Error al inicializar el listener de autenticación de Supabase:", e);
+                    console.error("Detalles de depuración (dentro del catch):", {
+                        supabaseExists: !!supabase,
+                        supabaseAuthExists: !!supabase.auth,
+                        onAuthStateChangedIsFunction: typeof (supabase && supabase.auth ? supabase.auth.onAuthStateChanged : undefined) === 'function',
+                        errorMessage: e.message
                     });
-                } else {
-                    // Si llegamos aquí, significa que supabase.auth.onAuthStateChanged no es una función
-                    throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función.");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de Inicialización',
+                        text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página o intenta más tarde.',
+                        customClass: { popup: 'swal2-custom-game-over' }
+                    });
                 }
-            } catch (e) {
-                console.error("Error al inicializar el listener de autenticación de Supabase:", e);
-                console.error("Detalles de depuración:", {
-                    supabaseExists: !!supabase,
-                    supabaseAuthExists: !!supabase.auth,
-                    onAuthStateChangedIsFunction: typeof (supabase && supabase.auth ? supabase.auth.onAuthStateChanged : undefined) === 'function',
-                    errorMessage: e.message
-                });
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de Inicialización',
-                    text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página o intenta más tarde.',
-                    customClass: { popup: 'swal2-custom-game-over' }
-                });
-            }
+            }, 10); // Pequeño retardo de 10ms
             
             // Event listener para el botón "Cargar Más Niveles"
             loadMoreBtn.addEventListener('click', () => {
