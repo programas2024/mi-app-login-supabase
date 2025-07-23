@@ -34,19 +34,21 @@
     <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
-    <!-- Librerías de terceros (cargadas globalmente) -->
+    <!-- Librerías de terceros (cargadas globalmente o como módulos ES) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    <!-- Usamos la versión UMD estable de Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
     <!-- Tu script principal con la lógica de Supabase -->
-    <script>
-        // --- Configuración de Supabase ---
-        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xibG9zaCIsInJvbGUiOiJub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yWvYCrR5nLo';
+    <script type="module">
+        // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
+        // Usamos esm.sh ya que tu script.js lo usa exitosamente.
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-        let supabase; // Declaramos 'supabase' aquí, pero la inicializamos en DOMContentLoaded
+        // --- Configuración de Supabase (la misma que en tu script.js) ---
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yWvYCrR5nLo';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- Elementos del DOM ---
         const currentDiamondsSpan = document.getElementById('current-diamonds');
@@ -81,13 +83,13 @@
                     const { data: newProfile, error: createError } = await supabase
                         .from('profiles')
                         .insert([
-                            { id: userId, gold: 0, diamonds: 0 }
+                            { id: userId, gold: 0, diamonds: 0 } // Solo inicializamos gold y diamonds
                         ])
                         .select()
                         .single();
                     if (createError) {
                         console.error("Error creating user profile:", createError.message);
-                        window.Swal.fire({
+                        Swal.fire({ // Usar Swal directamente porque SweetAlert2 ya está cargado
                             icon: 'error',
                             title: 'Error Crítico',
                             text: 'No pudimos crear tu perfil de jugador. Por favor, contacta soporte.',
@@ -97,7 +99,7 @@
                     }
                     profile = newProfile;
                 } else {
-                    window.Swal.fire({
+                    Swal.fire({ // Usar Swal directamente
                         icon: 'error',
                         title: 'Error de Perfil',
                         text: 'No pudimos cargar tu perfil. Intenta recargar la página.',
@@ -132,60 +134,41 @@
 
         // --- Inicialización y Event Listeners Globales ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Inicializamos el cliente Supabase aquí, después de que la librería global esté cargada
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log("Supabase client initialized in DOMContentLoaded.");
-                console.log("Supabase client object:", supabase);
-                console.log("Supabase auth object:", supabase.auth);
-                console.log("Type of supabase.auth.onAuthStateChanged:", typeof supabase.auth.onAuthStateChanged);
-            } else {
-                console.error("Error: window.supabase o createClient no están disponibles. Revisa la carga del CDN.");
-                window.Swal.fire({
-                    icon: 'error',
-                    title: 'Error Crítico',
-                    text: 'La librería de Supabase no pudo cargarse correctamente. Por favor, recarga la página.',
-                    customClass: { popup: 'swal2-custom-game-over' }
-                });
-                return; // Detener ejecución si Supabase no se carga
-            }
+            console.log("DOM Content Loaded. Initializing Supabase auth listener for VIP page.");
+            console.log("Supabase client object:", supabase);
+            console.log("Supabase auth object:", supabase.auth);
+            console.log("Type of supabase.auth.onAuthStateChange:", typeof supabase.auth.onAuthStateChange); // Usamos onAuthStateChange
 
-            // Ahora que Supabase está inicializado, podemos adjuntar el listener de autenticación
-            try {
-                if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChanged === 'function') {
-                    supabase.auth.onAuthStateChanged(async (event, session) => {
-                        console.log("Auth state changed:", event, session);
-                        if (session && session.user) {
-                            currentUser = session.user;
-                            console.log("Usuario autenticado:", currentUser.id);
-                            await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
-                        } else {
-                            currentUser = null;
-                            userProfile = { gold: 0, diamonds: 0 }; // Resetear si no hay usuario
-                            updateBalanceDisplay(); // Limpiar display si no hay usuario
-                            window.Swal.fire({
-                                icon: 'info',
-                                title: 'No Autenticado',
-                                text: 'Inicia sesión para ver tu balance VIP.',
-                                customClass: { popup: 'swal2-custom-warning' }
-                            });
-                        }
-                    });
-                } else {
-                    // Este error debería ser muy raro con la carga UMD
-                    throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función después de la inicialización.");
-                }
-            } catch (e) {
-                console.error("Error al inicializar el listener de autenticación de Supabase (catch principal):", e);
-                window.Swal.fire({
+            // Adjuntamos el listener de autenticación
+            // Usamos onAuthStateChange como en tu script.js
+            if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === 'function') {
+                supabase.auth.onAuthStateChange(async (event, session) => {
+                    console.log("Auth state changed on VIP page:", event, session);
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        console.log("Usuario autenticado:", currentUser.id);
+                        await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
+                    } else {
+                        currentUser = null;
+                        userProfile = { gold: 0, diamonds: 0 }; // Resetear si no hay usuario
+                        updateBalanceDisplay(); // Limpiar display si no hay usuario
+                        Swal.fire({ // Usar Swal directamente
+                            icon: 'info',
+                            title: 'No Autenticado',
+                            text: 'Inicia sesión para ver tu balance VIP.',
+                            customClass: { popup: 'swal2-custom-warning' }
+                        });
+                    }
+                });
+            } else {
+                console.error("Error: supabase.auth o onAuthStateChange no están disponibles. Esto es un error de inicialización.");
+                Swal.fire({ // Usar Swal directamente
                     icon: 'error',
                     title: 'Error de Inicialización Crítico',
-                    text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página o intenta más tarde.',
+                    text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página.',
                     customClass: { popup: 'swal2-custom-game-over' }
                 });
             }
-            
-            // No hay botón de "Cargar Más Niveles" ni lógica de tabla, así que eliminamos su listener.
         });
     </script>
 </body>
