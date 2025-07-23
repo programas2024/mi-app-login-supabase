@@ -485,11 +485,14 @@ body {
         font-size: 0.9em;
         padding: 12px 15px;
     }
-    .vip-rewards-table .reward-amount {
-        flex-direction: column;
-        gap: 3px;
-        align-items: flex-start;
-    }
+   .vip-rewards-table .reward-amount {
+    font-weight: 700;
+    font-size: 1.1em;
+    display: flex; /* <-- Esto es clave para alinear horizontalmente */
+    align-items: center; /* <-- Esto es clave para centrar verticalmente */
+    gap: 8px; /* <-- Esto controla el espacio entre los ítems */
+}
+
 }
 
 /* --- Estilos para el botón "Comprar VIP" --- */

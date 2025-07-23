@@ -46,7 +46,7 @@
             const currentDiamondsSpan = document.getElementById('current-diamonds');
             const currentGoldSpan = document.getElementById('current-gold');
             
-            // Valores de ejemplo para la demostración. En un juego real, se cargarían de una base de datos.
+            // Valores de ejemplo. En un juego real, se cargarían de una base de datos.
             currentDiamondsSpan.textContent = '150';
             currentGoldSpan.textContent = '500';
         });
@@ -102,12 +102,17 @@
             const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
             cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
 
-            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda aquí) ---
+            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda aquí, en la misma celda) ---
             const cell2 = row.insertCell();
             cell2.classList.add('reward-amount');
+            // Usamos un div interno para controlar mejor el layout de oro y esmeralda
             cell2.innerHTML = `
-                <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
-                <span style="font-size: 0.9em; margin: 0 5px; color: #666;">&</span> <i class="fas fa-gem" style="color: #3CB371;"></i> ${item.reward2Esmeralda} `;
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
+                    <span style="font-size: 0.9em; margin: 0 5px; color: #666;">&</span> 
+                    <i class="fas fa-gem" style="color: #3CB371;"></i> ${item.reward2Esmeralda}
+                </div>
+            `;
         });
     </script>
 </body>
