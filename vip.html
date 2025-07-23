@@ -46,6 +46,7 @@
             const currentDiamondsSpan = document.getElementById('current-diamonds');
             const currentGoldSpan = document.getElementById('current-gold');
             
+            // Valores de ejemplo para la demostración. En un juego real, se cargarían de una base de datos.
             currentDiamondsSpan.textContent = '150';
             currentGoldSpan.textContent = '500';
         });
@@ -59,7 +60,7 @@
             let reward2Gold = 0; // Oro para la recompensa 2
             let reward2Perla = 0; // Perla para la recompensa 2
 
-            // Definir Recompensa 1 (alternando entre oro y diamante, como antes)
+            // Definir Recompensa 1 (alternando entre oro y diamante)
             if (i % 2 !== 0) { // Niveles impares: Oro
                 reward1 = { type: 'gold', amount: 50 + (i * 10) };
             } else { // Niveles pares: Diamante
@@ -67,7 +68,7 @@
             }
 
             // Definir Recompensa 2 (Oro y Perla juntos)
-            reward2Gold = 30 + (i * 5); // Oro en recompensa 2
+            reward2Gold = 30 + (i * 5); // Oro en recompensa 2, aumenta con el nivel
             reward2Perla = 1 + Math.floor(i / 4); // Perlas aumentan cada 4 niveles, desde 1
 
             // Añadir bonificaciones en ciertos hitos
@@ -98,7 +99,7 @@
             const cell1 = row.insertCell();
             cell1.classList.add('reward-amount');
             const iconClass1 = item.reward1.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
-            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
+            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores específicos
             cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
 
             // Columna Recompensa 2 (Oro y Perla)
@@ -106,8 +107,9 @@
             cell2.classList.add('reward-amount');
             cell2.innerHTML = `
                 <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
-                <i class="fas fa-circle pearl-icon"></i> ${item.reward2Perla}
+                <span style="font-size: 0.9em; margin: 0 5px;">&</span> <i class="fas fa-circle pearl-icon"></i> ${item.reward2Perla}
             `;
+            // Agregué un "&" para mejorar la legibilidad entre Oro y Perla
         });
     </script>
 </body>

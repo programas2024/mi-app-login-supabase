@@ -1,7 +1,6 @@
-/* style.css */
+/* style2.css */
 
-/* --- Tus estilos de SweetAlerts (pegados aquí desde respuestas anteriores) --- */
-/* Asegúrate de que SweetAlert2.min.css esté enlazado en tu HTML */
+/* --- Estilos de SweetAlerts --- */
 .swal2-confirm-button {
     background-color: #5D3FD3 !important;
     color: #E0E0E0 !important;
@@ -47,7 +46,7 @@
 .swal2-popup.swal2-custom-warning { border-color: #DAA520 !important; }
 
 
-/* --- Estilos para el cargador (pegados aquí) --- */
+/* --- Estilos para el cargador --- */
 #loader-wrapper {
     position: fixed;
     top: 0;
@@ -92,7 +91,7 @@
     100% { transform: rotate(360deg); }
 }
 
-/* --- Estilos principales del juego (pegados aquí) --- */
+/* --- Estilos principales del juego --- */
 body {
     background-color: #E6EBF0;
     display: flex;
@@ -296,7 +295,7 @@ body {
     .submit-button { width: 100%; max-width: 150px; }
 }
 
-/* --- ESTILOS ESPECÍFICOS PARA LA PÁGINA VIP DE RECOMPENSAS (NUEVOS) --- */
+/* --- ESTILOS ESPECÍFICOS PARA LA PÁGINA VIP DE RECOMPENSAS --- */
 
 .vip-dashboard-container {
     background-color: #FFFFFF;
@@ -420,12 +419,14 @@ body {
 .vip-rewards-table .reward-amount .fas {
     font-size: 1.2em;
 }
+/* NO ES NECESARIO DEFINIR COLORES AQUÍ SI YA SE HACEN INLINE EN HTML
 .vip-rewards-table .reward-amount .fas.fa-coins {
     color: #DAA520;
 }
 .vip-rewards-table .reward-amount .fas.fa-gem {
     color: #87CEEB;
 }
+*/
 
 .back-to-game-btn {
     background-color: #5D3FD3;
@@ -522,14 +523,12 @@ body {
     color: #E0E0E0; /* Color claro para el ícono dentro del botón dorado */
 }
 
-/* --- Ajustes para el ícono de Perla en la tabla --- */
-/* Si no tienes un ícono de perla, usaremos un círculo y le daremos un estilo. */
+/* --- Estilos específicos para el ícono de Perla en la tabla --- */
 .vip-rewards-table .reward-amount .pearl-icon {
-    /* Usamos 'fa-circle' y lo estilizamos para que parezca una perla */
     color: #FFF0F5; /* Blanco rosado suave, como una perla */
     text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.5); /* Brillo más pronunciado */
     font-size: 0.8em; /* Un poco más pequeño que las monedas/gemas */
-    vertical-align: middle; /* Para que esté alineado con el texto */
+    vertical-align: middle;
     margin-left: 10px; /* Espacio para separarlo del oro */
 }
 
@@ -540,8 +539,7 @@ body {
     vertical-align: middle;
 }
 
-
-/* --- Media Queries (Asegúrate de que el botón VIP también se adapte) --- */
+/* Media Queries (Asegúrate de que el botón VIP también se adapte) */
 @media (max-width: 576px) {
     .buy-vip-btn {
         font-size: 1em;
