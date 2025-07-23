@@ -460,4 +460,226 @@ body {
 }
 
 /* ------------------------------------------------------------------- */
-/* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .
+/* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .swal2-custom-final-success) */
+/* Esto asegura una continuidad visual entre todas las alertas */
+.swal2-popup {
+    background: linear-gradient(135deg, #2C3E50, #34495E) !important; /* Tonos de azul muy oscuro */
+    border: 3px solid #7B68EE !important; /* Morado medio (lavender) para el borde distintivo */
+    color: #FFFFFF !important; /* Texto blanco para contraste */
+    font-weight: bold !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6) !important; /* Sombra más pronunciada para un look premium */
+    border-radius: 18px !important; /* Bordes ligeramente más redondeados */
+    font-family: 'Poppins', sans-serif !important; /* Usamos Poppins para consistencia */
+    animation: swal2-fadeIn 0.5s ease-out forwards; /* Animación de entrada sutil */
+}
+
+@keyframes swal2-fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.swal2-popup .swal2-title {
+    color: #ADD8E6 !important; /* Azul claro para el título, como el diamante */
+    font-size: 2.2em !important; /* Título un poco más grande */
+    margin-bottom: 0.8em !important; /* Más espacio debajo del título */
+    text-shadow: 0 0 10px rgba(173, 216, 230, 0.4); /* Sombra de texto para el título */
+}
+
+.swal2-popup .swal2-html-container {
+    color: #E0E0E0 !important; /* Gris muy claro para el contenido */
+    font-size: 1.3em !important; /* Contenido un poco más grande */
+    line-height: 1.7 !important; /* Mejor legibilidad */
+}
+
+/* Estilo para los íconos de SweetAlert (tick, cruz, etc.) */
+/* Aseguramos que el ícono de éxito no sea verde, usando el color del borde base */
+.swal2-success-line-tip,
+.swal2-success-line-long {
+    background-color: #7B68EE !important; /* Morado medio para el tick */
+}
+.swal2-success-ring {
+    border-color: #7B68EE !important; /* Morado medio para el anillo del tick */
+}
+/* Estilo para el ícono de error (la X) */
+.swal2-error-line-tip,
+.swal2-error-line-long {
+    background-color: #E74C3C !important; /* Rojo suave para la X */
+}
+.swal2-error-ring {
+    border-color: #E74C3C !important; /* Rojo suave para el anillo de la X */
+}
+/* Estilo para el ícono de advertencia (el signo de exclamación) */
+.swal2-warning {
+    color: #DAA520 !important; /* Dorado más tenue para la advertencia */
+    border-color: #DAA520 !important;
+}
+
+/* ------------------------------------------------------------------- */
+/* ESTILOS ESPECÍFICOS PARA ÍCONOS DE RECOMPENSA DENTRO DE LOS POP-UPS (¡Más Lindos!) */
+
+/* Ícono de Oro (moneda) */
+.swal2-popup .fas.fa-coins {
+    color: #FFD700 !important; /* ¡Oro vibrante! */
+    font-size: 2em !important; /* Más grande */
+    vertical-align: middle;
+    margin: 0 8px; /* Más espacio */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.5); /* Brillo dorado */
+    animation: coin-glow 1.5s infinite alternate ease-in-out; /* Animación de brillo */
+}
+@keyframes coin-glow {
+    from { transform: scale(1); filter: brightness(1); }
+    to { transform: scale(1.1); filter: brightness(1.2); }
+}
+
+/* Ícono de Diamante */
+.swal2-popup .fas.fa-gem {
+    color: #62c3e8 !important; /* ¡Azul diamante brillante! */
+    font-size: 2em !important; /* Más grande */
+    vertical-align: middle;
+    margin: 0 8px; /* Más espacio */
+    text-shadow: 0 0 10px rgba(98, 195, 232, 0.8), 0 0 20px rgba(98, 195, 232, 0.5); /* Brillo azul */
+    animation: gem-pulse 1.8s infinite alternate ease-in-out; /* Animación de pulso */
+}
+@keyframes gem-pulse {
+    from { transform: scale(1); filter: brightness(1); }
+    to { transform: scale(1.1); filter: brightness(1.3); }
+}
+
+
+/* Puedes añadir pequeños ajustes si quieres que ciertos pop-ups tengan un borde o título ligeramente diferente
+   sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
+.swal2-popup.swal2-custom-game-over .swal2-title {
+    color: #E74C3C !important; /* Título rojo suave para Game Over */
+}
+.swal2-popup.swal2-custom-game-over {
+    border-color: #A93226 !important; /* Borde un poco más oscuro para Game Over */
+}
+
+/* Para el pop-up de Advertencia, puedes cambiar el color del título para que sea más acorde al warning */
+.swal2-popup.swal2-custom-warning .swal2-title {
+    color: #DAA520 !important; /* Dorado más tenue para el título de advertencia */
+}
+.swal2-popup.swal2-custom-warning {
+    border-color: #DAA520 !important; /* Borde más acorde a la advertencia */
+}
+
+/* Para el pop-up de Nivel Completado */
+.swal2-popup.swal2-custom-level-up .swal2-title {
+    color: #50e3c2 !important; /* Verde esmeralda */
+}
+.swal2-popup.swal2-custom-level-up {
+    border-color: #3cb371 !important; /* Verde medio */
+}
+
+/* Para el pop-up de Éxito Final */
+.swal2-popup.swal2-custom-final-success .swal2-title {
+    color: #FFD700 !important; /* Oro */
+}
+.swal2-popup.swal2-custom-final-success {
+    border-color: #DAA520 !important; /* Oro más oscuro */
+}
+
+
+/* --- Media Queries para Responsividad --- */
+
+/* Pantallas medianas (tablets grandes, laptops pequeñas) */
+@media (max-width: 768px) {
+    .orcado-container {
+        padding: 20px;
+        width: 95%;
+    }
+    .orcado-container h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+    }
+    .orcado-description {
+        font-size: 0.95em;
+    }
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .word-display {
+        font-size: 2em;
+        letter-spacing: 3px;
+    }
+    .guess-controls {
+        flex-direction: column;
+    }
+    .guess-input {
+        width: 80%;
+        max-width: 150px;
+        font-size: 1.2em;
+    }
+    .submit-button {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+    .back-button {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    /* Ajustes para el dibujo del ahorcado en pantallas medianas */
+    .hangman-drawing {
+        width: 120px; /* Reduce el tamaño del dibujo */
+        height: 160px;
+        margin: 15px auto 20px auto;
+    }
+    .hangman-drawing .gallow-post { height: 140px; }
+    .hangman-drawing .gallow-top { width: 60px; }
+    .hangman-drawing .gallow-rope { height: 20px; left: 75px; } /* Ajusta la posición de la cuerda */
+
+    #hangman-head { top: 25px; left: 60px; width: 30px; height: 30px; }
+    #hangman-body { top: 55px; left: 74px; height: 50px; }
+    #hangman-arm-left { top: 65px; left: 45px; width: 30px; }
+    #hangman-arm-right { top: 65px; left: 70px; width: 30px; }
+    #hangman-leg-left { top: 105px; left: 40px; width: 40px; }
+    #hangman-leg-right { top: 105px; left: 65px; width: 40px; }
+}
+
+@media (max-width: 480px) {
+    .orcado-container {
+        padding: 20px;
+    }
+    .orcado-container h1 {
+        font-size: 2em;
+    }
+    .word-display {
+        font-size: 2em;
+        letter-spacing: 4px;
+    }
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .guess-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .guess-input {
+        width: 100%;
+        max-width: 150px;
+    }
+    .submit-button {
+        width: 100%;
+        max-width: 150px;
+    }
+    /* Ajustes para el dibujo del ahorcado en pantallas pequeñas */
+    .hangman-drawing {
+        width: 100px; /* Reduce aún más el tamaño del dibujo */
+        height: 140px;
+        margin: 10px auto 15px auto;
+    }
+    .hangman-drawing .gallow-post { height: 120px; left: 15px; }
+    .hangman-drawing .gallow-top { width: 50px; left: 15px; }
+    .hangman-drawing .gallow-rope { height: 18px; left: 60px; }
+
+    #hangman-head { top: 20px; left: 45px; width: 25px; height: 25px; }
+    #hangman-body { top: 45px; left: 56.5px; height: 40px; }
+    #hangman-arm-left { top: 55px; left: 30px; width: 25px; }
+    #hangman-arm-right { top: 55px; left: 50px; width: 25px; }
+    #hangman-leg-left { top: 85px; left: 25px; width: 30px; }
+    #hangman-leg-right { top: 85px; left: 45px; width: 30px; }
+}
