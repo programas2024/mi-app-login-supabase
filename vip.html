@@ -102,17 +102,16 @@
             const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
             cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
 
-            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda aquí, en la misma celda) ---
+            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda aquí, en la misma celda, alineados) ---
             const cell2 = row.insertCell();
-            cell2.classList.add('reward-amount');
-            // Usamos un div interno para controlar mejor el layout de oro y esmeralda
+            cell2.classList.add('reward-amount'); // Aplica la clase flexbox aquí
             cell2.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
-                    <span style="font-size: 0.9em; margin: 0 5px; color: #666;">&</span> 
-                    <i class="fas fa-gem" style="color: #3CB371;"></i> ${item.reward2Esmeralda}
-                </div>
+                <i class="fas fa-coins" style="color: #DAA520; margin-right: 5px;"></i> ${item.reward2Gold}
+                <span style="font-size: 0.9em; margin: 0 8px; color: #666; font-weight: normal;">y</span> 
+                <i class="fas fa-gem" style="color: #3CB371; margin-right: 5px;"></i> ${item.reward2Esmeralda}
             `;
+            // NOTA: Quité el <div> anidado porque '.reward-amount' ya es flex.
+            // Ajusté los márgenes y el 'y' para una mejor visualización.
         });
     </script>
 </body>
