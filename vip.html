@@ -30,8 +30,7 @@
                 <thead>
                     <tr>
                         <th>Nivel</th>
-                        <th>Recompensa de Diamante</th>
-                        <th>Recompensa de Oro & Perla</th> </tr>
+                        <th>Recompensa 1</th> <th>Recompensa 2 (Oro y Perla)</th> </tr>
                 </thead>
                 <tbody>
                     </tbody>
@@ -56,27 +55,37 @@
         const tbody = document.querySelector('.vip-rewards-table tbody');
 
         for (let i = 1; i <= 20; i++) {
-            let diamondReward = { type: 'diamond', amount: 0 };
-            let goldPerlaReward = { gold: 0, perla: 0 }; // Objeto para oro y perla
+            let reward1 = {}; // Recompensa 1 (solo oro O solo diamante)
+            let reward2Gold = 0; // Oro para la recompensa 2
+            let reward2Perla = 0; // Perla para la recompensa 2
 
-            // Recompensa de Diamante (Columna 1)
-            diamondReward.amount = 10 + (i * 3); // Empieza en 13, aumenta en 3 por nivel
-            if (i % 5 === 0) { // Bonificación cada 5 niveles
-                diamondReward.amount += 15;
+            // Definir Recompensa 1 (alternando entre oro y diamante, como antes)
+            if (i % 2 !== 0) { // Niveles impares: Oro
+                reward1 = { type: 'gold', amount: 50 + (i * 10) };
+            } else { // Niveles pares: Diamante
+                reward1 = { type: 'diamond', amount: 8 + (i * 2) };
             }
 
-            // Recompensa de Oro y Perla (Columna 2)
-            goldPerlaReward.gold = 30 + (i * 7); // Oro aumenta en 7 por nivel
-            goldPerlaReward.perla = 1 + Math.floor(i / 3); // Perlas aumentan cada 3 niveles
-            if (i % 10 === 0) { // Bonificación cada 10 niveles
-                goldPerlaReward.gold += 50;
-                goldPerlaReward.perla += 3;
+            // Definir Recompensa 2 (Oro y Perla juntos)
+            reward2Gold = 30 + (i * 5); // Oro en recompensa 2
+            reward2Perla = 1 + Math.floor(i / 4); // Perlas aumentan cada 4 niveles, desde 1
+
+            // Añadir bonificaciones en ciertos hitos
+            if (i % 5 === 0) {
+                reward1.amount += 10; // Extra para Recompensa 1
+                reward2Gold += 20;    // Extra oro en Recompensa 2
+            }
+            if (i % 10 === 0) {
+                reward1.amount += 25; // Gran extra para Recompensa 1
+                reward2Gold += 40;    // Gran extra oro en Recompensa 2
+                reward2Perla += 2;    // Extra perlas en Recompensa 2
             }
 
             rewardsData.push({
                 level: i,
-                diamondReward: diamondReward,
-                goldPerlaReward: goldPerlaReward
+                reward1: reward1,
+                reward2Gold: reward2Gold,
+                reward2Perla: reward2Perla
             });
         }
 
@@ -85,17 +94,20 @@
             const row = tbody.insertRow();
             row.insertCell().textContent = item.level; // Columna de Nivel
 
-            // Columna de Recompensa de Diamante
-            const diamondCell = row.insertCell();
-            diamondCell.classList.add('reward-amount');
-            diamondCell.innerHTML = `<i class="fas fa-gem"></i> ${item.diamondReward.amount}`;
+            // Columna Recompensa 1
+            const cell1 = row.insertCell();
+            cell1.classList.add('reward-amount');
+            const iconClass1 = item.reward1.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
+            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
+            cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
 
-            // Columna de Recompensa de Oro y Perla
-            const goldPerlaCell = row.insertCell();
-            goldPerlaCell.classList.add('reward-amount');
-            // Usamos un ícono diferente para la perla, si tienes uno, o mantenemos el de diamante si es abstracto
-            goldPerlaCell.innerHTML = `<i class="fas fa-coins"></i> ${item.goldPerlaReward.gold} <i class="fas fa-circle" style="color:#FFF0F5; text-shadow: 0 0 5px rgba(255,255,255,0.7);"></i> ${item.goldPerlaReward.perla}`;
-            // Nota: Usé un círculo como ícono de perla para el ejemplo. Si tienes un ícono de Font Awesome específico para perla (ej. 'fas fa-pearl'), úsalo. He puesto un color y sombra para que se vea más como perla.
+            // Columna Recompensa 2 (Oro y Perla)
+            const cell2 = row.insertCell();
+            cell2.classList.add('reward-amount');
+            cell2.innerHTML = `
+                <i class="fas fa-coins" style="color: #DAA520;"></i> ${item.reward2Gold}
+                <i class="fas fa-circle pearl-icon"></i> ${item.reward2Perla}
+            `;
         });
     </script>
 </body>

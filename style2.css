@@ -524,17 +524,20 @@ body {
 
 /* --- Ajustes para el ícono de Perla en la tabla --- */
 /* Si no tienes un ícono de perla, usaremos un círculo y le daremos un estilo. */
-.vip-rewards-table .reward-amount .fas.fa-circle {
+.vip-rewards-table .reward-amount .pearl-icon {
+    /* Usamos 'fa-circle' y lo estilizamos para que parezca una perla */
     color: #FFF0F5; /* Blanco rosado suave, como una perla */
-    text-shadow: 0 0 5px rgba(255,255,255,0.7); /* Brillo sutil */
+    text-shadow: 0 0 5px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.5); /* Brillo más pronunciado */
     font-size: 0.8em; /* Un poco más pequeño que las monedas/gemas */
-    vertical-align: middle;
+    vertical-align: middle; /* Para que esté alineado con el texto */
+    margin-left: 10px; /* Espacio para separarlo del oro */
 }
 
-/* Puedes ajustar el tamaño de los íconos de recompensa si es necesario */
+/* Mantener consistencia para los otros íconos en la tabla */
 .vip-rewards-table .reward-amount .fas.fa-coins,
 .vip-rewards-table .reward-amount .fas.fa-gem {
-    font-size: 1.2em; /* Mantener coherencia en los tamaños de íconos */
+    font-size: 1.2em;
+    vertical-align: middle;
 }
 
 
