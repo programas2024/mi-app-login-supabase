@@ -454,9 +454,22 @@
                 font-size: 0.9em;
             }
         }
+
+        
     </style>
 </head>
 <body>
+
+     <div id="loader-wrapper">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h1>Cargando Juego...</h1>
+        </div>
+    </div>
+
+    <div id="game-container">
+        </div>
+
     <div class="orcado-container">
         <button class="back-button" onclick="window.location.href='games.html'">
             <i class="fas fa-arrow-left"></i> Volver a Juegos
@@ -494,6 +507,7 @@
             <p id="message" class="message"></p>
         </div>
     </div>
+
 
     <script type="module" src="script.js"></script>
     

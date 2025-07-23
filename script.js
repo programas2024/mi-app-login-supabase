@@ -518,6 +518,7 @@ const levelDisplay = document.getElementById('level-display');
 const wrongGuessesDisplay = document.getElementById('wrong-guesses-display');
 const timerDisplay = document.getElementById('timer-display');
 const lettersUsedDisplay = document.getElementById('letters-used-display');
+const loaderWrapper = document.getElementById('loader-wrapper'); // <--- NUEVA REFERENCIA
 
 // ====================================================================================
 // FUNCIONES PRINCIPALES DEL JUEGO
@@ -530,29 +531,28 @@ const lettersUsedDisplay = document.getElementById('letters-used-display');
  */
 async function initializeGame(level = 1) {
     currentLevel = level;
-    // Verifica si hay palabras para el nivel actual, si no, vuelve al nivel 1.
+    // ... (tu lógica existente de inicialización del juego) ...
     if (!wordLists[currentLevel] || wordLists[currentLevel].length === 0) {
         console.error(`Error: No words found for level ${currentLevel}. Resetting to level 1.`);
         currentLevel = 1;
     }
 
-    // Selecciona una palabra aleatoria para el nivel actual.
     selectedWord = wordLists[currentLevel][Math.floor(Math.random() * wordLists[currentLevel].length)].toUpperCase();
-    guessedWord = Array(selectedWord.length).fill('_'); // Inicializa la palabra adivinada con guiones bajos
+    guessedWord = Array(selectedWord.length).fill('_');
     wrongGuesses = 0;
     lettersUsed = [];
-    timeLeft = 120; // Reinicia el temporizador
+    timeLeft = 120;
     messageDisplay.textContent = "";
-    guessInput.value = ""; // Limpia el campo de entrada
+    guessInput.value = "";
     
-    updateDisplay();         // Actualiza la interfaz del juego
-    updateHangmanDrawing();  // Actualiza el dibujo del ahorcado
-    startTimer();            // Inicia/Reinicia el temporizador
-    guessInput.focus();      // Enfoca el campo de entrada para que el jugador pueda empezar a escribir
+    updateDisplay();
+    updateHangmanDrawing();
+    startTimer();
+    guessInput.focus();
     
     levelDisplay.textContent = currentLevel;
     wrongGuessesDisplay.textContent = wrongGuesses;
-    lettersUsedDisplay.textContent = ''; // Limpia las letras usadas
+    lettersUsedDisplay.textContent = '';
 }
 
 /**
@@ -818,18 +818,24 @@ async function handleGameOver(isWin, message) {
 // Conecta las acciones del usuario con la lógica del juego.
 // ====================================================================================
 
-// Maneja el clic en el botón de adivinar
 submitButton.addEventListener('click', checkGuess);
 
-// Maneja la pulsación de la tecla 'Enter' en el campo de entrada
 guessInput.addEventListener('keypress', async (event) => {
     if (event.key === 'Enter') {
         await checkGuess();
     }
 });
 
-// Inicializa el juego cuando el DOM está completamente cargado
-// Se usa una función anónima para evitar pasar el objeto Event a initializeGame.
-document.addEventListener('DOMContentLoaded', () => {
-    initializeGame();
+// Inicializa el juego cuando el DOM está completamente cargado.
+// Oculta el cargador después de que initializeGame haya terminado.
+document.addEventListener('DOMContentLoaded', async () => { // <--- Añade 'async' aquí
+    await initializeGame(); // Asegúrate de que initializeGame termine antes de ocultar
+    
+    // Simula un pequeño retardo si initializeGame es muy rápido, para que el usuario vea el cargador.
+    // Esto es opcional, quítalo si initializeGame ya tarda lo suficiente.
+    setTimeout(() => {
+        if (loaderWrapper) {
+            loaderWrapper.classList.add('hidden'); // Añade la clase 'hidden' para ocultarlo
+        }
+    }, 500); // Pequeño retardo de 0.5 segundos
 });
