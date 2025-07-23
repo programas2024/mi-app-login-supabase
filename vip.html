@@ -39,20 +39,19 @@
     <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
-    <!-- Librerías de terceros (cargadas globalmente para máxima compatibilidad) -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    <!-- ¡CAMBIO CLAVE AQUÍ! Cargamos Supabase como una variable global (UMD) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
     <!-- Tu script principal con la lógica de Supabase y recompensas -->
-    <script>
-        // --- Configuración de Supabase ---
+    <script type="module">
+        // Importaciones necesarias para este módulo: Supabase, Confetti y SweetAlert2
+        // ¡Usamos esm.sh para Supabase y Confetti, y SweetAlert2 compatible con módulos ES!
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+        import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
+        import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11/+esm'; // Importar Swal como módulo ES
+
+        // --- Configuración de Supabase (¡CLAVE API IDÉNTICA A TU SCRIPT.JS!) ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        // ¡CLAVE API ASEGURADA Y CORREGIDA PARA COINCIDIR CON TU SCRIPT.JS!
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
-        let supabase; // Declaramos 'supabase' aquí, pero la inicializamos en DOMContentLoaded
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- Elementos del DOM ---
         const currentDiamondsSpan = document.getElementById('current-diamonds');
@@ -135,7 +134,7 @@
                 currentDiamondsSpan.textContent = userProfile.diamonds;
                 console.log(`DEBUG: updateBalanceDisplay - UI Actualizada: Oro: ${userProfile.gold}, Diamantes: ${userProfile.diamonds}`);
             } else {
-                console.error("DEBUG: updateBalanceDisplay - Fallo al obtener perfil para actualizar el display.");
+                console.error("DEBUG: updateBalanceDisplay - Fallo al obtener perfil para actualizar display.");
             }
         }
 
@@ -150,7 +149,7 @@
 
             grantRewardsBtn.disabled = true;
             grantRewardsBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Recibiendo...`;
-            console.log("DEBUG: grantRandomRewards - Botón clickeado. Usuario:", currentUser.id);
+            console.log("DEBUG: grantRandomRewards - Botón clickeado. User ID:", currentUser.id);
 
             try {
                 const { data: profile, error: profileError } = await supabase
@@ -194,6 +193,12 @@
                 userProfile.diamonds = newTotalDiamonds;
                 updateBalanceDisplay(); // Actualizar los spans en la UI
 
+                confetti({
+                    particleCount: 200, spread: 180, origin: { y: 0.6, x: 0.5 },
+                    colors: ['#FFD700', '#62c3e8', '#ffffff', '#8B4513'],
+                    shapes: ['circle', 'square', 'star'], scalar: 1.5, disableForReducedMotion: true
+                });
+
                 Swal.fire({
                     title: '¡Recompensas Recibidas!',
                     html: `
@@ -209,14 +214,7 @@
                         </div>
                     `,
                     confirmButtonText: '¡Genial!',
-                    customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' },
-                    willOpen: () => {
-                        confetti({
-                            particleCount: 200, spread: 180, origin: { y: 0.6, x: 0.5 },
-                            colors: ['#FFD700', '#62c3e8', '#ffffff', '#8B4513'],
-                            shapes: ['circle', 'square', 'star'], scalar: 1.5, disableForReducedMotion: true
-                        });
-                    }
+                    customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
                 });
 
             } catch (error) {
@@ -235,50 +233,59 @@
         }
 
         // --- Inicialización al cargar el DOM ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => { // Hacemos el listener async
             console.log("DEBUG: DOMContentLoaded - Página VIP cargada.");
 
-            // Inicializamos el cliente Supabase aquí, usando la variable global 'window.supabase'
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log("DEBUG: Supabase client initialized.");
-                console.log("DEBUG: Supabase client object:", supabase);
-                console.log("DEBUG: Supabase auth object:", supabase.auth);
-                console.log("DEBUG: Type of supabase.auth.onAuthStateChange:", typeof supabase.auth.onAuthStateChange);
+            // Intenta obtener el usuario inmediatamente al cargar la página
+            // para mostrar el balance lo antes posible.
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                currentUser = user;
+                console.log("DEBUG: DOMContentLoaded - Usuario autenticado al cargar:", currentUser.id);
+                await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
             } else {
-                console.error("DEBUG: ERROR CRÍTICO - window.supabase o createClient no están disponibles. La librería no se cargó.");
-                Swal.fire({ icon: 'error', title: 'Error Crítico', text: 'La librería de Supabase no pudo cargarse correctamente. Por favor, recarga la página.', customClass: { popup: 'swal2-custom-game-over' } });
-                return; // Detener ejecución si Supabase no se carga
+                console.log("DEBUG: DOMContentLoaded - No hay usuario autenticado al cargar.");
+                // Si no hay usuario, se mostrarán los 40000 por defecto y un Swal de info
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Autenticado',
+                    text: 'Inicia sesión para ver tu balance VIP y recibir recompensas.',
+                    customClass: { popup: 'swal2-custom-warning' }
+                });
             }
 
-            // Adjuntamos el listener de autenticación
+            // Adjuntamos el listener de cambios de estado de autenticación
+            // Esto es para reaccionar a inicios/cierres de sesión mientras la página está abierta
             if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === 'function') {
                 supabase.auth.onAuthStateChange(async (event, session) => {
                     console.log("DEBUG: onAuthStateChange - Evento de autenticación:", event, "Sesión:", session);
                     if (session && session.user) {
-                        currentUser = session.user;
-                        console.log("DEBUG: onAuthStateChange - Usuario autenticado:", currentUser.id);
-                        await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
-                    } else {
+                        // Solo actualizamos si el usuario cambia o si el evento es SIGNED_IN
+                        if (!currentUser || currentUser.id !== session.user.id || event === 'SIGNED_IN') {
+                            currentUser = session.user;
+                            console.log("DEBUG: onAuthStateChange - Usuario autenticado o cambiado:", currentUser.id);
+                            await updateBalanceDisplay();
+                        }
+                    } else if (event === 'SIGNED_OUT') {
                         currentUser = null;
-                        userProfile = { gold: 0, diamonds: 0 }; // Resetear si no hay usuario
-                        updateBalanceDisplay(); // Limpiar display si no hay usuario
-                        Swal.fire({ icon: 'info', title: 'No Autenticado', text: 'Inicia sesión para ver tu balance VIP y recibir recompensas.', customClass: { popup: 'swal2-custom-warning' } });
-                    }
-                });
-                // También intentamos cargar el balance al inicio por si ya hay una sesión activa
-                supabase.auth.getUser().then(async ({ data: { user } }) => {
-                    if (user) {
-                        currentUser = user;
-                        console.log("DEBUG: Initial getUser check - Usuario ya autenticado:", currentUser.id);
-                        await updateBalanceDisplay();
-                    } else {
-                        console.log("DEBUG: Initial getUser check - No hay usuario autenticado al cargar.");
+                        userProfile = { gold: 0, diamonds: 0 }; // Resetear si se cierra sesión
+                        updateBalanceDisplay(); // Limpiar display
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Sesión Cerrada',
+                            text: 'Has cerrado sesión. Por favor, inicia sesión para acceder a tu bóveda VIP.',
+                            customClass: { popup: 'swal2-custom-warning' }
+                        });
                     }
                 });
             } else {
-                console.error("DEBUG: ERROR CRÍTICO - supabase.auth o onAuthStateChange no están disponibles después de la inicialización.");
-                Swal.fire({ icon: 'error', title: 'Error de Inicialización Crítico', text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página.', customClass: { popup: 'swal2-custom-game-over' } });
+                console.error("DEBUG: ERROR CRÍTICO - supabase.auth o onAuthStateChange no están disponibles.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Inicialización Crítico',
+                    text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página.',
+                    customClass: { popup: 'swal2-custom-game-over' }
+                });
             }
 
             // Event listener para el botón de otorgar recompensas
