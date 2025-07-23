@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orcado - El Juego de la Palabra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css"> <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <style>
         body {
-            background-color: #f0f2f5; /* Fondo claro */
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,7 +21,7 @@
         }
 
         .orcado-container {
-            background-color: #ffffff; /* Contenedor principal blanco */
+            background-color: #ffffff;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             padding: 40px;
@@ -28,49 +29,134 @@
             max-width: 800px;
             text-align: center;
             position: relative;
+            overflow: hidden; /* Para el fondo animado */
         }
+
+        /* Fondo animado sutil */
+        .orcado-container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            right: -50px;
+            bottom: -50px;
+            background: radial-gradient(circle at center, rgba(52, 152, 219, 0.05) 0%, transparent 70%);
+            animation: pulseBlueLight 4s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulseBlueLight {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
 
         .orcado-container h1 {
             font-family: 'Montserrat', sans-serif;
             color: #333;
             font-size: 3em;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             font-weight: 800;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .orcado-description {
             color: #555;
             font-size: 1.1em;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #444;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-info span {
+            padding: 8px 15px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .game-info #timer-display {
+            background-color: #FFEB3B; /* Amarillo para el tiempo */
+            color: #333;
+        }
+
+        .game-info #level-display {
+            background-color: #BBDEFB; /* Azul claro para nivel */
+            color: #333;
         }
 
         .game-area {
             background-color: #f8f8f8;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
         }
 
         .word-display {
             font-family: 'Montserrat', sans-serif;
-            font-size: 3em;
-            letter-spacing: 5px;
+            font-size: 3.5em;
+            letter-spacing: 8px; /* Más espaciado */
             margin-bottom: 30px;
-            color: #4CAF50; /* Verde para la palabra oculta */
+            color: #28a745; /* Verde más vibrante para la palabra */
             font-weight: 700;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            animation: pulseWord 1.5s infinite alternate; /* Animación sutil */
+        }
+
+        @keyframes pulseWord {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+
+        .letters-used {
+            font-size: 1.1em;
+            color: #777;
+            margin-top: 15px;
+            min-height: 25px; /* Para evitar saltos cuando está vacío */
+        }
+        .letters-used strong {
+            color: #e74c3c; /* Rojo para letras incorrectas */
+        }
+        .letters-used span {
+            margin: 0 3px;
+            font-weight: bold;
+        }
+
+
+        .guess-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap; /* Para responsividad */
         }
 
         .guess-input {
             padding: 15px 20px;
             font-size: 1.5em;
             text-align: center;
-            width: 150px;
+            width: 100px; /* Reducido para mejor visualización en móvil */
             border: 2px solid #3498db;
             border-radius: 10px;
-            margin-bottom: 20px;
             outline: none;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -100,18 +186,19 @@
         }
 
         .message {
-            font-size: 1.2em;
-            margin-top: 20px;
-            color: #e74c3c; /* Rojo para mensajes de error */
+            font-size: 1.3em; /* Más grande */
+            margin-top: 25px;
+            min-height: 30px; /* Para evitar saltos de layout */
             font-weight: 600;
+            color: #e74c3c; /* Rojo por defecto para errores */
         }
 
-        /* Estilos del botón de regreso (copiado de games.html para consistencia) */
+        /* Estilos del botón de regreso */
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            background-color: #f39c12; /* Naranja brillante */
+            background-color: #f39c12;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -123,6 +210,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            z-index: 10; /* Asegura que esté por encima de otros elementos */
         }
 
         .back-button:hover {
@@ -130,6 +218,142 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
+
+        /* Estilos para el dibujo del ahorcado (simple con CSS) */
+        .hangman-drawing {
+            width: 150px;
+            height: 200px;
+            border-bottom: 5px solid #666;
+            margin: 20px auto 30px auto;
+            position: relative;
+        }
+        .hangman-drawing .gallow-post {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 180px;
+            background-color: #666;
+        }
+        .hangman-drawing .gallow-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 100px;
+            height: 5px;
+            background-color: #666;
+        }
+        .hangman-drawing .gallow-rope {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 30px;
+            background-color: #666;
+        }
+
+        /* Partes del ahorcado ocultas por defecto */
+        .hangman-part {
+            position: absolute;
+            background-color: #333; /* Color oscuro para el cuerpo */
+            border-radius: 50%; /* Para la cabeza */
+            display: none; /* Oculto por defecto */
+        }
+
+        .hangman-head {
+            width: 40px;
+            height: 40px;
+            top: 25px; /* Ajuste para colgar de la cuerda */
+            right: -17px; /* Ajuste para colgar de la cuerda */
+            border: 2px solid #666; /* Borde para la cabeza */
+            z-index: 2; /* Asegura que la cabeza esté por encima de la cuerda */
+        }
+
+        .hangman-body {
+            width: 5px;
+            height: 60px;
+            top: 65px;
+            right: 0px; /* Ajuste para que esté centrado bajo la cabeza */
+            border-radius: 0;
+        }
+
+        .hangman-arm-left {
+            width: 40px;
+            height: 5px;
+            top: 75px;
+            right: 5px; /* Empieza desde el cuerpo */
+            transform: rotate(45deg);
+            transform-origin: 0% 0%;
+            border-radius: 0;
+        }
+        .hangman-arm-right {
+            width: 40px;
+            height: 5px;
+            top: 75px;
+            right: -30px; /* Empieza desde el cuerpo */
+            transform: rotate(-45deg);
+            transform-origin: 100% 0%;
+            border-radius: 0;
+        }
+
+        .hangman-leg-left {
+            width: 50px;
+            height: 5px;
+            top: 120px;
+            right: 0px; /* Empieza desde el cuerpo */
+            transform: rotate(-45deg);
+            transform-origin: 0% 0%;
+            border-radius: 0;
+        }
+        .hangman-leg-right {
+            width: 50px;
+            height: 5px;
+            top: 120px;
+            right: -40px; /* Empieza desde el cuerpo */
+            transform: rotate(45deg);
+            transform-origin: 100% 0%;
+            border-radius: 0;
+        }
+
+        /* Clases para mostrar las partes del ahorcado */
+        .show-part {
+            display: block;
+        }
+
+
+        /* Estilos personalizados para SweetAlerts */
+        .swal2-custom-success .swal2-title {
+            color: #28a745 !important; /* Verde */
+        }
+        .swal2-custom-success .swal2-html-container {
+            color: #333 !important;
+        }
+        .swal2-custom-success .swal2-confirm-button {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+        }
+        .swal2-custom-error .swal2-title {
+            color: #dc3545 !important; /* Rojo */
+        }
+        .swal2-custom-error .swal2-html-container {
+            color: #333 !important;
+        }
+        .swal2-custom-error .swal2-confirm-button {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+        .swal2-custom-level-up .swal2-title {
+            color: #007bff !important; /* Azul */
+        }
+        .swal2-custom-level-up .swal2-html-container {
+            color: #333 !important;
+        }
+        .swal2-custom-level-up .swal2-confirm-button {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+        }
+
 
         /* Media queries para responsividad */
         @media (max-width: 768px) {
@@ -144,11 +368,20 @@
             .orcado-description {
                 font-size: 0.95em;
             }
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
             .word-display {
                 font-size: 2em;
+                letter-spacing: 3px;
+            }
+            .guess-controls {
+                flex-direction: column;
             }
             .guess-input {
-                width: 100px;
+                width: 80%;
+                max-width: 150px;
                 font-size: 1.2em;
             }
             .submit-button {
@@ -173,118 +406,257 @@
         <h1>Juego de Orcado</h1>
         <p class="orcado-description">¡Adivina la palabra oculta letra por letra! Cada error te acerca al final.</p>
 
-        <div class="game-area">
-            <div class="word-display" id="word-display">_ _ _ _ _</div>
-            <input type="text" id="guess-input" class="guess-input" maxlength="1" placeholder="Letra">
-            <button id="submit-guess" class="submit-button">Adivinar</button>
-            <p id="message" class="message"></p>
+        <div class="game-info">
+            <span>Nivel: <span id="level-display">1</span></span>
+            <span>Errores: <span id="wrong-guesses-display">0</span> / 6</span>
+            <span>Tiempo: <span id="timer-display">120</span>s</span>
         </div>
 
-        <script>
-            // Lógica de JavaScript para el juego "Orcado" (Ahorcado)
-            const words = ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "INTELIGENCIA", "ARTIFICIAL", "TECNOLOGIA", "APRENDIZAJE"];
-            let selectedWord = "";
-            let guessedWord = [];
-            let wrongGuesses = 0;
-            const maxWrongGuesses = 6; // Por ejemplo, 6 intentos para el ahorcado
+        <div class="game-area">
+            <div class="hangman-drawing">
+                <div class="gallow-post"></div>
+                <div class="gallow-top"></div>
+                <div class="gallow-rope"></div>
+                <div class="hangman-part hangman-head" id="hangman-head"></div>
+                <div class="hangman-part hangman-body" id="hangman-body"></div>
+                <div class="hangman-part hangman-arm-left" id="hangman-arm-left"></div>
+                <div class="hangman-part hangman-arm-right" id="hangman-arm-right"></div>
+                <div class="hangman-part hangman-leg-left" id="hangman-leg-left"></div>
+                <div class="hangman-part hangman-leg-right" id="hangman-leg-right"></div>
+            </div>
 
-            const wordDisplay = document.getElementById('word-display');
-            const guessInput = document.getElementById('guess-input');
-            const submitButton = document.getElementById('submit-guess');
-            const messageDisplay = document.getElementById('message');
+            <div class="word-display" id="word-display">_ _ _ _ _</div>
+            <div class="letters-used">Letras usadas: <span id="letters-used-display"></span></div>
 
-            function initializeGame() {
-                selectedWord = words[Math.floor(Math.random() * words.length)].toUpperCase();
-                guessedWord = Array(selectedWord.length).fill('_');
-                wrongGuesses = 0;
-                messageDisplay.textContent = "";
-                guessInput.value = "";
-                updateDisplay();
-                guessInput.focus();
-            }
+            <div class="guess-controls">
+                <input type="text" id="guess-input" class="guess-input" maxlength="1" placeholder="Letra">
+                <button id="submit-guess" class="submit-button">Adivinar</button>
+            </div>
+            <p id="message" class="message"></p>
+        </div>
+    </div>
 
-            function updateDisplay() {
-                wordDisplay.textContent = guessedWord.join(' ');
-            }
+    <script>
+        // Lógica de JavaScript para el juego "Orcado" (Ahorcado)
+        const wordLists = {
+            1: ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "TECNOLOGIA", "INTERNET", "NAVEGADOR", "APLICACION", "SERVIDOR", "DATABASE"],
+            2: ["INTELIGENCIA", "CRIPTOGRAFIA", "NEURONAL", "BIGDATA", "CIBERSEGURIDAD", "REALIDAD", "VIRTUAL", "AUMENTADA", "ROBOTICA", "AUTOMATIZACION", "INNOVACION"],
+            3: ["QUANTUM", "BIOMETRIA", "NANOTECNOLOGIA", "HOLOGRAMA", "SISTEMAS", "COMPLEJOS", "INFRAESTRUCTURA", "MICROSERVICIO", "CONTENEDORES", "DESPLIEGUE", "INTEGRACION"]
+        };
 
-            function checkGuess() {
-                const guess = guessInput.value.toUpperCase();
-                guessInput.value = ""; // Limpiar el input
+        const hangmanParts = [
+            'hangman-head', 'hangman-body', 'hangman-arm-left', 'hangman-arm-right', 'hangman-leg-left', 'hangman-leg-right'
+        ];
 
-                if (guess.length !== 1 || !/[A-Z]/.test(guess)) {
-                    messageDisplay.textContent = "Por favor, ingresa una sola letra válida.";
-                    return;
-                }
+        let currentLevel = 1;
+        let selectedWord = "";
+        let guessedWord = [];
+        let wrongGuesses = 0;
+        let lettersUsed = [];
+        let timerInterval;
+        let timeLeft = 120; // 2 minutos
 
-                if (guessedWord.includes(guess) || selectedWord.indexOf(guess) === -1 && wrongGuesses < maxWrongGuesses) {
-                    messageDisplay.textContent = `Ya adivinaste la letra '${guess}' o no está en la palabra.`;
-                    if (selectedWord.indexOf(guess) === -1) {
-                         // Solo cuenta como error si la letra no está y no es repetida (ya fue "adivinada" incorrectamente)
-                         messageDisplay.textContent = `La letra '${guess}' no está en la palabra.`;
+        const levelRequirements = {
+            1: { maxErrors: 5, reward: { gold: 5, diamonds: 0 } },
+            2: { maxErrors: 3, reward: { gold: 10, diamonds: 0 } },
+            3: { maxErrors: 2, reward: { gold: 20, diamonds: 30 } } // Recompensa final
+        };
+
+        // DOM Elements
+        const wordDisplay = document.getElementById('word-display');
+        const guessInput = document.getElementById('guess-input');
+        const submitButton = document.getElementById('submit-guess');
+        const messageDisplay = document.getElementById('message');
+        const levelDisplay = document.getElementById('level-display');
+        const wrongGuessesDisplay = document.getElementById('wrong-guesses-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const lettersUsedDisplay = document.getElementById('letters-used-display');
+
+        function initializeGame(level = 1) {
+            currentLevel = level;
+            selectedWord = wordLists[currentLevel][Math.floor(Math.random() * wordLists[currentLevel].length)].toUpperCase();
+            guessedWord = Array(selectedWord.length).fill('_');
+            wrongGuesses = 0;
+            lettersUsed = [];
+            timeLeft = 120; // Resetear tiempo
+            messageDisplay.textContent = "";
+            guessInput.value = "";
+            updateDisplay();
+            updateHangmanDrawing();
+            startTimer();
+            guessInput.focus();
+            levelDisplay.textContent = currentLevel;
+            wrongGuessesDisplay.textContent = wrongGuesses;
+            lettersUsedDisplay.textContent = '';
+        }
+
+        function updateDisplay() {
+            wordDisplay.textContent = guessedWord.join(' ');
+            wrongGuessesDisplay.textContent = wrongGuesses;
+            lettersUsedDisplay.innerHTML = lettersUsed.map(letter => {
+                return selectedWord.includes(letter) ? `<span>${letter}</span>` : `<strong style="color:#e74c3c;">${letter}</strong>`;
+            }).join(', ');
+        }
+
+        function updateHangmanDrawing() {
+            hangmanParts.forEach((partId, index) => {
+                const partElement = document.getElementById(partId);
+                if (partElement) {
+                    if (index < wrongGuesses) {
+                        partElement.classList.add('show-part');
+                    } else {
+                        partElement.classList.remove('show-part');
                     }
-                    return;
-                }
-
-
-                if (selectedWord.includes(guess)) {
-                    for (let i = 0; i < selectedWord.length; i++) {
-                        if (selectedWord[i] === guess) {
-                            guessedWord[i] = guess;
-                        }
-                    }
-                    messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
-                } else {
-                    wrongGuesses++;
-                    messageDisplay.textContent = `Incorrecto. Te quedan ${maxWrongGuesses - wrongGuesses} intentos.`;
-                    // Aquí podrías añadir lógica para dibujar el ahorcado, etc.
-                }
-
-                updateDisplay();
-                checkGameEnd();
-            }
-
-            function checkGameEnd() {
-                if (guessedWord.join('') === selectedWord) {
-                    messageDisplay.textContent = "¡Felicidades! Has adivinado la palabra: " + selectedWord;
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Ganaste!',
-                        text: `Has adivinado la palabra: ${selectedWord}`,
-                        confirmButtonText: 'Jugar de nuevo',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            initializeGame();
-                        }
-                    });
-                } else if (wrongGuesses >= maxWrongGuesses) {
-                    messageDisplay.textContent = `¡Game Over! La palabra era: ${selectedWord}`;
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Perdiste!',
-                        text: `La palabra era: ${selectedWord}`,
-                        confirmButtonText: 'Intentar de nuevo',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            initializeGame();
-                        }
-                    });
-                }
-            }
-
-            // Event Listeners
-            submitButton.addEventListener('click', checkGuess);
-            guessInput.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    checkGuess();
                 }
             });
+        }
 
-            // Inicializar el juego al cargar la página
-            document.addEventListener('DOMContentLoaded', initializeGame);
-        </script>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        function startTimer() {
+            clearInterval(timerInterval); // Limpiar cualquier temporizador existente
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleGameOver(false, "¡Se acabó el tiempo!");
+                }
+            }, 1000);
+        }
+
+        function checkGuess() {
+            const guess = guessInput.value.toUpperCase();
+            guessInput.value = ""; // Limpiar el input
+
+            if (guess.length !== 1 || !/[A-Z]/.test(guess)) {
+                messageDisplay.textContent = "Por favor, ingresa una sola letra válida.";
+                return;
+            }
+
+            if (lettersUsed.includes(guess)) {
+                messageDisplay.textContent = `Ya adivinaste la letra '${guess}'. Intenta con otra.`;
+                return;
+            }
+
+            lettersUsed.push(guess);
+
+            if (selectedWord.includes(guess)) {
+                for (let i = 0; i < selectedWord.length; i++) {
+                    if (selectedWord[i] === guess) {
+                        guessedWord[i] = guess;
+                    }
+                }
+                messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
+            } else {
+                wrongGuesses++;
+                messageDisplay.textContent = `Incorrecto. Te quedan ${maxWrongGuesses - wrongGuesses} intentos.`;
+                updateHangmanDrawing(); // Actualiza el dibujo del ahorcado
+            }
+
+            updateDisplay();
+            checkGameStatus();
+        }
+
+        function checkGameStatus() {
+            // Comprobar si la palabra ha sido adivinada
+            if (guessedWord.join('') === selectedWord) {
+                clearInterval(timerInterval); // Detener el temporizador
+                const errorsAllowed = levelRequirements[currentLevel].maxErrors;
+
+                if (wrongGuesses <= errorsAllowed) {
+                    if (currentLevel < Object.keys(wordLists).length) {
+                        // Avanzar al siguiente nivel
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Nivel Completado!',
+                            html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Pasas al Nivel ${currentLevel + 1}!`,
+                            confirmButtonText: 'Siguiente Nivel',
+                            customClass: {
+                                confirmButton: 'swal2-confirm-button',
+                                popup: 'swal2-custom-level-up'
+                            },
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                initializeGame(currentLevel + 1);
+                            }
+                        });
+                    } else {
+                        // ¡Juego ganado!
+                        const finalReward = levelRequirements[currentLevel].reward;
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡FELICITACIONES, ERES EL MAESTRO DE ORCADO!',
+                            html: `¡Lo lograste! Has superado todos los niveles.<br>¡Como recompensa, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong>!`,
+                            confirmButtonText: '¡A Jugar de Nuevo!',
+                            customClass: {
+                                confirmButton: 'swal2-confirm-button',
+                                popup: 'swal2-custom-success'
+                            },
+                            allowOutsideClick: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Aquí se debería actualizar el balance del usuario en la base de datos
+                                console.log(`Ganaste: ${finalReward.diamonds} Diamantes y ${finalReward.gold} Oro`);
+                                initializeGame(); // Reinicia el juego desde el nivel 1
+                            }
+                        });
+                    }
+                } else {
+                    // Ganó la palabra, pero con demasiados errores para avanzar
+                    const consolationReward = currentLevel === 1 ? { gold: 2, diamonds: 0 } : { gold: 0, diamonds: 0 }; // Ejemplo de recompensa menor
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Palabra Adivinada, ¡pero cuidado!',
+                        html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${consolationReward.gold} Oro <i class="fas fa-coins"></i></strong>.`,
+                        confirmButtonText: 'Volver a Intentar',
+                        customClass: {
+                            confirmButton: 'swal2-confirm-button',
+                            popup: 'swal2-custom-error' // Usamos error para indicar que no se avanzó
+                        },
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log(`Ganaste de consolación: ${consolationReward.gold} Oro`);
+                            initializeGame(); // Reinicia el juego desde el nivel 1
+                        }
+                    });
+                }
+            } else if (wrongGuesses >= maxWrongGuesses) {
+                // Perdió por exceso de errores
+                handleGameOver(false, `¡Has superado los ${maxWrongGuesses} errores! La palabra era: ${selectedWord}`);
+            }
+            // Si el tiempo se acaba, `handleGameOver` se llama desde `startTimer`
+        }
+
+        function handleGameOver(isWin, message) {
+            clearInterval(timerInterval); // Asegura que el temporizador se detenga
+            Swal.fire({
+                icon: isWin ? 'success' : 'error',
+                title: isWin ? '¡Ganaste!' : '¡Game Over!',
+                html: message,
+                confirmButtonText: 'Intentar de nuevo',
+                customClass: {
+                    confirmButton: 'swal2-confirm-button',
+                    popup: isWin ? 'swal2-custom-success' : 'swal2-custom-error'
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    initializeGame(); // Reinicia el juego desde el nivel 1
+                }
+            });
+        }
+
+        // Event Listeners
+        submitButton.addEventListener('click', checkGuess);
+        guessInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        // Inicializar el juego al cargar la página
+        document.addEventListener('DOMContentLoaded', initializeGame);
+    </script>
 </body>
 </html>
