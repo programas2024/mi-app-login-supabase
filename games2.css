@@ -113,7 +113,8 @@ body {
     line-height: 1; /* Elimina espacio extra */
     position: relative;
     z-index: 1;
-    color: #666666; /* Color de icono por defecto, será sobrescrito por temas */
+    /* Color por defecto, será sobrescrito por temas específicos para contraste */
+    color: #666666; 
 }
 
 .card-title {
@@ -138,55 +139,55 @@ body {
 
 /* Programación (Azul Suave) */
 .theme-card.programming { background: linear-gradient(135deg, #a8dadc, #8fd9da); }
-.theme-card.programming .card-icon { color: #3498db; } /* Icono más oscuro para contraste */
+.theme-card.programming .card-icon { color: #2196f3; } /* Azul más vibrante y oscuro */
 .theme-card.programming .card-title { color: #2c3e50; }
 .theme-card.programming .card-description { color: #555555; }
 
 /* Animales (Verde Suave) */
 .theme-card.animals { background: linear-gradient(135deg, #b8e994, #a5e07e); }
-.theme-card.animals .card-icon { color: #27ae60; }
+.theme-card.animals .card-icon { color: #4CAF50; } /* Verde más vibrante y oscuro */
 .theme-card.animals .card-title { color: #2c3e50; }
 .theme-card.animals .card-description { color: #555555; }
 
 /* Escritores (Púrpura Suave) */
 .theme-card.writers { background: linear-gradient(135deg, #c7b8e9, #b3a5e0); }
-.theme-card.writers .card-icon { color: #9b59b6; }
+.theme-card.writers .card-icon { color: #673AB7; } /* Púrpura más vibrante y oscuro */
 .theme-card.writers .card-title { color: #2c3e50; }
 .theme-card.writers .card-description { color: #555555; }
 
 /* Carreras (Naranja Suave) */
 .theme-card.careers { background: linear-gradient(135deg, #fbc490, #fbb473); }
-.theme-card.careers .card-icon { color: #e67e22; }
+.theme-card.careers .card-icon { color: #FF9800; } /* Naranja más vibrante y oscuro */
 .theme-card.careers .card-title { color: #2c3e50; }
 .theme-card.careers .card-description { color: #555555; }
 
 /* Deportes (Rojo Coral Suave) */
 .theme-card.sports { background: linear-gradient(135deg, #f08080, #e86f6f); }
-.theme-card.sports .card-icon { color: #e74c3c; }
+.theme-card.sports .card-icon { color: #F44336; } /* Rojo más vibrante y oscuro */
 .theme-card.sports .card-title { color: #2c3e50; }
 .theme-card.sports .card-description { color: #555555; }
 
 /* Inglés (Turquesa Suave) */
 .theme-card.english { background: linear-gradient(135deg, #8edce6, #7ad1e0); }
-.theme-card.english .card-icon { color: #1abc9c; }
+.theme-card.english .card-icon { color: #00BCD4; } /* Turquesa más vibrante y oscuro */
 .theme-card.english .card-title { color: #2c3e50; }
 .theme-card.english .card-description { color: #555555; }
 
 /* Países (Azul Grisáceo Suave) */
 .theme-card.countries { background: linear-gradient(135deg, #a2b9bc, #8ea9ac); }
-.theme-card.countries .card-icon { color: #34495e; }
+.theme-card.countries .card-icon { color: #607D8B; } /* Azul grisáceo más vibrante y oscuro */
 .theme-card.countries .card-title { color: #2c3e50; }
 .theme-card.countries .card-description { color: #555555; }
 
 /* Género Musical (Amarillo/Naranja Suave) */
 .theme-card.music-genre { background: linear-gradient(135deg, #ffda87, #ffcc66); }
-.theme-card.music-genre .card-icon { color: #f39c12; }
+.theme-card.music-genre .card-icon { color: #FFC107; } /* Amarillo más vibrante y oscuro */
 .theme-card.music-genre .card-title { color: #2c3e50; }
 .theme-card.music-genre .card-description { color: #555555; }
 
 /* Frutas (Amarillo Crema Suave) */
 .theme-card.fruits { background: linear-gradient(135deg, #ffe6a7, #ffd98a); }
-.theme-card.fruits .card-icon { color: #f1c40f; }
+.theme-card.fruits .card-icon { color: #FFEB3B; } /* Amarillo más vibrante y oscuro */
 .theme-card.fruits .card-title { color: #2c3e50; }
 .theme-card.fruits .card-description { color: #555555; }
 
@@ -196,7 +197,7 @@ body {
     background-size: 400% 400%; /* Para la animación de fondo */
     animation: gradient-shift 15s ease infinite;
 }
-.theme-card.all-inclusive .card-icon { color: #6a11cb; } /* Un color vibrante para el icono principal */
+.theme-card.all-inclusive .card-icon { color: #7B68EE; } /* Un color vibrante para el icono principal */
 .theme-card.all-inclusive .card-title { color: #2c3e50; }
 .theme-card.all-inclusive .card-description { color: #555555; }
 
