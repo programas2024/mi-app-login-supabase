@@ -6,12 +6,15 @@
     <title>🌟 VIP Elite Rewards 🌟</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style2.css"> </head>
+    <link rel="stylesheet" href="style2.css"> <!-- ¡Asegúrate de que este archivo CSS esté enlazado! -->
+</head>
 <body>
     <div class="vip-container">
+        <!-- Sección Principal de Recompensas -->
         <main class="rewards-main-content">
             <h2 class="rewards-title">Tabla de Recompensas Elite</h2>
 
+            <!-- Display de Balance del Usuario -->
             <div class="user-balance-display">
                 <div class="balance-item">
                     <i class="fas fa-diamond diamond-icon"></i>
@@ -32,30 +35,35 @@
                             <th>Nivel VIP</th>
                             <th>Recompensa Exclusiva</th>
                             <th>Tesoro Doble (Oro + Esmeralda)</th>
-                            <th>Desbloquear / Reclamar</th> </tr>
+                            <th>Desbloquear / Reclamar</th> <!-- Nueva columna para acciones -->
+                        </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                        <!-- Las filas se generarán con JavaScript -->
+                    </tbody>
                 </table>
             </div>
+            <!-- Botón para cargar más niveles -->
             <button id="load-more-levels" class="load-more-btn">Cargar Más Niveles <i class="fas fa-arrow-down"></i></button>
         </main>
     </div>
 
+    <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <!-- Cargamos Supabase y Confetti como librerías globales -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
+    <!-- Todo el JavaScript de la lógica de la página VIP -->
     <script>
-        // --- Configuración de Supabase (ahora disponible globalmente como 'window.supabase') ---
+        // --- Configuración de Supabase ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yWvYCrR5nLo';
 
-        // Ahora usamos 'window.supabase.createClient' porque la librería se cargó globalmente
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabase; // Declaramos 'supabase' aquí, pero la inicializamos en DOMContentLoaded
 
         // --- Elementos del DOM ---
         const currentDiamondsSpan = document.getElementById('current-diamonds');
@@ -387,7 +395,7 @@
             userProfile.diamonds += levelData.reward2Emerald;
 
             userProfile.claimed_levels.push(level);
-                userProfile.claimed_levels.sort((a, b) => a - b);
+            userProfile.claimed_levels.sort((a, b) => a - b);
 
             const success = await updateProfileInSupabase({
                 gold: userProfile.gold,
@@ -449,7 +457,7 @@
                                 <i class="fas fa-lock-open"></i> Desbloquear
                             </button>
                             <span class="unlock-cost-text">
-                                Costo: ${levelData.unlockCost} <i class="fas fa-diamond diamond-icon"></i>
+                                Costo: ${unlockCost} <i class="fas fa-diamond diamond-icon"></i>
                             </span>
                         </div>
                     `;
@@ -474,13 +482,26 @@
 
         // --- Inicialización y Event Listeners Globales ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Content Loaded. Initializing Supabase auth listener.");
-            console.log("Supabase client object:", supabase);
-            console.log("Supabase auth object:", supabase.auth);
-            console.log("Type of supabase.auth.onAuthStateChanged:", typeof supabase.auth.onAuthStateChanged);
-            console.log("Properties of supabase.auth:", Object.keys(supabase.auth));
+            // Inicializamos el cliente Supabase aquí, después de que la librería global esté cargada
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log("Supabase client initialized in DOMContentLoaded.");
+                console.log("Supabase client object:", supabase);
+                console.log("Supabase auth object:", supabase.auth);
+                console.log("Type of supabase.auth.onAuthStateChanged:", typeof supabase.auth.onAuthStateChanged);
+                console.log("Properties of supabase.auth:", Object.keys(supabase.auth));
+            } else {
+                console.error("Error: window.supabase o createClient no están disponibles.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Crítico',
+                    text: 'La librería de Supabase no pudo cargarse correctamente. Por favor, recarga la página.',
+                    customClass: { popup: 'swal2-custom-game-over' }
+                });
+                return; // Detener ejecución si Supabase no se carga
+            }
 
-            // Ahora que Supabase se carga globalmente, onAuthStateChanged debería estar disponible directamente
+            // Ahora que Supabase está inicializado, podemos adjuntar el listener de autenticación
             try {
                 if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChanged === 'function') {
                     supabase.auth.onAuthStateChanged(async (event, session) => {
@@ -511,8 +532,7 @@
                         }
                     });
                 } else {
-                    // Este error debería ser muy raro con la carga UMD, pero lo mantenemos para depuración
-                    throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función después de la carga UMD.");
+                    throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función después de la inicialización.");
                 }
             } catch (e) {
                 console.error("Error al inicializar el listener de autenticación de Supabase (catch principal):", e);
