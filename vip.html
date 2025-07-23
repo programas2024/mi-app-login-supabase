@@ -6,15 +6,12 @@
     <title>🌟 VIP Elite Rewards 🌟</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style2.css"> <!-- ¡Asegúrate de que este archivo CSS esté enlazado! -->
-</head>
+    <link rel="stylesheet" href="style2.css"> </head>
 <body>
     <div class="vip-container">
-        <!-- Sección Principal de Recompensas -->
         <main class="rewards-main-content">
             <h2 class="rewards-title">Tabla de Recompensas Elite</h2>
 
-            <!-- Display de Balance del Usuario -->
             <div class="user-balance-display">
                 <div class="balance-item">
                     <i class="fas fa-diamond diamond-icon"></i>
@@ -35,36 +32,30 @@
                             <th>Nivel VIP</th>
                             <th>Recompensa Exclusiva</th>
                             <th>Tesoro Doble (Oro + Esmeralda)</th>
-                            <th>Desbloquear / Reclamar</th> <!-- Nueva columna para acciones -->
-                        </tr>
+                            <th>Desbloquear / Reclamar</th> </tr>
                     </thead>
                     <tbody>
-                        <!-- Las filas se generarán con JavaScript -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
-            <!-- Botón para cargar más niveles -->
             <button id="load-more-levels" class="load-more-btn">Cargar Más Niveles <i class="fas fa-arrow-down"></i></button>
         </main>
     </div>
 
-    <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- ¡CAMBIO CLAVE AQUÍ: Cargamos Supabase como una librería global! -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-    <!-- Todo el JavaScript de la lógica de la página VIP -->
     <script>
-        // --- Configuración de Supabase (ahora disponible globalmente como 'supabase') ---
+        // --- Configuración de Supabase (ahora disponible globalmente como 'window.supabase') ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yWvYCrR5nLo';
 
-        // Ahora usamos 'supabase.createClient' porque la librería se cargó globalmente
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Ahora usamos 'window.supabase.createClient' porque la librería se cargó globalmente
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- Elementos del DOM ---
         const currentDiamondsSpan = document.getElementById('current-diamonds');
@@ -289,7 +280,6 @@
          * Se llama después de cada renderizado de niveles.
          */
         function attachButtonListeners() {
-            // Eliminar listeners antiguos para evitar duplicados
             tbody.querySelectorAll('.unlock-btn').forEach(button => {
                 button.onclick = null;
                 button.onclick = async (event) => {
@@ -348,6 +338,11 @@
 
             if (success) {
                 updateBalanceDisplay();
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
                 Swal.fire({
                     icon: 'success',
                     title: '¡Nivel Desbloqueado!',
@@ -392,7 +387,7 @@
             userProfile.diamonds += levelData.reward2Emerald;
 
             userProfile.claimed_levels.push(level);
-            userProfile.claimed_levels.sort((a, b) => a - b);
+                userProfile.claimed_levels.sort((a, b) => a - b);
 
             const success = await updateProfileInSupabase({
                 gold: userProfile.gold,
@@ -516,7 +511,7 @@
                         }
                     });
                 } else {
-                    // Este error debería ser muy raro con la carga UMD
+                    // Este error debería ser muy raro con la carga UMD, pero lo mantenemos para depuración
                     throw new Error("supabase.auth o onAuthStateChanged no están disponibles como función después de la carga UMD.");
                 }
             } catch (e) {
