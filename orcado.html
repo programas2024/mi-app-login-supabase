@@ -61,64 +61,68 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        /* --- ESTILOS PRINCIPALES DEL CUERPO Y CONTENEDOR DEL JUEGO --- */
+
         body {
-            background-color: #f0f2f5;
+            background-color: #212F3D; /* Azul muy oscuro, casi negro, de tu paleta SweetAlert */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', sans-serif; /* Fuente más moderna y suave */
             flex-direction: column;
             padding: 20px;
+            color: #E0E0E0; /* Texto claro para contraste sobre fondo oscuro */
         }
 
         .orcado-container {
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
+            background: linear-gradient(145deg, #2C3E50, #34495E); /* Degradado de azules oscuros */
+            border-radius: 25px; /* Bordes más suaves */
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5); /* Sombra más profunda y elegante */
+            padding: 45px; /* Un poco más de padding */
             width: 90%;
-            max-width: 800px;
+            max-width: 850px; /* Un poco más ancho si lo prefieres */
             text-align: center;
             position: relative;
             overflow: hidden;
+            border: 2px solid #5D3FD3; /* Borde morado sutil para un toque premium */
         }
 
         .orcado-container::before {
             content: '';
             position: absolute;
-            top: -50px;
-            left: -50px;
-            right: -50px;
-            bottom: -50px;
-            background: radial-gradient(circle at center, rgba(52, 152, 219, 0.05) 0%, transparent 70%);
-            animation: pulseBlueLight 4s infinite alternate;
+            top: -70px; /* Expande más el efecto */
+            left: -70px;
+            right: -70px;
+            bottom: -70px;
+            background: radial-gradient(circle at center, rgba(123, 104, 238, 0.08) 0%, transparent 60%); /* Pulso morado suave */
+            animation: pulseSubtle 5s infinite alternate ease-in-out; /* Animación más lenta y suave */
             z-index: 0;
+            border-radius: 50%; /* Asegura que el gradiente circular se vea bien */
         }
 
-        @keyframes pulseBlueLight {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.1); opacity: 1; }
+        @keyframes pulseSubtle {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.05); opacity: 1; }
         }
-
 
         .orcado-container h1 {
             font-family: 'Montserrat', sans-serif;
-            color: #333;
-            font-size: 3em;
-            margin-bottom: 15px;
+            color: #ADD8E6; /* Azul claro de tus títulos de SweetAlert */
+            font-size: 3.8em; /* Un poco más grande para el título principal */
+            margin-bottom: 20px;
             font-weight: 800;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Sombra más pronunciada */
             position: relative;
             z-index: 1;
         }
 
         .orcado-description {
-            color: #555;
-            font-size: 1.1em;
-            margin-bottom: 25px;
-            line-height: 1.6;
+            color: #B0B0B0; /* Gris medio para la descripción */
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.7;
             position: relative;
             z-index: 1;
         }
@@ -127,122 +131,141 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            margin-bottom: 25px;
-            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-size: 1.3em;
             font-weight: 600;
-            color: #444;
+            color: #E0E0E0; /* Texto claro para los info boxes */
             position: relative;
             z-index: 1;
+            gap: 20px; /* Espacio entre los elementos de info */
+            flex-wrap: wrap; /* Para pantallas pequeñas */
         }
 
         .game-info span {
-            padding: 8px 15px;
-            background-color: #e0e0e0;
-            border-radius: 8px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px 20px;
+            background-color: #3B4E61; /* Azul oscuro más claro que el fondo principal */
+            border-radius: 10px;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.3); /* Sombra interna para profundidad */
+            border: 1px solid #4F637A; /* Borde sutil */
         }
 
+        /* Colores específicos para los displays de info, ahora más acordes */
         .game-info #timer-display {
-            background-color: #FFEB3B;
-            color: #333;
+            background-color: #A93226; /* Rojo ladrillo oscuro de tu Game Over */
+            color: #FFF;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
+            border: 1px solid #E74C3C;
         }
 
         .game-info #level-display {
-            background-color: #BBDEFB;
-            color: #333;
+            background-color: #5D3FD3; /* Morado profundo de tus botones */
+            color: #FFF;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
+            border: 1px solid #7B68EE;
         }
 
         .game-area {
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
+            background-color: #3B4E61; /* Mismo azul oscuro claro que los info boxes */
+            border: 1px solid #4F637A;
+            border-radius: 20px; /* Bordes más suaves */
+            padding: 35px; /* Un poco más de padding */
+            margin-bottom: 35px;
+            box-shadow: inset 0 7px 20px rgba(0,0,0,0.15); /* Sombra interna más notable */
             position: relative;
             z-index: 1;
         }
 
         .word-display {
             font-family: 'Montserrat', sans-serif;
-            font-size: 3.5em;
-            letter-spacing: 8px;
-            margin-bottom: 30px;
-            color: #28a745;
+            font-size: 4em; /* Más grande para impacto */
+            letter-spacing: 10px; /* Más espacio entre letras */
+            margin-bottom: 35px;
+            color: #ADD8E6; /* Usamos el azul claro elegante para la palabra a adivinar */
             font-weight: 700;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            animation: pulseWord 1.5s infinite alternate;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.4); /* Sombra más fuerte */
+            animation: pulseWord 1.8s infinite alternate ease-in-out; /* Animación más lenta y suave */
         }
 
         @keyframes pulseWord {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.02); }
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.03); opacity: 1; }
         }
 
         .letters-used {
-            font-size: 1.1em;
-            color: #777;
-            margin-top: 15px;
-            min-height: 25px;
+            font-size: 1.2em;
+            color: #B0B0B0; /* Gris medio para las letras usadas */
+            margin-top: 20px;
+            min-height: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
         .letters-used strong {
-            color: #e74c3c;
-        }
-        .letters-used span {
-            margin: 0 3px;
+            color: #E74C3C; /* Rojo suave para letras incorrectas */
             font-weight: bold;
         }
-
+        .letters-used span {
+            margin: 0 4px; /* Un poco más de espacio */
+            font-weight: bold;
+            color: #7B68EE; /* Morado medio para letras correctas (no rojas) */
+        }
 
         .guess-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 20px; /* Más espacio entre input y botón */
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         .guess-input {
-            padding: 15px 20px;
-            font-size: 1.5em;
+            padding: 18px 25px; /* Más padding */
+            font-size: 1.8em; /* Tamaño de fuente más grande */
             text-align: center;
-            width: 100px;
-            border: 2px solid #3498db;
-            border-radius: 10px;
+            width: 120px; /* Un poco más ancho */
+            border: 2px solid #7B68EE; /* Borde morado medio */
+            border-radius: 12px; /* Bordes más suaves */
             outline: none;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #4F637A; /* Fondo del input que combine */
+            color: #FFF; /* Texto blanco en el input */
+            box-shadow: 0 0 15px rgba(0,0,0,0.2); /* Sombra sutil */
         }
 
         .guess-input:focus {
-            border-color: #2980b9;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.4);
+            border-color: #ADD8E6; /* Azul claro al enfocar */
+            box-shadow: 0 0 15px rgba(173, 216, 230, 0.6); /* Resplandor azul claro */
         }
 
         .submit-button {
-            background-color: #3498db;
+            background-color: #5D3FD3; /* Morado profundo de tus botones de SweetAlert */
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: 600;
+            padding: 18px 35px; /* Más padding */
+            border-radius: 12px; /* Bordes más suaves */
+            font-size: 1.3em; /* Más grande */
+            font-weight: 700;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
         }
 
         .submit-button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            background-color: #6E5DD3; /* Tono morado un poco más claro al pasar el ratón */
+            transform: translateY(-3px); /* Efecto de elevación más notable */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
 
         .message {
-            font-size: 1.3em;
-            margin-top: 25px;
-            min-height: 30px;
+            font-size: 1.4em; /* Más grande para el mensaje */
+            margin-top: 30px;
+            min-height: 35px;
             font-weight: 600;
-            color: #e74c3c;
+            color: #E74C3C; /* Rojo suave para mensajes de error/info */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra para mejor contraste */
+            position: relative;
+            z-index: 1;
         }
 
         .back-button {
