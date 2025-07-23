@@ -67,6 +67,7 @@ body {
     justify-content: center;
     width: 100%;
     max-width: 800px; /* Limita el ancho del grupo de contenedores */
+    margin-bottom: 50px; /* Espacio entre los contenedores y el botón */
 }
 
 .gold-vault, .diamond-vault {
@@ -157,6 +158,40 @@ body {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* --- Grant Rewards Button --- */
+.grant-rewards-btn {
+    background: linear-gradient(45deg, #FF6A00, #EE0979); /* Naranja a Rosa */
+    color: white;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 12px;
+    font-size: 1.3em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    width: fit-content;
+    margin-top: 30px; /* Espacio superior */
+}
+
+.grant-rewards-btn:hover {
+    background: linear-gradient(45deg, #e05e00, #d4076f);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.grant-rewards-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    opacity: 0.7;
+}
+
 /* --- Back to Game Button --- */
 .back-to-game-btn {
     background: linear-gradient(90deg, #1e3c72, #2a5298); /* Blue gradient */
@@ -202,6 +237,7 @@ body {
     .currency-vault {
         flex-direction: column; /* Apilar en pantallas pequeñas */
         gap: 25px;
+        margin-bottom: 30px;
     }
     .gold-vault, .diamond-vault {
         min-width: unset; /* Eliminar ancho mínimo */
@@ -216,6 +252,11 @@ body {
     }
     .currency-value {
         font-size: 3em;
+    }
+    .grant-rewards-btn {
+        font-size: 1.1em;
+        padding: 15px 25px;
+        gap: 10px;
     }
     .back-to-game-btn {
         font-size: 1em;
@@ -237,9 +278,15 @@ body {
     .currency-value {
         font-size: 2.5em;
     }
+    .grant-rewards-btn {
+        font-size: 1em;
+        padding: 12px 20px;
+        gap: 8px;
+    }
 }
 
-/* --- SweetAlerts Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
+/* --- SweetAlerts Custom Styles (Asegúrate de que estos estilos coincidan con los de tu dashboard) --- */
+/* Estos son los estilos que tenías en tu chestLogic.js y script.js */
 .swal2-confirm-button { background-color: #5D3FD3 !important; color: #E0E0E0 !important; border-radius: 8px !important; font-size: 1.1em !important; padding: 10px 20px !important; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
 .swal2-confirm-button:hover { background-color: #6E5DD3 !important; transform: translateY(-2px); }
 .swal2-popup { background: linear-gradient(135deg, #2C3E50, #34495E) !important; border: 3px solid #7B68EE !important; color: #FFFFFF !important; font-weight: bold !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; border-radius: 15px !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
@@ -250,12 +297,15 @@ body {
 .swal2-error-line-tip, .swal2-error-line-long { background-color: #E74C3C !important; }
 .swal2-error-ring { border-color: #E74C3C !important; }
 .swal2-warning { color: #DAA520 !important; border-color: #DAA520 !important; }
-.swal2-popup .fas.fa-coins { color: #C0C0C0 !important; font-size: 1.4em !important; vertical-align: middle; margin: 0 5px; }
-.swal2-popup .fas.fa-gem { color: #ADD8E6 !important; font-size: 1.4em !important; vertical-align: middle; margin: 0 5px; }
-.swal2-popup.swal2-custom-game-over .swal2-title { color: #E74C3C !important; }
-.swal2-popup.swal2-custom-game-over { border-color: #A93226 !important; }
-.swal2-popup.swal2-custom-warning .swal2-title { color: #DAA520 !important; }
-.swal2-popup.swal2-custom-warning { border-color: #DAA520 !important; }
+/* Estilos específicos para el modal de cofre/recompensas */
+.swal2-chest-popup { border: 3px solid #FFD700 !important; } /* Borde dorado para el modal de recompensas */
+.swal2-chest-popup .swal2-title { color: #FFD700 !important; }
+.swal2-chest-icon { font-size: 3em !important; color: #FFD700 !important; margin-bottom: 15px; }
+.swal2-reward-item { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1em; margin-bottom: 8px; }
+.swal2-reward-item .currency-icon { font-size: 1.8em !important; margin-bottom: 0; }
+.swal2-reward-item .fa-coins { color: #f9d923 !important; }
+.swal2-reward-item .fa-gem { color: #50e3c2 !important; }
+
 
 /* --- Loader Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
 #loader-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #2C3E50; display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.7s ease-out, visibility 0.7s ease-out; opacity: 1; visibility: visible; }
