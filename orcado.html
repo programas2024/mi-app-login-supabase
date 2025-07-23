@@ -331,146 +331,89 @@
         }
 
         /* ------------------------------------------------------------------- */
-        /* Estilo para el pop-up de Nivel Completado (Recompensa por palabra) */
-        /* Fondos suaves y tonos metálicos/azulados para una sensación de calma y logro */
-        .swal2-custom-level-up {
-            background: linear-gradient(135deg, #ECECEC, #DCDCDC); /* Gris muy suave, casi blanco */
-            border: 2px solid #A9A9A9; /* Gris medio, borde sutil */
-            color: #333333; /* Texto oscuro para buena legibilidad */
-            font-weight: bold;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna */
-        }
-        .swal2-custom-level-up .swal2-title {
-            color: #4A4A4A; /* Título gris oscuro */
-            font-size: 1.8em;
-            margin-bottom: 0.5em;
-        }
-        .swal2-custom-level-up .swal2-html-container {
-            color: #666666; /* Contenido gris más claro */
-            font-size: 1.1em;
-            line-height: 1.5;
-        }
-        /* Ajuste para el ícono de éxito de SweetAlert (el tick) - tono plateado/azul suave */
-        .swal2-custom-level-up .swal2-success-line-tip,
-        .swal2-custom-level-up .swal2-success-line-long {
-            background-color: #87CEEB !important; /* Azul cielo suave */
-        }
-        .swal2-custom-level-up .swal2-success-ring {
-            border-color: #87CEEB !important; /* Azul cielo suave para el anillo del tick */
-        }
-        /* Estilo para el ícono de moneda dentro del pop-up (Oro) */
-        .swal2-custom-level-up .fas.fa-coins {
-            color: #B8860B !important; /* Un oro viejo o bronce más apagado */
-            font-size: 1.3em !important;
-            vertical-align: middle;
+        /* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .swal2-custom-final-success) */
+        /* Esto asegura una continuidad visual entre todas las alertas */
+        .swal2-popup {
+            background: linear-gradient(135deg, #2C3E50, #34495E) !important; /* Tonos de azul muy oscuro */
+            border: 3px solid #7B68EE !important; /* Morado medio (lavender) para el borde distintivo */
+            color: #FFFFFF !important; /* Texto blanco para contraste */
+            font-weight: bold !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+            border-radius: 15px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
         }
 
+        .swal2-popup .swal2-title {
+            color: #ADD8E6 !important; /* Azul claro para el título, como el diamante */
+            font-size: 2em !important;
+            margin-bottom: 0.6em !important;
+        }
 
-        /* ------------------------------------------------------------------- */
-        /* Estilo para el pop-up de Éxito Final (Maestro de Ahorcado - Recompensa mayor) */
-        /* Tonos más profundos y ricos, con un toque de azul real/púrpura oscuro */
-        .swal2-custom-final-success {
-            background: linear-gradient(135deg, #2C3E50, #34495E); /* Tonos de azul muy oscuro */
-            border: 3px solid #7B68EE; /* Morado medio (lavender) para el borde distintivo */
-            color: #FFFFFF; /* Texto blanco para contraste */
-            font-weight: bold;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        .swal2-popup .swal2-html-container {
+            color: #E0E0E0 !important; /* Gris muy claro para el contenido */
+            font-size: 1.2em !important;
+            line-height: 1.6 !important;
         }
-        .swal2-custom-final-success .swal2-title {
-            color: #ADD8E6; /* Azul claro para el título, como el diamante */
-            font-size: 2em;
-            margin-bottom: 0.6em;
-        }
-        .swal2-custom-final-success .swal2-html-container {
-            color: #E0E0E0; /* Gris muy claro para el contenido */
-            font-size: 1.2em;
-            line-height: 1.6;
-        }
-        /* Ajuste para el ícono de éxito de SweetAlert (el tick) - tono morado/azul profundo */
-        .swal2-custom-final-success .swal2-success-line-tip,
-        .swal2-custom-final-success .swal2-success-line-long {
+
+        /* Estilo para los íconos de SweetAlert (tick, cruz, etc.) */
+        /* Aseguramos que el ícono de éxito no sea verde, usando el color del borde base */
+        .swal2-success-line-tip,
+        .swal2-success-line-long {
             background-color: #7B68EE !important; /* Morado medio para el tick */
         }
-        .swal2-custom-final-success .swal2-success-ring {
+        .swal2-success-ring {
             border-color: #7B68EE !important; /* Morado medio para el anillo del tick */
         }
-        /* Estilo para el ícono de moneda y diamante dentro del pop-up final */
-        .swal2-custom-final-success .fas.fa-coins {
-            color: #C0C0C0 !important; /* Plateado sutil para el oro final */
+        /* Estilo para el ícono de error (la X) */
+        .swal2-error-line-tip,
+        .swal2-error-line-long {
+            background-color: #E74C3C !important; /* Rojo suave para la X */
+        }
+        .swal2-error-ring {
+            border-color: #E74C3C !important; /* Rojo suave para el anillo de la X */
+        }
+        /* Estilo para el ícono de advertencia (el signo de exclamación) */
+        .swal2-warning {
+            color: #DAA520 !important; /* Dorado más tenue para la advertencia */
+            border-color: #DAA520 !important;
+        }
+
+        /* ------------------------------------------------------------------- */
+        /* ESTILOS ESPECÍFICOS PARA ÍCONOS DE RECOMPENSA DENTRO DE LOS POP-UPS */
+
+        /* Ícono de Oro (moneda) */
+        .swal2-popup .fas.fa-coins {
+            color: #C0C0C0 !important; /* Plateado sutil para el oro, para que combine */
             font-size: 1.4em !important;
             vertical-align: middle;
+            margin: 0 5px; /* Pequeño espacio para que no se pegue al texto */
         }
-        .swal2-custom-final-success .fas.fa-gem {
+
+        /* Ícono de Diamante */
+        .swal2-popup .fas.fa-gem {
             color: #ADD8E6 !important; /* Azul celeste claro para el diamante */
             font-size: 1.4em !important;
             vertical-align: middle;
+            margin: 0 5px; /* Pequeño espacio */
         }
 
-
-        /* ------------------------------------------------------------------- */
-        /* Estilo para el pop-up de Advertencia ("Palabra Adivinada, ¡pero cuidado!") */
-        /* Tonos cálidos y suaves, sin ser agresivos */
-        .swal2-custom-warning {
-            background: linear-gradient(135deg, #FDF5E6, #FAEBD7); /* Tonos muy claros de beige/crema */
-            border: 2px solid #D2B48C; /* Un beige más oscuro, tono arena */
-            color: #555555; /* Texto gris oscuro */
-            font-weight: bold;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 10px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Puedes añadir pequeños ajustes si quieres que ciertos pop-ups tengan un borde o título ligeramente diferente
+           sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
+        .swal2-popup.swal2-custom-game-over .swal2-title {
+            color: #E74C3C !important; /* Título rojo suave para Game Over */
         }
-        .swal2-custom-warning .swal2-title {
-            color: #B08C00; /* Un tono mostaza suave, no amarillo brillante */
-            font-size: 1.7em;
-            margin-bottom: 0.4em;
-        }
-        .swal2-custom-warning .swal2-html-container {
-            color: #777777; /* Gris un poco más claro */
-            font-size: 1em;
-            line-height: 1.4;
-        }
-        /* Estilo para el ícono de moneda dentro del pop-up de advertencia */
-        .swal2-custom-warning .fas.fa-coins {
-            color: #DAA520 !important; /* Un dorado más tenue para la advertencia */
-            font-size: 1.2em !important;
-            vertical-align: middle;
+        .swal2-popup.swal2-custom-game-over {
+            border-color: #A93226 !important; /* Borde un poco más oscuro para Game Over */
         }
 
+        /* Para el pop-up de Advertencia, puedes cambiar el color del título para que sea más acorde al warning */
+        .swal2-popup.swal2-custom-warning .swal2-title {
+            color: #DAA520 !important; /* Dorado más tenue para el título de advertencia */
+        }
+        .swal2-popup.swal2-custom-warning {
+             border-color: #DAA520 !important; /* Borde más acorde a la advertencia */
+        }
 
-        /* ------------------------------------------------------------------- */
-        /* Estilo para el pop-up de Game Over */
-        /* Colores oscuros y serios, con un toque de rojo apagado */
-        .swal2-custom-game-over {
-            background: linear-gradient(135deg, #1C2833, #212F3D); /* Azul muy oscuro/negro azulado */
-            border: 3px solid #A93226; /* Rojo ladrillo oscuro y sobrio */
-            color: #E0E0E0; /* Gris muy claro para el texto */
-            font-weight: bold;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
-            border-radius: 18px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .swal2-custom-game-over .swal2-title {
-            color: #E74C3C; /* Rojo suave para el título */
-            font-size: 2em;
-            margin-bottom: 0.6em;
-        }
-        .swal2-custom-game-over .swal2-html-container {
-            color: #B0B0B0; /* Gris medio para el contenido */
-            font-size: 1.1em;
-            line-height: 1.5;
-        }
-        /* Ajuste para el ícono de error de SweetAlert (la X) - rojo más suave */
-        .swal2-custom-game-over .swal2-error-line-tip,
-        .swal2-custom-game-over .swal2-error-line-long {
-            background-color: #E74C3C !important; /* Rojo suave para la X */
-        }
-        .swal2-custom-game-over .swal2-error-ring {
-            border-color: #E74C3C !important; /* Rojo suave para el anillo de la X */
-        }
 
         @media (max-width: 768px) {
             .orcado-container {
