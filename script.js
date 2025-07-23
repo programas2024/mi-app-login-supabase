@@ -472,6 +472,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// ====================================================================================
+// CONFIGURACIÓN INICIAL DEL JUEGO
+// Contiene las palabras para cada nivel y las configuraciones de la horca.
+// ====================================================================================
 const wordLists = {
     1: ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "TECNOLOGIA", "INTERNET", "NAVEGADOR", "APLICACION", "SERVIDOR", "DATABASE"],
     2: ["INTELIGENCIA", "CRIPTOGRAFIA", "NEURONAL", "BIGDATA", "CIBERSEGURIDAD", "REALIDAD", "VIRTUAL", "AUMENTADA", "ROBOTICA", "AUTOMATIZACION", "INNOVACION"],
@@ -482,22 +486,30 @@ const hangmanParts = [
     'hangman-head', 'hangman-body', 'hangman-arm-left', 'hangman-arm-right', 'hangman-leg-left', 'hangman-leg-right'
 ];
 
-let currentLevel = 1;
-let selectedWord = "";
-let guessedWord = [];
-let wrongGuesses = 0;
-let lettersUsed = [];
-let timerInterval;
-let timeLeft = 120; // 2 minutos
-const maxWrongGuesses = 6;
+// ====================================================================================
+// ESTADO ACTUAL DEL JUEGO
+// Variables que controlan el progreso del jugador y la partida.
+// ====================================================================================
+let currentLevel = 1;         // Nivel actual del juego
+let selectedWord = "";        // Palabra seleccionada para adivinar
+let guessedWord = [];         // Letras adivinadas de la palabra
+let wrongGuesses = 0;         // Número de intentos errados
+let lettersUsed = [];         // Letras ya intentadas por el jugador
+let timerInterval;            // Referencia al intervalo del temporizador
+let timeLeft = 120;           // Tiempo restante en segundos (2 minutos)
+const maxWrongGuesses = 6;    // Máximo de errores permitidos antes de Game Over
 
+// Requisitos y recompensas por nivel
 const levelRequirements = {
     1: { maxErrors: 5, reward: { gold: 5, diamonds: 0 } },
     2: { maxErrors: 3, reward: { gold: 10, diamonds: 0 } },
-    3: { maxErrors: 2, reward: { gold: 20, diamonds: 30 } } // Recompensa final
+    3: { maxErrors: 2, reward: { gold: 20, diamonds: 30 } } // Recompensa final del juego
 };
 
-// DOM Elements
+// ====================================================================================
+// ELEMENTOS DEL DOM
+// Referencias a los elementos HTML para interactuar con la interfaz.
+// ====================================================================================
 const wordDisplay = document.getElementById('word-display');
 const guessInput = document.getElementById('guess-input');
 const submitButton = document.getElementById('submit-guess');
@@ -507,62 +519,90 @@ const wrongGuessesDisplay = document.getElementById('wrong-guesses-display');
 const timerDisplay = document.getElementById('timer-display');
 const lettersUsedDisplay = document.getElementById('letters-used-display');
 
+// ====================================================================================
+// FUNCIONES PRINCIPALES DEL JUEGO
+// Lógica para inicializar, actualizar y gestionar la partida.
+// ====================================================================================
+
+/**
+ * Inicializa o reinicia el juego para un nivel específico.
+ * @param {number} level - El nivel al que se desea inicializar el juego. Por defecto es 1.
+ */
 async function initializeGame(level = 1) {
     currentLevel = level;
+    // Verifica si hay palabras para el nivel actual, si no, vuelve al nivel 1.
     if (!wordLists[currentLevel] || wordLists[currentLevel].length === 0) {
         console.error(`Error: No words found for level ${currentLevel}. Resetting to level 1.`);
         currentLevel = 1;
     }
 
+    // Selecciona una palabra aleatoria para el nivel actual.
     selectedWord = wordLists[currentLevel][Math.floor(Math.random() * wordLists[currentLevel].length)].toUpperCase();
-    guessedWord = Array(selectedWord.length).fill('_');
+    guessedWord = Array(selectedWord.length).fill('_'); // Inicializa la palabra adivinada con guiones bajos
     wrongGuesses = 0;
     lettersUsed = [];
-    timeLeft = 120;
+    timeLeft = 120; // Reinicia el temporizador
     messageDisplay.textContent = "";
-    guessInput.value = "";
-    updateDisplay();
-    updateHangmanDrawing();
-    startTimer();
-    guessInput.focus();
+    guessInput.value = ""; // Limpia el campo de entrada
+    
+    updateDisplay();         // Actualiza la interfaz del juego
+    updateHangmanDrawing();  // Actualiza el dibujo del ahorcado
+    startTimer();            // Inicia/Reinicia el temporizador
+    guessInput.focus();      // Enfoca el campo de entrada para que el jugador pueda empezar a escribir
+    
     levelDisplay.textContent = currentLevel;
     wrongGuessesDisplay.textContent = wrongGuesses;
-    lettersUsedDisplay.textContent = '';
+    lettersUsedDisplay.textContent = ''; // Limpia las letras usadas
 }
 
+/**
+ * Actualiza la visualización de la palabra, errores y letras usadas en la interfaz.
+ */
 function updateDisplay() {
     wordDisplay.textContent = guessedWord.join(' ');
     wrongGuessesDisplay.textContent = wrongGuesses;
+    // Muestra las letras usadas, destacando las incorrectas.
     lettersUsedDisplay.innerHTML = lettersUsed.map(letter => {
-        return selectedWord.includes(letter) ? `<span>${letter}</span>` : `<strong style="color:#e74c3c;">${letter}</strong>`;
+        return selectedWord.includes(letter) ? `<span>${letter}</span>` : `<strong style="color:#B22222;">${letter}</strong>`; // Rojo suave para errores
     }).join(', ');
 }
 
+/**
+ * Muestra u oculta las partes del dibujo del ahorcado según el número de errores.
+ */
 function updateHangmanDrawing() {
     hangmanParts.forEach((partId, index) => {
         const partElement = document.getElementById(partId);
         if (partElement) {
             if (index < wrongGuesses) {
-                partElement.classList.add('show-part');
+                partElement.classList.add('show-part'); // Muestra la parte si el error es suficiente
             } else {
-                partElement.classList.remove('show-part');
+                partElement.classList.remove('show-part'); // Oculta la parte
             }
         }
     });
 }
 
+/**
+ * Inicia o reinicia el temporizador del juego.
+ */
 function startTimer() {
-    clearInterval(timerInterval);
+    clearInterval(timerInterval); // Limpia cualquier temporizador existente
     timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.textContent = timeLeft;
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            handleGameOver(false, "¡Se acabó el tiempo!");
+            handleGameOver(false, "¡Se acabó el tiempo! La palabra era: " + selectedWord);
         }
-    }, 1000);
+    }, 1000); // Actualiza cada segundo
 }
 
+/**
+ * Actualiza el balance de oro y diamantes del jugador en la base de datos (Supabase).
+ * @param {number} gold - Cantidad de oro a añadir.
+ * @param {number} diamonds - Cantidad de diamantes a añadir.
+ */
 async function updatePlayerBalance(gold = 0, diamonds = 0) {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const user = session?.user;
@@ -573,26 +613,27 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
             icon: 'error',
             title: 'Error de Sesión',
             text: 'Hubo un problema al verificar tu sesión. Por favor, intenta de nuevo.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' } // Usa el estilo de Game Over para errores
         });
         return;
     }
 
     if (!user) {
         console.warn("No user logged in. Cannot update balance.");
-        // Si no hay usuario, podrías redirigir al login o simplemente no guardar la recompensa
         Swal.fire({
             icon: 'info',
             title: 'Inicia Sesión para Guardar',
             text: 'Inicia sesión para que tus recompensas se guarden.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-warning' } // Usa el estilo de advertencia
         });
         return;
     }
 
-    // Primero, intenta obtener el perfil actual del usuario
+    // Intenta obtener el perfil actual del usuario.
     const { data: currentProfile, error: fetchError } = await supabase
-        .from('profiles') // Asume que tu tabla de perfiles se llama 'profiles'
+        .from('profiles')
         .select('gold, diamonds')
         .eq('id', user.id)
         .single();
@@ -603,7 +644,8 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
             icon: 'error',
             title: 'Error al Obtener Perfil',
             text: 'Hubo un problema al cargar tu perfil de jugador. Por favor, contacta soporte.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' }
         });
         return;
     }
@@ -611,7 +653,7 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
     const newGold = currentProfile.gold + gold;
     const newDiamonds = currentProfile.diamonds + diamonds;
 
-    // Luego, actualiza el perfil con los nuevos valores
+    // Actualiza el perfil con los nuevos valores.
     const { data, error } = await supabase
         .from('profiles')
         .update({ gold: newGold, diamonds: newDiamonds })
@@ -623,19 +665,22 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
             icon: 'error',
             title: 'Error al Guardar Recompensa',
             text: 'Hubo un problema al guardar tus recompensas. Por favor, intenta de nuevo.',
-            confirmButtonText: 'Entendido'
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' }
         });
     } else {
         console.log(`Balance actualizado: +${gold} Oro, +${diamonds} Diamantes. Nuevo total: ${newGold} Oro, ${newDiamonds} Diamantes.`);
-        // Opcional: Podrías actualizar un display de oro/diamantes en la UI aquí si tuvieras uno.
     }
 }
 
-
+/**
+ * Procesa la letra ingresada por el jugador.
+ */
 async function checkGuess() {
     const guess = guessInput.value.toUpperCase();
-    guessInput.value = "";
+    guessInput.value = ""; // Limpia el input
 
+    // Validaciones de entrada
     if (guess.length !== 1 || !/[A-Z]/.test(guess)) {
         messageDisplay.textContent = "Por favor, ingresa una sola letra válida.";
         return;
@@ -646,9 +691,10 @@ async function checkGuess() {
         return;
     }
 
-    lettersUsed.push(guess);
+    lettersUsed.push(guess); // Añade la letra a las usadas
 
     if (selectedWord.includes(guess)) {
+        // La letra es correcta, actualiza la palabra adivinada
         for (let i = 0; i < selectedWord.length; i++) {
             if (selectedWord[i] === guess) {
                 guessedWord[i] = guess;
@@ -656,87 +702,102 @@ async function checkGuess() {
         }
         messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
     } else {
+        // La letra es incorrecta
         wrongGuesses++;
         messageDisplay.textContent = `Incorrecto. Te quedan ${maxWrongGuesses - wrongGuesses} intentos.`;
-        updateHangmanDrawing();
+        updateHangmanDrawing(); // Dibuja una parte más del ahorcado
     }
 
-    updateDisplay();
-    await checkGameStatus();
+    updateDisplay(); // Actualiza la interfaz
+    await checkGameStatus(); // Verifica el estado del juego (victoria/derrota)
 }
+
+/**
+ * Verifica si el juego ha terminado (victoria o derrota) y maneja las recompensas/transiciones.
+ */
 async function checkGameStatus() {
+    // Si la palabra ha sido completamente adivinada
     if (guessedWord.join('') === selectedWord) {
-        clearInterval(timerInterval);
+        clearInterval(timerInterval); // Detiene el temporizador
 
         const goldPerWord = 10;
-        await updatePlayerBalance(goldPerWord, 0);
+        await updatePlayerBalance(goldPerWord, 0); // Otorga oro por adivinar la palabra
 
         const errorsAllowed = levelRequirements[currentLevel].maxErrors;
 
+        // Si el jugador cumple con el requisito de errores para avanzar/ganar
         if (wrongGuesses <= errorsAllowed) {
+            // Si hay más niveles
             if (currentLevel < Object.keys(wordLists).length) {
                 Swal.fire({
-                    icon: 'success', // SweetAlert usa esto para un tick, pero lo personalizaremos con CSS
+                    icon: 'success',
                     title: '¡Nivel Completado!',
-                    html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
+                    html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
                     confirmButtonText: 'Siguiente Nivel',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-level-up' // Clase personalizada para el pop-up de nivel completado
+                        popup: 'swal2-custom-level-up' // Clase personalizada para pop-up de nivel completado
                     },
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        initializeGame(currentLevel + 1);
+                        initializeGame(currentLevel + 1); // Carga el siguiente nivel
                     }
                 });
             } else {
+                // El jugador ha completado todos los niveles (Maestro de Ahorcado)
                 const finalReward = levelRequirements[currentLevel].reward;
-                await updatePlayerBalance(finalReward.gold, finalReward.diamonds);
+                await updatePlayerBalance(finalReward.gold, finalReward.diamonds); // Otorga la recompensa final
 
                 Swal.fire({
-                    icon: 'success', // SweetAlert usa esto para un tick, pero lo personalizaremos con CSS
+                    icon: 'success',
                     title: '¡FELICITACIONES, ERES EL MAESTRO DE AHORCADO!',
-                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem" style="color:#ADD8E6; font-size:1.2em;"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong> adicionales!`,
+                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong> adicionales!`,
                     confirmButtonText: '¡A Jugar de Nuevo!',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-final-success' // Clase personalizada para el pop-up de éxito final
+                        popup: 'swal2-custom-final-success' // Clase personalizada para pop-up de éxito final
                     },
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        initializeGame();
+                        initializeGame(); // Reinicia el juego al nivel 1
                     }
                 });
             }
         } else {
-            // Este es el caso de "Palabra Adivinada, ¡pero cuidado!"
+            // La palabra fue adivinada, pero con demasiados errores para avanzar de nivel
             Swal.fire({
-                icon: 'warning', // El ícono de advertencia de SweetAlert es amarillo/naranja, lo dejaremos.
+                icon: 'warning',
                 title: 'Palabra Adivinada, ¡pero cuidado!',
-                html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong>.`,
+                html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins"></i></strong>.`,
                 confirmButtonText: 'Volver a Intentar',
                 customClass: {
                     confirmButton: 'swal2-confirm-button',
-                    popup: 'swal2-custom-warning' // Clase personalizada para el pop-up de advertencia
+                    popup: 'swal2-custom-warning' // Clase personalizada para pop-up de advertencia
                 },
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    initializeGame();
+                    initializeGame(); // Reinicia el juego al nivel 1
                 }
             });
         }
     } else if (wrongGuesses >= maxWrongGuesses) {
-        handleGameOver(false, `¡Has superado los ${maxWrongGuesses} errores! La palabra era: ${selectedWord}`);
+        // El jugador ha agotado todos sus intentos
+        handleGameOver(false, `¡Has superado los ${maxWrongGuesses} errores! La palabra era: **${selectedWord}**`);
     }
 }
 
+/**
+ * Maneja el fin del juego, mostrando un mensaje de victoria o derrota.
+ * @param {boolean} isWin - True si el jugador ganó, false si perdió.
+ * @param {string} message - Mensaje a mostrar al jugador.
+ */
 async function handleGameOver(isWin, message) {
-    clearInterval(timerInterval);
+    clearInterval(timerInterval); // Detiene el temporizador
     Swal.fire({
-        icon: isWin ? 'success' : 'error', // El ícono de error de SweetAlert es rojo, lo dejaremos.
+        icon: isWin ? 'success' : 'error',
         title: isWin ? '¡Ganaste!' : '¡Game Over!',
         html: message,
         confirmButtonText: 'Intentar de nuevo',
@@ -747,17 +808,28 @@ async function handleGameOver(isWin, message) {
         allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
-            initializeGame();
+            initializeGame(); // Reinicia el juego
         }
     });
 }
 
+// ====================================================================================
+// MANEJADORES DE EVENTOS
+// Conecta las acciones del usuario con la lógica del juego.
+// ====================================================================================
+
+// Maneja el clic en el botón de adivinar
 submitButton.addEventListener('click', checkGuess);
+
+// Maneja la pulsación de la tecla 'Enter' en el campo de entrada
 guessInput.addEventListener('keypress', async (event) => {
     if (event.key === 'Enter') {
         await checkGuess();
     }
 });
+
+// Inicializa el juego cuando el DOM está completamente cargado
+// Se usa una función anónima para evitar pasar el objeto Event a initializeGame.
 document.addEventListener('DOMContentLoaded', () => {
     initializeGame();
 });
