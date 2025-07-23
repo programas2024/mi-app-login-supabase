@@ -472,16 +472,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-const playBtn = document.getElementById('play-btn'); // Asegúrate de que esta línea exista y esté descomentada
-
-// ... (tus otras funciones y manejadores de eventos existentes) ...
-
-// --- Lógica del botón "Jugar" ---
-// Añade este bloque si no existe, o asegúrate de que esté configurado así.
-if (playBtn) { // Buena práctica: verificar que el elemento existe antes de añadir un listener
-    playBtn.addEventListener('click', () => {
-        window.location.href = 'games.html'; // Redirige a la nueva página de juegos
-    });
-} else {
-    console.error('Error: El botón con ID "play-btn" no se encontró en el DOM.');
-}
