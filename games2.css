@@ -163,7 +163,7 @@ body {
 
 /* Deportes (Rojo Coral Suave) */
 .theme-card.sports { background: linear-gradient(135deg, #f08080, #e86f6f); }
-.theme-card.sports .card-icon { color: #F44336; } /* Rojo más vibrante y oscuro */
+.theme-card.sports .card-icon { color: #FFFFFF; } /* ¡Icono blanco para Deportes! */
 .theme-card.sports .card-title { color: #2c3e50; }
 .theme-card.sports .card-description { color: #555555; }
 
@@ -187,7 +187,7 @@ body {
 
 /* Frutas (Amarillo Crema Suave) */
 .theme-card.fruits { background: linear-gradient(135deg, #ffe6a7, #ffd98a); }
-.theme-card.fruits .card-icon { color: #FFEB3B; } /* Amarillo más vibrante y oscuro */
+.theme-card.fruits .card-icon { color: #8B4513; } /* ¡Icono café claro para Frutas! */
 .theme-card.fruits .card-title { color: #2c3e50; }
 .theme-card.fruits .card-description { color: #555555; }
 
