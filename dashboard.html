@@ -15,6 +15,7 @@
 <style>
 /* Ejemplo de estilo para el botón del cofre */
         /* --- Estilos para el botón del cofre --- */
+/* --- Estilos para el botón del cofre (o cualquier botón con esta clase) --- */
 .btn-chest-custom {
     background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
     border: 2px solid #00FA9A; /* Verde Primavera Medio */
@@ -22,7 +23,17 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Sombra más pronunciada */
     transition: all 0.3s ease;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Sombra de texto sutil */
-    width: 100%;
+    
+    /* --- Ajustes para responsividad --- */
+    width: 100%; /* Ocupa el 100% del ancho disponible de su contenedor */
+    max-width: 100%; /* Asegura que no se desborde */
+    box-sizing: border-box; /* ¡IMPORTANTE! Incluye padding y border en el ancho total */
+    padding: 15px 25px; /* Ajuste de padding para que no sea demasiado grande */
+    font-size: 1.1em; /* Ajuste de tamaño de fuente */
+    display: flex; /* Para centrar contenido si es necesario */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre icono y texto */
 }
 
 .btn-chest-custom:hover {
@@ -30,6 +41,14 @@
     transform: translateY(-4px) scale(1.02); /* Efecto de "levantarse" y agrandarse ligeramente */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); /* Sombra más grande al pasar el ratón */
     border-color: #7FFFD4; /* Aguamarina en hover */
+}
+
+/* Media query para pantallas más pequeñas, si es necesario un ajuste adicional */
+@media (max-width: 480px) {
+    .btn-chest-custom {
+        padding: 12px 20px; /* Un poco menos de padding en pantallas muy pequeñas */
+        font-size: 1em; /* Fuente un poco más pequeña */
+    }
 }
 
 /* --- Estilos para la SweetAlert del cofre (¡Más impactante y con blancos!) --- */
