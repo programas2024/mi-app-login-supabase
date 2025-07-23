@@ -1,5 +1,8 @@
 // orcado_animals_specific_game.js - Lógica para el juego de Orcado de Animales (con niveles)
 
+// ¡IMPORTANTE: Importa createClient desde la URL del CDN de Supabase como un módulo ES!
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 // ====================================================================================
 // CONFIGURACIÓN INICIAL DEL JUEGO
 // Contiene las palabras para cada nivel y las configuraciones de la horca.
@@ -48,8 +51,8 @@ const animals_game_timerDisplay = document.getElementById('timer-display');
 const animals_game_lettersUsedDisplay = document.getElementById('letters-used-display');
 const animals_game_loaderWrapper = document.getElementById('loader-wrapper');
 
-// --- Supabase Config (Asegúrate de que estas claves sean las correctas para tu proyecto) ---
-// NOTA: Se incluye aquí para que el script sea completamente autónomo.
+// --- Supabase Config ---
+// Ahora que createClient está importado, podemos usarlo directamente.
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

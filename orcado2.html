@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orcado - El Juego de la Palabra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="orcado.css"> <!-- ¡Tu CSS de Orcado sin cambios! -->
+    <link rel="stylesheet" href="orcado.css"> <!-- Tu CSS de Orcado sin cambios -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ¡IMPORTANTE: Añade type="module" aquí para que funcione la importación! -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" type="module"></script> 
 </head>
 <body>
 
@@ -64,6 +65,6 @@
         </div>
     </div>
 
-    <script type="module" src="orcado_animals_specific_game.js"></script> <!-- ¡NUEVO NOMBRE DE ARCHIVO PARA ANIMALES! -->
+    <script type="module" src="orcado_animals_specific_game.js"></script>
 </body>
 </html>
