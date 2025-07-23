@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background-color: #f0f2f5;
@@ -429,7 +430,13 @@
     </div>
 
     <script>
-        // Lógica de JavaScript para el juego "Orcado" (Ahorcado)
+       // --- 1. Configuración de Supabase ---
+const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // -----------------------------
+
         const wordLists = {
             1: ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "TECNOLOGIA", "INTERNET", "NAVEGADOR", "APLICACION", "SERVIDOR", "DATABASE"],
             2: ["INTELIGENCIA", "CRIPTOGRAFIA", "NEURONAL", "BIGDATA", "CIBERSEGURIDAD", "REALIDAD", "VIRTUAL", "AUMENTADA", "ROBOTICA", "AUTOMATIZACION", "INNOVACION"],
@@ -447,11 +454,11 @@
         let lettersUsed = [];
         let timerInterval;
         let timeLeft = 120; // 2 minutos
-        const maxWrongGuesses = 6; // Definir aquí para acceso global
+        const maxWrongGuesses = 6;
 
         const levelRequirements = {
-            1: { maxErrors: 5, reward: { gold: 5, diamonds: 0 } },
-            2: { maxErrors: 3, reward: { gold: 10, diamonds: 0 } },
+            1: { maxErrors: 5, reward: { gold: 5, diamonds: 3 } },
+            2: { maxErrors: 3, reward: { gold: 15, diamonds: 5 } },
             3: { maxErrors: 2, reward: { gold: 20, diamonds: 30 } } // Recompensa final
         };
 
@@ -465,19 +472,18 @@
         const timerDisplay = document.getElementById('timer-display');
         const lettersUsedDisplay = document.getElementById('letters-used-display');
 
-        function initializeGame(level = 1) { // Default level to 1 if not provided
+        async function initializeGame(level = 1) {
             currentLevel = level;
-            // Check if the currentLevel exists in wordLists
             if (!wordLists[currentLevel] || wordLists[currentLevel].length === 0) {
                 console.error(`Error: No words found for level ${currentLevel}. Resetting to level 1.`);
-                currentLevel = 1; // Fallback to level 1
+                currentLevel = 1;
             }
 
             selectedWord = wordLists[currentLevel][Math.floor(Math.random() * wordLists[currentLevel].length)].toUpperCase();
             guessedWord = Array(selectedWord.length).fill('_');
             wrongGuesses = 0;
             lettersUsed = [];
-            timeLeft = 120; // Resetear tiempo
+            timeLeft = 120;
             messageDisplay.textContent = "";
             guessInput.value = "";
             updateDisplay();
@@ -522,7 +528,49 @@
             }, 1000);
         }
 
-        function checkGuess() {
+        async function updatePlayerBalance(gold = 0, diamonds = 0) {
+            const user = (await supabase.auth.getSession()).data.session?.user;
+
+            if (!user) {
+                console.warn("No user logged in. Cannot update balance.");
+                return;
+            }
+
+            const { data: currentProfile, error: fetchError } = await supabase
+                .from('profiles') // Asume que tu tabla de perfiles se llama 'profiles'
+                .select('gold, diamonds')
+                .eq('id', user.id)
+                .single();
+
+            if (fetchError) {
+                console.error("Error fetching current profile:", fetchError);
+                return;
+            }
+
+            const newGold = currentProfile.gold + gold;
+            const newDiamonds = currentProfile.diamonds + diamonds;
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .update({ gold: newGold, diamonds: newDiamonds })
+                .eq('id', user.id);
+
+            if (error) {
+                console.error("Error updating player balance:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al Guardar Recompensa',
+                    text: 'Hubo un problema al guardar tus recompensas. Por favor, intenta de nuevo.',
+                    confirmButtonText: 'Entendido'
+                });
+            } else {
+                console.log(`Balance actualizado: +${gold} Oro, +${diamonds} Diamantes. Nuevo total: ${newGold} Oro, ${newDiamonds} Diamantes.`);
+                // Puedes añadir una pequeña notificación in-game aquí si quieres
+            }
+        }
+
+
+        async function checkGuess() {
             const guess = guessInput.value.toUpperCase();
             guessInput.value = "";
 
@@ -552,12 +600,16 @@
             }
 
             updateDisplay();
-            checkGameStatus();
+            await checkGameStatus(); // Call with await
         }
 
-        function checkGameStatus() {
+        async function checkGameStatus() { // Make this async
             if (guessedWord.join('') === selectedWord) {
                 clearInterval(timerInterval);
+
+                const goldPerWord = 10;
+                await updatePlayerBalance(goldPerWord, 0); // Update balance with 10 gold for guessing the word
+
                 const errorsAllowed = levelRequirements[currentLevel].maxErrors;
 
                 if (wrongGuesses <= errorsAllowed) {
@@ -565,7 +617,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: '¡Nivel Completado!',
-                            html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Pasas al Nivel ${currentLevel + 1}!`,
+                            html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
                             confirmButtonText: 'Siguiente Nivel',
                             customClass: {
                                 confirmButton: 'swal2-confirm-button',
@@ -579,10 +631,13 @@
                         });
                     } else {
                         const finalReward = levelRequirements[currentLevel].reward;
+                        // Add final reward to balance
+                        await updatePlayerBalance(finalReward.gold, finalReward.diamonds);
+
                         Swal.fire({
                             icon: 'success',
                             title: '¡FELICITACIONES, ERES EL MAESTRO DE ORCADO!',
-                            html: `¡Lo lograste! Has superado todos los niveles.<br>¡Como recompensa, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong>!`,
+                            html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong> adicionales!`,
                             confirmButtonText: '¡A Jugar de Nuevo!',
                             customClass: {
                                 confirmButton: 'swal2-confirm-button',
@@ -591,18 +646,15 @@
                             allowOutsideClick: false
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                console.log(`Ganaste: ${finalReward.diamonds} Diamantes y ${finalReward.gold} Oro`);
-                                // Aquí puedes añadir la lógica para guardar esto en la base de datos de Supabase.
                                 initializeGame();
                             }
                         });
                     }
                 } else {
-                    const consolationReward = currentLevel === 1 ? { gold: 2, diamonds: 0 } : { gold: 0, diamonds: 0 };
                     Swal.fire({
                         icon: 'warning',
                         title: 'Palabra Adivinada, ¡pero cuidado!',
-                        html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${consolationReward.gold} Oro <i class="fas fa-coins"></i></strong>.`,
+                        html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins"></i></strong>.`, // Only 10 gold for this case
                         confirmButtonText: 'Volver a Intentar',
                         customClass: {
                             confirmButton: 'swal2-confirm-button',
@@ -611,7 +663,6 @@
                         allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            console.log(`Ganaste de consolación: ${consolationReward.gold} Oro`);
                             initializeGame();
                         }
                     });
@@ -621,7 +672,7 @@
             }
         }
 
-        function handleGameOver(isWin, message) {
+        async function handleGameOver(isWin, message) {
             clearInterval(timerInterval);
             Swal.fire({
                 icon: isWin ? 'success' : 'error',
@@ -640,15 +691,13 @@
             });
         }
 
-        // Event Listeners
         submitButton.addEventListener('click', checkGuess);
-        guessInput.addEventListener('keypress', (event) => {
+        guessInput.addEventListener('keypress', async (event) => { // Make event listener async
             if (event.key === 'Enter') {
-                checkGuess();
+                await checkGuess();
             }
         });
 
-        // Inicializar el juego al cargar la página
         document.addEventListener('DOMContentLoaded', initializeGame);
     </script>
 </body>
