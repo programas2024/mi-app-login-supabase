@@ -145,7 +145,7 @@ body {
 
 .currency-label {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.6em;
+    font-size: 1.4em; /* Más pequeño como pediste */
     font-weight: 600;
     margin-bottom: 10px;
     opacity: 0.9;
@@ -158,7 +158,76 @@ body {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* --- Grant Rewards Button --- */
+/* --- Instructions Card --- */
+.instructions-card {
+    background-color: rgba(0, 0, 0, 0.2); /* Fondo oscuro translúcido */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 40px; /* Espacio antes de los botones */
+    max-width: 700px;
+    width: 90%;
+    text-align: left;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.instructions-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    color: #ADD8E6; /* Azul claro para el título de instrucciones */
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    text-shadow: 0 0 8px rgba(173, 216, 230, 0.4);
+}
+
+.instructions-card p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #dcdcdc;
+    margin-bottom: 20px;
+}
+
+.instructions-card ul {
+    list-style: none; /* Elimina los puntos por defecto */
+    padding: 0;
+    margin: 0;
+}
+
+.instructions-card ul li {
+    font-size: 1em;
+    line-height: 1.8;
+    color: #c0c0c0;
+    margin-bottom: 8px;
+    position: relative;
+    padding-left: 25px; /* Espacio para el icono */
+}
+
+.instructions-card ul li::before {
+    content: '\f058'; /* Icono de check-circle de Font Awesome */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: #50e3c2; /* Verde esmeralda para los checks */
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* --- Rewards Buttons Container --- */
+.rewards-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espacio entre los botones */
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* --- General Reward Button Styles --- */
 .grant-rewards-btn {
     background: linear-gradient(45deg, #FF6A00, #EE0979); /* Naranja a Rosa */
     color: white;
@@ -174,8 +243,8 @@ body {
     align-items: center;
     gap: 12px;
     justify-content: center;
-    width: fit-content;
-    margin-top: 30px; /* Espacio superior */
+    flex: 1; /* Permite que crezcan y se encojan */
+    min-width: 280px; /* Ancho mínimo para cada botón */
 }
 
 .grant-rewards-btn:hover {
@@ -191,6 +260,32 @@ body {
     transform: none;
     opacity: 0.7;
 }
+
+/* --- Specific Button Styles --- */
+.gold-only-btn {
+    background: linear-gradient(45deg, #FFD700, #FFC107); /* Dorado */
+    color: #333;
+    text-shadow: none;
+}
+.gold-only-btn:hover {
+    background: linear-gradient(45deg, #e0b800, #e0a406);
+}
+.gold-only-btn .fa-coins {
+    color: #B8860B; /* Icono más oscuro para contraste */
+}
+
+.diamond-only-btn {
+    background: linear-gradient(45deg, #ADD8E6, #62c3e8); /* Azul claro/diamante */
+    color: #333;
+    text-shadow: none;
+}
+.diamond-only-btn:hover {
+    background: linear-gradient(45deg, #99c2d1, #4dafd6);
+}
+.diamond-only-btn .fa-gem {
+    color: #2980b9; /* Icono más oscuro para contraste */
+}
+
 
 /* --- Back to Game Button --- */
 .back-to-game-btn {
@@ -248,15 +343,31 @@ body {
         font-size: 4em;
     }
     .currency-label {
-        font-size: 1.4em;
+        font-size: 1.2em; /* Ajuste para móviles */
     }
     .currency-value {
         font-size: 3em;
+    }
+    .instructions-card {
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .instructions-card h3 {
+        font-size: 1.5em;
+    }
+    .instructions-card p, .instructions-card ul li {
+        font-size: 0.95em;
+    }
+    .rewards-buttons-container {
+        flex-direction: column; /* Apilar botones en móviles */
+        gap: 15px;
     }
     .grant-rewards-btn {
         font-size: 1.1em;
         padding: 15px 25px;
         gap: 10px;
+        min-width: unset; /* Eliminar ancho mínimo para que se adapte */
+        width: 100%;
     }
     .back-to-game-btn {
         font-size: 1em;
@@ -273,10 +384,16 @@ body {
         font-size: 3.5em;
     }
     .currency-label {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
     .currency-value {
         font-size: 2.5em;
+    }
+    .instructions-card {
+        padding: 15px;
+    }
+    .instructions-card h3 {
+        font-size: 1.3em;
     }
     .grant-rewards-btn {
         font-size: 1em;

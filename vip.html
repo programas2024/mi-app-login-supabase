@@ -29,23 +29,45 @@
                 </div>
             </div>
 
-            <!-- Nuevo botón para dar recompensas aleatorias -->
-            <button id="grant-rewards-btn" class="grant-rewards-btn">
-                <i class="fas fa-gift"></i> Recibir Recompensas VIP
-            </button>
+            <!-- Nuevo contenedor de Instrucciones -->
+            <div class="instructions-card">
+                <h3><i class="fas fa-info-circle"></i> Cómo Funciona tu Bóveda VIP</h3>
+                <p>Aquí puedes ver tu balance actual de Oro y Diamantes. ¡Usa los botones de abajo para reclamar recompensas adicionales!</p>
+                <ul>
+                    <li>El botón "Recibir Recompensas VIP" te otorga Oro y Diamantes aleatorios.</li>
+                    <li>Los botones "Recibir Oro VIP" y "Recibir Diamantes VIP" te dan solo ese tipo de moneda.</li>
+                    <li>Cada botón tiene un tiempo de espera de 1 minuto antes de poder ser usado de nuevo.</li>
+                </ul>
+            </div>
+
+            <div class="rewards-buttons-container">
+                <!-- Botón principal para dar recompensas aleatorias (Oro y Diamantes) -->
+                <button id="grant-rewards-btn" class="grant-rewards-btn" data-cooldown-key="allRewards">
+                    <i class="fas fa-gift"></i> Recibir Recompensas VIP
+                </button>
+
+                <!-- Nuevos botones específicos para Oro y Diamantes -->
+                <button id="grant-gold-btn" class="grant-rewards-btn gold-only-btn" data-cooldown-key="goldRewards">
+                    <i class="fas fa-coins"></i> Recibir Oro VIP
+                </button>
+                <button id="grant-diamonds-btn" class="grant-rewards-btn diamond-only-btn" data-cooldown-key="diamondRewards">
+                    <i class="fas fa-gem"></i> Recibir Diamantes VIP
+                </button>
+            </div>
         </main>
     </div>
 
     <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
+    <!-- Librería SweetAlert2 (cargada globalmente) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
     <!-- Tu script principal con la lógica de Supabase y recompensas -->
     <script type="module">
-        // Importaciones necesarias para este módulo: Supabase, Confetti y SweetAlert2
-        // ¡Usamos esm.sh para Supabase y Confetti, y SweetAlert2 compatible con módulos ES!
+        // Importaciones necesarias para este módulo: Supabase y Confetti
         import { createClient } from 'https://esm.sh/@supabase/supabase-js';
         import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
-        import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11/+esm'; // Importar Swal como módulo ES
 
         // --- Configuración de Supabase (¡CLAVE API IDÉNTICA A TU SCRIPT.JS!) ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -57,6 +79,8 @@
         const currentDiamondsSpan = document.getElementById('current-diamonds');
         const currentGoldSpan = document.getElementById('current-gold');
         const grantRewardsBtn = document.getElementById('grant-rewards-btn');
+        const grantGoldBtn = document.getElementById('grant-gold-btn');
+        const grantDiamondsBtn = document.getElementById('grant-diamonds-btn');
 
         // --- Variables de Estado del Usuario ---
         let currentUser = null;
@@ -64,6 +88,54 @@
             gold: 0,
             diamonds: 0
         };
+
+        // --- Configuración del Cooldown ---
+        const COOLDOWN_SECONDS = 60; // 1 minuto
+        const COOLDOWN_KEYS = {
+            allRewards: 'lastClaimTime_allRewards',
+            goldRewards: 'lastClaimTime_goldRewards',
+            diamondRewards: 'lastClaimTime_diamondRewards'
+        };
+
+        // --- Funciones de Utilidad ---
+
+        /**
+         * Actualiza el estado de un botón de recompensa (habilitado/deshabilitado, texto).
+         * @param {HTMLElement} button - El botón a actualizar.
+         * @param {string} cooldownKey - La clave de localStorage para el cooldown de este botón.
+         */
+        function updateButtonCooldown(button, cooldownKey) {
+            const lastClaimTime = parseInt(localStorage.getItem(cooldownKey) || '0');
+            const now = Date.now();
+            const elapsedTime = now - lastClaimTime;
+            const remainingTime = COOLDOWN_SECONDS * 1000 - elapsedTime;
+
+            if (remainingTime > 0) {
+                button.disabled = true;
+                const secondsLeft = Math.ceil(remainingTime / 1000);
+                button.innerHTML = `<i class="fas fa-hourglass-half"></i> ${secondsLeft}s`;
+                setTimeout(() => updateButtonCooldown(button, cooldownKey), 1000); // Revisa cada segundo
+            } else {
+                button.disabled = false;
+                const originalIcon = button.classList.contains('gold-only-btn') ? 'fas fa-coins' :
+                                     button.classList.contains('diamond-only-btn') ? 'fas fa-gem' :
+                                     'fas fa-gift';
+                const originalText = button.classList.contains('gold-only-btn') ? 'Recibir Oro VIP' :
+                                     button.classList.contains('diamond-only-btn') ? 'Recibir Diamantes VIP' :
+                                     'Recibir Recompensas VIP';
+                button.innerHTML = `<i class="${originalIcon}"></i> ${originalText}`;
+            }
+        }
+
+        /**
+         * Inicia el cooldown para un botón específico.
+         * @param {HTMLElement} button - El botón que activó el cooldown.
+         * @param {string} cooldownKey - La clave de localStorage para el cooldown.
+         */
+        function startCooldown(button, cooldownKey) {
+            localStorage.setItem(cooldownKey, Date.now().toString());
+            updateButtonCooldown(button, cooldownKey);
+        }
 
         // --- Funciones de Supabase ---
 
@@ -139,17 +211,31 @@
         }
 
         /**
-         * Maneja la lógica para otorgar recompensas aleatorias (Oro y Diamantes).
+         * Función genérica para otorgar recompensas.
+         * @param {string} type - 'all', 'gold', o 'diamonds'.
+         * @param {HTMLElement} button - El botón que se clickeó.
          */
-        async function grantRandomRewards() {
+        async function grantRewards(type, button) {
+            const cooldownKey = button.dataset.cooldownKey;
+
             if (!currentUser) {
                 Swal.fire({ icon: 'error', title: 'Error', text: 'Debes iniciar sesión para recibir recompensas.', customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' } });
                 return;
             }
 
-            grantRewardsBtn.disabled = true;
-            grantRewardsBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Recibiendo...`;
-            console.log("DEBUG: grantRandomRewards - Botón clickeado. User ID:", currentUser.id);
+            // Verificar cooldown antes de deshabilitar
+            const lastClaimTime = parseInt(localStorage.getItem(cooldownKey) || '0');
+            const now = Date.now();
+            if (now - lastClaimTime < COOLDOWN_SECONDS * 1000) {
+                // Esto no debería ocurrir si el botón está deshabilitado por el cooldown,
+                // pero es una capa de seguridad.
+                Swal.fire({ icon: 'info', title: 'Espera un momento', text: 'Este botón aún está en tiempo de recarga.', customClass: { popup: 'swal2-custom-warning' } });
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Recibiendo...`;
+            console.log(`DEBUG: grantRewards - Botón '${type}' clickeado. User ID:`, currentUser.id);
 
             try {
                 const { data: profile, error: profileError } = await supabase
@@ -159,21 +245,34 @@
                     .single();
 
                 if (profileError) {
-                    console.error("DEBUG: grantRandomRewards - Error al obtener perfil para recompensas:", profileError.message);
+                    console.error("DEBUG: grantRewards - Error al obtener perfil para recompensas:", profileError.message);
                     throw profileError;
                 }
 
-                const currentGold = profile.gold || 0;
-                const currentDiamonds = profile.diamonds || 0;
-                console.log(`DEBUG: grantRandomRewards - Balance actual antes de recompensas: Oro ${currentGold}, Diamantes ${currentDiamonds}`);
+                let currentGold = profile.gold || 0;
+                let currentDiamonds = profile.diamonds || 0;
+                console.log(`DEBUG: grantRewards - Balance actual antes de recompensas: Oro ${currentGold}, Diamantes ${currentDiamonds}`);
 
-                const goldReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
-                const diamondReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
-                console.log(`DEBUG: grantRandomRewards - Recompensas generadas: Oro ${goldReward}, Diamantes ${diamondReward}`);
+                let goldReward = 0;
+                let diamondReward = 0;
+                let titleText = '';
+
+                if (type === 'all') {
+                    goldReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
+                    diamondReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
+                    titleText = '¡Recompensas Recibidas!';
+                } else if (type === 'gold') {
+                    goldReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
+                    titleText = '¡Oro Recibido!';
+                } else if (type === 'diamonds') {
+                    diamondReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
+                    titleText = '¡Diamantes Recibidos!';
+                }
+                console.log(`DEBUG: grantRewards - Recompensas generadas: Oro ${goldReward}, Diamantes ${diamondReward}`);
 
                 const newTotalGold = currentGold + goldReward;
                 const newTotalDiamonds = currentDiamonds + diamondReward;
-                console.log(`DEBUG: grantRandomRewards - Nuevo balance total: Oro ${newTotalGold}, Diamantes ${newTotalDiamonds}`);
+                console.log(`DEBUG: grantRewards - Nuevo balance total: Oro ${newTotalGold}, Diamantes ${newTotalDiamonds}`);
 
                 const { error: updateError } = await supabase
                     .from('profiles')
@@ -184,10 +283,10 @@
                     .eq('id', currentUser.id);
 
                 if (updateError) {
-                    console.error("DEBUG: grantRandomRewards - Error al actualizar perfil con recompensas:", updateError.message);
+                    console.error("DEBUG: grantRewards - Error al actualizar perfil con recompensas:", updateError.message);
                     throw updateError;
                 }
-                console.log("DEBUG: grantRandomRewards - Perfil actualizado exitosamente en Supabase.");
+                console.log("DEBUG: grantRewards - Perfil actualizado exitosamente en Supabase.");
 
                 userProfile.gold = newTotalGold;
                 userProfile.diamonds = newTotalDiamonds;
@@ -200,25 +299,23 @@
                 });
 
                 Swal.fire({
-                    title: '¡Recompensas Recibidas!',
+                    title: titleText,
                     html: `
                         <div class="swal2-chest-content">
                             <i class="fas fa-gift swal2-chest-icon"></i>
                             <p style="font-size: 1.2em; margin-bottom: 15px; color: #dcdcdc;">Has encontrado:</p>
-                            <div class="swal2-reward-item">
-                                <i class="fas fa-coins currency-icon"></i> <span>${goldReward} Oro</span>
-                            </div>
-                            <div class="swal2-reward-item">
-                                <i class="fas fa-gem currency-icon"></i> <span>${diamondReward} Diamantes</span>
-                            </div>
+                            ${goldReward > 0 ? `<div class="swal2-reward-item"><i class="fas fa-coins currency-icon"></i> <span>${goldReward} Oro</span></div>` : ''}
+                            ${diamondReward > 0 ? `<div class="swal2-reward-item"><i class="fas fa-gem currency-icon"></i> <span>${diamondReward} Diamantes</span></div>` : ''}
                         </div>
                     `,
                     confirmButtonText: '¡Genial!',
                     customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
                 });
 
+                startCooldown(button, cooldownKey); // Iniciar el cooldown después de éxito
+
             } catch (error) {
-                console.error('DEBUG: grantRandomRewards - Error general al otorgar recompensas:', error.message);
+                console.error('DEBUG: grantRewards - Error general al otorgar recompensas:', error.message);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error al recibir recompensas',
@@ -227,17 +324,17 @@
                     customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
                 });
             } finally {
-                grantRewardsBtn.disabled = false;
-                grantRewardsBtn.innerHTML = `<i class="fas fa-gift"></i> Recibir Recompensas VIP`;
+                // El botón se re-habilitará automáticamente por updateButtonCooldown
+                // si el cooldown ya terminó, o se actualizará para mostrar el tiempo restante.
+                // No lo habilitamos directamente aquí para no interferir con el cooldown.
             }
         }
 
         // --- Inicialización al cargar el DOM ---
-        document.addEventListener('DOMContentLoaded', async () => { // Hacemos el listener async
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log("DEBUG: DOMContentLoaded - Página VIP cargada.");
 
             // Intenta obtener el usuario inmediatamente al cargar la página
-            // para mostrar el balance lo antes posible.
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 currentUser = user;
@@ -245,7 +342,6 @@
                 await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
             } else {
                 console.log("DEBUG: DOMContentLoaded - No hay usuario autenticado al cargar.");
-                // Si no hay usuario, se mostrarán los 40000 por defecto y un Swal de info
                 Swal.fire({
                     icon: 'info',
                     title: 'No Autenticado',
@@ -255,12 +351,10 @@
             }
 
             // Adjuntamos el listener de cambios de estado de autenticación
-            // Esto es para reaccionar a inicios/cierres de sesión mientras la página está abierta
             if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === 'function') {
                 supabase.auth.onAuthStateChange(async (event, session) => {
                     console.log("DEBUG: onAuthStateChange - Evento de autenticación:", event, "Sesión:", session);
                     if (session && session.user) {
-                        // Solo actualizamos si el usuario cambia o si el evento es SIGNED_IN
                         if (!currentUser || currentUser.id !== session.user.id || event === 'SIGNED_IN') {
                             currentUser = session.user;
                             console.log("DEBUG: onAuthStateChange - Usuario autenticado o cambiado:", currentUser.id);
@@ -268,8 +362,8 @@
                         }
                     } else if (event === 'SIGNED_OUT') {
                         currentUser = null;
-                        userProfile = { gold: 0, diamonds: 0 }; // Resetear si se cierra sesión
-                        updateBalanceDisplay(); // Limpiar display
+                        userProfile = { gold: 0, diamonds: 0 };
+                        updateBalanceDisplay();
                         Swal.fire({
                             icon: 'info',
                             title: 'Sesión Cerrada',
@@ -288,9 +382,18 @@
                 });
             }
 
-            // Event listener para el botón de otorgar recompensas
+            // Asignar event listeners a los botones de recompensa
             if (grantRewardsBtn) {
-                grantRewardsBtn.addEventListener('click', grantRandomRewards);
+                grantRewardsBtn.addEventListener('click', () => grantRewards('all', grantRewardsBtn));
+                updateButtonCooldown(grantRewardsBtn, COOLDOWN_KEYS.allRewards);
+            }
+            if (grantGoldBtn) {
+                grantGoldBtn.addEventListener('click', () => grantRewards('gold', grantGoldBtn));
+                updateButtonCooldown(grantGoldBtn, COOLDOWN_KEYS.goldRewards);
+            }
+            if (grantDiamondsBtn) {
+                grantDiamondsBtn.addEventListener('click', () => grantRewards('diamonds', grantDiamondsBtn));
+                updateButtonCooldown(grantDiamondsBtn, COOLDOWN_KEYS.diamondRewards);
             }
         });
     </script>
