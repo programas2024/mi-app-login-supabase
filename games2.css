@@ -5,8 +5,9 @@ body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #2c3e50, #34495e); /* Fondo oscuro elegante */
-    color: #ecf0f1; /* Texto claro */
+    /* Fondo claro y sutil */
+    background: linear-gradient(135deg, #f0f4f8, #e6eff6); /* Muy ligero azul-gris */
+    color: #333333; /* Texto oscuro para buen contraste */
     display: flex;
     justify-content: center;
     align-items: flex-start; /* Alinea al inicio para que el contenido no esté pegado al centro */
@@ -24,13 +25,14 @@ body {
 .games-container {
     width: 100%;
     max-width: 1200px; /* Ancho máximo del contenedor principal */
-    background-color: rgba(255, 255, 255, 0.08); /* Fondo translúcido */
+    /* Fondo blanco sutil */
+    background-color: #fdfdfd; /* Blanco casi puro */
     border-radius: 25px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1); /* Sombra suave y elegante */
     padding: 50px;
     text-align: center;
-    backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* backdrop-filter: blur(10px); /* No es necesario con fondo sólido */
+    border: 1px solid #e0e0e0; /* Borde muy sutil */
     animation: fadeInScale 0.8s ease-out forwards;
 }
 
@@ -43,15 +45,15 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 4em;
     font-weight: 900;
-    color: #ffd700; /* Dorado brillante */
+    color: #34495e; /* Azul oscuro para el título */
     margin-bottom: 15px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7), 2px 2px 5px rgba(0, 0, 0, 0.4);
-    letter-spacing: 2px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra de texto sutil */
+    letter-spacing: 1px;
 }
 
 .games-description {
     font-size: 1.3em;
-    color: #bdc3c7; /* Gris azulado suave */
+    color: #666666; /* Gris medio para la descripción */
     margin-bottom: 50px;
     line-height: 1.6;
 }
@@ -64,7 +66,8 @@ body {
 }
 
 .theme-card {
-    background-color: rgba(255, 255, 255, 0.1); /* Fondo de tarjeta más claro */
+    /* Fondo de tarjeta base más claro y sutil */
+    background-color: #ffffff; /* Blanco puro para las tarjetas */
     border-radius: 18px;
     padding: 30px;
     text-decoration: none; /* Quita el subrayado del enlace */
@@ -74,9 +77,9 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Sombra más suave */
     transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid #e0e0e0; /* Borde sutil */
     position: relative;
     overflow: hidden;
 }
@@ -99,9 +102,9 @@ body {
 }
 
 .theme-card:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
-    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-8px) scale(1.02); /* Efecto de levantamiento más sutil */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); /* Sombra más intensa al hover */
+    background-color: #f8f8f8; /* Ligeramente más oscuro al hover */
 }
 
 .card-icon {
@@ -110,6 +113,7 @@ body {
     line-height: 1; /* Elimina espacio extra */
     position: relative;
     z-index: 1;
+    color: #666666; /* Color de icono por defecto, será sobrescrito por temas */
 }
 
 .card-title {
@@ -119,77 +123,88 @@ body {
     margin-bottom: 10px;
     position: relative;
     z-index: 1;
+    color: #4a4a4a; /* Color de título por defecto, será sobrescrito por temas */
 }
 
 .card-description {
     font-size: 1em;
-    color: #bdc3c7;
+    color: #777777; /* Gris medio para la descripción */
     line-height: 1.5;
     position: relative;
     z-index: 1;
 }
 
-/* --- Specific Theme Colors and Icon Colors --- */
+/* --- Specific Theme Colors (¡Más Suaves y Elegantes!) --- */
 
-/* Programación */
-.theme-card.programming { background: linear-gradient(135deg, #3498db, #2980b9); } /* Azul */
-.theme-card.programming .card-icon { color: #ecf0f1; }
-.theme-card.programming .card-title { color: #ecf0f1; }
-.theme-card.programming .card-description { color: #d0e0ea; }
+/* Programación (Azul Suave) */
+.theme-card.programming { background: linear-gradient(135deg, #a8dadc, #8fd9da); }
+.theme-card.programming .card-icon { color: #3498db; } /* Icono más oscuro para contraste */
+.theme-card.programming .card-title { color: #2c3e50; }
+.theme-card.programming .card-description { color: #555555; }
 
-/* Animales */
-.theme-card.animals { background: linear-gradient(135deg, #27ae60, #2ecc71); } /* Verde */
-.theme-card.animals .card-icon { color: #ecf0f1; }
-.theme-card.animals .card-title { color: #ecf0f1; }
-.theme-card.animals .card-description { color: #d0e0ea; }
+/* Animales (Verde Suave) */
+.theme-card.animals { background: linear-gradient(135deg, #b8e994, #a5e07e); }
+.theme-card.animals .card-icon { color: #27ae60; }
+.theme-card.animals .card-title { color: #2c3e50; }
+.theme-card.animals .card-description { color: #555555; }
 
-/* Escritores */
-.theme-card.writers { background: linear-gradient(135deg, #9b59b6, #8e44ad); } /* Púrpura */
-.theme-card.writers .card-icon { color: #ecf0f1; }
-.theme-card.writers .card-title { color: #ecf0f1; }
-.theme-card.writers .card-description { color: #d0e0ea; }
+/* Escritores (Púrpura Suave) */
+.theme-card.writers { background: linear-gradient(135deg, #c7b8e9, #b3a5e0); }
+.theme-card.writers .card-icon { color: #9b59b6; }
+.theme-card.writers .card-title { color: #2c3e50; }
+.theme-card.writers .card-description { color: #555555; }
 
-/* Carreras */
-.theme-card.careers { background: linear-gradient(135deg, #e67e22, #d35400); } /* Naranja */
-.theme-card.careers .card-icon { color: #ecf0f1; }
-.theme-card.careers .card-title { color: #ecf0f1; }
-.theme-card.careers .card-description { color: #d0e0ea; }
+/* Carreras (Naranja Suave) */
+.theme-card.careers { background: linear-gradient(135deg, #fbc490, #fbb473); }
+.theme-card.careers .card-icon { color: #e67e22; }
+.theme-card.careers .card-title { color: #2c3e50; }
+.theme-card.careers .card-description { color: #555555; }
 
-/* Deportes */
-.theme-card.sports { background: linear-gradient(135deg, #e74c3c, #c0392b); } /* Rojo */
-.theme-card.sports .card-icon { color: #ecf0f1; }
-.theme-card.sports .card-title { color: #ecf0f1; }
-.theme-card.sports .card-description { color: #d0e0ea; }
+/* Deportes (Rojo Coral Suave) */
+.theme-card.sports { background: linear-gradient(135deg, #f08080, #e86f6f); }
+.theme-card.sports .card-icon { color: #e74c3c; }
+.theme-card.sports .card-title { color: #2c3e50; }
+.theme-card.sports .card-description { color: #555555; }
 
-/* Inglés */
-.theme-card.english { background: linear-gradient(135deg, #1abc9c, #16a085); } /* Turquesa */
-.theme-card.english .card-icon { color: #ecf0f1; }
-.theme-card.english .card-title { color: #ecf0f1; }
-.theme-card.english .card-description { color: #d0e0ea; }
+/* Inglés (Turquesa Suave) */
+.theme-card.english { background: linear-gradient(135deg, #8edce6, #7ad1e0); }
+.theme-card.english .card-icon { color: #1abc9c; }
+.theme-card.english .card-title { color: #2c3e50; }
+.theme-card.english .card-description { color: #555555; }
 
-/* Países */
-.theme-card.countries { background: linear-gradient(135deg, #34495e, #2c3e50); } /* Azul oscuro */
-.theme-card.countries .card-icon { color: #ecf0f1; }
-.theme-card.countries .card-title { color: #ecf0f1; }
-.theme-card.countries .card-description { color: #d0e0ea; }
+/* Países (Azul Grisáceo Suave) */
+.theme-card.countries { background: linear-gradient(135deg, #a2b9bc, #8ea9ac); }
+.theme-card.countries .card-icon { color: #34495e; }
+.theme-card.countries .card-title { color: #2c3e50; }
+.theme-card.countries .card-description { color: #555555; }
 
-/* Género Musical */
-.theme-card.music-genre { background: linear-gradient(135deg, #f39c12, #e67e22); } /* Amarillo/Naranja */
-.theme-card.music-genre .card-icon { color: #ecf0f1; }
-.theme-card.music-genre .card-title { color: #ecf0f1; }
-.theme-card.music-genre .card-description { color: #d0e0ea; }
+/* Género Musical (Amarillo/Naranja Suave) */
+.theme-card.music-genre { background: linear-gradient(135deg, #ffda87, #ffcc66); }
+.theme-card.music-genre .card-icon { color: #f39c12; }
+.theme-card.music-genre .card-title { color: #2c3e50; }
+.theme-card.music-genre .card-description { color: #555555; }
 
-/* Frutas */
-.theme-card.fruits { background: linear-gradient(135deg, #f1c40f, #f39c12); } /* Amarillo */
-.theme-card.fruits .card-icon { color: #ecf0f1; }
-.theme-card.fruits .card-title { color: #ecf0f1; }
-.theme-card.fruits .card-description { color: #d0e0ea; }
+/* Frutas (Amarillo Crema Suave) */
+.theme-card.fruits { background: linear-gradient(135deg, #ffe6a7, #ffd98a); }
+.theme-card.fruits .card-icon { color: #f1c40f; }
+.theme-card.fruits .card-title { color: #2c3e50; }
+.theme-card.fruits .card-description { color: #555555; }
 
-/* El Todo (Categoría Mixta/Aleatoria) */
-.theme-card.all-inclusive { background: linear-gradient(135deg, #8e44ad, #3498db, #27ae60, #e67e22); } /* Degradado multicolor */
-.theme-card.all-inclusive .card-icon { color: #ecf0f1; }
-.theme-card.all-inclusive .card-title { color: #ecf0f1; }
-.theme-card.all-inclusive .card-description { color: #d0e0ea; }
+/* El Todo (Degradado Multicolor Sutil) */
+.theme-card.all-inclusive { 
+    background: linear-gradient(135deg, #c7b8e9, #a8dadc, #b8e994, #fbc490);
+    background-size: 400% 400%; /* Para la animación de fondo */
+    animation: gradient-shift 15s ease infinite;
+}
+.theme-card.all-inclusive .card-icon { color: #6a11cb; } /* Un color vibrante para el icono principal */
+.theme-card.all-inclusive .card-title { color: #2c3e50; }
+.theme-card.all-inclusive .card-description { color: #555555; }
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
 
 /* --- Responsive Design --- */
