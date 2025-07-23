@@ -20,7 +20,7 @@ body {
     background-color: rgba(255, 255, 255, 0.05); /* Fondo translúcido */
     border-radius: 25px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    display: flex; /* Mantenemos flex para el layout interno si se añade algo más */
+    display: flex;
     flex-direction: column; /* Ahora es una columna principal */
     max-width: 1000px; /* Ancho ajustado para una sola columna */
     width: 95%;
@@ -368,14 +368,6 @@ body {
         height: auto; /* Altura automática en móviles */
         min-height: 90vh; /* Asegura un mínimo */
     }
-    .vip-sidebar { /* Ya no existe, pero si se reutilizan clases, precaución */
-        position: static;
-        width: 100%;
-        height: auto;
-        border-radius: 20px 20px 0 0;
-        overflow-y: visible;
-        padding-bottom: 20px;
-    }
     .rewards-main-content {
         padding: 20px;
         height: auto;
@@ -388,13 +380,6 @@ body {
     .vip-rewards-table th, .vip-rewards-table td {
         padding: 15px 20px;
         font-size: 1em;
-    }
-    .buy-vip-btn { /* Ya no existe en este layout, pero si se reutilizan clases, precaución */
-        width: 80%;
-        max-width: 300px;
-        font-size: 1.2em;
-        padding: 15px 0;
-        justify-content: center;
     }
     .user-balance-display {
         flex-direction: column;
