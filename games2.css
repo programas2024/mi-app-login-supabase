@@ -297,3 +297,59 @@ body {
         font-size: 0.8em;
     }
 }
+
+/* games.css (Add this to the end of your existing games.css) */
+
+/* VS. Algoritmo (Gris Azulado Oscuro con Icono Naranja Vibrante) */
+.theme-card.vs-algo { 
+    background: linear-gradient(135deg, #607D8B, #455A64); /* Tonos de gris azulado */
+}
+.theme-card.vs-algo .card-icon { color: #FF5722; } /* Naranja vibrante para el robot */
+.theme-card.vs-algo .card-title { color: #ffffff; } /* Texto blanco para contraste */
+.theme-card.vs-algo .card-description { color: #e0e0e0; } /* Gris claro para descripción */
+
+/* Estilos para el contenedor de puntajes en orcado_vs_algo.html */
+.scores-info {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #34495e;
+}
+
+.scores-info span {
+    background-color: #e6eff6;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scores-info span i {
+    font-size: 1.2em;
+    color: #FF9800; /* Color para los iconos de puntaje */
+}
+
+/* Ajustes responsivos para scores-info */
+@media (max-width: 768px) {
+    .scores-info {
+        flex-direction: column;
+        gap: 15px;
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .scores-info {
+        font-size: 1em;
+    }
+    .scores-info span {
+        padding: 8px 15px;
+    }
+}
