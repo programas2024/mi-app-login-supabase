@@ -3,38 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Rewards Dashboard - Ahorcado</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>VIP Rewards - ¡Recompensas Exclusivas!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="style2.css"> </head>
 <body>
     <div class="vip-dashboard-container">
         <aside class="vip-sidebar">
-            <h2><i class="fas fa-crown"></i> VIP STATUS</h2>
-            <div class="stat-item">
-                <i class="fas fa-gem"></i>
-                <span>Tus Diamantes: <br> <span id="current-diamonds">0</span></span>
+            <div class="sidebar-header">
+                <i class="fas fa-crown"></i>
+                <h2>Estado VIP</h2>
             </div>
             <div class="stat-item">
-                <i class="fas fa-coins"></i>
-                <span>Tu Oro: <br> <span id="current-gold">0</span></span>
+                <i class="fas fa-gem icon-diamond"></i>
+                <span>Tus Diamantes: <br><span id="current-diamonds">150</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-coins icon-gold"></i>
+                <span>Tu Oro: <br><span id="current-gold">500</span></span>
             </div>
             <button class="buy-vip-btn" onclick="alert('¡Funcionalidad de compra VIP en desarrollo!')">
-                <i class="fas fa-star"></i> Comprar VIP
+                <i class="fas fa-star"></i> Comprar VIP Ahora
             </button>
         </aside>
 
-        <main class="vip-rewards-table-wrapper">
-            <h2>Recompensas por Nivel</h2>
-            <table class="vip-rewards-table">
-                <thead>
-                    <tr>
-                        <th>Nivel</th>
-                        <th>Recompensa 1</th> <th>Recompensa 2 (Oro y Esmeralda)</th> </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
+        <main class="vip-rewards-section">
+            <h2 class="section-title">Recompensas Exclusivas por Nivel VIP</h2>
+            <div class="rewards-table-wrapper">
+                <table class="vip-rewards-table">
+                    <thead>
+                        <tr>
+                            <th>Nivel</th>
+                            <th>Recompensa 1</th>
+                            <th>Recompensa 2 (Oro y Esmeralda)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
         </main>
     </div>
     
@@ -43,22 +50,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const currentDiamondsSpan = document.getElementById('current-diamonds');
-            const currentGoldSpan = document.getElementById('current-gold');
-            
             // Valores de ejemplo. En un juego real, se cargarían de una base de datos.
-            currentDiamondsSpan.textContent = '150';
-            currentGoldSpan.textContent = '500';
+            // Los spans de arriba ya tienen valores por defecto, pero podrías actualizarlos dinámicamente si los obtienes del backend.
         });
 
-        // --- Generación de las recompensas en la tabla con JavaScript ---
         const rewardsData = [];
         const tbody = document.querySelector('.vip-rewards-table tbody');
 
         for (let i = 1; i <= 20; i++) {
-            let reward1 = {}; // Recompensa 1 (solo oro O solo diamante)
-            let reward2Gold = 0; // Oro para la recompensa 2
-            let reward2Esmeralda = 0; // Esmeralda para la recompensa 2
+            let reward1 = {};
+            let reward2Gold = 0;
+            let reward2Esmeralda = 0;
 
             // Definir Recompensa 1 (alternando entre oro y diamante)
             if (i % 2 !== 0) { // Niveles impares: Oro
@@ -68,18 +70,18 @@
             }
 
             // Definir Recompensa 2 (Oro y Esmeralda juntos)
-            reward2Gold = 30 + (i * 5); // Oro en recompensa 2, aumenta con el nivel
-            reward2Esmeralda = 1 + Math.floor(i / 4); // Esmeraldas aumentan cada 4 niveles, desde 1
+            reward2Gold = 30 + (i * 5);
+            reward2Esmeralda = 1 + Math.floor(i / 4);
 
             // Añadir bonificaciones en ciertos hitos
             if (i % 5 === 0) {
-                reward1.amount += 10; // Extra para Recompensa 1
-                reward2Gold += 20;    // Extra oro en Recompensa 2
+                reward1.amount += 10;
+                reward2Gold += 20;
             }
             if (i % 10 === 0) {
-                reward1.amount += 25; // Gran extra para Recompensa 1
-                reward2Gold += 40;    // Gran extra oro en Recompensa 2
-                reward2Esmeralda += 2;    // Extra esmeraldas en Recompensa 2
+                reward1.amount += 25;
+                reward2Gold += 40;
+                reward2Esmeralda += 2;
             }
 
             rewardsData.push({
@@ -90,28 +92,28 @@
             });
         }
 
-        // Renderizar la tabla
         rewardsData.forEach(item => {
             const row = tbody.insertRow();
-            row.insertCell().textContent = item.level; // Columna de Nivel
+            row.insertCell().textContent = item.level;
 
-            // --- COLUMNA RECOMPENSA 1 (Solo UN tipo de ícono aquí) ---
+            // --- COLUMNA RECOMPENSA 1 (Solo UN tipo de ícono) ---
             const cell1 = row.insertCell();
-            cell1.classList.add('reward-amount');
-            const iconClass1 = item.reward1.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
-            const iconColor1 = item.reward1.type === 'gold' ? '#DAA520' : '#87CEEB'; // Colores para oro y diamante
-            cell1.innerHTML = `<i class="${iconClass1}" style="color: ${iconColor1};"></i> ${item.reward1.amount}`;
+            cell1.classList.add('reward-cell');
+            const iconClass1 = item.reward1.type === 'gold' ? 'fas fa-coins icon-gold' : 'fas fa-gem icon-diamond';
+            cell1.innerHTML = `<i class="${iconClass1}"></i> ${item.reward1.amount}`;
 
-            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda aquí, en la misma celda, alineados) ---
+            // --- COLUMNA RECOMPENSA 2 (Oro Y Esmeralda, alineados) ---
             const cell2 = row.insertCell();
-            cell2.classList.add('reward-amount'); // Aplica la clase flexbox aquí
+            cell2.classList.add('reward-cell', 'reward-pair'); // Añadimos una clase para el par
             cell2.innerHTML = `
-                <i class="fas fa-coins" style="color: #DAA520; margin-right: 5px;"></i> ${item.reward2Gold}
-                <span style="font-size: 0.9em; margin: 0 8px; color: #666; font-weight: normal;">y</span> 
-                <i class="fas fa-gem" style="color: #3CB371; margin-right: 5px;"></i> ${item.reward2Esmeralda}
+                <div class="reward-item">
+                    <i class="fas fa-coins icon-gold"></i> ${item.reward2Gold}
+                </div>
+                <span class="reward-separator">y</span>
+                <div class="reward-item">
+                    <i class="fas fa-gem icon-emerald"></i> ${item.reward2Esmeralda}
+                </div>
             `;
-            // NOTA: Quité el <div> anidado porque '.reward-amount' ya es flex.
-            // Ajusté los márgenes y el 'y' para una mejor visualización.
         });
     </script>
 </body>
