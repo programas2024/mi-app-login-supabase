@@ -4,10 +4,10 @@
 :root {
     /* Paleta de colores más rica y vibrante para un look premium */
     --primary-gradient-start: #6a11cb; /* Púrpura oscuro */
-    --primary-gradient-end: #2575fc;   /* Azul eléctrico */
+    --primary-gradient-end: #2575fc;    /* Azul eléctrico */
 
     --profile-gradient-start: #fc6767; /* Rojo coral */
-    --profile-gradient-end: #ec008c;   /* Rosa intenso */
+    --profile-gradient-end: #ec008c;    /* Rosa intenso */
 
     --shop-gradient-start: #ffafbd;    /* Rosa suave */
     --shop-gradient-end: #ffc3a0;      /* Durazno */
@@ -18,24 +18,33 @@
     --play-gradient-start: #00c6ff;    /* Azul cielo brillante */
     --play-gradient-end: #0072ff;      /* Azul más profundo */
 
-    --gold-card-start: #fdd835;        /* Amarillo fuerte para oro */
-    --gold-card-end: #fb8c00;          /* Naranja para oro */
-    --diamond-card-start: #2196f3;     /* Azul brillante para diamante */
-    --diamond-card-end: #0d47a1;       /* Azul oscuro para diamante */
+    --gold-card-start: #fdd835;         /* Amarillo fuerte para oro */
+    --gold-card-end: #fb8c00;           /* Naranja para oro */
+    --diamond-card-start: #2196f3;      /* Azul brillante para diamante */
+    --diamond-card-end: #0d47a1;        /* Azul oscuro para diamante */
 
-    --text-dark-primary: #2c3e50;      /* Gris azulado oscuro para el texto principal */
-    --text-light-soft: #f0f4f8;        /* Blanco roto para el fondo */
-    --text-color-light: #ffffff;       /* Blanco puro para texto sobre fondos oscuros */
-    --text-muted: #7f8c8d;             /* Gris sutil para texto secundario */
+    --text-dark-primary: #2c3e50;       /* Gris azulado oscuro para el texto principal */
+    --text-light-soft: #f0f4f8;         /* Blanco roto para el fondo */
+    --text-color-light: #ffffff;        /* Blanco puro para texto sobre fondos oscuros */
+    --text-muted: #7f8c8d;              /* Gris sutil para texto secundario */
     --text-subtle-white: rgba(255, 255, 255, 0.9);
 
-    --bg-main-subtle: #f8faff;         /* Fondo principal muy claro y brillante */
-    --bg-card-vibrant: #ffffff;        /* Fondo de tarjetas blanco puro */
+    --bg-main-subtle: #f8faff;          /* Fondo principal muy claro y brillante */
+    --bg-card-vibrant: #ffffff;         /* Fondo de tarjetas blanco puro */
 
     --shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
     --shadow-hover-glow: 0 15px 40px rgba(0, 0, 0, 0.25); /* Sombra intensa al hover */
-    --border-radius-large: 16px;       /* Bordes más pronunciados */
+    --border-radius-large: 16px;        /* Bordes más pronunciados */
     --border-radius-soft: 12px;
+}
+
+/*
+ * Aplica box-sizing: border-box a todos los elementos.
+ * Esto es crucial para que 'width: 100%' funcione como se espera,
+ * incluyendo padding y border dentro del ancho/alto especificado.
+ */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 /* --- Base y Contenedor Principal --- */
@@ -48,6 +57,11 @@ body {
     line-height: 1.6;
     overflow-x: hidden; /* Previene scroll horizontal no deseado */
     scroll-behavior: smooth;
+    display: flex; /* Añadido para centrar el orcado-container */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Asegura que ocupe al menos toda la altura de la vista */
+    flex-direction: column; /* Para apilar el loader y el orcado-container */
 }
 
 .dashboard-wrapper {
@@ -107,36 +121,52 @@ body {
     font-weight: 700;
 }
 
-/* --- Loader Styles --- */
-.loader-hidden {
-    display: none !important;
-}
-
-#loader {
+/* --- Loader Styles (Movido desde el HTML) --- */
+#loader-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro semitransparente */
+    display: flex; /* Usamos flexbox para centrar */
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    justify-content: center; /* Centrado vertical */
+    align-items: center; /* Centrado horizontal */
+    z-index: 1000; /* Asegura que esté por encima de todo */
     color: var(--text-color-light);
     font-size: 1.4em;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.7s ease-out, visibility 0.7s ease-out; /* Transición suave al desaparecer */
+    opacity: 1; /* Por defecto visible */
+    visibility: visible; /* Por defecto visible */
+}
+
+#loader-wrapper.hidden {
+    opacity: 0;
+    visibility: hidden; /* Oculta completamente y quita la interacción */
+}
+
+.loader-content {
+    text-align: center;
+    color: #E0E0E0; /* Gris claro para el texto */
+    font-family: 'Poppins', sans-serif; /* Usamos Poppins para consistencia */
+}
+
+.loader-content h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #ADD8E6; /* El azul claro que usas para los diamantes/títulos */
+    text-shadow: 0 0 10px rgba(173, 216, 230, 0.5); /* Un brillo sutil */
 }
 
 .spinner {
     border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid var(--play-gradient-end);
+    border-top: 8px solid #7B68EE; /* El morado de tus bordes de SweetAlert */
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
+    width: 70px; /* Un poco más grande */
+    height: 70px; /* Un poco más grande */
     animation: spin 1s linear infinite;
-    margin-bottom: 25px;
+    margin: 0 auto 25px auto; /* Centrar el spinner y más espacio abajo */
 }
 
 @keyframes spin {
@@ -211,6 +241,41 @@ body {
 }
 .btn-vip-custom {
     background-image: linear-gradient(135deg, var(--vip-gradient-start) 0%, var(--vip-gradient-end) 100%);
+}
+
+/* --- Estilos para el botón del cofre (combinando las clases existentes) --- */
+.sidebar-btn.btn-chest-custom {
+    background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
+    border: 2px solid #00FA9A; /* Verde Primavera Medio */
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Sombra más pronunciada */
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Sombra de texto sutil */
+    
+    /* --- Ajustes para responsividad y layout (base) --- */
+    width: 100%; /* Asegura que ocupe el 100% del ancho de su contenedor */
+    max-width: 100%; /* Previene que se desborde si el contenido es demasiado ancho */
+    padding: 15px 25px; /* Padding por defecto */
+    font-size: 1.1em; /* Tamaño de fuente por defecto */
+    display: flex; /* Permite centrar el icono y el texto */
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre icono y texto */
+
+    /*
+     * Estas propiedades son útiles si el contenedor padre usa flexbox.
+     * Aseguran que el botón se ajuste al espacio disponible.
+     */
+    flex-grow: 1; 
+    flex-shrink: 1;
+    flex-basis: auto; /* Permite que el elemento determine su tamaño base */
+}
+
+.sidebar-btn.btn-chest-custom:hover {
+    background: linear-gradient(to right, #00CED1, #00BFFF); /* Turquesa Oscuro a Azul Profundo */
+    transform: translateY(-4px) scale(1.02); /* Efecto de "levantarse" y agrandarse ligeramente */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); /* Sombra más grande al pasar el ratón */
+    border-color: #7FFFD4; /* Aguamarina en hover */
 }
 
 
@@ -693,6 +758,351 @@ body {
     color: #FFD700; /* Color oro, o el que prefieras */
 }
 
+/* --- ESTILOS CORREGIDOS Y MEJORADOS PARA EL DIBUJO DEL AHORCADO --- */
+.hangman-drawing {
+    position: relative;
+    width: 150px; /* Ancho del área del dibujo */
+    height: 200px; /* Alto del área del dibujo */
+    margin: 20px auto 30px auto; /* Centra el dibujo y le da espacio */
+    /* border-bottom: 5px solid #666; /* Esto ya no es necesario si tienes un stand */
+}
+
+/* Estructura de la horca (tus clases existentes) */
+.hangman-drawing .gallow-post {
+    position: absolute;
+    bottom: 0; /* Empieza desde la base del hangman-drawing */
+    left: 20px; /* Posición desde la izquierda */
+    width: 5px;
+    height: 180px;
+    background-color: #666; /* Color de la madera */
+    border-radius: 2px;
+}
+.hangman-drawing .gallow-top {
+    position: absolute;
+    top: 0;
+    left: 20px; /* Empieza donde termina el poste vertical */
+    width: 80px; /* Ancho del travesaño horizontal */
+    height: 5px;
+    background-color: #666;
+    border-radius: 2px;
+}
+.hangman-drawing .gallow-rope {
+    position: absolute;
+    top: 5px; /* Cuelga un poco del travesaño */
+    left: 95px; /* Posición de la cuerda desde el travesaño */
+    width: 4px; /* Grosor de la cuerda */
+    height: 25px; /* Largo de la cuerda */
+    background-color: #8B4513; /* Marrón de cuerda */
+    border-radius: 2px;
+}
+
+/* Estilos para las partes del cuerpo del ahorcado */
+.hangman-part {
+    position: absolute;
+    background-color: #333; /* Color del cuerpo del ahorcado */
+    border: 2px solid #000; /* Borde de las partes */
+    opacity: 0; /* Inicialmente invisible */
+    visibility: hidden; /* Oculta completamente, pero permite transiciones */
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Transición suave */
+}
+
+/* Clase para mostrar la parte del ahorcado (añadida por JS) */
+.hangman-part.show-part {
+    opacity: 1; /* Hace la parte visible */
+    visibility: visible; /* Asegura que sea visible */
+}
+
+/* Posiciones y tamaños específicos para cada parte */
+#hangman-head {
+    width: 40px;
+    height: 40px;
+    top: 30px; /* Ajustado para colgar de la cuerda */
+    left: 77px; /* Ajustado para centrarse bajo la cuerda */
+    border-radius: 50%;
+}
+
+#hangman-body {
+    width: 4px;
+    height: 60px;
+    top: 70px; /* Debajo de la cabeza */
+    left: 96px; /* Centrado con la cabeza */
+    border-radius: 0;
+}
+
+#hangman-arm-left {
+    width: 40px;
+    height: 4px;
+    top: 80px; /* A la altura de los hombros */
+    left: 60px; /* Izquierda del cuerpo */
+    transform: rotate(45deg);
+    transform-origin: right center; /* Rota desde el centro del cuerpo */
+    border-radius: 0;
+}
+#hangman-arm-right {
+    width: 40px;
+    height: 4px;
+    top: 80px;
+    left: 95px; /* Derecha del cuerpo */
+    transform: rotate(-45deg);
+    transform-origin: left center; /* Rota desde el centro del cuerpo */
+    border-radius: 0;
+}
+
+#hangman-leg-left {
+    width: 50px;
+    height: 4px;
+    top: 130px; /* Debajo del cuerpo */
+    left: 55px; /* Izquierda del cuerpo */
+    transform: rotate(45deg);
+    transform-origin: right center; /* Rota desde el centro del cuerpo */
+    border-radius: 0;
+}
+#hangman-leg-right {
+    width: 50px;
+    height: 4px;
+    top: 130px;
+    left: 90px; /* Derecha del cuerpo */
+    transform: rotate(-45deg);
+    transform-origin: left center; /* Rota desde el centro del cuerpo */
+    border-radius: 0;
+}
+
+/* --- Estilos generales para los botones de SweetAlert --- */
+.swal2-confirm-button {
+    background-color: #5D3FD3 !important; /* Un morado profundo y elegante */
+    color: #E0E0E0 !important; /* Gris claro para el texto del botón */
+    border-radius: 8px !important;
+    font-size: 1.1em !important;
+    padding: 10px 20px !important;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.swal2-confirm-button:hover {
+    background-color: #6E5DD3 !important; /* Un tono un poco más claro al pasar el ratón */
+    transform: translateY(-2px); /* Pequeño efecto de elevación */
+}
+
+/* ------------------------------------------------------------------- */
+/* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .swal2-custom-final-success) */
+/* Esto asegura una continuidad visual entre todas las alertas */
+.swal2-popup {
+    background: linear-gradient(135deg, #2C3E50, #34495E) !important; /* Tonos de azul muy oscuro */
+    border: 3px solid #7B68EE !important; /* Morado medio (lavender) para el borde distintivo */
+    color: #FFFFFF !important; /* Texto blanco para contraste */
+    font-weight: bold !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 15px !important;
+    font-family: 'Poppins', sans-serif !important; /* Usamos Poppins para consistencia */
+}
+
+.swal2-popup .swal2-title {
+    color: #ADD8E6 !important; /* Azul claro para el título, como el diamante */
+    font-size: 2em !important;
+    margin-bottom: 0.6em !important;
+}
+
+.swal2-popup .swal2-html-container {
+    color: #E0E0E0 !important; /* Gris muy claro para el contenido */
+    font-size: 1.2em !important;
+    line-height: 1.6 !important;
+}
+
+/* Estilo para los íconos de SweetAlert (tick, cruz, etc.) */
+/* Aseguramos que el ícono de éxito no sea verde, usando el color del borde base */
+.swal2-success-line-tip,
+.swal2-success-line-long {
+    background-color: #7B68EE !important; /* Morado medio para el tick */
+}
+.swal2-success-ring {
+    border-color: #7B68EE !important; /* Morado medio para el anillo del tick */
+}
+/* Estilo para el ícono de error (la X) */
+.swal2-error-line-tip,
+.swal2-error-line-long {
+    background-color: #E74C3C !important; /* Rojo suave para la X */
+}
+.swal2-error-ring {
+    border-color: #E74C3C !important; /* Rojo suave para el anillo de la X */
+}
+/* Estilo para el ícono de advertencia (el signo de exclamación) */
+.swal2-warning {
+    color: #DAA520 !important; /* Dorado más tenue para la advertencia */
+    border-color: #DAA520 !important;
+}
+
+/* ------------------------------------------------------------------- */
+/* ESTILOS ESPECÍFICOS PARA ÍCONOS DE RECOMPENSA DENTRO DE LOS POP-UPS */
+
+/* Ícono de Oro (moneda) */
+.swal2-popup .fas.fa-coins {
+    color: #C0C0C0 !important; /* Plateado sutil para el oro, para que combine */
+    font-size: 1.4em !important;
+    vertical-align: middle;
+    margin: 0 5px; /* Pequeño espacio para que no se pegue al texto */
+}
+
+/* Ícono de Diamante */
+.swal2-popup .fas.fa-gem {
+    color: #ADD8E6 !important; /* Azul celeste claro para el diamante */
+    font-size: 1.4em !important;
+    vertical-align: middle;
+    margin: 0 5px; /* Pequeño espacio */
+}
+
+/* Puedes añadir pequeños ajustes si quieres que ciertos pop-ups tengan un borde o título ligeramente diferente
+   sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
+.swal2-popup.swal2-custom-game-over .swal2-title {
+    color: #E74C3C !important; /* Título rojo suave para Game Over */
+}
+.swal2-popup.swal2-custom-game-over {
+    border-color: #A93226 !important; /* Borde un poco más oscuro para Game Over */
+}
+
+/* Para el pop-up de Advertencia, puedes cambiar el color del título para que sea más acorde al warning */
+.swal2-popup.swal2-custom-warning .swal2-title {
+    color: #DAA520 !important; /* Dorado más tenue para el título de advertencia */
+}
+.swal2-popup.swal2-custom-warning {
+    border-color: #DAA520 !important; /* Borde más acorde a la advertencia */
+}
+
+/* Para el pop-up de Nivel Completado */
+.swal2-popup.swal2-custom-level-up .swal2-title {
+    color: #50e3c2 !important; /* Verde esmeralda */
+}
+.swal2-popup.swal2-custom-level-up {
+    border-color: #3cb371 !important; /* Verde medio */
+}
+
+/* Para el pop-up de Éxito Final */
+.swal2-popup.swal2-custom-final-success .swal2-title {
+    color: #FFD700 !important; /* Oro */
+}
+.swal2-popup.swal2-custom-final-success {
+    border-color: #DAA520 !important; /* Oro más oscuro */
+}
 
 
+/* Responsive adjustments (mantener y ajustar si es necesario) */
+@media (max-width: 768px) {
+    .orcado-container {
+        padding: 20px;
+        width: 95%;
+    }
+    .orcado-container h1 {
+        font-size: 2.2em;
+        margin-bottom: 15px;
+    }
+    .orcado-description {
+        font-size: 0.95em;
+    }
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .word-display {
+        font-size: 2em;
+        letter-spacing: 3px;
+    }
+    .guess-controls {
+        flex-direction: column;
+    }
+    .guess-input {
+        width: 80%;
+        max-width: 150px;
+        font-size: 1.2em;
+    }
+    .submit-button {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+    .back-button {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}
 
+@media (max-width: 480px) {
+    .orcado-container {
+        padding: 20px;
+    }
+    .orcado-container h1 {
+        font-size: 2em;
+    }
+    .word-display {
+        font-size: 2em;
+        letter-spacing: 4px;
+    }
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .guess-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .guess-input {
+        width: 100%;
+        max-width: 150px;
+    }
+    .submit-button {
+        width: 100%;
+        max-width: 150px;
+    }
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.back-button:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Ejemplo para dashboard.css */
+.sidebar-btn.btn-custom-action {
+    background-color: var(--button-bg-color); /* O el color que desees */
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    width: 100%; /* Ajustar al ancho de la sidebar */
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-btn.btn-custom-action:hover {
+    background-color: var(--button-hover-bg-color); /* Un color de hover */
+    transform: translateY(-2px);
+}
+
+/* Si quieres un color específico para el ícono de rango/copa */
+.sidebar-btn.btn-custom-action .fa-trophy,
+.sidebar-btn.btn-custom-action .fa-medal {
+    color: #FFD700; /* Color oro, o el que prefieras */
+}
