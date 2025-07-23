@@ -1,3 +1,4 @@
+
 /* style2.css */
 
 /* --- Base Styles & Fonts --- */
@@ -23,11 +24,12 @@ body {
     display: flex;
     max-width: 1400px;
     width: 95%;
-    overflow: hidden;
+    overflow: hidden; /* Importante para los bordes redondeados y el sticky */
     margin-bottom: 30px;
     backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
     border: 1px solid rgba(255, 255, 255, 0.1);
     animation: fadeInSlideUp 0.8s ease-out forwards;
+    height: 90vh; /* Establece una altura fija para que el contenido principal scrolle */
 }
 
 @keyframes fadeInSlideUp {
@@ -35,10 +37,10 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- VIP Sidebar (Left Panel) --- */
+/* --- VIP Sidebar (Panel Izquierdo - Ahora Sticky) --- */
 .vip-sidebar {
-    flex: 0 0 320px; /* Fixed width */
-    background: linear-gradient(180deg, #3a006f, #8e2de2); /* Deep purple gradient */
+    flex: 0 0 320px; /* Ancho fijo para el sidebar */
+    background: linear-gradient(180deg, #3a006f, #8e2de2); /* Degradado morado/azul */
     padding: 40px 30px;
     color: #ffffff;
     display: flex;
@@ -48,10 +50,16 @@ body {
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
+    /* --- Hacemos el sidebar sticky --- */
+    position: sticky; /* O 'fixed' si quieres que esté siempre en pantalla */
+    top: 0;
+    height: 100%; /* Ocupa la altura de su contenedor flex */
+    overflow-y: auto; /* Permite scroll si el contenido es demasiado largo */
+    align-self: flex-start; /* Alinea al inicio del contenedor flex */
 }
 
 .sidebar-header {
-    margin-bottom: 50px;
+    margin-bottom: 30px; /* Reducido para hacer espacio */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -77,6 +85,45 @@ body {
     margin: 0;
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
+}
+
+/* --- Botón "Obtén VIP Ahora!" --- */
+.buy-vip-btn {
+    background: linear-gradient(45deg, #ffd700, #ff8c00); /* Gold to Orange gradient */
+    color: #333;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 50px; /* Pill shape */
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    margin-bottom: 40px; /* Espacio debajo del botón */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+    100% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255, 140, 0, 0.6); }
+}
+
+.buy-vip-btn:hover {
+    background: linear-gradient(45deg, #ffc400, #e07b00);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    animation: none; /* Stop pulse on hover */
+}
+
+.buy-vip-btn .shining-star {
+    font-size: 1.8em;
+    color: #fff;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffd700;
 }
 
 .stat-card {
@@ -127,51 +174,14 @@ body {
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* --- Buy VIP Button --- */
-.buy-vip-btn {
-    background: linear-gradient(45deg, #ffd700, #ff8c00); /* Gold to Orange gradient */
-    color: #333;
-    border: none;
-    padding: 18px 35px;
-    border-radius: 50px; /* Pill shape */
-    font-size: 1.4em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    margin-top: auto; /* Push to bottom */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    animation: pulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-    0% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
-    100% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255, 140, 0, 0.6); }
-}
-
-.buy-vip-btn:hover {
-    background: linear-gradient(45deg, #ffc400, #e07b00);
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-    animation: none; /* Stop pulse on hover */
-}
-
-.buy-vip-btn .shining-star {
-    font-size: 1.8em;
-    color: #fff;
-    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffd700;
-}
-
 /* --- Main Rewards Content --- */
 .rewards-main-content {
     flex: 1;
     padding: 40px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto; /* Permite que el contenido principal scrollee */
+    height: 100%; /* Ocupa la altura disponible en el flex container */
 }
 
 .rewards-title {
@@ -185,25 +195,23 @@ body {
 }
 
 .rewards-table-scroll {
-    flex: 1;
-    overflow-y: auto; /* Enable vertical scrolling for table */
-    padding-right: 10px; /* Space for scrollbar */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    /* Eliminamos el overflow-y y padding-right aquí, ya lo controla rewards-main-content */
+    /* La tabla se expandirá con los niveles que se carguen */
 }
 
-/* Custom scrollbar for webkit browsers */
-.rewards-table-scroll::-webkit-scrollbar {
+/* Custom scrollbar for webkit browsers for main content */
+.rewards-main-content::-webkit-scrollbar {
     width: 8px;
 }
-.rewards-table-scroll::-webkit-scrollbar-track {
+.rewards-main-content::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
-.rewards-table-scroll::-webkit-scrollbar-thumb {
+.rewards-main-content::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
 }
-.rewards-table-scroll::-webkit-scrollbar-thumb:hover {
+.rewards-main-content::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
 }
 
@@ -312,6 +320,33 @@ body {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* --- Load More Button --- */
+.load-more-btn {
+    background: linear-gradient(90deg, #ff6a00, #ee0979); /* Naranja a Rosa */
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    width: fit-content;
+    align-self: center; /* Centra el botón en el contenedor flex */
+}
+
+.load-more-btn:hover {
+    background: linear-gradient(90deg, #e05e00, #d4076f);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
 /* --- Back to Game Button --- */
 .back-to-game-btn {
     background: linear-gradient(90deg, #1e3c72, #2a5298); /* Blue gradient */
@@ -341,22 +376,21 @@ body {
 @media (max-width: 1024px) {
     .vip-container {
         flex-direction: column;
-        padding: 20px;
-        gap: 30px;
+        height: auto; /* Altura automática en móviles */
+        min-height: 90vh; /* Asegura un mínimo */
     }
     .vip-sidebar {
-        flex: none;
+        position: static; /* No sticky en pantallas pequeñas */
         width: 100%;
-        padding: 30px 20px;
-        border-radius: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        height: auto;
+        border-radius: 20px 20px 0 0; /* Bordes redondeados solo arriba */
+        overflow-y: visible; /* No scroll en sidebar en móvil */
+        padding-bottom: 20px; /* Reduce padding si es necesario */
     }
     .rewards-main-content {
-        padding: 0;
-    }
-    .rewards-table-scroll {
-        padding-right: 0;
-        max-height: 60vh; /* Allow scrolling for table on smaller screens */
+        padding: 20px; /* Reduce padding */
+        height: auto; /* Altura automática */
+        overflow-y: visible; /* El scroll lo maneja el body si es muy largo */
     }
     .rewards-title {
         font-size: 2.5em;
@@ -392,110 +426,97 @@ body {
     .stat-value {
         font-size: 1.8em;
     }
+    .load-more-btn {
+        margin-top: 20px;
+        padding: 12px 25px;
+        font-size: 1em;
+    }
 }
 
 @media (max-width: 768px) {
     body {
-        padding: 15px;
+        padding: 10px;
     }
     .vip-container {
-        padding: 15px;
-        border-radius: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        width: 100%; /* Ocupa todo el ancho */
     }
     .vip-sidebar {
-        padding: 20px 15px;
+        padding: 15px 10px;
     }
     .sidebar-header {
-        margin-bottom: 25px;
-    }
-    .sidebar-header .gold-icon {
-        font-size: 3em;
-    }
-    .vip-sidebar h1 {
-        font-size: 2em;
-    }
-    .stat-card {
-        flex-direction: column; /* Stack stats vertically */
-        align-items: flex-start;
-        padding: 12px 15px;
-        gap: 5px;
-    }
-    .stat-card i {
-        margin-bottom: 5px;
-    }
-    .stat-info {
-        text-align: center; /* Center text when stacked */
-        width: 100%;
-    }
-    .rewards-title {
-        font-size: 2em;
         margin-bottom: 20px;
     }
-    .vip-rewards-table th, .vip-rewards-table td {
+    .sidebar-header .gold-icon {
+        font-size: 2.8em;
+    }
+    .vip-sidebar h1 {
+        font-size: 1.8em;
+    }
+    .stat-card {
+        flex-direction: row; /* Mantener horizontal en móviles, si es posible */
+        flex-wrap: wrap; /* Permite que el contenido se envuelva */
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+    .stat-card i {
+        font-size: 1.8em;
+    }
+    .stat-info span:first-child {
         font-size: 0.9em;
-        padding: 12px 15px;
+    }
+    .stat-value {
+        font-size: 1.5em;
+    }
+    .rewards-title {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+    .vip-rewards-table th, .vip-rewards-table td {
+        font-size: 0.8em;
+        padding: 10px 12px;
+    }
+    .reward-item-cell {
+        gap: 5px;
     }
     .reward-pair {
         flex-direction: column; /* Stack gold and emerald vertically in table */
-        align-items: flex-start;
-        gap: 8px;
+        align-items: center; /* Centrar items apilados */
+        gap: 5px;
     }
     .reward-pair-item {
-        padding: 8px 12px;
-        font-size: 0.95em;
+        padding: 6px 10px;
+        font-size: 0.9em;
     }
     .reward-pair-item i {
-        font-size: 1.3em;
+        font-size: 1.2em;
     }
     .separator-text {
         display: none; /* Hide 'y' when stacked vertically */
     }
     .reward-amount-text {
-        font-size: 1.1em;
+        font-size: 1em;
     }
     .buy-vip-btn {
-        font-size: 1.1em;
-        padding: 12px 20px;
+        font-size: 1em;
+        padding: 10px 15px;
     }
     .back-to-game-btn {
-        font-size: 0.9em;
-        padding: 12px 25px;
+        font-size: 0.85em;
+        padding: 10px 20px;
     }
 }
 
+
 /* --- SweetAlerts Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
-.swal2-confirm-button {
-    background-color: #5D3FD3 !important;
-    color: #E0E0E0 !important;
-    border-radius: 8px !important;
-    font-size: 1.1em !important;
-    padding: 10px 20px !important;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-.swal2-confirm-button:hover {
-    background-color: #6E5DD3 !important;
-    transform: translateY(-2px);
-}
-.swal2-popup {
-    background: linear-gradient(135deg, #2C3E50, #34495E) !important;
-    border: 3px solid #7B68EE !important;
-    color: #FFFFFF !important;
-    font-weight: bold !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
-    border-radius: 15px !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-}
-.swal2-popup .swal2-title {
-    color: #ADD8E6 !important;
-    font-size: 2em !important;
-    margin-bottom: 0.6em !important;
-}
-.swal2-popup .swal2-html-container {
-    color: #E0E0E0 !important;
-    font-size: 1.2em !important;
-    line-height: 1.6 !important;
-}
+.swal2-confirm-button { background-color: #5D3FD3 !important; color: #E0E0E0 !important; border-radius: 8px !important; font-size: 1.1em !important; padding: 10px 20px !important; transition: background-color 0.3s ease, transform 0.2s ease; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+.swal2-confirm-button:hover { background-color: #6E5DD3 !important; transform: translateY(-2px); }
+.swal2-popup { background: linear-gradient(135deg, #2C3E50, #34495E) !important; border: 3px solid #7B68EE !important; color: #FFFFFF !important; font-weight: bold !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important; border-radius: 15px !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
+.swal2-popup .swal2-title { color: #ADD8E6 !important; font-size: 2em !important; margin-bottom: 0.6em !important; }
+.swal2-popup .swal2-html-container { color: #E0E0E0 !important; font-size: 1.2em !important; line-height: 1.6 !important; }
 .swal2-success-line-tip, .swal2-success-line-long { background-color: #7B68EE !important; }
 .swal2-success-ring { border-color: #7B68EE !important; }
 .swal2-error-line-tip, .swal2-error-line-long { background-color: #E74C3C !important; }
@@ -509,59 +530,17 @@ body {
 .swal2-popup.swal2-custom-warning { border-color: #DAA520 !important; }
 
 /* --- Loader Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
-#loader-wrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #2C3E50;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
-    opacity: 1;
-    visibility: visible;
-}
-#loader-wrapper.hidden {
-    opacity: 0;
-    visibility: hidden;
-}
-.loader-content {
-    text-align: center;
-    color: #E0E0E0;
-    font-family: 'Poppins', sans-serif;
-}
-.loader-content h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    color: #ADD8E6;
-    text-shadow: 0 0 10px rgba(173, 216, 230, 0.5);
-}
-.spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid #7B68EE;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1.2s linear infinite;
-    margin: 0 auto 20px auto;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+#loader-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #2C3E50; display: flex; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.7s ease-out, visibility 0.7s ease-out; opacity: 1; visibility: visible; }
+#loader-wrapper.hidden { opacity: 0; visibility: hidden; }
+.loader-content { text-align: center; color: #E0E0E0; font-family: 'Poppins', sans-serif; }
+.loader-content h1 { font-size: 3em; margin-bottom: 20px; color: #ADD8E6; text-shadow: 0 0 10px rgba(173, 216, 230, 0.5); }
+.spinner { border: 8px solid rgba(255, 255, 255, 0.3); border-top: 8px solid #7B68EE; border-radius: 50%; width: 60px; height: 60px; animation: spin 1.2s linear infinite; margin: 0 auto 20px auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- Main Game Styles (Mantengo tus estilos originales aquí para compatibilidad) --- */
+/* --- Main Game Styles (Si compartes el mismo CSS, lo mantengo aquí) --- */
 /* Estas reglas podrían necesitar un archivo CSS separado si la página VIP es la única que usa style2.css,
    pero las mantengo aquí por si compartes el mismo archivo para todo el juego. */
 /* Si solo la página VIP usa style2.css, todo lo de "orcado-container", "game-info", etc. puede ser eliminado */
-body {
-    background-color: #E6EBF0; /* Esta regla será sobrescrita por el gradiente global en la página VIP */
-    /* ... el resto de tus estilos del juego del ahorcado ... */
-}
-.orcado-container, .game-info, .game-area, .word-display, .letters-used, .guess-controls, .guess-input, .submit-button, .message {
-    /* Manten tus estilos del juego original aquí */
-}
+body { background-color: #E6EBF0; /* Esta regla será sobrescrita por el gradiente global en la página VIP */ }
+.orcado-container, .game-info, .game-area, .word-display, .letters-used, .guess-controls, .guess-input, .submit-button, .message { /* Manten tus estilos del juego original aquí */ }
 /* ... y todos los media queries relacionados con el juego ... */
