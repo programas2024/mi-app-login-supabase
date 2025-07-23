@@ -324,6 +324,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.2px;
     outline: none;
+    text-decoration: none; /* Esto elimina el subrayado del enlace */
 }
 
 .btn-play i {
