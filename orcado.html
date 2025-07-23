@@ -10,6 +10,57 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+
+        /* CSS para el cargador */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #2C3E50; /* Un color oscuro que combine con tus pop-ups */
+            display: flex; /* Usamos flexbox para centrar */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            z-index: 9999; /* Asegura que esté por encima de todo */
+            transition: opacity 0.7s ease-out, visibility 0.7s ease-out; /* Transición suave al desaparecer */
+            opacity: 1; /* Por defecto visible */
+            visibility: visible; /* Por defecto visible */
+        }
+
+        #loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden; /* Oculta completamente y quita la interacción */
+        }
+
+        .loader-content {
+            text-align: center;
+            color: #E0E0E0; /* Gris claro para el texto */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* No necesitamos flexbox aquí, ya el padre centra este contenido */
+        }
+
+        .loader-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ADD8E6; /* El azul claro que usas para los diamantes/títulos */
+            text-shadow: 0 0 10px rgba(173, 216, 230, 0.5); /* Un brillo sutil */
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #7B68EE; /* El morado de tus bordes de SweetAlert */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.2s linear infinite;
+            margin: 0 auto 20px auto; /* Centrar el spinner */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         body {
             background-color: #f0f2f5;
             display: flex;

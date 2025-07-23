@@ -826,16 +826,17 @@ guessInput.addEventListener('keypress', async (event) => {
     }
 });
 
-// Inicializa el juego cuando el DOM está completamente cargado.
-// Oculta el cargador después de que initializeGame haya terminado.
-document.addEventListener('DOMContentLoaded', async () => { // <--- Añade 'async' aquí
-    await initializeGame(); // Asegúrate de que initializeGame termine antes de ocultar
-    
-    // Simula un pequeño retardo si initializeGame es muy rápido, para que el usuario vea el cargador.
-    // Esto es opcional, quítalo si initializeGame ya tarda lo suficiente.
+// NUEVA LÓGICA PARA EL CARGADOR Y LA INICIALIZACIÓN DEL JUEGO
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Ocultar el cargador después de un tiempo fijo (ej. 2 segundos)
     setTimeout(() => {
         if (loaderWrapper) {
-            loaderWrapper.classList.add('hidden'); // Añade la clase 'hidden' para ocultarlo
+            loaderWrapper.classList.add('hidden');
         }
-    }, 500); // Pequeño retardo de 0.5 segundos
+    }, 2000); // 2000 milisegundos = 2 segundos
+
+    // 2. Inicializar el juego inmediatamente cuando el DOM esté cargado.
+    //    Esto ocurre en paralelo con el temporizador del cargador.
+    initializeGame();
 });
+
