@@ -670,7 +670,7 @@ async function checkGameStatus() {
         clearInterval(timerInterval);
 
         const goldPerWord = 10;
-        await updatePlayerBalance(goldPerWord, 0); // Otorga 10 de oro por palabra adivinada
+        await updatePlayerBalance(goldPerWord, 0);
 
         const errorsAllowed = levelRequirements[currentLevel].maxErrors;
 
@@ -679,7 +679,7 @@ async function checkGameStatus() {
                 Swal.fire({
                     icon: 'success',
                     title: '¡Nivel Completado!',
-                    html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
+                    html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
                     confirmButtonText: 'Siguiente Nivel',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
@@ -693,13 +693,12 @@ async function checkGameStatus() {
                 });
             } else {
                 const finalReward = levelRequirements[currentLevel].reward;
-                // Suma la recompensa final a los 10 de oro ya dados por la palabra
                 await updatePlayerBalance(finalReward.gold, finalReward.diamonds);
 
                 Swal.fire({
                     icon: 'success',
-                    title: '¡FELICITACIONES, ERES EL MAESTRO DE ORCADO!',
-                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong> adicionales!`,
+                    title: '¡FELICITACIONES, ERES EL MAESTRO DE AHORCADO!', // Corregido: ORCADO a AHORCADO
+                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong> adicionales!`,
                     confirmButtonText: '¡A Jugar de Nuevo!',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
@@ -716,7 +715,7 @@ async function checkGameStatus() {
             Swal.fire({
                 icon: 'warning',
                 title: 'Palabra Adivinada, ¡pero cuidado!',
-                html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins"></i></strong>.`, // Solo los 10 de oro por la palabra
+                html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong>.`,
                 confirmButtonText: 'Volver a Intentar',
                 customClass: {
                     confirmButton: 'swal2-confirm-button',
