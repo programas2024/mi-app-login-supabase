@@ -759,5 +759,6 @@ guessInput.addEventListener('keypress', async (event) => {
         await checkGuess();
     }
 });
-
-document.addEventListener('DOMContentLoaded', initializeGame);
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame();
+});
