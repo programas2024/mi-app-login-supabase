@@ -1,0 +1,283 @@
+/* games.css */
+
+/* --- Base Styles --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #2c3e50, #34495e); /* Fondo oscuro elegante */
+    color: #ecf0f1; /* Texto claro */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinea al inicio para que el contenido no esté pegado al centro */
+    min-height: 100vh;
+    padding: 40px 20px; /* Padding general para el body */
+    box-sizing: border-box;
+    overflow-x: hidden; /* Previene scroll horizontal */
+}
+
+/* Global box-sizing for consistency */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.games-container {
+    width: 100%;
+    max-width: 1200px; /* Ancho máximo del contenedor principal */
+    background-color: rgba(255, 255, 255, 0.08); /* Fondo translúcido */
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    padding: 50px;
+    text-align: center;
+    backdrop-filter: blur(10px); /* Efecto de cristal esmerilado */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    animation: fadeInScale 0.8s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.games-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4em;
+    font-weight: 900;
+    color: #ffd700; /* Dorado brillante */
+    margin-bottom: 15px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.7), 2px 2px 5px rgba(0, 0, 0, 0.4);
+    letter-spacing: 2px;
+}
+
+.games-description {
+    font-size: 1.3em;
+    color: #bdc3c7; /* Gris azulado suave */
+    margin-bottom: 50px;
+    line-height: 1.6;
+}
+
+.theme-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 5 en 5, adaptable */
+    gap: 30px; /* Espacio entre las tarjetas */
+    justify-content: center;
+}
+
+.theme-card {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo de tarjeta más claro */
+    border-radius: 18px;
+    padding: 30px;
+    text-decoration: none; /* Quita el subrayado del enlace */
+    color: inherit; /* Hereda el color del texto del padre */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255,255,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+}
+
+.theme-card:hover::before {
+    opacity: 1;
+}
+
+.theme-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.card-icon {
+    font-size: 4.5em; /* Iconos grandes */
+    margin-bottom: 20px;
+    line-height: 1; /* Elimina espacio extra */
+    position: relative;
+    z-index: 1;
+}
+
+.card-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8em;
+    font-weight: 800;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-description {
+    font-size: 1em;
+    color: #bdc3c7;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Specific Theme Colors and Icon Colors --- */
+
+/* Programación */
+.theme-card.programming { background: linear-gradient(135deg, #3498db, #2980b9); } /* Azul */
+.theme-card.programming .card-icon { color: #ecf0f1; }
+.theme-card.programming .card-title { color: #ecf0f1; }
+.theme-card.programming .card-description { color: #d0e0ea; }
+
+/* Animales */
+.theme-card.animals { background: linear-gradient(135deg, #27ae60, #2ecc71); } /* Verde */
+.theme-card.animals .card-icon { color: #ecf0f1; }
+.theme-card.animals .card-title { color: #ecf0f1; }
+.theme-card.animals .card-description { color: #d0e0ea; }
+
+/* Escritores */
+.theme-card.writers { background: linear-gradient(135deg, #9b59b6, #8e44ad); } /* Púrpura */
+.theme-card.writers .card-icon { color: #ecf0f1; }
+.theme-card.writers .card-title { color: #ecf0f1; }
+.theme-card.writers .card-description { color: #d0e0ea; }
+
+/* Carreras */
+.theme-card.careers { background: linear-gradient(135deg, #e67e22, #d35400); } /* Naranja */
+.theme-card.careers .card-icon { color: #ecf0f1; }
+.theme-card.careers .card-title { color: #ecf0f1; }
+.theme-card.careers .card-description { color: #d0e0ea; }
+
+/* Deportes */
+.theme-card.sports { background: linear-gradient(135deg, #e74c3c, #c0392b); } /* Rojo */
+.theme-card.sports .card-icon { color: #ecf0f1; }
+.theme-card.sports .card-title { color: #ecf0f1; }
+.theme-card.sports .card-description { color: #d0e0ea; }
+
+/* Inglés */
+.theme-card.english { background: linear-gradient(135deg, #1abc9c, #16a085); } /* Turquesa */
+.theme-card.english .card-icon { color: #ecf0f1; }
+.theme-card.english .card-title { color: #ecf0f1; }
+.theme-card.english .card-description { color: #d0e0ea; }
+
+/* Países */
+.theme-card.countries { background: linear-gradient(135deg, #34495e, #2c3e50); } /* Azul oscuro */
+.theme-card.countries .card-icon { color: #ecf0f1; }
+.theme-card.countries .card-title { color: #ecf0f1; }
+.theme-card.countries .card-description { color: #d0e0ea; }
+
+/* Género Musical */
+.theme-card.music-genre { background: linear-gradient(135deg, #f39c12, #e67e22); } /* Amarillo/Naranja */
+.theme-card.music-genre .card-icon { color: #ecf0f1; }
+.theme-card.music-genre .card-title { color: #ecf0f1; }
+.theme-card.music-genre .card-description { color: #d0e0ea; }
+
+/* Frutas */
+.theme-card.fruits { background: linear-gradient(135deg, #f1c40f, #f39c12); } /* Amarillo */
+.theme-card.fruits .card-icon { color: #ecf0f1; }
+.theme-card.fruits .card-title { color: #ecf0f1; }
+.theme-card.fruits .card-description { color: #d0e0ea; }
+
+/* El Todo (Categoría Mixta/Aleatoria) */
+.theme-card.all-inclusive { background: linear-gradient(135deg, #8e44ad, #3498db, #27ae60, #e67e22); } /* Degradado multicolor */
+.theme-card.all-inclusive .card-icon { color: #ecf0f1; }
+.theme-card.all-inclusive .card-title { color: #ecf0f1; }
+.theme-card.all-inclusive .card-description { color: #d0e0ea; }
+
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .games-title {
+        font-size: 3.2em;
+    }
+    .games-description {
+        font-size: 1.1em;
+        margin-bottom: 40px;
+    }
+    .games-container {
+        padding: 40px;
+    }
+    .theme-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* 2-3 columnas en tablet */
+        gap: 25px;
+    }
+    .theme-card {
+        padding: 25px;
+    }
+    .card-icon {
+        font-size: 4em;
+        margin-bottom: 15px;
+    }
+    .card-title {
+        font-size: 1.6em;
+    }
+    .card-description {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 768px) {
+    .games-title {
+        font-size: 2.8em;
+    }
+    .games-description {
+        font-size: 1em;
+        margin-bottom: 30px;
+    }
+    .games-container {
+        padding: 30px;
+        border-radius: 15px;
+    }
+    .theme-cards-grid {
+        grid-template-columns: 1fr; /* Una sola columna en móviles */
+        gap: 20px;
+    }
+    .theme-card {
+        padding: 20px;
+    }
+    .card-icon {
+        font-size: 3.5em;
+        margin-bottom: 10px;
+    }
+    .card-title {
+        font-size: 1.4em;
+    }
+    .card-description {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 20px 10px;
+    }
+    .games-title {
+        font-size: 2.2em;
+    }
+    .games-description {
+        font-size: 0.9em;
+        margin-bottom: 25px;
+    }
+    .games-container {
+        padding: 20px;
+    }
+    .theme-card {
+        padding: 18px;
+    }
+    .card-icon {
+        font-size: 3em;
+    }
+    .card-title {
+        font-size: 1.2em;
+    }
+    .card-description {
+        font-size: 0.8em;
+    }
+}
