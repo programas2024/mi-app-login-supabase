@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Rewards Dashboard - Ahorcado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="vip-dashboard-container">
+        <aside class="vip-sidebar">
+            <h2><i class="fas fa-crown"></i> VIP STATUS</h2>
+            <div class="stat-item">
+                <i class="fas fa-gem"></i>
+                <span>Tus Diamantes: <br> <span id="current-diamonds">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-coins"></i>
+                <span>Tu Oro: <br> <span id="current-gold">0</span></span>
+            </div>
+            </aside>
+
+        <main class="vip-rewards-table-wrapper">
+            <h2>Recompensas por Nivel</h2>
+            <table class="vip-rewards-table">
+                <thead>
+                    <tr>
+                        <th>Nivel</th>
+                        <th>Recompensa 1</th>
+                        <th>Recompensa 2</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </main>
+    </div>
+    
+    <a href="index.html" class="back-to-game-btn">Volver al Juego</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Placeholder para cargar el balance del usuario
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentDiamondsSpan = document.getElementById('current-diamonds');
+            const currentGoldSpan = document.getElementById('current-gold');
+            
+            // Aquí puedes integrar la lógica real para obtener el balance del usuario
+            // Por ahora, usaremos valores de ejemplo
+            currentDiamondsSpan.textContent = '150'; // Valor de ejemplo
+            currentGoldSpan.textContent = '500';     // Valor de ejemplo
+        });
+
+
+        // --- Generación de las recompensas en la tabla con JavaScript ---
+        const rewardsData = [];
+        const tbody = document.querySelector('.vip-rewards-table tbody');
+
+        for (let i = 1; i <= 20; i++) {
+            let reward1 = {};
+            let reward2 = {};
+
+            // Alternar las recompensas principales
+            if (i % 2 !== 0) { // Niveles impares: Oro principal, Diamante secundario
+                reward1 = { type: 'gold', amount: 50 + (i * 10) };
+                reward2 = { type: 'diamond', amount: 5 + Math.floor(i / 2) };
+            } else { // Niveles pares: Diamante principal, Oro secundario
+                reward1 = { type: 'diamond', amount: 8 + (i * 2) };
+                reward2 = { type: 'gold', amount: 30 + (i * 5) };
+            }
+
+            // Añadir recompensas extra en ciertos hitos
+            if (i % 5 === 0) {
+                reward1.amount += 10;
+                reward2.amount += 5;
+            }
+            if (i % 10 === 0) {
+                reward1.amount += 25;
+                reward2.amount += 10;
+            }
+
+            rewardsData.push({
+                level: i,
+                rewards: [reward1, reward2]
+            });
+        }
+
+        // Renderizar la tabla
+        rewardsData.forEach(item => {
+            const row = tbody.insertRow();
+            row.insertCell().textContent = item.level;
+
+            item.rewards.forEach(reward => {
+                const cell = row.insertCell();
+                cell.classList.add('reward-amount');
+                const iconClass = reward.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
+                cell.innerHTML = `<i class="${iconClass}"></i> ${reward.amount}`;
+            });
+        });
+    </script>
+</body>
+</html>
