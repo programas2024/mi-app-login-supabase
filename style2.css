@@ -490,3 +490,61 @@ body {
         align-items: flex-start;
     }
 }
+
+/* --- Estilos para el botón "Comprar VIP" --- */
+.buy-vip-btn {
+    background-color: #FFD700; /* Dorado brillante para atraer la atención */
+    color: #333333; /* Texto oscuro para contraste */
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.2em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    margin-top: 30px; /* Espacio superior para separarlo de las estadísticas */
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase; /* Mayúsculas para darle más impacto */
+    letter-spacing: 1px;
+}
+
+.buy-vip-btn:hover {
+    background-color: #FFC400; /* Tono de dorado un poco más oscuro al pasar el ratón */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.buy-vip-btn i {
+    font-size: 1.5em; /* Ícono más grande */
+    color: #E0E0E0; /* Color claro para el ícono dentro del botón dorado */
+}
+
+/* --- Ajustes para el ícono de Perla en la tabla --- */
+/* Si no tienes un ícono de perla, usaremos un círculo y le daremos un estilo. */
+.vip-rewards-table .reward-amount .fas.fa-circle {
+    color: #FFF0F5; /* Blanco rosado suave, como una perla */
+    text-shadow: 0 0 5px rgba(255,255,255,0.7); /* Brillo sutil */
+    font-size: 0.8em; /* Un poco más pequeño que las monedas/gemas */
+    vertical-align: middle;
+}
+
+/* Puedes ajustar el tamaño de los íconos de recompensa si es necesario */
+.vip-rewards-table .reward-amount .fas.fa-coins,
+.vip-rewards-table .reward-amount .fas.fa-gem {
+    font-size: 1.2em; /* Mantener coherencia en los tamaños de íconos */
+}
+
+
+/* --- Media Queries (Asegúrate de que el botón VIP también se adapte) --- */
+@media (max-width: 576px) {
+    .buy-vip-btn {
+        font-size: 1em;
+        padding: 12px 20px;
+    }
+    .buy-vip-btn i {
+        font-size: 1.2em;
+    }
+}

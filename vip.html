@@ -6,8 +6,7 @@
     <title>VIP Rewards Dashboard - Ahorcado</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="style2.css">
-</head>
+    <link rel="stylesheet" href="style2.css"> </head>
 <body>
     <div class="vip-dashboard-container">
         <aside class="vip-sidebar">
@@ -20,7 +19,10 @@
                 <i class="fas fa-coins"></i>
                 <span>Tu Oro: <br> <span id="current-gold">0</span></span>
             </div>
-            </aside>
+            <button class="buy-vip-btn" onclick="alert('¡Funcionalidad de compra VIP en desarrollo!')">
+                <i class="fas fa-star"></i> Comprar VIP
+            </button>
+        </aside>
 
         <main class="vip-rewards-table-wrapper">
             <h2>Recompensas por Nivel</h2>
@@ -28,9 +30,8 @@
                 <thead>
                     <tr>
                         <th>Nivel</th>
-                        <th>Recompensa 1</th>
-                        <th>Recompensa 2</th>
-                        </tr>
+                        <th>Recompensa de Diamante</th>
+                        <th>Recompensa de Oro & Perla</th> </tr>
                 </thead>
                 <tbody>
                     </tbody>
@@ -38,66 +39,63 @@
         </main>
     </div>
     
-    <a href="index.html" class="back-to-game-btn">Volver al Juego</a>
+    <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Placeholder para cargar el balance del usuario
         document.addEventListener('DOMContentLoaded', () => {
             const currentDiamondsSpan = document.getElementById('current-diamonds');
             const currentGoldSpan = document.getElementById('current-gold');
             
-            // Aquí puedes integrar la lógica real para obtener el balance del usuario
-            // Por ahora, usaremos valores de ejemplo
-            currentDiamondsSpan.textContent = '150'; // Valor de ejemplo
-            currentGoldSpan.textContent = '500';     // Valor de ejemplo
+            currentDiamondsSpan.textContent = '150';
+            currentGoldSpan.textContent = '500';
         });
-
 
         // --- Generación de las recompensas en la tabla con JavaScript ---
         const rewardsData = [];
         const tbody = document.querySelector('.vip-rewards-table tbody');
 
         for (let i = 1; i <= 20; i++) {
-            let reward1 = {};
-            let reward2 = {};
+            let diamondReward = { type: 'diamond', amount: 0 };
+            let goldPerlaReward = { gold: 0, perla: 0 }; // Objeto para oro y perla
 
-            // Alternar las recompensas principales
-            if (i % 2 !== 0) { // Niveles impares: Oro principal, Diamante secundario
-                reward1 = { type: 'gold', amount: 50 + (i * 10) };
-                reward2 = { type: 'diamond', amount: 5 + Math.floor(i / 2) };
-            } else { // Niveles pares: Diamante principal, Oro secundario
-                reward1 = { type: 'diamond', amount: 8 + (i * 2) };
-                reward2 = { type: 'gold', amount: 30 + (i * 5) };
+            // Recompensa de Diamante (Columna 1)
+            diamondReward.amount = 10 + (i * 3); // Empieza en 13, aumenta en 3 por nivel
+            if (i % 5 === 0) { // Bonificación cada 5 niveles
+                diamondReward.amount += 15;
             }
 
-            // Añadir recompensas extra en ciertos hitos
-            if (i % 5 === 0) {
-                reward1.amount += 10;
-                reward2.amount += 5;
-            }
-            if (i % 10 === 0) {
-                reward1.amount += 25;
-                reward2.amount += 10;
+            // Recompensa de Oro y Perla (Columna 2)
+            goldPerlaReward.gold = 30 + (i * 7); // Oro aumenta en 7 por nivel
+            goldPerlaReward.perla = 1 + Math.floor(i / 3); // Perlas aumentan cada 3 niveles
+            if (i % 10 === 0) { // Bonificación cada 10 niveles
+                goldPerlaReward.gold += 50;
+                goldPerlaReward.perla += 3;
             }
 
             rewardsData.push({
                 level: i,
-                rewards: [reward1, reward2]
+                diamondReward: diamondReward,
+                goldPerlaReward: goldPerlaReward
             });
         }
 
         // Renderizar la tabla
         rewardsData.forEach(item => {
             const row = tbody.insertRow();
-            row.insertCell().textContent = item.level;
+            row.insertCell().textContent = item.level; // Columna de Nivel
 
-            item.rewards.forEach(reward => {
-                const cell = row.insertCell();
-                cell.classList.add('reward-amount');
-                const iconClass = reward.type === 'gold' ? 'fas fa-coins' : 'fas fa-gem';
-                cell.innerHTML = `<i class="${iconClass}"></i> ${reward.amount}`;
-            });
+            // Columna de Recompensa de Diamante
+            const diamondCell = row.insertCell();
+            diamondCell.classList.add('reward-amount');
+            diamondCell.innerHTML = `<i class="fas fa-gem"></i> ${item.diamondReward.amount}`;
+
+            // Columna de Recompensa de Oro y Perla
+            const goldPerlaCell = row.insertCell();
+            goldPerlaCell.classList.add('reward-amount');
+            // Usamos un ícono diferente para la perla, si tienes uno, o mantenemos el de diamante si es abstracto
+            goldPerlaCell.innerHTML = `<i class="fas fa-coins"></i> ${item.goldPerlaReward.gold} <i class="fas fa-circle" style="color:#FFF0F5; text-shadow: 0 0 5px rgba(255,255,255,0.7);"></i> ${item.goldPerlaReward.perla}`;
+            // Nota: Usé un círculo como ícono de perla para el ejemplo. Si tienes un ícono de Font Awesome específico para perla (ej. 'fas fa-pearl'), úsalo. He puesto un color y sombra para que se vea más como perla.
         });
     </script>
 </body>
