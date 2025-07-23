@@ -39,21 +39,20 @@
     <!-- Botón para Volver al Juego -->
     <a href="dashboard.html" class="back-to-game-btn">Volver al Juego</a>
 
-    <!-- Librería SweetAlert2 (cargada globalmente) -->
+    <!-- Librerías de terceros (cargadas globalmente para máxima compatibilidad) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <!-- ¡CAMBIO CLAVE AQUÍ! Cargamos Supabase como una variable global (UMD) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-    <!-- Tu script principal con la lógica de Supabase -->
-    <script type="module">
-        // Importaciones necesarias para este módulo: Supabase y Confetti
-        // Usamos esm.sh para Supabase y Confetti, como en tu chestLogic.js
-        import { createClient } from 'https://esm.sh/@supabase/supabase-js';
-        import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
-
-        // --- Configuración de Supabase (¡Asegurada la misma clave que en script.js!) ---
+    <!-- Tu script principal con la lógica de Supabase y recompensas -->
+    <script>
+        // --- Configuración de Supabase ---
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo'; // CLAVE CORREGIDA
+        // ¡CLAVE API ASEGURADA Y CORREGIDA PARA COINCIDIR CON TU SCRIPT.JS!
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabase; // Declaramos 'supabase' aquí, pero la inicializamos en DOMContentLoaded
 
         // --- Elementos del DOM ---
         const currentDiamondsSpan = document.getElementById('current-diamonds');
@@ -76,58 +75,53 @@
          * @returns {Object|null} El perfil del usuario o null si hay un error irrecuperable.
          */
         async function fetchUserProfile(userId) {
-            console.log("Fetching user profile for userId:", userId);
-            let { data: profile, error } = await supabase
-                .from('profiles')
-                .select('gold, diamonds') // Solo necesitamos oro y diamantes para esta página
-                .eq('id', userId)
-                .single();
+            console.log("DEBUG: fetchUserProfile - Iniciando para userId:", userId);
+            try {
+                let { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('gold, diamonds')
+                    .eq('id', userId)
+                    .single();
 
-            if (error) {
-                console.error("Error fetching user profile:", error.message, error.code);
-                if (error.code === 'PGRST116' || error.message.includes('rows returned for query')) {
-                    console.log("Profile not found for", userId, ". Creating new one with default values.");
-                    const { data: newProfile, error: createError } = await supabase
-                        .from('profiles')
-                        .insert([
-                            { id: userId, gold: 0, diamonds: 0 } // Solo inicializamos gold y diamonds
-                        ])
-                        .select()
-                        .single();
-                    if (createError) {
-                        console.error("Error creating user profile:", createError.message);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error Crítico',
-                            text: 'No pudimos crear tu perfil de jugador. Por favor, contacta soporte.',
-                            customClass: { popup: 'swal2-custom-game-over' }
-                        });
+                if (error) {
+                    console.error("DEBUG: fetchUserProfile - Error al obtener perfil:", error.message, "Código:", error.code);
+                    if (error.code === 'PGRST116' || error.message.includes('rows returned for query')) {
+                        console.log("DEBUG: fetchUserProfile - Perfil no encontrado para", userId, ". Intentando crear uno nuevo.");
+                        const { data: newProfile, error: createError } = await supabase
+                            .from('profiles')
+                            .insert([
+                                { id: userId, gold: 0, diamonds: 0 }
+                            ])
+                            .select()
+                            .single();
+                        if (createError) {
+                            console.error("DEBUG: fetchUserProfile - Error al crear perfil:", createError.message);
+                            Swal.fire({ icon: 'error', title: 'Error Crítico', text: 'No pudimos crear tu perfil de jugador. Por favor, contacta soporte.', customClass: { popup: 'swal2-custom-game-over' } });
+                            return null;
+                        }
+                        console.log("DEBUG: fetchUserProfile - Nuevo perfil creado:", newProfile);
+                        profile = newProfile;
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Error de Perfil', text: 'No pudimos cargar tu perfil. Intenta recargar la página.', customClass: { popup: 'swal2-custom-game-over' } });
                         return null;
                     }
-                    console.log("New profile created:", newProfile);
-                    profile = newProfile;
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error de Perfil',
-                        text: 'No pudimos cargar tu perfil. Intenta recargar la página.',
-                        customClass: { popup: 'swal2-custom-game-over' }
-                    });
-                    return null;
                 }
+                console.log("DEBUG: fetchUserProfile - Datos de perfil obtenidos/creados:", profile);
+                return profile;
+            } catch (e) {
+                console.error("DEBUG: fetchUserProfile - Error inesperado en la función:", e.message);
+                Swal.fire({ icon: 'error', title: 'Error Inesperado', text: 'Ocurrió un problema al procesar tu perfil.', customClass: { popup: 'swal2-custom-game-over' } });
+                return null;
             }
-            console.log("Fetched profile data:", profile);
-            return profile;
         }
 
         /**
          * Actualiza el display de oro y diamantes en la UI.
-         * Esta función es la que se usará para cargar el balance del usuario.
          */
         async function updateBalanceDisplay() {
-            console.log("Attempting to update balance display.");
+            console.log("DEBUG: updateBalanceDisplay - Intentando actualizar el display.");
             if (!currentUser) {
-                console.warn('No hay usuario autenticado para actualizar la moneda. Mostrando 0.');
+                console.warn('DEBUG: updateBalanceDisplay - No hay usuario autenticado. Mostrando 0.');
                 currentDiamondsSpan.textContent = 0;
                 currentGoldSpan.textContent = 0;
                 return;
@@ -139,34 +133,26 @@
                 userProfile.diamonds = profile.diamonds || 0;
                 currentGoldSpan.textContent = userProfile.gold;
                 currentDiamondsSpan.textContent = userProfile.diamonds;
-                console.log(`UI Updated: Gold: ${userProfile.gold}, Diamonds: ${userProfile.diamonds}`);
+                console.log(`DEBUG: updateBalanceDisplay - UI Actualizada: Oro: ${userProfile.gold}, Diamantes: ${userProfile.diamonds}`);
             } else {
-                console.error("Failed to get profile to update display.");
+                console.error("DEBUG: updateBalanceDisplay - Fallo al obtener perfil para actualizar el display.");
             }
         }
 
         /**
          * Maneja la lógica para otorgar recompensas aleatorias (Oro y Diamantes).
-         * Inspirado en tu lógica de chestLogic.js
          */
         async function grantRandomRewards() {
             if (!currentUser) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Debes iniciar sesión para recibir recompensas.',
-                    customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
-                });
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Debes iniciar sesión para recibir recompensas.', customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' } });
                 return;
             }
 
-            // Deshabilitar el botón mientras se procesa
             grantRewardsBtn.disabled = true;
             grantRewardsBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Recibiendo...`;
-            console.log("Grant rewards button clicked. User:", currentUser.id);
+            console.log("DEBUG: grantRandomRewards - Botón clickeado. Usuario:", currentUser.id);
 
             try {
-                // Obtener el perfil actual para actualizar las monedas
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('gold, diamonds')
@@ -174,25 +160,22 @@
                     .single();
 
                 if (profileError) {
-                    console.error("Error fetching profile for rewards:", profileError.message);
+                    console.error("DEBUG: grantRandomRewards - Error al obtener perfil para recompensas:", profileError.message);
                     throw profileError;
                 }
 
                 const currentGold = profile.gold || 0;
                 const currentDiamonds = profile.diamonds || 0;
-                console.log(`Current balance before rewards: Gold ${currentGold}, Diamonds ${currentDiamonds}`);
+                console.log(`DEBUG: grantRandomRewards - Balance actual antes de recompensas: Oro ${currentGold}, Diamantes ${currentDiamonds}`);
 
-                // Generar recompensas aleatorias (3-400 para ambos, como pediste)
                 const goldReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
                 const diamondReward = Math.floor(Math.random() * (400 - 3 + 1)) + 3;
-                console.log(`Generated rewards: Gold ${goldReward}, Diamonds ${diamondReward}`);
+                console.log(`DEBUG: grantRandomRewards - Recompensas generadas: Oro ${goldReward}, Diamantes ${diamondReward}`);
 
-                // Calcular nuevos totales
                 const newTotalGold = currentGold + goldReward;
                 const newTotalDiamonds = currentDiamonds + diamondReward;
-                console.log(`New total balance: Gold ${newTotalGold}, Diamonds ${newTotalDiamonds}`);
+                console.log(`DEBUG: grantRandomRewards - Nuevo balance total: Oro ${newTotalGold}, Diamantes ${newTotalDiamonds}`);
 
-                // Actualizar el perfil del usuario con las nuevas recompensas
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({
@@ -202,17 +185,15 @@
                     .eq('id', currentUser.id);
 
                 if (updateError) {
-                    console.error("Error updating profile with rewards:", updateError.message);
+                    console.error("DEBUG: grantRandomRewards - Error al actualizar perfil con recompensas:", updateError.message);
                     throw updateError;
                 }
-                console.log("Profile updated successfully in Supabase.");
+                console.log("DEBUG: grantRandomRewards - Perfil actualizado exitosamente en Supabase.");
 
-                // Actualizar el userProfile local y la UI
                 userProfile.gold = newTotalGold;
                 userProfile.diamonds = newTotalDiamonds;
-                updateBalanceDisplay(); // Esto actualizará los spans en la UI
+                updateBalanceDisplay(); // Actualizar los spans en la UI
 
-                // Mostrar SweetAlert con las recompensas y efectos
                 Swal.fire({
                     title: '¡Recompensas Recibidas!',
                     html: `
@@ -228,26 +209,18 @@
                         </div>
                     `,
                     confirmButtonText: '¡Genial!',
-                    customClass: {
-                        popup: 'swal2-chest-popup',
-                        confirmButton: 'swal2-confirm-button'
-                    },
+                    customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' },
                     willOpen: () => {
-                        // Efecto de confeti
                         confetti({
-                            particleCount: 200,
-                            spread: 180,
-                            origin: { y: 0.6, x: 0.5 },
-                            colors: ['#FFD700', '#62c3e8', '#ffffff', '#8B4513'], // Oro, Diamante, Blanco, Marrón
-                            shapes: ['circle', 'square', 'star'],
-                            scalar: 1.5,
-                            disableForReducedMotion: true
+                            particleCount: 200, spread: 180, origin: { y: 0.6, x: 0.5 },
+                            colors: ['#FFD700', '#62c3e8', '#ffffff', '#8B4513'],
+                            shapes: ['circle', 'square', 'star'], scalar: 1.5, disableForReducedMotion: true
                         });
                     }
                 });
 
             } catch (error) {
-                console.error('Error general al otorgar recompensas:', error.message);
+                console.error('DEBUG: grantRandomRewards - Error general al otorgar recompensas:', error.message);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error al recibir recompensas',
@@ -256,48 +229,56 @@
                     customClass: { popup: 'swal2-chest-popup', confirmButton: 'swal2-confirm-button' }
                 });
             } finally {
-                // Habilitar el botón de nuevo
                 grantRewardsBtn.disabled = false;
                 grantRewardsBtn.innerHTML = `<i class="fas fa-gift"></i> Recibir Recompensas VIP`;
             }
         }
 
-
-        // --- Inicialización y Event Listeners Globales ---
+        // --- Inicialización al cargar el DOM ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM Content Loaded. Initializing Supabase auth listener for VIP page.");
-            console.log("Supabase client object:", supabase);
-            console.log("Supabase auth object:", supabase.auth);
-            console.log("Type of supabase.auth.onAuthStateChange:", typeof supabase.auth.onAuthStateChange); // Usamos onAuthStateChange
+            console.log("DEBUG: DOMContentLoaded - Página VIP cargada.");
+
+            // Inicializamos el cliente Supabase aquí, usando la variable global 'window.supabase'
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log("DEBUG: Supabase client initialized.");
+                console.log("DEBUG: Supabase client object:", supabase);
+                console.log("DEBUG: Supabase auth object:", supabase.auth);
+                console.log("DEBUG: Type of supabase.auth.onAuthStateChange:", typeof supabase.auth.onAuthStateChange);
+            } else {
+                console.error("DEBUG: ERROR CRÍTICO - window.supabase o createClient no están disponibles. La librería no se cargó.");
+                Swal.fire({ icon: 'error', title: 'Error Crítico', text: 'La librería de Supabase no pudo cargarse correctamente. Por favor, recarga la página.', customClass: { popup: 'swal2-custom-game-over' } });
+                return; // Detener ejecución si Supabase no se carga
+            }
 
             // Adjuntamos el listener de autenticación
             if (supabase && supabase.auth && typeof supabase.auth.onAuthStateChange === 'function') {
                 supabase.auth.onAuthStateChange(async (event, session) => {
-                    console.log("Auth state changed on VIP page:", event, session);
+                    console.log("DEBUG: onAuthStateChange - Evento de autenticación:", event, "Sesión:", session);
                     if (session && session.user) {
                         currentUser = session.user;
-                        console.log("Usuario autenticado:", currentUser.id);
+                        console.log("DEBUG: onAuthStateChange - Usuario autenticado:", currentUser.id);
                         await updateBalanceDisplay(); // Cargar y mostrar el balance del usuario
                     } else {
                         currentUser = null;
                         userProfile = { gold: 0, diamonds: 0 }; // Resetear si no hay usuario
                         updateBalanceDisplay(); // Limpiar display si no hay usuario
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'No Autenticado',
-                            text: 'Inicia sesión para ver tu balance VIP y recibir recompensas.',
-                            customClass: { popup: 'swal2-custom-warning' }
-                        });
+                        Swal.fire({ icon: 'info', title: 'No Autenticado', text: 'Inicia sesión para ver tu balance VIP y recibir recompensas.', customClass: { popup: 'swal2-custom-warning' } });
+                    }
+                });
+                // También intentamos cargar el balance al inicio por si ya hay una sesión activa
+                supabase.auth.getUser().then(async ({ data: { user } }) => {
+                    if (user) {
+                        currentUser = user;
+                        console.log("DEBUG: Initial getUser check - Usuario ya autenticado:", currentUser.id);
+                        await updateBalanceDisplay();
+                    } else {
+                        console.log("DEBUG: Initial getUser check - No hay usuario autenticado al cargar.");
                     }
                 });
             } else {
-                console.error("Error: supabase.auth o onAuthStateChange no están disponibles. Esto es un error de inicialización.");
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de Inicialización Crítico',
-                    text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página.',
-                    customClass: { popup: 'swal2-custom-game-over' }
-                });
+                console.error("DEBUG: ERROR CRÍTICO - supabase.auth o onAuthStateChange no están disponibles después de la inicialización.");
+                Swal.fire({ icon: 'error', title: 'Error de Inicialización Crítico', text: 'El sistema de autenticación no pudo cargarse correctamente. Por favor, recarga la página.', customClass: { popup: 'swal2-custom-game-over' } });
             }
 
             // Event listener para el botón de otorgar recompensas
