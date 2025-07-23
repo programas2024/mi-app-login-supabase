@@ -15,6 +15,10 @@
 <style>
 /* Ejemplo de estilo para el botón del cofre */
         /* --- Estilos para el botón del cofre --- */
+::before, *::after {
+    box-sizing: border-box;
+}
+
 /* --- Estilos para el botón del cofre (o cualquier botón con esta clase) --- */
 .btn-chest-custom {
     background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
@@ -24,16 +28,24 @@
     transition: all 0.3s ease;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Sombra de texto sutil */
     
-    /* --- Ajustes para responsividad --- */
+    /* --- Ajustes para responsividad y layout --- */
     width: 100%; /* Ocupa el 100% del ancho disponible de su contenedor */
     max-width: 100%; /* Asegura que no se desborde */
-    box-sizing: border-box; /* ¡IMPORTANTE! Incluye padding y border en el ancho total */
     padding: 15px 25px; /* Ajuste de padding para que no sea demasiado grande */
     font-size: 1.1em; /* Ajuste de tamaño de fuente */
-    display: flex; /* Para centrar contenido si es necesario */
+    display: flex; /* Para centrar contenido (icono y texto) */
     align-items: center;
     justify-content: center;
     gap: 8px; /* Espacio entre icono y texto */
+
+    /*
+     * Estas propiedades son útiles si el botón está dentro de un contenedor
+     * que usa flexbox (ej. `display: flex;`). Aseguran que el botón
+     * crezca para llenar el espacio disponible y se encoja si es necesario.
+     */
+    flex-grow: 1; 
+    flex-shrink: 1;
+    flex-basis: auto; 
 }
 
 .btn-chest-custom:hover {
@@ -44,6 +56,13 @@
 }
 
 /* Media query para pantallas más pequeñas, si es necesario un ajuste adicional */
+@media (max-width: 768px) {
+    .btn-chest-custom {
+        padding: 14px 22px; /* Ligeramente menos padding en pantallas medianas/pequeñas */
+        font-size: 1.05em; /* Ligeramente más pequeño */
+    }
+}
+
 @media (max-width: 480px) {
     .btn-chest-custom {
         padding: 12px 20px; /* Un poco menos de padding en pantallas muy pequeñas */
