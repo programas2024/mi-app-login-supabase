@@ -664,7 +664,6 @@ async function checkGuess() {
     updateDisplay();
     await checkGameStatus();
 }
-
 async function checkGameStatus() {
     if (guessedWord.join('') === selectedWord) {
         clearInterval(timerInterval);
@@ -677,13 +676,13 @@ async function checkGameStatus() {
         if (wrongGuesses <= errorsAllowed) {
             if (currentLevel < Object.keys(wordLists).length) {
                 Swal.fire({
-                    icon: 'success',
+                    icon: 'success', // SweetAlert usa esto para un tick, pero lo personalizaremos con CSS
                     title: '¡Nivel Completado!',
                     html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
                     confirmButtonText: 'Siguiente Nivel',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-level-up'
+                        popup: 'swal2-custom-level-up' // Clase personalizada para el pop-up de nivel completado
                     },
                     allowOutsideClick: false
                 }).then((result) => {
@@ -696,13 +695,13 @@ async function checkGameStatus() {
                 await updatePlayerBalance(finalReward.gold, finalReward.diamonds);
 
                 Swal.fire({
-                    icon: 'success',
-                    title: '¡FELICITACIONES, ERES EL MAESTRO DE AHORCADO!', // Corregido: ORCADO a AHORCADO
-                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong> adicionales!`,
+                    icon: 'success', // SweetAlert usa esto para un tick, pero lo personalizaremos con CSS
+                    title: '¡FELICITACIONES, ERES EL MAESTRO DE AHORCADO!',
+                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem" style="color:#ADD8E6; font-size:1.2em;"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong> adicionales!`,
                     confirmButtonText: '¡A Jugar de Nuevo!',
                     customClass: {
                         confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-success'
+                        popup: 'swal2-custom-final-success' // Clase personalizada para el pop-up de éxito final
                     },
                     allowOutsideClick: false
                 }).then((result) => {
@@ -712,14 +711,15 @@ async function checkGameStatus() {
                 });
             }
         } else {
+            // Este es el caso de "Palabra Adivinada, ¡pero cuidado!"
             Swal.fire({
-                icon: 'warning',
+                icon: 'warning', // El ícono de advertencia de SweetAlert es amarillo/naranja, lo dejaremos.
                 title: 'Palabra Adivinada, ¡pero cuidado!',
                 html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins" style="color:#FFD700; font-size:1.2em;"></i></strong>.`,
                 confirmButtonText: 'Volver a Intentar',
                 customClass: {
                     confirmButton: 'swal2-confirm-button',
-                    popup: 'swal2-custom-error'
+                    popup: 'swal2-custom-warning' // Clase personalizada para el pop-up de advertencia
                 },
                 allowOutsideClick: false
             }).then((result) => {
@@ -736,13 +736,13 @@ async function checkGameStatus() {
 async function handleGameOver(isWin, message) {
     clearInterval(timerInterval);
     Swal.fire({
-        icon: isWin ? 'success' : 'error',
+        icon: isWin ? 'success' : 'error', // El ícono de error de SweetAlert es rojo, lo dejaremos.
         title: isWin ? '¡Ganaste!' : '¡Game Over!',
         html: message,
         confirmButtonText: 'Intentar de nuevo',
         customClass: {
             confirmButton: 'swal2-confirm-button',
-            popup: isWin ? 'swal2-custom-success' : 'swal2-custom-error'
+            popup: isWin ? 'swal2-custom-final-success' : 'swal2-custom-game-over' // Clases personalizadas
         },
         allowOutsideClick: false
     }).then((result) => {

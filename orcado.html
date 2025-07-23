@@ -314,39 +314,109 @@
             border-radius: 0;
         }
 
-        .show-part {
-            display: block;
+       /* Estilos generales para los botones de SweetAlert */
+        .swal2-confirm-button {
+            background-color: #6A0DAD !important; /* Un morado oscuro elegante */
+            color: #fff !important;
+            border-radius: 8px !important;
+            font-size: 1.1em !important;
+            padding: 10px 20px !important;
+            transition: background-color 0.3s ease;
         }
 
-        .swal2-custom-success .swal2-title {
-            color: #28a745 !important;
+        .swal2-confirm-button:hover {
+            background-color: #8A2BE2 !important; /* Un morado más claro al pasar el ratón */
         }
-        .swal2-custom-success .swal2-html-container {
-            color: #333 !important;
-        }
-        .swal2-custom-success .swal2-confirm-button {
-            background-color: #28a745 !important;
-            border-color: #28a745 !important;
-        }
-        .swal2-custom-error .swal2-title {
-            color: #dc3545 !important;
-        }
-        .swal2-custom-error .swal2-html-container {
-            color: #333 !important;
-        }
-        .swal2-custom-error .swal2-confirm-button {
-            background-color: #dc3545 !important;
-            border-color: #dc3545 !important;
+
+        /* Estilo para el pop-up de Nivel Completado (no verde) */
+        .swal2-custom-level-up {
+            background: linear-gradient(135deg, #f0e68c, #ffd700); /* Tonos dorados suaves */
+            border: 3px solid #DAA520; /* Borde dorado oscuro */
+            color: #4B0082; /* Texto morado oscuro para contraste */
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
         }
         .swal2-custom-level-up .swal2-title {
-            color: #007bff !important;
+            color: #4B0082; /* Título morado oscuro */
         }
         .swal2-custom-level-up .swal2-html-container {
-            color: #333 !important;
+            color: #6A0DAD; /* Contenido morado */
         }
-        .swal2-custom-level-up .swal2-confirm-button {
-            background-color: #007bff !important;
-            border-color: #007bff !important;
+        /* Ajuste para el ícono de éxito de SweetAlert (el tick) para que no sea verde */
+        .swal2-custom-level-up .swal2-success-line-tip,
+        .swal2-custom-level-up .swal2-success-line-long {
+            background-color: #4B0082 !important; /* Morado oscuro para el tick */
+        }
+        .swal2-custom-level-up .swal2-success-ring {
+            border-color: #4B0082 !important; /* Morado oscuro para el anillo del tick */
+        }
+
+
+        /* Estilo para el pop-up de Éxito Final (Maestro de Ahorcado) */
+        .swal2-custom-final-success {
+            background: linear-gradient(135deg, #4B0082, #8A2BE2); /* Degradado de morado oscuro a claro */
+            border: 3px solid #FFD700; /* Borde dorado para el éxito final */
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+        }
+        .swal2-custom-final-success .swal2-title {
+            color: #FFD700; /* Título dorado */
+        }
+        .swal2-custom-final-success .swal2-html-container {
+            color: #fff;
+        }
+        /* Ajuste para el ícono de éxito de SweetAlert (el tick) para que no sea verde */
+        .swal2-custom-final-success .swal2-success-line-tip,
+        .swal2-custom-final-success .swal2-success-line-long {
+            background-color: #FFD700 !important; /* Dorado para el tick */
+        }
+        .swal2-custom-final-success .swal2-success-ring {
+            border-color: #FFD700 !important; /* Dorado para el anillo del tick */
+        }
+
+
+        /* Estilo para el pop-up de Advertencia ("Palabra Adivinada, ¡pero cuidado!") */
+        .swal2-custom-warning {
+            background: linear-gradient(135deg, #FFA07A, #FF6347); /* Tonos de naranja y coral */
+            border: 3px solid #CD5C5C; /* Borde rojo ladrillo */
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .swal2-custom-warning .swal2-title {
+            color: #8B0000; /* Título rojo oscuro */
+        }
+        .swal2-custom-warning .swal2-html-container {
+            color: #444;
+        }
+
+
+        /* Estilo para el pop-up de Game Over */
+        .swal2-custom-game-over {
+            background: linear-gradient(135deg, #36454F, #2F4F4F); /* Tonos de gris y azul oscuro (carbón) */
+            border: 3px solid #DC143C; /* Borde rojo carmesí fuerte */
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 18px;
+        }
+        .swal2-custom-game-over .swal2-title {
+            color: #DC143C; /* Título rojo carmesí */
+        }
+        .swal2-custom-game-over .swal2-html-container {
+            color: #E0E0E0;
+        }
+        /* Ajuste para el ícono de error de SweetAlert (la X) */
+        .swal2-custom-game-over .swal2-error-line-tip,
+        .swal2-custom-game-over .swal2-error-line-long {
+            background-color: #DC143C !important; /* Rojo carmesí para la X */
+        }
+        .swal2-custom-game-over .swal2-error-ring {
+            border-color: #DC143C !important; /* Rojo carmesí para el anillo de la X */
         }
 
         @media (max-width: 768px) {
