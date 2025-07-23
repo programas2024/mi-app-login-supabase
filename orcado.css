@@ -15,26 +15,26 @@
     --vip-gradient-start: #ffe259;     /* Amarillo dorado */
     --vip-gradient-end: #ffa751;       /* Naranja ámbar */
 
-    --play-gradient-start: #00c6ff;    /* Azul cielo brillante */
+    --play-gradient-start: #00c6ff;     /* Azul cielo brillante */
     --play-gradient-end: #0072ff;      /* Azul más profundo */
 
-    --gold-card-start: #fdd835;         /* Amarillo fuerte para oro */
+    --gold-card-start: #fdd835;          /* Amarillo fuerte para oro */
     --gold-card-end: #fb8c00;           /* Naranja para oro */
-    --diamond-card-start: #2196f3;      /* Azul brillante para diamante */
-    --diamond-card-end: #0d47a1;        /* Azul oscuro para diamante */
+    --diamond-card-start: #2196f3;       /* Azul brillante para diamante */
+    --diamond-card-end: #0d47a1;         /* Azul oscuro para diamante */
 
-    --text-dark-primary: #2c3e50;       /* Gris azulado oscuro para el texto principal */
-    --text-light-soft: #f0f4f8;         /* Blanco roto para el fondo */
-    --text-color-light: #ffffff;        /* Blanco puro para texto sobre fondos oscuros */
-    --text-muted: #7f8c8d;              /* Gris sutil para texto secundario */
+    --text-dark-primary: #2c3e50;        /* Gris azulado oscuro para el texto principal */
+    --text-light-soft: #f0f4f8;          /* Blanco roto para el fondo */
+    --text-color-light: #ffffff;         /* Blanco puro para texto sobre fondos oscuros */
+    --text-muted: #7f8c8d;               /* Gris sutil para texto secundario */
     --text-subtle-white: rgba(255, 255, 255, 0.9);
 
-    --bg-main-subtle: #f8faff;          /* Fondo principal muy claro y brillante */
-    --bg-card-vibrant: #ffffff;         /* Fondo de tarjetas blanco puro */
+    --bg-main-subtle: #f8faff;           /* Fondo principal muy claro y brillante */
+    --bg-card-vibrant: #ffffff;          /* Fondo de tarjetas blanco puro */
 
     --shadow-deep: 0 10px 30px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
     --shadow-hover-glow: 0 15px 40px rgba(0, 0, 0, 0.25); /* Sombra intensa al hover */
-    --border-radius-large: 16px;        /* Bordes más pronunciados */
+    --border-radius-large: 16px;         /* Bordes más pronunciados */
     --border-radius-soft: 12px;
 }
 
@@ -151,6 +151,44 @@ body {
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
     border: 1px solid #B0BEC5;
 }
+
+/* --- NEW STYLES FOR SCORES INFO --- */
+.scores-info {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+    margin-bottom: 30px; /* Increased margin for better separation */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6em; /* Slightly larger font */
+    font-weight: 800; /* Bolder for emphasis */
+    color: #34495e;
+}
+
+.scores-info span {
+    background-color: #e6eff6; /* Light blue-gray background */
+    padding: 15px 25px; /* More padding */
+    border-radius: 15px; /* More rounded corners */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12); /* Stronger shadow */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* More space between text and score */
+    transition: transform 0.15s ease-out, background-color 0.15s ease-out; /* Smooth transition for animation */
+    min-width: 220px; /* Ensure consistent width */
+    justify-content: center; /* Center content horizontally */
+}
+
+/* Animation for score highlight */
+.scores-info span.score-highlight {
+    animation: scorePop 0.3s ease-out; /* Apply animation */
+}
+
+@keyframes scorePop {
+    0% { transform: scale(1); background-color: #e6eff6; }
+    50% { transform: scale(1.05); background-color: #a8dadc; /* A subtle highlight color */ }
+    100% { transform: scale(1); background-color: #e6eff6; }
+}
+
 
 .game-area {
     background-color: #FDFDFD; /* Fondo casi blanco para el área de juego */
@@ -547,7 +585,7 @@ body {
 
 
 /* Puedes añadir pequeños ajustes si quieres que ciertos pop-ups tengan un borde o título ligeramente diferente
-   sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
+    sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
 .swal2-popup.swal2-custom-game-over .swal2-title {
     color: #E74C3C !important; /* Título rojo suave para Game Over */
 }
@@ -599,6 +637,18 @@ body {
         flex-direction: column;
         gap: 10px;
     }
+    /* Responsive for scores-info */
+    .scores-info {
+        flex-direction: column;
+        gap: 15px;
+        font-size: 1.3em; /* Adjusted for smaller screens */
+        margin-bottom: 20px;
+    }
+    .scores-info span {
+        padding: 10px 20px;
+        min-width: unset; /* Allow width to adapt */
+    }
+
     .word-display {
         font-size: 2em;
         letter-spacing: 3px;
@@ -654,6 +704,14 @@ body {
         flex-direction: column;
         gap: 10px;
     }
+    /* Responsive for scores-info */
+    .scores-info {
+        font-size: 1.1em;
+    }
+    .scores-info span {
+        padding: 8px 15px;
+    }
+
     .guess-controls {
         flex-direction: column;
         gap: 10px;
@@ -665,6 +723,11 @@ body {
     .submit-button {
         width: 100%;
         max-width: 150px;
+    }
+    .back-button {
+        font-size: 0.8em;
+        top: 10px;
+        left: 10px;
     }
     /* Ajustes para el dibujo del ahorcado en pantallas pequeñas */
     .hangman-drawing {

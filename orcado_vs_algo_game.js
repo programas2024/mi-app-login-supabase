@@ -127,8 +127,12 @@ const vs_game_wrongGuessesDisplay = document.getElementById('wrong-guesses-displ
 const vs_game_timerDisplay = document.getElementById('timer-display');
 const vs_game_lettersUsedDisplay = document.getElementById('letters-used-display');
 const vs_game_loaderWrapper = document.getElementById('loader-wrapper');
-const vs_game_playerScoreDisplay = document.getElementById('player-score-display'); // New
-const vs_game_algoScoreDisplay = document.getElementById('algo-score-display');     // New
+
+// Nuevas referencias para los contenedores de puntaje para la animación
+const vs_game_playerScoreContainer = document.getElementById('player-score-container'); 
+const vs_game_algoScoreContainer = document.getElementById('algo-score-container');     
+const vs_game_playerScoreDisplay = document.getElementById('player-score-display'); 
+const vs_game_algoScoreDisplay = document.getElementById('algo-score-display');     
 
 // --- Supabase Config ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -206,7 +210,7 @@ function vs_game_updateDisplay() {
 }
 
 /**
- * Shows or hides parts of the hangman drawing based on the number of errors.
+ * Muestra u oculta las partes del dibujo del ahorcado según el número de errores.
  */
 function vs_game_updateHangmanDrawing() {
     console.log(`DEBUG (VS. Algo Game): updateHangmanDrawing called. wrongGuesses: ${vs_game_wrongGuesses}`);
@@ -318,6 +322,16 @@ async function vs_game_updatePlayerBalance(gold = 0, diamonds = 0) {
 }
 
 /**
+ * Aplica una animación temporal a un elemento de puntaje.
+ * @param {HTMLElement} element - El elemento DOM del puntaje a animar.
+ */
+function vs_game_animateScore(element) {
+    element.classList.remove('score-highlight'); // Asegura que se reinicie la animación
+    void element.offsetWidth; // Truco para forzar un reflow y reiniciar la animación
+    element.classList.add('score-highlight');
+}
+
+/**
  * Procesa la letra ingresada por el jugador y actualiza los puntajes.
  */
 async function vs_game_checkGuess() {
@@ -348,12 +362,16 @@ async function vs_game_checkGuess() {
                 }
             }
         }
-        vs_game_playerScore += lettersFoundInThisGuess * vs_game_pointsPerCorrectLetter;
+        if (lettersFoundInThisGuess > 0) {
+            vs_game_playerScore += lettersFoundInThisGuess * vs_game_pointsPerCorrectLetter;
+            vs_game_animateScore(vs_game_playerScoreContainer); // Animar el puntaje del jugador
+        }
         vs_game_messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
     } else {
         // La letra es incorrecta
         vs_game_wrongGuesses++;
         vs_game_algoScore += vs_game_pointsPerWrongGuess;
+        vs_game_animateScore(vs_game_algoScoreContainer); // Animar el puntaje del algoritmo
         vs_game_messageDisplay.textContent = `Incorrecto. Te quedan ${vs_game_maxWrongGuesses - vs_game_wrongGuesses} intentos.`;
         vs_game_updateHangmanDrawing(); // Dibuja una parte más del ahorcado
     }
@@ -374,12 +392,14 @@ async function vs_game_checkRoundEnd() {
     if (vs_game_guessedWord.join('') === vs_game_selectedWord) {
         clearInterval(vs_game_timerInterval); // Detiene el temporizador
         vs_game_playerScore += vs_game_playerWinBonus; // Bono por adivinar la palabra
+        vs_game_animateScore(vs_game_playerScoreContainer); // Animar el puntaje del jugador
         playerWonWord = true;
         message = `¡Felicidades! Adivinaste la palabra **"${vs_game_selectedWord}"**.`;
     } else if (vs_game_wrongGuesses >= vs_game_maxWrongGuesses) {
         // El jugador ha agotado todos sus intentos
         clearInterval(vs_game_timerInterval); // Detiene el temporizador
         vs_game_algoScore += vs_game_algoWinBonus; // Bono para el algoritmo por ahorcar al jugador
+        vs_game_animateScore(vs_game_algoScoreContainer); // Animar el puntaje del algoritmo
         playerWonWord = false;
         message = `¡Has superado los ${vs_game_maxWrongGuesses} errores! La palabra era: **${vs_game_selectedWord}**`;
     } else {

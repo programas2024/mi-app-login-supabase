@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orcado - El Juego de la Palabra (VS. Algoritmo)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="orcado.css"> <!-- Tu CSS de Orcado sin cambios -->
+    <link rel="stylesheet" href="orcado.css"> <!-- Tu CSS de Orcado se actualizará aquí -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" type="module"></script> 
@@ -38,8 +38,8 @@
         </div>
 
         <div class="scores-info">
-            <span>Tu Puntaje: <span id="player-score-display">0</span></span>
-            <span>Puntaje Algoritmo: <span id="algo-score-display">0</span></span>
+            <span id="player-score-container">Tu Puntaje: <span id="player-score-display">0</span></span>
+            <span id="algo-score-container">Puntaje Algoritmo: <span id="algo-score-display">0</span></span>
         </div>
 
         <div class="game-area">
@@ -69,6 +69,6 @@
         </div>
     </div>
 
-    <script type="module" src="orcado_vs_algo_game.js"></script> <!-- NEW FILE NAME FOR VS. ALGO! -->
+    <script type="module" src="orcado_vs_algo_game.js"></script>
 </body>
 </html>
