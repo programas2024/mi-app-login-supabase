@@ -1,4 +1,4 @@
-/* dashboard.css - Versión Revisada y Optimizada */
+/* orcado.css - Versión Revisada y Optimizada */
 
 /* --- Variables CSS Globales --- */
 :root {
@@ -47,7 +47,7 @@
     box-sizing: border-box;
 }
 
-/* --- Base y Contenedor Principal --- */
+/* --- Base del Body y Contenedor Principal del Juego --- */
 body {
     font-family: 'Poppins', 'Montserrat', sans-serif; /* Más moderno y profesional */
     margin: 0;
@@ -64,64 +64,224 @@ body {
     flex-direction: column; /* Para apilar el loader y el orcado-container */
 }
 
-.dashboard-wrapper {
+.orcado-container {
+    background-color: #FFFFFF; /* Fondo completamente blanco para el contenedor principal */
+    border-radius: 25px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15); /* Sombra más sutil y menos oscura */
+    padding: 45px;
+    width: 90%;
+    max-width: 850px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #DCDCDC; /* Borde muy sutil para definición */
+}
+
+.orcado-container::before {
+    content: '';
+    position: absolute;
+    top: -70px;
+    left: -70px;
+    right: -70px;
+    bottom: -70px;
+    background: radial-gradient(circle at center, rgba(123, 104, 238, 0.05) 0%, transparent 60%); /* Pulso morado aún más sutil */
+    animation: pulseSubtle 5s infinite alternate ease-in-out;
+    z-index: 0;
+    border-radius: 50%;
+}
+
+@keyframes pulseSubtle {
+    0% { transform: scale(1); opacity: 0.6; } /* Opacidad inicial reducida */
+    100% { transform: scale(1.05); opacity: 0.9; } /* Opacidad final también reducida */
+}
+
+.orcado-container h1 {
+    font-family: 'Montserrat', sans-serif;
+    color: #4A4A4A; /* Un gris oscuro para el título, elegante y legible */
+    font-size: 3.8em;
+    margin-bottom: 20px;
+    font-weight: 800;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Sombra de texto más ligera */
+    position: relative;
+    z-index: 1;
+}
+
+.orcado-description {
+    color: #666666; /* Gris medio oscuro para la descripción */
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #4A4A4A; /* Texto oscuro para los info boxes */
+    position: relative;
+    z-index: 1;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.game-info span {
+    padding: 10px 20px;
+    background-color: #F5F5F5; /* Gris muy claro para las tarjetas de info */
+    border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Sombra interna sutil */
+    border: 1px solid #E0E0E0; /* Borde muy claro */
+}
+
+/* Colores específicos para los displays de info (mantenemos contrastes sutiles) */
+.game-info #timer-display {
+    background-color: #FFE0B2; /* Naranja muy pálido para el tiempo */
+    color: #D35400; /* Naranja oscuro para el texto del tiempo */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+    border: 1px solid #FFCC80;
+}
+
+.game-info #level-display {
+    background-color: #CFD8DC; /* Azul grisáceo muy pálido para el nivel */
+    color: #455A64; /* Azul grisáceo oscuro para el texto del nivel */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+    border: 1px solid #B0BEC5;
+}
+
+.game-area {
+    background-color: #FDFDFD; /* Fondo casi blanco para el área de juego */
+    border: 1px solid #E0E0E0;
+    border-radius: 20px;
+    padding: 35px;
+    margin-bottom: 35px;
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.word-display {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4em;
+    letter-spacing: 10px;
+    margin-bottom: 35px;
+    color: #5D3FD3; /* Morado profundo para la palabra a adivinar */
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Sombra de texto ligera */
+    animation: pulseWord 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes pulseWord {
+    0% { transform: scale(1); opacity: 0.95; }
+    100% { transform: scale(1.03); opacity: 1; }
+}
+
+.letters-used {
+    font-size: 1.2em;
+    color: #777777; /* Gris medio para las letras usadas */
+    margin-top: 20px;
+    min-height: 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.letters-used strong {
+    color: #E74C3C; /* Rojo suave para letras incorrectas (manteniendo el tono de alerta) */
+    font-weight: bold;
+}
+.letters-used span {
+    margin: 0 4px;
+    font-weight: bold;
+    color: #5D3FD3; /* Morado profundo para letras correctas */
+}
+
+.guess-controls {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinea al inicio verticalmente */
-    min-height: 100vh;
-    padding: 40px;
-    box-sizing: border-box;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }
 
-.dashboard-main-content {
-    display: grid;
-    /* Define 3 columnas: sidebar izquierdo, contenido principal, sidebar derecho */
-    grid-template-columns: 260px 1fr 320px;
-    /* Define áreas con nombre para facilitar el posicionamiento */
-    grid-template-areas:
-        ". welcome-area welcome-area" /* Mensaje de bienvenida en la parte superior derecha */
-        "sidebar-left main-content-area sidebar-right"
-        ". . floating-logout-btn"; /* Botón de logout al final de la tercera columna */
-    gap: 50px; /* Espacio entre las columnas del grid */
-    width: 100%;
-    max-width: 1600px; /* Ancho máximo del dashboard */
-    background-color: var(--bg-card-vibrant);
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-deep);
-    padding: 50px;
-    position: relative; /* Necesario para posicionar el welcome-message absoluto */
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+.guess-input {
+    padding: 18px 25px;
+    font-size: 1.8em;
+    text-align: center;
+    width: 120px;
+    border: 2px solid #DCDCDC; /* Borde muy claro */
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #FFFFFF; /* Fondo blanco para el input */
+    color: #333333; /* Texto oscuro en el input */
+    box-shadow: 0 0 10px rgba(0,0,0,0.08); /* Sombra sutil */
 }
 
-/* Mensaje de Bienvenida y Email (Superior Derecha, Discreto) */
-.welcome-message {
-    grid-area: welcome-area; /* Asigna al área definida en el grid */
-    justify-self: end; /* Alinea a la derecha dentro de su área de grid */
-    align-self: start; /* Alinea arriba dentro de su área de grid */
-    font-size: 0.9em;
-    color: var(--text-muted);
-    padding: 10px 20px;
-    background-color: #eaf1f7;
-    border-radius: var(--border-radius-soft);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
-    position: absolute; /* Permite posicionar libremente sin afectar el flujo del grid */
-    top: 20px;
-    right: 20px;
-    z-index: 20; /* Asegura que esté por encima de otros elementos */
+.guess-input:focus {
+    border-color: #5D3FD3; /* Morado profundo al enfocar */
+    box-shadow: 0 0 15px rgba(93, 63, 211, 0.4); /* Resplandor morado al enfocar */
 }
 
-.welcome-message span {
-    font-weight: 600;
-}
-
-#user-email {
-    color: var(--primary-gradient-end); /* Color distintivo para el email */
+.submit-button {
+    background-color: #5D3FD3; /* Morado profundo de tus botones de SweetAlert */
+    color: white;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 12px;
+    font-size: 1.3em;
     font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Sombra más ligera para fondos claros */
 }
 
-/* --- Loader Styles (Movido desde el HTML) --- */
+.submit-button:hover {
+    background-color: #6E5DD3;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.message {
+    font-size: 1.4em;
+    margin-top: 30px;
+    min-height: 35px;
+    font-weight: 600;
+    color: #E74C3C; /* Rojo suave para mensajes de error/info (contrasta bien) */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1); /* Sombra de texto muy sutil */
+    position: relative;
+    z-index: 1;
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.back-button:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* --- ESTILOS DEL CARGADOR --- */
 #loader-wrapper {
     position: fixed;
     top: 0;
@@ -133,7 +293,7 @@ body {
     flex-direction: column;
     justify-content: center; /* Centrado vertical */
     align-items: center; /* Centrado horizontal */
-    z-index: 1000; /* Asegura que esté por encima de todo */
+    z-index: 9999; /* Asegura que esté por encima de todo */
     color: var(--text-color-light);
     font-size: 1.4em;
     transition: opacity 0.7s ease-out, visibility 0.7s ease-out; /* Transición suave al desaparecer */
@@ -174,589 +334,6 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* --- Sidebar Izquierdo (Perfil, Tienda, VIP) --- */
-.sidebar-left {
-    grid-area: sidebar-left; /* Asigna al área del grid */
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
-    padding-right: 40px;
-}
-
-.sidebar-btn {
-    color: var(--text-color-light);
-    border: none;
-    border-radius: 12px;
-    padding: 20px 28px;
-    font-size: 1.2em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-    background-size: 200% auto;
-}
-
-.sidebar-btn:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-hover-glow);
-    background-position: right center;
-}
-
-.sidebar-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-    z-index: -1;
-}
-
-.sidebar-btn:hover::before {
-    left: 100%;
-}
-
-.sidebar-btn i {
-    font-size: 1.6em;
-    color: rgba(255, 255, 255, 0.95);
-}
-
-/* COLORES ESPECÍFICOS PARA CADA BOTÓN */
-.btn-profile-custom {
-    background-image: linear-gradient(135deg, var(--profile-gradient-start) 0%, var(--profile-gradient-end) 100%);
-}
-.btn-shop-custom {
-    background-image: linear-gradient(135deg, var(--shop-gradient-start) 0%, var(--shop-gradient-end) 100%);
-}
-.btn-vip-custom {
-    background-image: linear-gradient(135deg, var(--vip-gradient-start) 0%, var(--vip-gradient-end) 100%);
-}
-
-/* --- Estilos para el botón del cofre (combinando las clases existentes) --- */
-.sidebar-btn.btn-chest-custom {
-    background: linear-gradient(to right, #20B2AA, #00CED1); /* Verde Mar Claro a Turquesa Oscuro */
-    border: 2px solid #00FA9A; /* Verde Primavera Medio */
-    color: #fff;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Sombra más pronunciada */
-    transition: all 0.3s ease;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Sombra de texto sutil */
-    
-    /* --- Ajustes para responsividad y layout (base) --- */
-    width: 100%; /* Asegura que ocupe el 100% del ancho de su contenedor */
-    max-width: 100%; /* Previene que se desborde si el contenido es demasiado ancho */
-    padding: 15px 25px; /* Padding por defecto */
-    font-size: 1.1em; /* Tamaño de fuente por defecto */
-    display: flex; /* Permite centrar el icono y el texto */
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* Espacio entre icono y texto */
-
-    /*
-     * Estas propiedades son útiles si el contenedor padre usa flexbox.
-     * Aseguran que el botón se ajuste al espacio disponible.
-     */
-    flex-grow: 1; 
-    flex-shrink: 1;
-    flex-basis: auto; /* Permite que el elemento determine su tamaño base */
-}
-
-.sidebar-btn.btn-chest-custom:hover {
-    background: linear-gradient(to right, #00CED1, #00BFFF); /* Turquesa Oscuro a Azul Profundo */
-    transform: translateY(-4px) scale(1.02); /* Efecto de "levantarse" y agrandarse ligeramente */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); /* Sombra más grande al pasar el ratón */
-    border-color: #7FFFD4; /* Aguamarina en hover */
-}
-
-
-/* --- Contenido Central (Monedas y Botón Jugar) --- */
-.main-content-area {
-    grid-area: main-content-area; /* Asigna al área del grid */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra elementos horizontalmente */
-    text-align: center;
-    padding-top: 30px;
-}
-
-/* Ocultar el header-section original (si existía) */
-.header-section {
-    display: none;
-}
-
-/* Contenedor Flex para Oro y Diamantes (Horizontales y Centrados) */
-.currency-display-wrapper {
-    display: flex;
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no hay espacio */
-    justify-content: center; /* Centra los elementos horizontalmente */
-    align-items: center; /* Alinea verticalmente al centro */
-    gap: 20px; /* Espacio entre las tarjetas de moneda */
-    margin-bottom: 40px; /* Espacio debajo de los contadores */
-    width: 100%;
-    max-width: 500px; /* Limita el ancho del contenedor para que no se extiendan demasiado */
-}
-
-/* Estilo individual para cada tarjeta de moneda (Más pequeña y horizontal) */
-.currency-card {
-    display: flex;
-    flex-direction: row; /* Icono y texto en fila */
-    align-items: center; /* Centra verticalmente el contenido */
-    justify-content: space-around; /* Distribuye espacio entre elementos */
-    padding: 12px 20px; /* Padding reducido para menor altura */
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-deep);
-    color: var(--text-color-light);
-    flex: 1; /* Permite que las tarjetas se distribuyan equitativamente */
-    min-width: 160px; /* Ancho mínimo para cada tarjeta */
-    max-width: 230px; /* Ancho máximo para cada tarjeta */
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: default; /* Indica que no son interactivos */
-}
-
-.currency-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.currency-card .currency-icon {
-    font-size: 2.2em; /* Iconos más pequeños */
-    margin-right: 15px; /* Espacio a la derecha del icono */
-    margin-bottom: 0; /* Asegura que no haya margen inferior */
-    color: var(--text-subtle-white);
-}
-
-.currency-card .currency-value-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Alinea el texto a la izquierda dentro del wrapper */
-}
-
-.currency-card .currency-value {
-    font-size: 1.8em; /* Valor numérico más pequeño */
-    font-weight: 900;
-    line-height: 1.2; /* Ajusta la altura de línea */
-    margin-bottom: 2px; /* Pequeño margen entre valor y nombre */
-    color: var(--text-color-light);
-}
-
-.currency-card .currency-name {
-    font-size: 0.85em; /* Nombre de la moneda más pequeño */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-subtle-white);
-}
-
-/* Colores específicos para las tarjetas de Oro y Diamantes */
-.gold-card {
-    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-.diamond-card {
-    background: linear-gradient(135deg, var(--diamond-card-start) 0%, var(--diamond-card-end) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-}
-
-
-/* Botón Jugar */
-.btn-play {
-    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%);
-    color: var(--text-color-light);
-    border: none;
-    border-radius: 50px;
-    padding: 18px 35px; /* Tamaño ajustado para ser menos dominante */
-    font-size: 1.8em; /* Tamaño de fuente ajustado */
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: flex;
-    align-items: center;
-    gap: 12px; /* Espacio entre icono y texto */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-    margin-top: 35px; /* Espacio superior ajustado */
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    outline: none;
-    text-decoration: none; /* Esto elimina el subrayado del enlace */
-}
-
-.btn-play i {
-    font-size: 1.5em; /* Tamaño del icono ajustado */
-}
-
-.btn-play:hover {
-    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%);
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
-}
-
-.btn-play:active {
-    transform: translateY(-2px) scale(1);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.game-slogan {
-    font-size: 1em; /* Tamaño reducido */
-    color: var(--text-muted);
-    margin-top: 25px; /* Espacio ajustado */
-    font-style: italic;
-    font-weight: 500;
-}
-
-/* --- Sidebar Derecho (Rango y Tabla de Clasificación) --- */
-.sidebar-right {
-    grid-area: sidebar-right; /* Asigna al área del grid */
-    padding-top: 20px;
-    border-left: 1px solid rgba(0, 0, 0, 0.08);
-    padding-left: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.ranking-section, .leaderboard-section {
-    background-color: var(--bg-card-vibrant);
-    border-radius: var(--border-radius-large);
-    padding: 30px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-}
-
-.ranking-section h3, .leaderboard-section h3 {
-    font-size: 1.8em;
-    color: var(--text-dark-primary);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-weight: 700;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-}
-
-.ranking-section h3 i, .leaderboard-section h3 i {
-    color: var(--play-gradient-start);
-    font-size: 1.2em;
-}
-
-.ranking-section p {
-    font-size: 1.5em;
-    font-weight: 800;
-    color: var(--gold-card-start);
-    margin-bottom: 10px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-}
-
-.rank-description {
-    font-size: 1em;
-    color: var(--text-muted);
-}
-
-/* Tabla de Clasificación */
-.leaderboard-table-container {
-    overflow-x: auto; /* Permite scroll si la tabla es demasiado ancha */
-    margin-top: 25px;
-}
-
-.leaderboard-table {
-    width: 100%;
-    border-collapse: separate; /* Para bordes redondeados */
-    border-spacing: 0;
-    font-size: 1em;
-    text-align: left;
-    background-color: var(--bg-card-vibrant);
-    border-radius: var(--border-radius-large);
-    overflow: hidden; /* Para que los bordes redondeados funcionen */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-.leaderboard-table th, .leaderboard-table td {
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.leaderboard-table thead th {
-    background: linear-gradient(90deg, #e3f2fd, #bbdefb);
-    color: var(--text-dark-primary);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    position: sticky; /* Fija el encabezado al hacer scroll */
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.leaderboard-table thead th:first-child { border-top-left-radius: var(--border-radius-large); }
-.leaderboard-table thead th:last-child { border-top-right-radius: var(--border-radius-large); }
-
-.leaderboard-table tbody tr:nth-child(even) {
-    background-color: #fefefe;
-}
-
-.leaderboard-table tbody tr:hover {
-    background-color: #f0f8ff;
-    transform: scale(1.005);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    position: relative;
-    z-index: 1;
-}
-
-.leaderboard-table td:first-child {
-    font-weight: 800;
-    color: var(--play-gradient-end);
-}
-
-/* --- Botón Cerrar Sesión (Flotante y Elegante) --- */
-.floating-logout-btn {
-    grid-area: floating-logout-btn; /* Asigna al área del grid */
-    justify-self: end; /* Alinea a la derecha */
-    align-self: end; /* Alinea abajo */
-    position: static; /* Gestionado por el layout de grid */
-    background: linear-gradient(45deg, #ff6b6b 0%, #ee5253 100%);
-    color: var(--text-color-light);
-    border: none;
-    border-radius: 50%;
-    width: 60px; /* Tamaño reducido */
-    height: 60px; /* Tamaño reducido */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.6em; /* Tamaño del icono reducido */
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    z-index: 50;
-    padding: 0;
-    margin-top: 25px; /* Añade un margen superior para separarlo de la tabla */
-    margin-right: 0;
-}
-
-.floating-logout-btn:hover {
-    background: linear-gradient(45deg, #ee5253 0%, #ff6b6b 100%);
-    transform: translateY(-5px) rotate(8deg);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.floating-logout-btn i {
-    color: var(--text-color-light);
-}
-
-/* --- Media Queries para Responsividad --- */
-
-/* Pantallas medianas (tablets grandes, laptops pequeñas) */
-@media (max-width: 1300px) {
-    .dashboard-main-content {
-        grid-template-columns: 220px 1fr 280px;
-        gap: 30px;
-        padding: 35px;
-    }
-    .sidebar-left { padding-right: 25px; }
-    .sidebar-right { padding-left: 25px; }
-    .sidebar-btn { padding: 15px 20px; font-size: 1.1em; gap: 15px; }
-    .sidebar-btn i { font-size: 1.4em; }
-
-    .currency-display-wrapper {
-        gap: 15px;
-        max-width: 450px; /* Ajusta el max-width */
-    }
-    .currency-card {
-        padding: 10px 18px; /* Padding ligeramente más reducido */
-        min-width: 150px;
-        max-width: 200px;
-    }
-    .currency-card .currency-icon { font-size: 2em; margin-right: 12px; }
-    .currency-card .currency-value { font-size: 1.6em; }
-    .currency-card .currency-name { font-size: 0.8em; }
-
-    .btn-play { font-size: 1.7em; padding: 16px 30px; gap: 10px; }
-    .btn-play i { font-size: 1.4em; }
-    .game-slogan { font-size: 0.95em; }
-
-    .ranking-section, .leaderboard-section { padding: 25px; }
-    .ranking-section h3, .leaderboard-section h3 { font-size: 1.6em; gap: 10px; }
-    .ranking-section h3 i, .leaderboard-section h3 i { font-size: 1.1em; }
-    .ranking-section p { font-size: 1.4em; }
-    .rank-description { font-size: 0.9em; }
-    .leaderboard-table th, .leaderboard-table td { padding: 12px 18px; }
-
-    .floating-logout-btn { width: 55px; height: 55px; font-size: 1.5em; }
-}
-
-/* Pantallas de tablet (vertical) y laptops muy pequeñas */
-@media (max-width: 992px) {
-    .dashboard-main-content {
-        grid-template-columns: 1fr; /* Una sola columna principal */
-        grid-template-areas:
-            "welcome-area"
-            "sidebar-left"
-            "main-content-area" /* Ahora la única área grande central */
-            "sidebar-right"
-            "floating-logout-btn";
-        gap: 25px;
-        padding: 20px;
-        box-shadow: none; /* Elimina la sombra para un look más "móvil" */
-        border-radius: 0;
-    }
-
-    .welcome-message {
-        position: static; /* Se comporta como un elemento de flujo normal del grid */
-        margin: 0 0 15px 0;
-        justify-self: center; /* Centra el texto */
-        font-size: 0.8em;
-        padding: 6px 12px;
-    }
-
-    .sidebar-left, .sidebar-right {
-        border: none; /* Elimina los bordes laterales */
-        padding: 0;
-        margin: 0 auto; /* Centra los sidebars */
-        width: 95%; /* Ocupa casi todo el ancho */
-        max-width: 600px; /* Limita su ancho máximo */
-    }
-
-    .sidebar-left {
-        flex-direction: row; /* Botones en fila */
-        justify-content: center;
-        flex-wrap: wrap; /* Permite que los botones salten de línea */
-        gap: 10px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(0, 0, 0, 0.08); /* Borde superior para separarlo */
-    }
-    .sidebar-btn {
-        width: 47%; /* Dos botones por fila */
-        font-size: 0.9em;
-        padding: 12px 8px;
-        flex-direction: column; /* Icono y texto apilados en el botón */
-        gap: 5px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-    }
-    .sidebar-btn i { font-size: 1.2em; }
-
-    .main-content-area {
-        padding-top: 20px;
-        max-width: 600px; /* Limita el ancho del contenido central */
-        margin: 0 auto; /* Centra el contenido principal */
-    }
-
-    .currency-display-wrapper {
-        flex-direction: row; /* Sigue horizontal por ahora */
-        gap: 10px;
-        max-width: 100%; /* Ocupa todo el ancho disponible del main-content-area */
-        justify-content: center;
-    }
-    .currency-card {
-        padding: 8px 15px; /* Más compacto */
-        min-width: unset;
-        max-width: unset;
-        width: 48%; /* Dos por fila, con un pequeño gap */
-        justify-content: center; /* Centra el contenido dentro de la tarjeta */
-        flex-direction: column; /* Icono y texto apilados en la tarjeta para ahorrar espacio */
-    }
-    .currency-card .currency-icon { font-size: 1.8em; margin-right: 0; margin-bottom: 5px; } /* Icono arriba del texto */
-    .currency-card .currency-value-wrapper { align-items: center; } /* Centra el texto apilado */
-    .currency-card .currency-value { font-size: 1.3em; }
-    .currency-card .currency-name { font-size: 0.7em; letter-spacing: 0.2px; }
-
-    .btn-play { font-size: 1.5em; padding: 14px 28px; gap: 8px; margin-top: 25px; }
-    .btn-play i { font-size: 1.3em; }
-    .game-slogan { font-size: 0.9em; margin-top: 20px; }
-
-    .sidebar-right {
-        padding-top: 20px;
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
-    }
-
-    .floating-logout-btn {
-        position: static;
-        margin: 20px auto 0 auto;
-        width: 50px;
-        height: 50px;
-        font-size: 1.3em;
-    }
-}
-
-/* Pantallas de móvil */
-@media (max-width: 576px) {
-    .dashboard-wrapper { padding: 5px; }
-    .dashboard-main-content { padding: 10px; gap: 10px; }
-    .welcome-message { font-size: 0.7em; padding: 4px 6px; margin-bottom: 10px; }
-
-    .sidebar-btn {
-        width: 100%; /* Un botón por fila en móviles */
-        font-size: 0.8em;
-        padding: 10px;
-    }
-    .sidebar-btn i { font-size: 1.1em; }
-
-    .currency-display-wrapper {
-        flex-direction: column; /* Vuelve a vertical en móviles muy pequeños para más espacio */
-        gap: 10px;
-    }
-    .currency-card {
-        width: 90%; /* Ocupa la mayoría del ancho disponible */
-        max-width: 250px; /* Asegura un tamaño razonable */
-        flex-direction: row; /* Vuelve a horizontal dentro de la tarjeta si hay espacio */
-        justify-content: space-around;
-        padding: 10px 15px;
-    }
-    .currency-card .currency-icon { font-size: 2em; margin-right: 10px; margin-bottom: 0; }
-    .currency-card .currency-value-wrapper { align-items: flex-start; }
-    .currency-card .currency-value { font-size: 1.5em; }
-    .currency-card .currency-name { font-size: 0.75em; }
-
-    .btn-play { font-size: 1.3em; padding: 12px 25px; margin-top: 20px; }
-    .game-slogan { font-size: 0.8em; margin-top: 15px; }
-
-    .ranking-section, .leaderboard-section { padding: 15px; }
-    .ranking-section h3, .leaderboard-section h3 { font-size: 1.4em; }
-    .ranking-section p { font-size: 1.2em; }
-    .rank-description { font-size: 0.8em; }
-    .leaderboard-table th, .leaderboard-table td { padding: 10px 15px; font-size: 0.9em; }
-
-    .floating-logout-btn { width: 45px; height: 45px; font-size: 1.2em; margin-top: 15px; }
-}
-
-/* Ejemplo para dashboard.css */
-.sidebar-btn.btn-custom-action {
-    background-color: var(--button-bg-color); /* O el color que desees */
-    color: var(--text-color);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    width: 100%; /* Ajustar al ancho de la sidebar */
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.sidebar-btn.btn-custom-action:hover {
-    background-color: var(--button-hover-bg-color); /* Un color de hover */
-    transform: translateY(-2px);
-}
-
-/* Si quieres un color específico para el ícono de rango/copa */
-.sidebar-btn.btn-custom-action .fa-trophy,
-.sidebar-btn.btn-custom-action .fa-medal {
-    color: #FFD700; /* Color oro, o el que prefieras */
-}
 
 /* --- ESTILOS CORREGIDOS Y MEJORADOS PARA EL DIBUJO DEL AHORCADO --- */
 .hangman-drawing {
@@ -764,17 +341,16 @@ body {
     width: 150px; /* Ancho del área del dibujo */
     height: 200px; /* Alto del área del dibujo */
     margin: 20px auto 30px auto; /* Centra el dibujo y le da espacio */
-    /* border-bottom: 5px solid #666; /* Esto ya no es necesario si tienes un stand */
 }
 
-/* Estructura de la horca (tus clases existentes) */
+/* Estructura de la horca */
 .hangman-drawing .gallow-post {
     position: absolute;
-    bottom: 0; /* Empieza desde la base del hangman-drawing */
+    bottom: 0;
     left: 20px; /* Posición desde la izquierda */
     width: 5px;
     height: 180px;
-    background-color: #666; /* Color de la madera */
+    background-color: #663300; /* Marrón de la madera */
     border-radius: 2px;
 }
 .hangman-drawing .gallow-top {
@@ -783,7 +359,7 @@ body {
     left: 20px; /* Empieza donde termina el poste vertical */
     width: 80px; /* Ancho del travesaño horizontal */
     height: 5px;
-    background-color: #666;
+    background-color: #663300; /* Marrón de la madera */
     border-radius: 2px;
 }
 .hangman-drawing .gallow-rope {
@@ -884,225 +460,4 @@ body {
 }
 
 /* ------------------------------------------------------------------- */
-/* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .swal2-custom-final-success) */
-/* Esto asegura una continuidad visual entre todas las alertas */
-.swal2-popup {
-    background: linear-gradient(135deg, #2C3E50, #34495E) !important; /* Tonos de azul muy oscuro */
-    border: 3px solid #7B68EE !important; /* Morado medio (lavender) para el borde distintivo */
-    color: #FFFFFF !important; /* Texto blanco para contraste */
-    font-weight: bold !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
-    border-radius: 15px !important;
-    font-family: 'Poppins', sans-serif !important; /* Usamos Poppins para consistencia */
-}
-
-.swal2-popup .swal2-title {
-    color: #ADD8E6 !important; /* Azul claro para el título, como el diamante */
-    font-size: 2em !important;
-    margin-bottom: 0.6em !important;
-}
-
-.swal2-popup .swal2-html-container {
-    color: #E0E0E0 !important; /* Gris muy claro para el contenido */
-    font-size: 1.2em !important;
-    line-height: 1.6 !important;
-}
-
-/* Estilo para los íconos de SweetAlert (tick, cruz, etc.) */
-/* Aseguramos que el ícono de éxito no sea verde, usando el color del borde base */
-.swal2-success-line-tip,
-.swal2-success-line-long {
-    background-color: #7B68EE !important; /* Morado medio para el tick */
-}
-.swal2-success-ring {
-    border-color: #7B68EE !important; /* Morado medio para el anillo del tick */
-}
-/* Estilo para el ícono de error (la X) */
-.swal2-error-line-tip,
-.swal2-error-line-long {
-    background-color: #E74C3C !important; /* Rojo suave para la X */
-}
-.swal2-error-ring {
-    border-color: #E74C3C !important; /* Rojo suave para el anillo de la X */
-}
-/* Estilo para el ícono de advertencia (el signo de exclamación) */
-.swal2-warning {
-    color: #DAA520 !important; /* Dorado más tenue para la advertencia */
-    border-color: #DAA520 !important;
-}
-
-/* ------------------------------------------------------------------- */
-/* ESTILOS ESPECÍFICOS PARA ÍCONOS DE RECOMPENSA DENTRO DE LOS POP-UPS */
-
-/* Ícono de Oro (moneda) */
-.swal2-popup .fas.fa-coins {
-    color: #C0C0C0 !important; /* Plateado sutil para el oro, para que combine */
-    font-size: 1.4em !important;
-    vertical-align: middle;
-    margin: 0 5px; /* Pequeño espacio para que no se pegue al texto */
-}
-
-/* Ícono de Diamante */
-.swal2-popup .fas.fa-gem {
-    color: #ADD8E6 !important; /* Azul celeste claro para el diamante */
-    font-size: 1.4em !important;
-    vertical-align: middle;
-    margin: 0 5px; /* Pequeño espacio */
-}
-
-/* Puedes añadir pequeños ajustes si quieres que ciertos pop-ups tengan un borde o título ligeramente diferente
-   sin romper la continuidad del fondo. Por ejemplo, para Game Over: */
-.swal2-popup.swal2-custom-game-over .swal2-title {
-    color: #E74C3C !important; /* Título rojo suave para Game Over */
-}
-.swal2-popup.swal2-custom-game-over {
-    border-color: #A93226 !important; /* Borde un poco más oscuro para Game Over */
-}
-
-/* Para el pop-up de Advertencia, puedes cambiar el color del título para que sea más acorde al warning */
-.swal2-popup.swal2-custom-warning .swal2-title {
-    color: #DAA520 !important; /* Dorado más tenue para el título de advertencia */
-}
-.swal2-popup.swal2-custom-warning {
-    border-color: #DAA520 !important; /* Borde más acorde a la advertencia */
-}
-
-/* Para el pop-up de Nivel Completado */
-.swal2-popup.swal2-custom-level-up .swal2-title {
-    color: #50e3c2 !important; /* Verde esmeralda */
-}
-.swal2-popup.swal2-custom-level-up {
-    border-color: #3cb371 !important; /* Verde medio */
-}
-
-/* Para el pop-up de Éxito Final */
-.swal2-popup.swal2-custom-final-success .swal2-title {
-    color: #FFD700 !important; /* Oro */
-}
-.swal2-popup.swal2-custom-final-success {
-    border-color: #DAA520 !important; /* Oro más oscuro */
-}
-
-
-/* Responsive adjustments (mantener y ajustar si es necesario) */
-@media (max-width: 768px) {
-    .orcado-container {
-        padding: 20px;
-        width: 95%;
-    }
-    .orcado-container h1 {
-        font-size: 2.2em;
-        margin-bottom: 15px;
-    }
-    .orcado-description {
-        font-size: 0.95em;
-    }
-    .game-info {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .word-display {
-        font-size: 2em;
-        letter-spacing: 3px;
-    }
-    .guess-controls {
-        flex-direction: column;
-    }
-    .guess-input {
-        width: 80%;
-        max-width: 150px;
-        font-size: 1.2em;
-    }
-    .submit-button {
-        padding: 12px 20px;
-        font-size: 1em;
-    }
-    .back-button {
-        top: 10px;
-        left: 10px;
-        padding: 8px 15px;
-        font-size: 0.9em;
-    }
-}
-
-@media (max-width: 480px) {
-    .orcado-container {
-        padding: 20px;
-    }
-    .orcado-container h1 {
-        font-size: 2em;
-    }
-    .word-display {
-        font-size: 2em;
-        letter-spacing: 4px;
-    }
-    .game-info {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .guess-controls {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .guess-input {
-        width: 100%;
-        max-width: 150px;
-    }
-    .submit-button {
-        width: 100%;
-        max-width: 150px;
-    }
-}
-
-.back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #f39c12;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    z-index: 10;
-}
-
-.back-button:hover {
-    background-color: #e67e22;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Ejemplo para dashboard.css */
-.sidebar-btn.btn-custom-action {
-    background-color: var(--button-bg-color); /* O el color que desees */
-    color: var(--text-color);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    width: 100%; /* Ajustar al ancho de la sidebar */
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.sidebar-btn.btn-custom-action:hover {
-    background-color: var(--button-hover-bg-color); /* Un color de hover */
-    transform: translateY(-2px);
-}
-
-/* Si quieres un color específico para el ícono de rango/copa */
-.sidebar-btn.btn-custom-action .fa-trophy,
-.sidebar-btn.btn-custom-action .fa-medal {
-    color: #FFD700; /* Color oro, o el que prefieras */
-}
+/* BASE DE ESTILO UNIFICADA PARA TODOS LOS POP-UPS (inspirada en .
