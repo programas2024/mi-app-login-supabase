@@ -785,16 +785,16 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
             .select('*')
             .eq('user_id', userId)
             .order('time_taken_seconds', { ascending: true }) 
-            .limit(1); // Usamos limit(1) en lugar de single() para manejar mejor si hay múltiples entradas (aunque no debería ocurrir con la lógica actual)
+            .limit(1); 
 
         let existingRanking = null;
         if (existingRankings && existingRankings.length > 0) {
             existingRanking = existingRankings[0];
         }
 
-        if (fetchRankingError) { 
+        if (fetchRankingError && fetchRankingError.code !== 'PGRST116') { // PGRST116 means "no rows found"
             console.error("Error fetching existing ranking for user:", fetchRankingError);
-            // Si hay un error al buscar (que no sea "no rows found"), intentamos insertar como nuevo para no perder el resultado
+            // Si hay un error al buscar, intentamos insertar como si fuera nuevo para no perder el resultado
             const { error: insertError } = await supabase
                 .from('sopa_rankings_general')
                 .insert([
@@ -987,6 +987,11 @@ async function showRanking() {
         didOpen: () => {
             // Asegurarse de que el botón de ranking esté visible si se cierra el modal
             rankingButton.style.display = 'flex';
+        }
+    }).then((result) => {
+        // Al cerrar el modal, recargar la página
+        if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
+            location.reload(); // Recarga la página
         }
     });
 }
