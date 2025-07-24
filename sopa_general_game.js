@@ -7,8 +7,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // ====================================================================================
 
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const GRID_SIZE = 12; // Cuadrícula de 12x12
@@ -753,7 +752,7 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
 
 /**
  * Guarda o actualiza el resultado del juego en la tabla de rankings.
- * Prioriza la actualización si el puntaje combinado es mejor, o el tiempo es mejor en caso de empate.
+ * Prioriza la actualización si el tiempo es mejor para usuarios logueados.
  * @param {number} timeTaken - Tiempo en segundos para completar el juego.
  * @param {number} wordsFound - Número de palabras encontradas.
  * @param {number} goldEarned - Oro ganado en esta partida.
@@ -779,15 +778,13 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
             username = profile.username;
         }
 
-        // --- Lógica para usuarios logueados: Actualizar si es mejor puntaje/tiempo ---
-        // Obtener el mejor registro existente para este usuario
+        // --- Lógica para usuarios logueados: Actualizar si es mejor tiempo ---
+        // Obtener el mejor tiempo existente para este usuario
         const { data: existingRankings, error: fetchRankingError } = await supabase
             .from('sopa_rankings_general')
             .select('*')
             .eq('user_id', userId)
-            .order('gold_earned', { ascending: false }) // Ordenar por oro descendente
-            .order('diamonds_earned', { ascending: false }) // Luego por diamantes descendente
-            .order('time_taken_seconds', { ascending: true }) // Finalmente por tiempo ascendente
+            .order('time_taken_seconds', { ascending: true }) 
             .limit(1); 
 
         let existingRanking = null;
@@ -795,8 +792,7 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
             existingRanking = existingRankings[0];
         }
 
-        // Manejo de errores de Supabase que no sean "no rows found"
-        if (fetchRankingError && fetchRankingError.code !== 'PGRST116' && !fetchRankingError.message.includes('rows returned for query')) {
+        if (fetchRankingError && fetchRankingError.code !== 'PGRST116') { // PGRST116 means "no rows found"
             console.error("Error fetching existing ranking for user:", fetchRankingError);
             // Si hay un error al buscar, intentamos insertar como si fuera nuevo para no perder el resultado
             const { error: insertError } = await supabase
@@ -819,21 +815,10 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
             return;
         }
 
-        const newCombinedScore = goldEarned + diamondsEarned;
-        const existingCombinedScore = existingRanking ? (existingRanking.gold_earned + existingRanking.diamonds_earned) : -1; // -1 si no existe
-
-        let shouldUpdate = false;
-        if (!existingRanking) {
-            shouldUpdate = true; // Si no hay registro, siempre insertamos
-        } else if (newCombinedScore > existingCombinedScore) {
-            shouldUpdate = true; // Si el nuevo puntaje combinado es mejor
-        } else if (newCombinedScore === existingCombinedScore && Math.floor(timeTaken) < existingRanking.time_taken_seconds) {
-            shouldUpdate = true; // Si el puntaje es igual pero el tiempo es mejor
-        }
-
-        if (shouldUpdate) {
-            if (existingRanking) {
-                // Actualizar el registro existente
+        if (existingRanking) {
+            // Si ya existe un ranking para este usuario
+            if (Math.floor(timeTaken) < existingRanking.time_taken_seconds) {
+                // Si el nuevo tiempo es mejor, actualizamos el registro existente
                 const { error: updateError } = await supabase
                     .from('sopa_rankings_general')
                     .update({
@@ -855,38 +840,39 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
                         customClass: { popup: 'swal2-custom-game-over' }
                     });
                 } else {
-                    console.log("Game result updated in ranking (better score/time).");
+                    console.log("Game result updated in ranking (better time).");
                 }
             } else {
-                // Insertar un nuevo registro (primera vez para este usuario)
-                const { error: insertError } = await supabase
-                    .from('sopa_rankings_general')
-                    .insert([
-                        {
-                            user_id: userId,
-                            username: username,
-                            time_taken_seconds: Math.floor(timeTaken),
-                            words_found_count: wordsFound,
-                            gold_earned: goldEarned,
-                            diamonds_earned: diamondsEarned
-                        }
-                    ]);
-
-                if (insertError) {
-                    console.error("Error inserting new game result to ranking:", insertError);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al Guardar Ranking',
-                        text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
-                        confirmButtonText: 'Entendido',
-                        customClass: { popup: 'swal2-custom-game-over' }
-                    });
-                } else {
-                    console.log("New game result inserted into ranking.");
-                }
+                // Si el nuevo tiempo no es mejor, no hacemos nada en el ranking
+                console.log("New game time is not better than existing best time. Ranking not updated.");
             }
         } else {
-            console.log("New game score/time is not better than existing best. Ranking not updated.");
+            // Si no existe un ranking para este usuario, insertamos uno nuevo
+            const { error: insertError } = await supabase
+                .from('sopa_rankings_general')
+                .insert([
+                    {
+                        user_id: userId,
+                        username: username,
+                        time_taken_seconds: Math.floor(timeTaken),
+                        words_found_count: wordsFound,
+                        gold_earned: goldEarned,
+                        diamonds_earned: diamondsEarned
+                    }
+                ]);
+
+            if (insertError) {
+                console.error("Error inserting new game result to ranking:", insertError);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al Guardar Ranking',
+                    text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
+                    confirmButtonText: 'Entendido',
+                    customClass: { popup: 'swal2-custom-game-over' }
+                });
+            } else {
+                console.log("New game result inserted into ranking.");
+            }
         }
     } else {
         // --- Lógica para usuarios anónimos: Siempre insertar nuevo ---
@@ -922,6 +908,9 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
     }
 }
 
+/**
+ * Muestra el ranking de la Sopa de Letras General en un modal.
+ */
 /**
  * Muestra el ranking de la Sopa de Letras General en un modal.
  */
