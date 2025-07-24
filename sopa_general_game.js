@@ -911,6 +911,9 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
 /**
  * Muestra el ranking de la Sopa de Letras General en un modal.
  */
+/**
+ * Muestra el ranking de la Sopa de Letras General en un modal.
+ */
 async function showRanking() {
     showLoader('Cargando Ranking...');
     
@@ -921,7 +924,10 @@ async function showRanking() {
     const { data, error } = await supabase
         .from('sopa_rankings_general')
         .select('*')
-        .order('time_taken_seconds', { ascending: true })
+        // ORDENACIÓN CORREGIDA: Primero por oro (desc), luego por diamantes (desc), luego por tiempo (asc)
+        .order('gold_earned', { ascending: false })      // Mayor oro primero
+        .order('diamonds_earned', { ascending: false }) // Luego mayor diamantes
+        .order('time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
         .limit(10); // Mostrar el top 10
 
     hideLoader();
