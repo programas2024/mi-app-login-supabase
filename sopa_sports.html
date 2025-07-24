@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sopa de Letras - Animales</title>
+    <title>Sopa de Letras - Deportes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="orcado.css"> <!-- Puedes usar tu CSS general o uno específico para Sopa -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 
         .sopa-game-container h1 {
             font-family: 'Montserrat', sans-serif;
-            color: #E91E63; /* Color de Sopa de Letras */
+            color: #FFC107; /* Color de Sopa de Letras Deportes */
             font-size: 3em;
             margin-bottom: 10px; /* Ajustado */
             font-weight: 800;
@@ -129,8 +129,8 @@
         }
 
         .grid-cell.selected {
-            background-color: #FFD1DC; /* Rosa claro al seleccionar */
-            color: #E91E63;
+            background-color: #FFF3CD; /* Amarillo claro al seleccionar */
+            color: #FFC107;
         }
 
         .grid-cell.found {
@@ -205,12 +205,12 @@
             width: 100%;
             margin-top: 30px;
             padding: 15px 25px;
-            background: linear-gradient(135deg, #FFD1DC, #FFABAB); /* Degradado de Sopa de Letras */
+            background: linear-gradient(135deg, #FFF3CD, #FFE082); /* Degradado de Sopa de Letras Deportes */
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            color: #E91E63; /* Color de texto principal */
+            color: #FFC107; /* Color de texto principal */
             flex-wrap: wrap; /* Para responsividad */
             gap: 15px;
         }
@@ -222,7 +222,7 @@
             gap: 8px;
         }
         .game-info-bar span i {
-            color: #C2185B; /* Iconos un poco más oscuros */
+            color: #E0A800; /* Iconos un poco más oscuros */
         }
 
         /* Animación para el puntaje (similar a Orcado) */
@@ -270,13 +270,13 @@
         .loader-content h1 {
             font-size: 3em;
             margin-bottom: 20px;
-            color: #ADD8E6;
-            text-shadow: 0 0 10px rgba(173, 216, 230, 0.5);
+            color: #FFD700; /* Oro */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .spinner {
             border: 8px solid rgba(255, 255, 255, 0.3);
-            border-top: 8px solid #7B68EE;
+            border-top: 8px solid #FFC107; /* Amarillo */
             border-radius: 50%;
             width: 70px;
             height: 70px;
@@ -361,7 +361,7 @@
             <i class="fas fa-arrow-left"></i> Volver a Categorías
         </button>
 
-        <h1>Sopa de Letras: Animales</h1>
+        <h1>Sopa de Letras: Deportes</h1>
         <p class="description">¡Encuentra todas las palabras ocultas en la cuadrícula!</p>
 
         <div class="game-info-bar">
@@ -386,6 +386,6 @@
         </div>
     </div>
 
-    <script type="module" src="sopa_animals_game.js"></script>
+    <script type="module" src="sopa_sports_game.js"></script>
 </body>
 </html>
