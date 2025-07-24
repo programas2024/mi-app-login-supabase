@@ -779,17 +779,22 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
         }
 
         // --- Lógica para usuarios logueados: Actualizar si es mejor tiempo ---
-        const { data: existingRanking, error: fetchRankingError } = await supabase
+        // Obtener el mejor tiempo existente para este usuario
+        const { data: existingRankings, error: fetchRankingError } = await supabase
             .from('sopa_rankings_general')
             .select('*')
             .eq('user_id', userId)
-            .order('time_taken_seconds', { ascending: true }) // Obtener el mejor tiempo existente
-            .limit(1)
-            .single();
+            .order('time_taken_seconds', { ascending: true }) 
+            .limit(1); // Usamos limit(1) en lugar de single() para manejar mejor si hay múltiples entradas (aunque no debería ocurrir con la lógica actual)
 
-        if (fetchRankingError && fetchRankingError.code !== 'PGRST116') { // PGRST116 means "no rows found"
+        let existingRanking = null;
+        if (existingRankings && existingRankings.length > 0) {
+            existingRanking = existingRankings[0];
+        }
+
+        if (fetchRankingError) { 
             console.error("Error fetching existing ranking for user:", fetchRankingError);
-            // Si hay un error al buscar, intentamos insertar como si fuera nuevo para no perder el resultado
+            // Si hay un error al buscar (que no sea "no rows found"), intentamos insertar como nuevo para no perder el resultado
             const { error: insertError } = await supabase
                 .from('sopa_rankings_general')
                 .insert([
@@ -813,7 +818,7 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
         if (existingRanking) {
             // Si ya existe un ranking para este usuario
             if (Math.floor(timeTaken) < existingRanking.time_taken_seconds) {
-                // Si el nuevo tiempo es mejor, actualizamos
+                // Si el nuevo tiempo es mejor, actualizamos el registro existente
                 const { error: updateError } = await supabase
                     .from('sopa_rankings_general')
                     .update({
@@ -823,7 +828,7 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
                         diamonds_earned: diamondsEarned,
                         created_at: new Date().toISOString() // Actualizar la fecha de la última mejora
                     })
-                    .eq('id', existingRanking.id); // Usar el ID del registro existente
+                    .eq('id', existingRanking.id); // Usar el ID del registro existente para la actualización
 
                 if (updateError) {
                     console.error("Error updating game result in ranking:", updateError);
