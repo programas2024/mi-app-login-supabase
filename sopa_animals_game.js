@@ -327,7 +327,7 @@ function updateSelectionHighlight() {
     selectedCells = []; // Reiniciar la lista de celdas seleccionadas
     cellsToHighlight.forEach(cellPos => {
         const cellElement = wordGridElement.querySelector(`[data-row="${cellPos.row}"][data-col="${cellPos.col}"]`);
-        if (cellElement && !cellElement.classList.contains('found')) { // No resaltar si ya está encontrada
+        if (cellElement) { // ELIMINADO: !cellElement.classList.contains('found')
             highlightCell(cellElement);
             selectedCells.push(cellPos); // Almacenar las celdas que realmente se resaltaron
         }
