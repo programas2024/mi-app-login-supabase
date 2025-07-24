@@ -535,7 +535,8 @@ function startTimer() {
         updateTimerDisplay();
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            handleGameOver(false, "¡Se acabó el tiempo!");
+            // Llama a handleGameOver sin el parámetro isWin, ya que siempre es false aquí
+            handleGameOver("¡Se acabó el tiempo!"); 
         }
     }, 1000);
 }
@@ -583,20 +584,23 @@ async function checkGameEnd() {
 }
 
 /**
- * Maneja el fin del juego (por tiempo agotado o si el jugador rinde).
- * @param {boolean} isWin - True si el jugador ganó, false si perdió.
- * @param {string} message - Mensaje a mostrar.
+ * Maneja el fin del juego, específicamente cuando el tiempo se agota.
+ * @param {string} message - Mensaje a mostrar (ej. "¡Se acabó el tiempo!").
  */
-async function handleGameOver(isWin, message) {
+async function handleGameOver(message) { // Se eliminó el parámetro isWin, ya que siempre es false aquí
     clearInterval(timerInterval);
+
+    // Otorgar oro y diamantes acumulados por las palabras encontradas hasta ahora
+    await updatePlayerBalance(currentGold, currentDiamonds);
+
     Swal.fire({
-        icon: isWin ? 'success' : 'error',
-        title: isWin ? '¡Juego Terminado!' : '¡Tiempo Agotado!',
-        html: `${message}<br>¡Inténtalo de nuevo para mejorar tu puntaje!`,
+        icon: 'error', // Icono para tiempo agotado/derrota
+        title: '¡Tiempo Agotado!',
+        html: `${message}<br>Has ganado <strong>${currentGold} Oro <i class="fas fa-coins"></i></strong> y <strong>${currentDiamonds} Diamantes <i class="fas fa-gem"></i></strong> por las palabras que encontraste.<br>¡Inténtalo de nuevo para mejorar tu puntaje!`,
         confirmButtonText: 'Jugar de Nuevo',
         customClass: {
             confirmButton: 'swal2-confirm-button',
-            popup: isWin ? 'swal2-custom-final-success' : 'swal2-custom-game-over'
+            popup: 'swal2-custom-game-over' // Estilo para fin de juego
         },
         allowOutsideClick: false
     }).then((result) => {
