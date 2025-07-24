@@ -112,6 +112,17 @@ function animateScore(element) {
     element.classList.add('score-highlight');
 }
 
+/**
+ * Formatea segundos a formato MM:SS.
+ * @param {number} totalSeconds - Segundos totales.
+ * @returns {string} Tiempo formateado.
+ */
+function formatTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
+
 // ====================================================================================
 // LÓGICA DE GENERACIÓN DE LA CUADRÍCULA
 // ====================================================================================
@@ -605,7 +616,7 @@ async function checkGameEnd() {
             icon: 'success',
             title: '¡Sopa de Letras Completada!',
             html: `¡Felicidades! Encontraste todas las palabras.<br>
-                   Tiempo total: <strong>${Math.floor(timeTaken)} segundos</strong><br>
+                   Tiempo total: <strong>${formatTime(timeTaken)}</strong><br>
                    Ganaste <strong>${finalRewards.gold} Oro <i class="fas fa-coins"></i></strong> y <strong>${finalRewards.diamonds} Diamantes <i class="fas fa-gem"></i></strong>.`,
             confirmButtonText: 'Jugar de Nuevo',
             showCancelButton: true,
@@ -637,7 +648,7 @@ async function handleGameOver(message) {
     // Calcular las recompensas finales incluyendo las bonificaciones por cantidad de palabras
     const finalRewards = calculateFinalRewards(foundWordsCount, 0, currentGold, currentDiamonds); // Tiempo restante es 0 si se agota
 
-    await updatePlayerBalance(finalRewards.gold, finalDiamonds.diamonds); // Actualiza el balance del jugador
+    await updatePlayerBalance(finalRewards.gold, finalRewards.diamonds); // Actualiza el balance del jugador
     await saveGameResultToRanking(timeTaken, foundWordsCount, finalRewards.gold, finalRewards.diamonds); // Guarda el resultado en el ranking
 
     Swal.fire({
@@ -766,9 +777,6 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
             username = profile.username;
         }
     } else {
-        // Si no hay usuario logueado, generamos un ID temporal para el ranking
-        // Esto es opcional, podrías dejar user_id como NULL y username como "Anónimo"
-        // Para este caso, mantendremos user_id como NULL si no hay sesión.
         console.warn("No user session found. Saving ranking as Anónimo.");
     }
 
@@ -800,7 +808,7 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
 }
 
 /**
- * Muestra el ranking de la Sopa de Letras General.
+ * Muestra el ranking de la Sopa de Letras General en un modal.
  */
 async function showRanking() {
     showLoader('Cargando Ranking...');
@@ -846,15 +854,11 @@ async function showRanking() {
         rankingHtml += `<tr><td colspan="6">No hay resultados aún. ¡Sé el primero en jugar!</td></tr>`;
     } else {
         data.forEach((entry, index) => {
-            const minutes = Math.floor(entry.time_taken_seconds / 60);
-            const seconds = entry.time_taken_seconds % 60;
-            const timeFormatted = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            
             rankingHtml += `
                 <tr>
                     <td class="rank-number" data-label="#">${index + 1}</td>
                     <td data-label="Jugador">${entry.username || 'Anónimo'}</td>
-                    <td class="time-taken" data-label="Tiempo">${timeFormatted}</td>
+                    <td class="time-taken" data-label="Tiempo">${formatTime(entry.time_taken_seconds)}</td>
                     <td data-label="Palabras">${entry.words_found_count}</td>
                     <td data-label="Oro">${entry.gold_earned} <i class="fas fa-coins"></i></td>
                     <td data-label="Diamantes">${entry.diamonds_earned} <i class="fas fa-gem"></i></td>
@@ -875,10 +879,10 @@ async function showRanking() {
         showConfirmButton: true,
         confirmButtonText: 'Cerrar',
         customClass: {
-            popup: 'swal2-custom-ranking-modal',
+            popup: 'swal2-custom-ranking-modal', // Clase CSS personalizada para el modal
             confirmButton: 'swal2-confirm-button'
         },
-        width: '80%',
+        width: '80%', // Ancho del modal
         didOpen: () => {
             // Asegurarse de que el botón de ranking esté visible si se cierra el modal
             rankingButton.style.display = 'flex';

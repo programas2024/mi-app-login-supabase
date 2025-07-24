@@ -60,6 +60,7 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
             justify-content: center;
+            margin-bottom: 40px; /* Espacio para el nuevo botón */
         }
 
         .category-card {
@@ -186,6 +187,43 @@
         .category-card.general-sopa button { background-color: #8A2BE2; }
         .category-card.general-sopa button:hover { background-color: #6A0DAD; }
 
+        /* Estilos para el nuevo botón de ranking en la página de categorías */
+        .general-buttons-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .general-ranking-button {
+            background-color: #8A2BE2; /* Morado, color de la categoría General */
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            text-decoration: none; /* Para que parezca botón a pesar de ser <a> */
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .general-ranking-button:hover {
+            background-color: #6A0DAD; /* Tono más oscuro en hover */
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        }
+
+        .general-ranking-button .fas {
+            font-size: 1.2em;
+        }
+
 
         /* Botón de regreso */
         .back-button {
@@ -242,6 +280,10 @@
             .card-description {
                 font-size: 0.9em;
             }
+            .general-ranking-button {
+                font-size: 1.2em;
+                padding: 12px 25px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -279,6 +321,10 @@
                 padding: 8px 15px;
                 font-size: 0.9em;
             }
+            .general-ranking-button {
+                font-size: 1.1em;
+                padding: 10px 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -306,6 +352,10 @@
             }
             .card-description {
                 font-size: 0.8em;
+            }
+            .general-ranking-button {
+                font-size: 1em;
+                padding: 8px 18px;
             }
         }
     </style>
@@ -358,6 +408,12 @@
                 <h2 class="card-title">General</h2>
                 <p class="card-description">Una mezcla de palabras de todas las categorías. ¡El desafío definitivo!</p>
                 <button>Jugar Ahora</button>
+            </a>
+        </div>
+
+        <div class="general-buttons-container">
+            <a href="ranking_general.html" class="general-ranking-button">
+                <i class="fas fa-medal"></i> Ver Ranking General
             </a>
         </div>
     </div>

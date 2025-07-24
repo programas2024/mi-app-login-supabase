@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Sopa de Letras General</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" type="module"></script> 
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Alinea al inicio */
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .ranking-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 90%;
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .ranking-container h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #8A2BE2; /* Morado para el ranking general */
+            font-size: 3.5em;
+            margin-bottom: 25px;
+            font-weight: 900;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ranking-table-wrapper {
+            max-height: 600px; /* Altura máxima para la tabla con scroll */
+            overflow-y: auto;
+            margin-top: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            background-color: #f8faff;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Poppins', sans-serif;
+            min-width: 600px; /* Asegura que la tabla no se haga demasiado pequeña */
+        }
+
+        .ranking-table th, .ranking-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .ranking-table th {
+            background-color: #F0F8FF; /* Azul claro para encabezado */
+            color: #555;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 1em;
+            position: sticky;
+            top: 0;
+            z-index: 2; /* Asegura que el encabezado se quede arriba */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra para el sticky header */
+        }
+
+        .ranking-table tbody tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        .ranking-table tbody tr:hover {
+            background-color: #eef5ff; /* Un azul muy claro al pasar el ratón */
+        }
+
+        .ranking-table td {
+            color: #444;
+            font-size: 1em;
+        }
+
+        .ranking-table td.rank-number {
+            font-weight: 800;
+            color: #8A2BE2; /* Morado */
+            font-size: 1.1em;
+        }
+
+        .ranking-table td.time-taken {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .ranking-table td .fas {
+            margin-left: 5px;
+            color: #FFD700; /* Oro */
+        }
+        .ranking-table td .fa-gem {
+            color: #00BFFF; /* Azul diamante */
+        }
+
+        /* Loader */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: #fff;
+            font-size: 1.4em;
+            transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: #E0E0E0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .loader-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #BA55D3; /* Orquídea */
+            text-shadow: 0 0 10px rgba(186, 85, 211, 0.5);
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #8A2BE2; /* Azul violeta */
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-button-ranking {
+            margin-top: 30px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .back-button-ranking:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive para la tabla */
+        @media (max-width: 600px) {
+            .ranking-table {
+                min-width: unset; /* Elimina el min-width en móviles */
+            }
+            .ranking-table thead {
+                display: none; /* Oculta el encabezado en pantallas pequeñas */
+            }
+            .ranking-table, .ranking-table tbody, .ranking-table tr, .ranking-table td {
+                display: block;
+                width: 100%;
+            }
+            .ranking-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+            .ranking-table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+            .ranking-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: calc(50% - 30px);
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 700;
+                color: #777;
+            }
+            .ranking-container {
+                padding: 20px;
+            }
+            .ranking-container h1 {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loader-wrapper">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h1>Cargando Ranking...</h1>
+        </div>
+    </div>
+
+    <div class="ranking-container">
+        <h1><i class="fas fa-trophy"></i> Ranking Sopa de Letras General</h1>
+        <div class="ranking-table-wrapper">
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jugador</th>
+                        <th>Tiempo</th>
+                        <th>Palabras</th>
+                        <th>Oro</th>
+                        <th>Diamantes</th>
+                    </tr>
+                </thead>
+                <tbody id="ranking-table-body">
+                    <!-- Los datos del ranking se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+        <a href="games2.html" class="back-button-ranking">
+            <i class="fas fa-arrow-left"></i> Volver a Categorías
+        </a>
+    </div>
+
+    <script type="module" src="ranking_general_script.js"></script>
+</body>
+</html>

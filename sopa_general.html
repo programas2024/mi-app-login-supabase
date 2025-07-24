@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -289,7 +289,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Estilos para el ranking */
+        /* Estilos para el botón de ranking dentro del juego */
         #ranking-button {
             background-color: #8A2BE2; /* Morado */
             color: white;
@@ -313,6 +313,30 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
+        /* Estilos para el modal de SweetAlert2 (ranking) */
+        .swal2-custom-ranking-modal {
+            background-color: #ffffff !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+            padding: 30px !important;
+            max-width: 900px !important;
+            width: 90% !important;
+        }
+
+        .swal2-custom-ranking-modal .swal2-title {
+            font-family: 'Montserrat', sans-serif !important;
+            color: #8A2BE2 !important;
+            font-size: 2.5em !important;
+            font-weight: 900 !important;
+            margin-bottom: 25px !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .swal2-custom-ranking-modal .swal2-html-container {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
         .ranking-modal-content {
             text-align: center;
         }
@@ -320,7 +344,7 @@
         .ranking-modal-content h2 {
             font-family: 'Montserrat', sans-serif;
             color: #8A2BE2;
-            font-size: 2.5em;
+            font-size: 2.5em; /* Ajustado para el modal */
             margin-bottom: 25px;
             font-weight: 800;
         }
@@ -329,8 +353,9 @@
             max-height: 400px; /* Altura máxima para scroll */
             overflow-y: auto;
             margin-bottom: 20px;
-            border: 1px solid #eee;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
+            background-color: #f8faff; /* Fondo para el contenedor de la tabla */
         }
 
         .ranking-table {
@@ -344,10 +369,11 @@
             padding: 12px 15px;
             border-bottom: 1px solid #eee;
             text-align: left;
+            vertical-align: middle;
         }
 
         .ranking-table th {
-            background-color: #f8f8f8;
+            background-color: #F0F8FF; /* Azul claro para encabezado */
             color: #555;
             font-weight: 700;
             text-transform: uppercase;
@@ -355,6 +381,7 @@
             position: sticky;
             top: 0;
             z-index: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra ligera */
         }
 
         .ranking-table tbody tr:nth-child(even) {
@@ -362,7 +389,7 @@
         }
 
         .ranking-table tbody tr:hover {
-            background-color: #f0f0f0;
+            background-color: #eef5ff; /* Un azul muy claro al pasar el ratón */
         }
 
         .ranking-table td {
@@ -372,16 +399,96 @@
 
         .ranking-table td.rank-number {
             font-weight: 700;
-            color: #8A2BE2;
+            color: #8A2BE2; /* Morado */
         }
 
         .ranking-table td.time-taken {
             font-weight: 600;
             color: #333;
         }
+        .ranking-table td .fas {
+            margin-left: 5px;
+            color: #FFD700; /* Oro */
+        }
+        .ranking-table td .fa-gem {
+            color: #00BFFF; /* Azul diamante */
+        }
 
-        /* Responsive para la tabla */
-        @media (max-width: 600px) {
+
+        .swal2-custom-ranking-modal .swal2-actions {
+            margin-top: 30px !important;
+        }
+        .swal2-custom-ranking-modal .swal2-confirm-button,
+        .swal2-custom-ranking-modal .swal2-cancel-button {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 1.1em !important;
+            padding: 10px 25px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease !important;
+        }
+        .swal2-custom-ranking-modal .swal2-confirm-button {
+            background-color: #4CAF50 !important; /* Verde para "Jugar de Nuevo" */
+        }
+        .swal2-custom-ranking-modal .swal2-confirm-button:hover {
+            background-color: #388E3C !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important;
+        }
+        .swal2-custom-ranking-modal .swal2-cancel-button {
+            background-color: #8A2BE2 !important; /* Morado para "Ver Ranking" */
+            margin-left: 15px !important;
+        }
+        .swal2-custom-ranking-modal .swal2-cancel-button:hover {
+            background-color: #6A0DAD !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important;
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sopa-game-container {
+                padding: 20px;
+                width: 95%;
+            }
+            .sopa-game-container h1 {
+                font-size: 2.2em;
+            }
+            .sopa-game-container p.description {
+                font-size: 1em;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+            .game-area-wrapper {
+                flex-direction: column; /* Apila la cuadrícula y la lista en móviles */
+                gap: 20px;
+            }
+            #word-grid-container {
+                max-width: 100%; /* Ocupa todo el ancho disponible */
+                padding: 10px;
+            }
+            #word-list-container {
+                width: 100%; /* Ocupa todo el ancho disponible */
+                padding: 15px;
+            }
+            #word-list li {
+                min-width: unset; /* Permite que el ancho se ajuste al contenido */
+                flex-grow: 1; /* Distribuye el espacio equitativamente */
+            }
+            .grid-cell {
+                font-size: 0.9em; /* Reduce el tamaño de la letra en celdas */
+            }
+            .game-info-bar span {
+                font-size: 1.2em;
+            }
+
+            /* Responsive para la tabla del modal */
             .ranking-table thead {
                 display: none; /* Oculta el encabezado en pantallas pequeñas */
             }
@@ -410,6 +517,29 @@
                 text-align: left;
                 font-weight: 700;
                 color: #777;
+            }
+            .swal2-custom-ranking-modal .swal2-title {
+                font-size: 1.8em !important;
+            }
+            .swal2-custom-ranking-modal .swal2-confirm-button,
+            .swal2-custom-ranking-modal .swal2-cancel-button {
+                font-size: 1em !important;
+                padding: 8px 18px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sopa-game-container {
+                padding: 15px;
+            }
+            .sopa-game-container h1 {
+                font-size: 1.8em;
+            }
+            .game-info-bar span {
+                font-size: 1em;
+            }
+            .grid-cell {
+                font-size: 0.8em;
             }
         }
     </style>
