@@ -1,4 +1,4 @@
-// script.js
+// script.js - Lógica de Autenticación y Perfil (para index.html, dashboard.html, profile.html)
 
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
@@ -9,45 +9,25 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- 2. Referencias a Elementos HTML (CONDICIONALES para todas las páginas) ---
-// Elementos de autenticación (index.html)
-const initialOptionsDiv = document.getElementById('initial-options');
-const signupFormDiv = document.getElementById('signup-form');
-const loginFormDiv = document.getElementById('login-form');
-const signupEmail = document.getElementById('signup-email');
-const signupPassword = document.getElementById('signup-password');
-const registerBtn = document.getElementById('register-btn');
-const loginEmail = document.getElementById('login-email');
-const loginPassword = document.getElementById('login-password');
-const loginSubmitBtn = document.getElementById('login-submit-btn'); // CORRECCIÓN APLICADA AQUÍ
-const showSignupBtn = document.getElementById('show-signup-btn');
-const showLoginBtn = document.getElementById('show-login-btn');
-const backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
-const backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
-const forgotPasswordLink = document.getElementById('forgot-password');
+// --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
+// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
+let initialOptionsDiv, signupFormDiv, loginFormDiv;
+let signupEmail, signupPassword, registerBtn;
+let loginEmail, loginPassword, loginSubmitBtn;
+let showSignupBtn, showLoginBtn;
+let backToOptionsFromSignup, backToOptionsFromLogin;
+let forgotPasswordLink;
 
-// Elementos del Dashboard (dashboard.html)
-const dashboardDiv = document.getElementById('dashboard');
-const userEmailDashboardSpan = document.getElementById('user-email'); // Usado en dashboard
-const goldDisplayDashboard = document.getElementById('gold-display');
-const diamondsDisplayDashboard = document.getElementById('diamonds-display');
-const profileBtnDashboard = document.getElementById('profile-btn');
-const logoutBtnDashboard = document.getElementById('logout-btn');
+let dashboardDiv;
+let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard;
+let profileBtnDashboard, logoutBtnDashboard;
 
-// Elementos del Perfil (profile.html)
-const profileCard = document.getElementById('profile-card'); // Contenedor principal del perfil
-const userEmailProfileSpan = document.getElementById('user-email-profile'); // Usado en profile
-const usernameInputProfile = document.getElementById('edit-username');
-const countryInputProfile = document.getElementById('edit-country');
-const saveProfileBtn = document.getElementById('save-profile-btn');
-const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-const configureBtn = document.getElementById('configure-btn'); // Nuevo botón de configuración
-const goldDisplayProfile = document.getElementById('gold-display-profile');
-const diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+let profileCard;
+let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
+let saveProfileBtn, backToDashboardBtn, configureBtn;
+let goldDisplayProfile, diamondsDisplayProfile;
 
-
-const loaderDiv = document.getElementById('loader'); // Loader global
-const loaderText = loaderDiv ? loaderDiv.querySelector('p') : null; // Aseguramos que se obtenga el <p>
+let loaderDiv, loaderText;
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
@@ -191,35 +171,41 @@ async function loadUserProfile(userId) {
 
         if (error) {
             console.error('Error al cargar perfil:', error);
-            // No mostrar un error Swall si es solo que el perfil no existe, se creará uno.
-            // showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil. Inténtalo de nuevo.');
-
+            
+            // Si el perfil no se encuentra (PGRST116), intenta crearlo
             if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
                 console.log('Perfil no encontrado, intentando crear uno básico.');
                 const { error: insertError } = await supabase
                     .from('profiles')
                     .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
+                
                 if (insertError) {
                     console.error('Error al crear perfil básico:', insertError);
-                    showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta.');
+                    // Si el error es un conflicto (409), significa que el perfil ya existe (ej. creado por otra sesión)
+                    // En este caso, intenta cargar de nuevo el perfil en lugar de mostrar un error crítico.
+                    if (insertError.code === '23505') { // PostgreSQL unique_violation (código para 409 Conflict)
+                        console.warn('Conflicto al crear perfil (ya existe). Intentando cargar de nuevo.');
+                        await loadUserProfile(userId); // Recargar el perfil
+                        return; // Salir para evitar la ejecución del resto del bloque
+                    } else {
+                        showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta: ' + insertError.message);
+                    }
                 } else {
                     showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
-                    
-                    // Actualizamos manualmente los campos con los datos por defecto para evitar otra carga
-                    if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
-                    if (usernameInputProfile) usernameInputProfile.value = 'Nuevo Jugador';
-                    if (countryInputProfile) countryInputProfile.value = 'Desconocido';
-                    if (goldDisplayProfile) goldDisplayProfile.textContent = '0';
-                    if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = '0';
-
-                    // Si estamos en dashboard, actualizamos también allí
-                    if (goldDisplayDashboard) goldDisplayDashboard.textContent = '0';
-                    if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = '0';
+                    // No es necesario recargar, los datos ya se establecieron en la inserción
+                    // y los campos se actualizarán en el 'finally' o con la siguiente carga.
                 }
             } else { // Si es otro tipo de error al cargar el perfil
-                 showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
+                showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
-        } else if (data) {
+        } 
+        
+        // Si no hubo error en la carga inicial (data existe) O si se creó el perfil exitosamente
+        // (en cuyo caso 'data' podría ser null si no se hizo un select después del insert,
+        // pero se asume que si no hubo insertError, el perfil está listo para ser cargado en la siguiente iteración
+        // o ya se cargó si el 409 lo disparó).
+        // Para simplificar, si 'data' existe, actualizamos los displays.
+        if (data) {
             // Actualizar datos en el dashboard (si es la página actual)
             if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
             if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
@@ -237,7 +223,7 @@ async function loadUserProfile(userId) {
         showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
     } finally {
         hideLoader(); // Esto se ejecutará SIEMPRE.
-        // Aseguramos que la tarjeta de perfil sea visible DESPUÉS de ocultar el loader
+        // Aseguramos que la tarjeta de perfil/dashboard sea visible DESPUÉS de ocultar el loader
         if (profileCard) {
             profileCard.classList.remove('dashboard-hidden');
         }
@@ -323,13 +309,10 @@ async function showConfigureOptions() {
     Swal.fire({
         title: '¿Qué deseas hacer?',
         icon: 'question',
-        // Cambios aquí:
-        showCloseButton: true, // Habilita el botón de cerrar (la 'X')
-        showCancelButton: false, // Deshabilita el botón de "Cancelar" o "Cerrar"
-        // cancelButtonText: 'Cerrar', // Ya no es necesario
-        
-        confirmButtonText: 'Ok', // Este botón será invisible, solo para la estructura
-        showConfirmButton: false, // Escondemos el botón principal
+        showCloseButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Ok', 
+        showConfirmButton: false,
         allowOutsideClick: true,
         html: `
             <div class="swal-custom-buttons-container">
@@ -338,21 +321,20 @@ async function showConfigureOptions() {
             </div>
         `,
         didOpen: () => {
-            // Añadir event listeners a los botones personalizados dentro del SweetAlert
             document.getElementById('swal-give-gold').addEventListener('click', async () => {
-                Swal.close(); // Cerrar el modal antes de ejecutar la acción
+                Swal.close();
                 await giveGold();
             });
             document.getElementById('swal-logout').addEventListener('click', async () => {
-                Swal.close(); // Cerrar el modal antes de ejecutar la acción
+                Swal.close();
                 await signOut();
             });
         },
         customClass: {
             popup: 'swal2-modern',
-            htmlContainer: 'swal2-html-container-no-padding' // Clases para personalizar el SweetAlert
+            htmlContainer: 'swal2-html-container-no-padding'
         },
-        buttonsStyling: false // Deshabilita los estilos por defecto de SweetAlert2 en los botones
+        buttonsStyling: false
     });
 }
 
@@ -360,9 +342,29 @@ async function showConfigureOptions() {
 document.addEventListener('DOMContentLoaded', async () => {
     const currentPage = window.location.pathname.split('/').pop();
 
+    // --- Inicializar referencias a elementos del DOM globales ---
+    loaderDiv = document.getElementById('loader');
+    loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
+
     // --- Lógica para index.html ---
     if (currentPage === 'index.html' || currentPage === '') {
         console.log('Cargando lógica de index.html');
+
+        // Asignar referencias a elementos de index.html
+        initialOptionsDiv = document.getElementById('initial-options');
+        signupFormDiv = document.getElementById('signup-form');
+        loginFormDiv = document.getElementById('login-form');
+        signupEmail = document.getElementById('signup-email');
+        signupPassword = document.getElementById('signup-password');
+        registerBtn = document.getElementById('register-btn');
+        loginEmail = document.getElementById('login-email');
+        loginPassword = document.getElementById('login-password');
+        loginSubmitBtn = document.getElementById('login-submit-btn');
+        showSignupBtn = document.getElementById('show-signup-btn');
+        showLoginBtn = document.getElementById('show-login-btn');
+        backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
+        backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
+        forgotPasswordLink = document.getElementById('forgot-password');
 
         // Primero, verifica si el usuario ya está autenticado
         const { data: { user } } = await supabase.auth.getUser();
@@ -417,9 +419,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
-            // Opcional: Para manejar cambios de estado de sesión *después* de que la página ya cargó en index.html
-            // y si por alguna razón el usuario se loguea en otra pestaña o su sesión se activa.
-            // Es menos crítico aquí ya que la redirección inicial ya lo maneja.
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log('Auth event in index.html:', event, 'Session:', session);
                 if (session && session.user && currentPage === 'index.html') {
@@ -432,6 +431,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Lógica para dashboard.html y profile.html ---
     else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
         console.log(`Cargando lógica de ${currentPage}`);
+
+        // Asignar referencias a elementos del dashboard/perfil
+        dashboardDiv = document.getElementById('dashboard');
+        userEmailDashboardSpan = document.getElementById('user-email');
+        goldDisplayDashboard = document.getElementById('gold-display');
+        diamondsDisplayDashboard = document.getElementById('diamonds-display');
+        profileBtnDashboard = document.getElementById('profile-btn');
+        logoutBtnDashboard = document.getElementById('logout-btn');
+
+        profileCard = document.getElementById('profile-card');
+        userEmailProfileSpan = document.getElementById('user-email-profile');
+        usernameInputProfile = document.getElementById('edit-username');
+        countryInputProfile = document.getElementById('edit-country');
+        saveProfileBtn = document.getElementById('save-profile-btn');
+        backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        configureBtn = document.getElementById('configure-btn');
+        goldDisplayProfile = document.getElementById('gold-display-profile');
+        diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+
 
         // Siempre verifica la sesión al cargar estas páginas
         const { data: { user } } = await supabase.auth.getUser();
@@ -470,373 +488,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.href = 'index.html';
         }
     }
+    // --- Lógica para páginas de juego (si este script se carga allí) ---
+    // NOTA: Idealmente, las páginas de juego solo cargarían sus propios scripts específicos (ej. orcado_vs_algo_game.js).
+    // Si este script se carga en una página de juego, la lógica de juego que estaba aquí
+    // causaría conflictos. La he ELIMINADO de este script.
+    // Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
+    // Solo deberían cargar sus respectivos 'orcado_THEME_specific_game.js'
 });
-
-// ====================================================================================
-// CONFIGURACIÓN INICIAL DEL JUEGO
-// Contiene las palabras para cada nivel y las configuraciones de la horca.
-// ====================================================================================
-const wordLists = {
-    1: ["PROGRAMACION", "JAVASCRIPT", "DESARROLLO", "WEB", "COMPUTADORA", "ALGORITMO", "TECNOLOGIA", "INTERNET", "NAVEGADOR", "APLICACION", "SERVIDOR", "DATABASE"],
-    2: ["INTELIGENCIA", "CRIPTOGRAFIA", "NEURONAL", "BIGDATA", "CIBERSEGURIDAD", "REALIDAD", "VIRTUAL", "AUMENTADA", "ROBOTICA", "AUTOMATIZACION", "INNOVACION"],
-    3: ["QUANTUM", "BIOMETRIA", "NANOTECNOLOGIA", "HOLOGRAMA", "SISTEMAS", "COMPLEJOS", "INFRAESTRUCTURA", "MICROSERVICIO", "CONTENEDORES", "DESPLIEGUE", "INTEGRACION"]
-};
-
-const hangmanParts = [
-    'hangman-head', 'hangman-body', 'hangman-arm-left', 'hangman-arm-right', 'hangman-leg-left', 'hangman-leg-right'
-];
-
-// ====================================================================================
-// ESTADO ACTUAL DEL JUEGO
-// Variables que controlan el progreso del jugador y la partida.
-// ====================================================================================
-let currentLevel = 1;         // Nivel actual del juego
-let selectedWord = "";        // Palabra seleccionada para adivinar
-let guessedWord = [];         // Letras adivinadas de la palabra
-let wrongGuesses = 0;         // Número de intentos errados
-let lettersUsed = [];         // Letras ya intentadas por el jugador
-let timerInterval;            // Referencia al intervalo del temporizador
-let timeLeft = 120;           // Tiempo restante en segundos (2 minutos)
-const maxWrongGuesses = 6;    // Máximo de errores permitidos antes de Game Over
-
-// Requisitos y recompensas por nivel
-const levelRequirements = {
-    1: { maxErrors: 5, reward: { gold: 5, diamonds: 0 } },
-    2: { maxErrors: 3, reward: { gold: 10, diamonds: 0 } },
-    3: { maxErrors: 2, reward: { gold: 20, diamonds: 30 } } // Recompensa final del juego
-};
-
-// ====================================================================================
-// ELEMENTOS DEL DOM
-// Referencias a los elementos HTML para interactuar con la interfaz.
-// ====================================================================================
-const wordDisplay = document.getElementById('word-display');
-const guessInput = document.getElementById('guess-input');
-const submitButton = document.getElementById('submit-guess');
-const messageDisplay = document.getElementById('message');
-const levelDisplay = document.getElementById('level-display');
-const wrongGuessesDisplay = document.getElementById('wrong-guesses-display');
-const timerDisplay = document.getElementById('timer-display');
-const lettersUsedDisplay = document.getElementById('letters-used-display');
-const loaderWrapper = document.getElementById('loader-wrapper'); // <--- NUEVA REFERENCIA
-
-// ====================================================================================
-// FUNCIONES PRINCIPALES DEL JUEGO
-// Lógica para inicializar, actualizar y gestionar la partida.
-// ====================================================================================
-
-/**
- * Inicializa o reinicia el juego para un nivel específico.
- * @param {number} level - El nivel al que se desea inicializar el juego. Por defecto es 1.
- */
-async function initializeGame(level = 1) {
-    currentLevel = level;
-    // ... (tu lógica existente de inicialización del juego) ...
-    if (!wordLists[currentLevel] || wordLists[currentLevel].length === 0) {
-        console.error(`Error: No words found for level ${currentLevel}. Resetting to level 1.`);
-        currentLevel = 1;
-    }
-
-    selectedWord = wordLists[currentLevel][Math.floor(Math.random() * wordLists[currentLevel].length)].toUpperCase();
-    guessedWord = Array(selectedWord.length).fill('_');
-    wrongGuesses = 0;
-    lettersUsed = [];
-    timeLeft = 120;
-    messageDisplay.textContent = "";
-    guessInput.value = "";
-    
-    updateDisplay();
-    updateHangmanDrawing();
-    startTimer();
-    guessInput.focus();
-    
-    levelDisplay.textContent = currentLevel;
-    wrongGuessesDisplay.textContent = wrongGuesses;
-    lettersUsedDisplay.textContent = '';
-}
-
-/**
- * Actualiza la visualización de la palabra, errores y letras usadas en la interfaz.
- */
-function updateDisplay() {
-    wordDisplay.textContent = guessedWord.join(' ');
-    wrongGuessesDisplay.textContent = wrongGuesses;
-    // Muestra las letras usadas, destacando las incorrectas.
-    lettersUsedDisplay.innerHTML = lettersUsed.map(letter => {
-        return selectedWord.includes(letter) ? `<span>${letter}</span>` : `<strong style="color:#B22222;">${letter}</strong>`; // Rojo suave para errores
-    }).join(', ');
-}
-
-/**
- * Muestra u oculta las partes del dibujo del ahorcado según el número de errores.
- */
-function updateHangmanDrawing() {
-    hangmanParts.forEach((partId, index) => {
-        const partElement = document.getElementById(partId);
-        if (partElement) {
-            if (index < wrongGuesses) {
-                partElement.classList.add('show-part'); // Muestra la parte si el error es suficiente
-            } else {
-                partElement.classList.remove('show-part'); // Oculta la parte
-            }
-        }
-    });
-}
-
-/**
- * Inicia o reinicia el temporizador del juego.
- */
-function startTimer() {
-    clearInterval(timerInterval); // Limpia cualquier temporizador existente
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        timerDisplay.textContent = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            handleGameOver(false, "¡Se acabó el tiempo! La palabra era: " + selectedWord);
-        }
-    }, 1000); // Actualiza cada segundo
-}
-
-/**
- * Actualiza el balance de oro y diamantes del jugador en la base de datos (Supabase).
- * @param {number} gold - Cantidad de oro a añadir.
- * @param {number} diamonds - Cantidad de diamantes a añadir.
- */
-async function updatePlayerBalance(gold = 0, diamonds = 0) {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    const user = session?.user;
-
-    if (sessionError) {
-        console.error("Error getting session:", sessionError);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de Sesión',
-            text: 'Hubo un problema al verificar tu sesión. Por favor, intenta de nuevo.',
-            confirmButtonText: 'Entendido',
-            customClass: { popup: 'swal2-custom-game-over' } // Usa el estilo de Game Over para errores
-        });
-        return;
-    }
-
-    if (!user) {
-        console.warn("No user logged in. Cannot update balance.");
-        Swal.fire({
-            icon: 'info',
-            title: 'Inicia Sesión para Guardar',
-            text: 'Inicia sesión para que tus recompensas se guarden.',
-            confirmButtonText: 'Entendido',
-            customClass: { popup: 'swal2-custom-warning' } // Usa el estilo de advertencia
-        });
-        return;
-    }
-
-    // Intenta obtener el perfil actual del usuario.
-    const { data: currentProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('gold, diamonds')
-        .eq('id', user.id)
-        .single();
-
-    if (fetchError) {
-        console.error("Error fetching current profile:", fetchError);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error al Obtener Perfil',
-            text: 'Hubo un problema al cargar tu perfil de jugador. Por favor, contacta soporte.',
-            confirmButtonText: 'Entendido',
-            customClass: { popup: 'swal2-custom-game-over' }
-        });
-        return;
-    }
-
-    const newGold = currentProfile.gold + gold;
-    const newDiamonds = currentProfile.diamonds + diamonds;
-
-    // Actualiza el perfil con los nuevos valores.
-    const { data, error } = await supabase
-        .from('profiles')
-        .update({ gold: newGold, diamonds: newDiamonds })
-        .eq('id', user.id);
-
-    if (error) {
-        console.error("Error updating player balance:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error al Guardar Recompensa',
-            text: 'Hubo un problema al guardar tus recompensas. Por favor, intenta de nuevo.',
-            confirmButtonText: 'Entendido',
-            customClass: { popup: 'swal2-custom-game-over' }
-        });
-    } else {
-        console.log(`Balance actualizado: +${gold} Oro, +${diamonds} Diamantes. Nuevo total: ${newGold} Oro, ${newDiamonds} Diamantes.`);
-    }
-}
-
-/**
- * Procesa la letra ingresada por el jugador.
- */
-async function checkGuess() {
-    const guess = guessInput.value.toUpperCase();
-    guessInput.value = ""; // Limpia el input
-
-    // Validaciones de entrada
-    if (guess.length !== 1 || !/[A-Z]/.test(guess)) {
-        messageDisplay.textContent = "Por favor, ingresa una sola letra válida.";
-        return;
-    }
-
-    if (lettersUsed.includes(guess)) {
-        messageDisplay.textContent = `Ya adivinaste la letra '${guess}'. Intenta con otra.`;
-        return;
-    }
-
-    lettersUsed.push(guess); // Añade la letra a las usadas
-
-    if (selectedWord.includes(guess)) {
-        // La letra es correcta, actualiza la palabra adivinada
-        for (let i = 0; i < selectedWord.length; i++) {
-            if (selectedWord[i] === guess) {
-                guessedWord[i] = guess;
-            }
-        }
-        messageDisplay.textContent = `¡Bien! La letra '${guess}' es correcta.`;
-    } else {
-        // La letra es incorrecta
-        wrongGuesses++;
-        messageDisplay.textContent = `Incorrecto. Te quedan ${maxWrongGuesses - wrongGuesses} intentos.`;
-        updateHangmanDrawing(); // Dibuja una parte más del ahorcado
-    }
-
-    updateDisplay(); // Actualiza la interfaz
-    await checkGameStatus(); // Verifica el estado del juego (victoria/derrota)
-}
-
-/**
- * Verifica si el juego ha terminado (victoria o derrota) y maneja las recompensas/transiciones.
- */
-async function checkGameStatus() {
-    // Si la palabra ha sido completamente adivinada
-    if (guessedWord.join('') === selectedWord) {
-        clearInterval(timerInterval); // Detiene el temporizador
-
-        const goldPerWord = 10;
-        await updatePlayerBalance(goldPerWord, 0); // Otorga oro por adivinar la palabra
-
-        const errorsAllowed = levelRequirements[currentLevel].maxErrors;
-
-        // Si el jugador cumple con el requisito de errores para avanzar/ganar
-        if (wrongGuesses <= errorsAllowed) {
-            // Si hay más niveles
-            if (currentLevel < Object.keys(wordLists).length) {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Nivel Completado!',
-                    html: `¡Perfecto! Has adivinado la palabra **"${selectedWord}"** con ${wrongGuesses} errores.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por esta palabra!<br>¡Pasas al Nivel ${currentLevel + 1}!`,
-                    confirmButtonText: 'Siguiente Nivel',
-                    customClass: {
-                        confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-level-up' // Clase personalizada para pop-up de nivel completado
-                    },
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        initializeGame(currentLevel + 1); // Carga el siguiente nivel
-                    }
-                });
-            } else {
-                // El jugador ha completado todos los niveles (Maestro de Ahorcado)
-                const finalReward = levelRequirements[currentLevel].reward;
-                await updatePlayerBalance(finalReward.gold, finalReward.diamonds); // Otorga la recompensa final
-
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡FELICITACIONES, ERES EL MAESTRO DE AHORCADO!',
-                    html: `¡Lo lograste! Has superado todos los niveles.<br>¡Ganaste **${goldPerWord} Oro <i class="fas fa-coins"></i>** por la última palabra!<br>¡Como recompensa final, has ganado <strong>${finalReward.diamonds} Diamantes <i class="fas fa-gem"></i></strong> y <strong>${finalReward.gold} Oro <i class="fas fa-coins"></i></strong> adicionales!`,
-                    confirmButtonText: '¡A Jugar de Nuevo!',
-                    customClass: {
-                        confirmButton: 'swal2-confirm-button',
-                        popup: 'swal2-custom-final-success' // Clase personalizada para pop-up de éxito final
-                    },
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        initializeGame(); // Reinicia el juego al nivel 1
-                    }
-                });
-            }
-        } else {
-            // La palabra fue adivinada, pero con demasiados errores para avanzar de nivel
-            Swal.fire({
-                icon: 'warning',
-                title: 'Palabra Adivinada, ¡pero cuidado!',
-                html: `Adivinaste la palabra **"${selectedWord}"**, pero tuviste ${wrongGuesses} errores. Necesitabas ${errorsAllowed} para avanzar al siguiente nivel. <br>Por tu esfuerzo, ganas <strong>${goldPerWord} Oro <i class="fas fa-coins"></i></strong>.`,
-                confirmButtonText: 'Volver a Intentar',
-                customClass: {
-                    confirmButton: 'swal2-confirm-button',
-                    popup: 'swal2-custom-warning' // Clase personalizada para pop-up de advertencia
-                },
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    initializeGame(); // Reinicia el juego al nivel 1
-                }
-            });
-        }
-    } else if (wrongGuesses >= maxWrongGuesses) {
-        // El jugador ha agotado todos sus intentos
-        handleGameOver(false, `¡Has superado los ${maxWrongGuesses} errores! La palabra era: **${selectedWord}**`);
-    }
-}
-
-/**
- * Maneja el fin del juego, mostrando un mensaje de victoria o derrota.
- * @param {boolean} isWin - True si el jugador ganó, false si perdió.
- * @param {string} message - Mensaje a mostrar al jugador.
- */
-async function handleGameOver(isWin, message) {
-    clearInterval(timerInterval); // Detiene el temporizador
-    Swal.fire({
-        icon: isWin ? 'success' : 'error',
-        title: isWin ? '¡Ganaste!' : '¡Game Over!',
-        html: message,
-        confirmButtonText: 'Intentar de nuevo',
-        customClass: {
-            confirmButton: 'swal2-confirm-button',
-            popup: isWin ? 'swal2-custom-final-success' : 'swal2-custom-game-over' // Clases personalizadas
-        },
-        allowOutsideClick: false
-    }).then((result) => {
-        if (result.isConfirmed) {
-            initializeGame(); // Reinicia el juego
-        }
-    });
-}
-
-// ====================================================================================
-// MANEJADORES DE EVENTOS
-// Conecta las acciones del usuario con la lógica del juego.
-// ====================================================================================
-
-submitButton.addEventListener('click', checkGuess);
-
-guessInput.addEventListener('keypress', async (event) => {
-    if (event.key === 'Enter') {
-        await checkGuess();
-    }
-});
-
-// NUEVA LÓGICA PARA EL CARGADOR Y LA INICIALIZACIÓN DEL JUEGO
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ocultar el cargador después de un tiempo fijo (ej. 2 segundos)
-    setTimeout(() => {
-        if (loaderWrapper) {
-            loaderWrapper.classList.add('hidden');
-        }
-    }, 2000); // 2000 milisegundos = 2 segundos
-
-    // 2. Inicializar el juego inmediatamente cuando el DOM esté cargado.
-    //    Esto ocurre en paralelo con el temporizador del cargador.
-    initializeGame();
-});
-
