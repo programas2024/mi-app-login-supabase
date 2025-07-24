@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras - Elige tu Categoría</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="games.css"> <!-- Usaremos tu CSS general de games.css -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para games2.html (Sopa de Letras) */
+        body {
+            background-color: #f0f2f5; /* Fondo claro */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinea al inicio para que el contenido no esté pegado al centro */
+            min-height: 100vh;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .sopa-categories-container { /* Renombrado para Sopa de Letras */
+            width: 100%;
+            max-width: 1200px;
+            background-color: #ffffff;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            padding: 50px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            animation: fadeInScale 0.8s ease-out forwards;
+            position: relative;
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .sopa-categories-container h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #E91E63; /* Color principal de Sopa de Letras */
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+
+        .sopa-categories-container p {
+            font-size: 1.2em;
+            color: #666666;
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        .category-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .category-card {
+            background-color: #ffffff;
+            border-radius: 18px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            border: 1px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .category-card:hover::before {
+            opacity: 1;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background-color: #f8f8f8;
+        }
+
+        .card-icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+            color: #666666; 
+        }
+
+        .card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            color: #4a4a4a;
+        }
+
+        .card-description {
+            font-size: 1em;
+            color: #777777;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-card button {
+            background-color: #FF69B4; /* Color de botón de Sopa de Letras */
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-top: 20px; /* Espacio entre descripción y botón */
+        }
+
+        .category-card button:hover {
+            background-color: #E91E63; /* Tono más oscuro en hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Colores específicos para las tarjetas de categoría de Sopa de Letras */
+        .category-card.animals-sopa { background: linear-gradient(135deg, #FFD1DC, #FFABAB); } /* Rosa pastel */
+        .category-card.animals-sopa .card-icon { color: #E91E63; } /* Rosa oscuro */
+        .category-card.animals-sopa .card-title { color: #333; }
+        .category-card.animals-sopa .card-description { color: #555; }
+        .category-card.animals-sopa button { background-color: #FF69B4; }
+        .category-card.animals-sopa button:hover { background-color: #E91E63; }
+
+        .category-card.plants-sopa { background: linear-gradient(135deg, #D4EDDA, #B3E0BD); } /* Verde menta */
+        .category-card.plants-sopa .card-icon { color: #28A745; } /* Verde vibrante */
+        .category-card.plants-sopa .card-title { color: #333; }
+        .category-card.plants-sopa .card-description { color: #555; }
+        .category-card.plants-sopa button { background-color: #28A745; }
+        .category-card.plants-sopa button:hover { background-color: #218838; }
+
+        .category-card.medicine-sopa { background: linear-gradient(135deg, #CCE5FF, #A6D9FF); } /* Azul cielo */
+        .category-card.medicine-sopa .card-icon { color: #007BFF; } /* Azul brillante */
+        .category-card.medicine-sopa .card-title { color: #333; }
+        .category-card.medicine-sopa .card-description { color: #555; }
+        .category-card.medicine-sopa button { background-color: #007BFF; }
+        .category-card.medicine-sopa button:hover { background-color: #0056B3; }
+
+        .category-card.sports-sopa { background: linear-gradient(135deg, #FFF3CD, #FFE082); } /* Amarillo cálido */
+        .category-card.sports-sopa .card-icon { color: #FFC107; } /* Amarillo vibrante */
+        .category-card.sports-sopa .card-title { color: #333; }
+        .category-card.sports-sopa .card-description { color: #555; }
+        .category-card.sports-sopa button { background-color: #FFC107; }
+        .category-card.sports-sopa button:hover { background-color: #E0A800; }
+
+
+        /* Botón de regreso */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #f39c12; /* Naranja brillante */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Media queries para responsividad */
+        @media (max-width: 992px) {
+            .sopa-categories-container {
+                padding: 40px;
+            }
+            .sopa-categories-container h1 {
+                font-size: 2.8em;
+            }
+            .sopa-categories-container p {
+                font-size: 1.1em;
+                margin-bottom: 40px;
+            }
+            .category-cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 25px;
+            }
+            .category-card {
+                padding: 25px;
+            }
+            .card-icon {
+                font-size: 4em;
+                margin-bottom: 15px;
+            }
+            .card-title {
+                font-size: 1.6em;
+            }
+            .card-description {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sopa-categories-container {
+                padding: 30px;
+                border-radius: 15px;
+            }
+            .sopa-categories-container h1 {
+                font-size: 2.2em;
+            }
+            .sopa-categories-container p {
+                font-size: 1em;
+                margin-bottom: 30px;
+            }
+            .category-cards-grid {
+                grid-template-columns: 1fr; /* Una sola columna en móviles */
+                gap: 20px;
+            }
+            .category-card {
+                padding: 20px;
+            }
+            .card-icon {
+                font-size: 3.5em;
+                margin-bottom: 10px;
+            }
+            .card-title {
+                font-size: 1.4em;
+            }
+            .card-description {
+                font-size: 0.85em;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 10px;
+            }
+            .sopa-categories-container {
+                padding: 20px;
+            }
+            .sopa-categories-container h1 {
+                font-size: 1.8em;
+            }
+            .sopa-categories-container p {
+                font-size: 0.9em;
+                margin-bottom: 25px;
+            }
+            .category-card {
+                padding: 18px;
+            }
+            .card-icon {
+                font-size: 3em;
+            }
+            .card-title {
+                font-size: 1.2em;
+            }
+            .card-description {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sopa-categories-container">
+        <button class="back-button" onclick="window.location.href='games.html'">
+            <i class="fas fa-arrow-left"></i> Volver a Juegos
+        </button>
+
+        <h1>Sopa de Letras: Elige tu Categoría</h1>
+        <p>Encuentra las palabras ocultas en la cuadrícula. ¡Selecciona un tema para empezar!</p>
+
+        <div class="category-cards-grid">
+            <!-- Tarjeta: Animales - Sopa de Letras -->
+            <a href="sopa_animals.html" class="category-card animals-sopa">
+                <div class="card-icon"><i class="fas fa-paw"></i></div>
+                <h2 class="card-title">Animales</h2>
+                <p class="card-description">Busca nombres de animales de la tierra, el mar y el aire.</p>
+                <button>Jugar Ahora</button>
+            </a>
+
+            <!-- Tarjeta: Plantas - Sopa de Letras -->
+            <a href="sopa_plants.html" class="category-card plants-sopa">
+                <div class="card-icon"><i class="fas fa-leaf"></i></div>
+                <h2 class="card-title">Plantas</h2>
+                <p class="card-description">Encuentra términos relacionados con la flora, árboles, flores y más.</p>
+                <button>Jugar Ahora</button>
+            </a>
+
+            <!-- Tarjeta: Medicina - Sopa de Letras -->
+            <a href="sopa_medicine.html" class="category-card medicine-sopa">
+                <div class="card-icon"><i class="fas fa-stethoscope"></i></div>
+                <h2 class="card-title">Medicina</h2>
+                <p class="card-description">Descubre palabras del ámbito de la salud, el cuerpo humano y tratamientos.</p>
+                <button>Jugar Ahora</button>
+            </a>
+
+            <!-- Tarjeta: Deportes - Sopa de Letras -->
+            <a href="sopa_sports.html" class="category-card sports-sopa">
+                <div class="card-icon"><i class="fas fa-futbol"></i></div>
+                <h2 class="card-title">Deportes</h2>
+                <p class="card-description">Localiza nombres de deportes, equipos y términos deportivos.</p>
+                <button>Jugar Ahora</button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+</html>
