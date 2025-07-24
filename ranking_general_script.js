@@ -6,7 +6,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // CONFIGURACIÓN SUPABASE
 // ====================================================================================
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xibG9zaCIsInJvbGUiOiJub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ====================================================================================
@@ -70,9 +70,7 @@ async function fetchAndDisplayRanking() {
     const { data, error } = await supabase
         .from('sopa_rankings_general')
         .select('*')
-        .order('gold_earned', { ascending: false }) // Ordenar por oro descendente
-        .order('diamonds_earned', { ascending: false }) // Luego por diamantes descendente
-        .order('time_taken_seconds', { ascending: true }) // Finalmente por tiempo ascendente (desempate)
+        .order('time_taken_seconds', { ascending: true }) // Ordenar de menor tiempo a mayor
         .limit(10); // Mostrar el top 10
 
     hideLoader();
