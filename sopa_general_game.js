@@ -17,11 +17,11 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const MAIN_WORDS = [
     "LEON", "ELEFANTE", "SERPIENTE", "JIRAFA", "TIGRE", // Animales
     "ARBOL", "FLOR", "HOJA", "SEMILLA", "CACTUS",      // Plantas
-    "SALUD", "DOCTOR", "HOSPITAL", "VACUNA", "TERAPIA", // Medicina
+    "SALUD", "DOCTOR", "HOSPITAL", "VACUNA", "SINTOMA", // Medicina
     "FUTBOL", "TENIS", "NATACION", "GIMNASIA", "BOXEO"  // Deportes
 ];
 
-// Palabras sorpresa (combinadas de todas las categorías y algunas nuevas)
+// Palabras sorpresa (no visibles en la lista, pero dan puntos extra)
 const SURPRISE_WORDS = [
     "PANDA", "KOALA", "ROSA", "ORQUIDEA", "ANATOMIA", 
     "BACTERIA", "SURF", "YOGA", "ESPACIO", "ESTRELLA"
@@ -751,7 +751,8 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
 }
 
 /**
- * Guarda el resultado del juego en la tabla de rankings.
+ * Guarda o actualiza el resultado del juego en la tabla de rankings.
+ * Prioriza la actualización si el tiempo es mejor para usuarios logueados.
  * @param {number} timeTaken - Tiempo en segundos para completar el juego.
  * @param {number} wordsFound - Número de palabras encontradas.
  * @param {number} goldEarned - Oro ganado en esta partida.
@@ -776,34 +777,129 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
         } else if (profile && profile.username) {
             username = profile.username;
         }
-    } else {
-        console.warn("No user session found. Saving ranking as Anónimo.");
-    }
 
-    const { data, error } = await supabase
-        .from('sopa_rankings_general')
-        .insert([
-            {
-                user_id: userId,
-                username: username,
-                time_taken_seconds: Math.floor(timeTaken),
-                words_found_count: wordsFound,
-                gold_earned: goldEarned,
-                diamonds_earned: diamondsEarned
+        // --- Lógica para usuarios logueados: Actualizar si es mejor tiempo ---
+        const { data: existingRanking, error: fetchRankingError } = await supabase
+            .from('sopa_rankings_general')
+            .select('*')
+            .eq('user_id', userId)
+            .order('time_taken_seconds', { ascending: true }) // Obtener el mejor tiempo existente
+            .limit(1)
+            .single();
+
+        if (fetchRankingError && fetchRankingError.code !== 'PGRST116') { // PGRST116 means "no rows found"
+            console.error("Error fetching existing ranking for user:", fetchRankingError);
+            // Si hay un error al buscar, intentamos insertar como si fuera nuevo para no perder el resultado
+            const { error: insertError } = await supabase
+                .from('sopa_rankings_general')
+                .insert([
+                    {
+                        user_id: userId,
+                        username: username,
+                        time_taken_seconds: Math.floor(timeTaken),
+                        words_found_count: wordsFound,
+                        gold_earned: goldEarned,
+                        diamonds_earned: diamondsEarned
+                    }
+                ]);
+            if (insertError) {
+                console.error("Error inserting new ranking after fetch error:", insertError);
+            } else {
+                console.log("New ranking inserted after fetch error.");
             }
-        ]);
+            return;
+        }
 
-    if (error) {
-        console.error("Error saving game result to ranking:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error al Guardar Ranking',
-            text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
-            confirmButtonText: 'Entendido',
-            customClass: { popup: 'swal2-custom-game-over' }
-        });
+        if (existingRanking) {
+            // Si ya existe un ranking para este usuario
+            if (Math.floor(timeTaken) < existingRanking.time_taken_seconds) {
+                // Si el nuevo tiempo es mejor, actualizamos
+                const { error: updateError } = await supabase
+                    .from('sopa_rankings_general')
+                    .update({
+                        time_taken_seconds: Math.floor(timeTaken),
+                        words_found_count: wordsFound,
+                        gold_earned: goldEarned,
+                        diamonds_earned: diamondsEarned,
+                        created_at: new Date().toISOString() // Actualizar la fecha de la última mejora
+                    })
+                    .eq('id', existingRanking.id); // Usar el ID del registro existente
+
+                if (updateError) {
+                    console.error("Error updating game result in ranking:", updateError);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al Actualizar Ranking',
+                        text: 'Hubo un problema al actualizar tu mejor resultado en el ranking. Intenta de nuevo.',
+                        confirmButtonText: 'Entendido',
+                        customClass: { popup: 'swal2-custom-game-over' }
+                    });
+                } else {
+                    console.log("Game result updated in ranking (better time).");
+                }
+            } else {
+                // Si el nuevo tiempo no es mejor, no hacemos nada en el ranking
+                console.log("New game time is not better than existing best time. Ranking not updated.");
+            }
+        } else {
+            // Si no existe un ranking para este usuario, insertamos uno nuevo
+            const { error: insertError } = await supabase
+                .from('sopa_rankings_general')
+                .insert([
+                    {
+                        user_id: userId,
+                        username: username,
+                        time_taken_seconds: Math.floor(timeTaken),
+                        words_found_count: wordsFound,
+                        gold_earned: goldEarned,
+                        diamonds_earned: diamondsEarned
+                    }
+                ]);
+
+            if (insertError) {
+                console.error("Error inserting new game result to ranking:", insertError);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al Guardar Ranking',
+                    text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
+                    confirmButtonText: 'Entendido',
+                    customClass: { popup: 'swal2-custom-game-over' }
+                });
+            } else {
+                console.log("New game result inserted into ranking.");
+            }
+        }
     } else {
-        console.log("Game result saved to ranking:", data);
+        // --- Lógica para usuarios anónimos: Siempre insertar nuevo ---
+        // Para usuarios anónimos, siempre insertamos un nuevo registro.
+        // Esto evita que un "Anónimo" sobrescriba el ranking de otro "Anónimo"
+        // dado que no hay una identidad persistente para ellos.
+        console.warn("No user session found. Inserting new ranking as Anónimo.");
+        const { error: insertAnonError } = await supabase
+            .from('sopa_rankings_general')
+            .insert([
+                {
+                    user_id: null, // user_id es null para anónimos
+                    username: username, // Será "Anónimo"
+                    time_taken_seconds: Math.floor(timeTaken),
+                    words_found_count: wordsFound,
+                    gold_earned: goldEarned,
+                    diamonds_earned: diamondsEarned
+                }
+            ]);
+
+        if (insertAnonError) {
+            console.error("Error inserting anonymous game result to ranking:", insertAnonError);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al Guardar Ranking',
+                text: 'Hubo un problema al guardar tu resultado anónimo en el ranking. Intenta de nuevo.',
+                confirmButtonText: 'Entendido',
+                customClass: { popup: 'swal2-custom-game-over' }
+            });
+        } else {
+            console.log("Anonymous game result inserted into ranking.");
+        }
     }
 }
 
