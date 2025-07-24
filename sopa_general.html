@@ -402,10 +402,24 @@
             color: #8A2BE2; /* Morado */
         }
 
-        .ranking-table td.time-taken {
-            font-weight: 600;
-            color: #333;
+        /* Nuevo estilo para la fila del jugador actual */
+        .current-player-rank {
+            background-color: #E0BBE4 !important; /* Un morado más claro */
+            color: #4A0080 !important; /* Texto más oscuro para contraste */
+            font-weight: 700 !important;
+            border: 2px solid #8A2BE2 !important; /* Borde morado */
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3) !important; /* Sombra morada */
+            transform: scale(1.02); /* Pequeña escala para destacar */
+            transition: all 0.2s ease-in-out;
         }
+        .current-player-rank td {
+            color: #4A0080 !important; /* Asegura que el texto dentro de la celda también sea oscuro */
+        }
+        .current-player-rank td.rank-number {
+            color: #6A0DAD !important; /* Un morado intermedio para el número de rank */
+        }
+
+
         .ranking-table td .fas {
             margin-left: 5px;
             color: #FFD700; /* Oro */
@@ -554,7 +568,7 @@
     </div>
 
     <div class="sopa-game-container">
-        <button class="back-button" onclick="window.location.href='games3.html'">
+        <button class="back-button" onclick="window.location.href='games2.html'">
             <i class="fas fa-arrow-left"></i> Volver a Categorías
         </button>
 

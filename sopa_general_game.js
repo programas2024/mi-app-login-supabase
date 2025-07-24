@@ -913,6 +913,11 @@ async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamon
  */
 async function showRanking() {
     showLoader('Cargando Ranking...');
+    
+    // Obtener el ID del usuario actual
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id || null;
+
     const { data, error } = await supabase
         .from('sopa_rankings_general')
         .select('*')
@@ -955,8 +960,12 @@ async function showRanking() {
         rankingHtml += `<tr><td colspan="6">No hay resultados aún. ¡Sé el primero en jugar!</td></tr>`;
     } else {
         data.forEach((entry, index) => {
+            // Comprobar si esta entrada pertenece al usuario actual
+            const isCurrentUser = currentUserId && entry.user_id === currentUserId;
+            const rowClass = isCurrentUser ? 'current-player-rank' : '';
+
             rankingHtml += `
-                <tr>
+                <tr class="${rowClass}">
                     <td class="rank-number" data-label="#">${index + 1}</td>
                     <td data-label="Jugador">${entry.username || 'Anónimo'}</td>
                     <td class="time-taken" data-label="Tiempo">${formatTime(entry.time_taken_seconds)}</td>
