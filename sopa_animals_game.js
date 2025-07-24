@@ -56,8 +56,31 @@ let goldScoreDisplay;
 let diamondsScoreDisplay;
 
 // ====================================================================================
-// FUNCIONES DE UTILIDAD
+// FUNCIONES DE UTILIDAD (AHORA INCLUYEN showLoader y hideLoader)
 // ====================================================================================
+
+/**
+ * Muestra el loader de la página de juego.
+ * @param {string} message - Mensaje a mostrar en el loader.
+ */
+function showLoader(message = 'Cargando...') {
+    if (loaderWrapper) {
+        const loaderText = loaderWrapper.querySelector('h1'); // Asumiendo que el texto está en un h1
+        if (loaderText) {
+            loaderText.textContent = message;
+        }
+        loaderWrapper.classList.remove('hidden');
+    }
+}
+
+/**
+ * Oculta el loader de la página de juego.
+ */
+function hideLoader() {
+    if (loaderWrapper) {
+        loaderWrapper.classList.add('hidden');
+    }
+}
 
 /**
  * Obtiene un número aleatorio entre min y max (inclusive).
@@ -409,7 +432,6 @@ async function checkSelectedWord(selectedWordText, cells) {
         if (foundPlacedWord.isBonus) {
             // Palabra sorpresa encontrada
             currentDiamonds += 5; // Recompensa de diamantes por palabra sorpresa
-            goldScoreDisplay.textContent = currentGold; // Actualizar solo oro si no hay cambio de diamantes
             diamondsScoreDisplay.textContent = currentDiamonds;
             animateScore(diamondsScoreDisplay);
             Swal.fire({
@@ -459,7 +481,7 @@ async function checkSelectedWord(selectedWordText, cells) {
  * Inicializa el juego de Sopa de Letras.
  */
 async function initializeGame() {
-    hideLoader(); // Asegurarse de que el loader esté oculto si ya no es necesario
+    showLoader('Generando Sopa de Letras...'); // Mostrar loader al inicio de la inicialización
     
     currentGold = 0;
     currentDiamonds = 0;
@@ -484,14 +506,23 @@ async function initializeGame() {
     wordGridElement.addEventListener('touchstart', (e) => {
         e.preventDefault(); // Prevenir scroll
         const touch = e.touches[0];
-        handleMouseDown({ target: document.elementFromPoint(touch.clientX, touch.clientY) });
-    });
+        // Usar elementFromPoint para obtener el elemento en la posición del toque
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (targetElement && targetElement.classList.contains('grid-cell')) {
+            handleMouseDown({ target: targetElement });
+        }
+    }, { passive: false });
     wordGridElement.addEventListener('touchmove', (e) => {
         e.preventDefault(); // Prevenir scroll
         const touch = e.touches[0];
-        handleMouseMove({ target: document.elementFromPoint(touch.clientX, touch.clientY) });
-    });
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (targetElement && targetElement.classList.contains('grid-cell')) {
+            handleMouseMove({ target: targetElement });
+        }
+    }, { passive: false });
     wordGridElement.addEventListener('touchend', handleMouseUp);
+
+    hideLoader(); // Ocultar loader al finalizar la inicialización
 }
 
 /**
@@ -666,11 +697,11 @@ document.addEventListener('DOMContentLoaded', () => {
     goldScoreDisplay = document.getElementById('gold-score-display');
     diamondsScoreDisplay = document.getElementById('diamonds-score-display');
 
-    // Ocultar el cargador después de un breve retraso y luego inicializar el juego
+    // Mostrar el loader inmediatamente
+    showLoader('Generando Sopa de Letras...');
+
+    // Inicializar el juego después de un breve retraso (para que el loader sea visible)
     setTimeout(() => {
-        if (loaderWrapper) {
-            loaderWrapper.classList.add('hidden');
-        }
         initializeGame();
-    }, 2000); // 2 segundos para que el usuario vea el loader
+    }, 500); // Pequeño retraso para que el loader se muestre antes de la generación
 });
