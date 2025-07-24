@@ -55,6 +55,7 @@ let wordListElement;
 let timerDisplay;
 let goldScoreDisplay;
 let diamondsScoreDisplay;
+let rankingButton;
 
 // ====================================================================================
 // FUNCIONES DE UTILIDAD
@@ -495,6 +496,7 @@ function calculateFinalRewards(wordsFound, timeLeftAtEnd, baseGold, baseDiamonds
     totalDiamonds += Math.floor(timeLeftAtEnd / 10); // 1 diamante por cada 10 segundos restantes
 
     // Bonificaciones escalonadas por cantidad de palabras principales encontradas
+    // MAIN_WORDS.length es el total de palabras principales
     if (wordsFound === totalMainWords) {
         totalGold += 200;
         totalDiamonds += 190;
@@ -530,6 +532,9 @@ async function initializeGame() {
     renderGrid();
     renderWordList();
     startTimer();
+
+    // Ocultar el botón de ranking al inicio del juego
+    rankingButton.style.display = 'none';
 
     // Añadir event listeners para la interacción con la cuadrícula
     wordGridElement.addEventListener('mousedown', handleMouseDown);
@@ -589,25 +594,33 @@ async function checkGameEnd() {
     if (foundWordsCount === totalMainWords) {
         clearInterval(timerInterval);
         const timeRemaining = Math.max(0, timeLeft); // Asegura que no sea negativo
+        const timeTaken = (Date.now() - gameStartedTime) / 1000; // Tiempo en segundos
+
         const finalRewards = calculateFinalRewards(foundWordsCount, timeRemaining, currentGold, currentDiamonds);
 
         await updatePlayerBalance(finalRewards.gold, finalRewards.diamonds);
+        await saveGameResultToRanking(timeTaken, foundWordsCount, finalRewards.gold, finalRewards.diamonds);
 
         Swal.fire({
             icon: 'success',
             title: '¡Sopa de Letras Completada!',
             html: `¡Felicidades! Encontraste todas las palabras.<br>
-                   Tiempo restante: <strong>${Math.floor(timeRemaining)} segundos</strong><br>
+                   Tiempo total: <strong>${Math.floor(timeTaken)} segundos</strong><br>
                    Ganaste <strong>${finalRewards.gold} Oro <i class="fas fa-coins"></i></strong> y <strong>${finalRewards.diamonds} Diamantes <i class="fas fa-gem"></i></strong>.`,
             confirmButtonText: 'Jugar de Nuevo',
+            showCancelButton: true,
+            cancelButtonText: 'Ver Ranking',
             customClass: {
                 confirmButton: 'swal2-confirm-button',
+                cancelButton: 'swal2-cancel-button',
                 popup: 'swal2-custom-final-success'
             },
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
                 initializeGame(); // Reinicia el juego
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                showRanking(); // Muestra el ranking
             }
         });
     }
@@ -619,25 +632,32 @@ async function checkGameEnd() {
  */
 async function handleGameOver(message) { 
     clearInterval(timerInterval);
+    const timeTaken = (Date.now() - gameStartedTime) / 1000; // Tiempo en segundos
 
     // Calcular las recompensas finales incluyendo las bonificaciones por cantidad de palabras
     const finalRewards = calculateFinalRewards(foundWordsCount, 0, currentGold, currentDiamonds); // Tiempo restante es 0 si se agota
 
-    await updatePlayerBalance(finalRewards.gold, finalRewards.diamonds);
+    await updatePlayerBalance(finalRewards.gold, finalDiamonds.diamonds); // Actualiza el balance del jugador
+    await saveGameResultToRanking(timeTaken, foundWordsCount, finalRewards.gold, finalRewards.diamonds); // Guarda el resultado en el ranking
 
     Swal.fire({
         icon: 'error', // Icono para tiempo agotado/derrota
         title: '¡Tiempo Agotado!',
         html: `${message}<br>Has ganado <strong>${finalRewards.gold} Oro <i class="fas fa-coins"></i></strong> y <strong>${finalRewards.diamonds} Diamantes <i class="fas fa-gem"></i></strong> por las palabras que encontraste.<br>¡Inténtalo de nuevo para mejorar tu puntaje!`,
         confirmButtonText: 'Jugar de Nuevo',
+        showCancelButton: true,
+        cancelButtonText: 'Ver Ranking',
         customClass: {
             confirmButton: 'swal2-confirm-button',
+            cancelButton: 'swal2-cancel-button',
             popup: 'swal2-custom-game-over' // Estilo para fin de juego
         },
         allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
             initializeGame(); // Reinicia el juego
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            showRanking(); // Muestra el ranking
         }
     });
 }
@@ -719,6 +739,153 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
     }
 }
 
+/**
+ * Guarda el resultado del juego en la tabla de rankings.
+ * @param {number} timeTaken - Tiempo en segundos para completar el juego.
+ * @param {number} wordsFound - Número de palabras encontradas.
+ * @param {number} goldEarned - Oro ganado en esta partida.
+ * @param {number} diamondsEarned - Diamantes ganados en esta partida.
+ */
+async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamondsEarned) {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const user = session?.user;
+    
+    let userId = user?.id || null;
+    let username = "Anónimo";
+
+    if (user) {
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError) {
+            console.error("Error fetching profile for ranking:", profileError);
+        } else if (profile && profile.username) {
+            username = profile.username;
+        }
+    } else {
+        // Si no hay usuario logueado, generamos un ID temporal para el ranking
+        // Esto es opcional, podrías dejar user_id como NULL y username como "Anónimo"
+        // Para este caso, mantendremos user_id como NULL si no hay sesión.
+        console.warn("No user session found. Saving ranking as Anónimo.");
+    }
+
+    const { data, error } = await supabase
+        .from('sopa_rankings_general')
+        .insert([
+            {
+                user_id: userId,
+                username: username,
+                time_taken_seconds: Math.floor(timeTaken),
+                words_found_count: wordsFound,
+                gold_earned: goldEarned,
+                diamonds_earned: diamondsEarned
+            }
+        ]);
+
+    if (error) {
+        console.error("Error saving game result to ranking:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al Guardar Ranking',
+            text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' }
+        });
+    } else {
+        console.log("Game result saved to ranking:", data);
+    }
+}
+
+/**
+ * Muestra el ranking de la Sopa de Letras General.
+ */
+async function showRanking() {
+    showLoader('Cargando Ranking...');
+    const { data, error } = await supabase
+        .from('sopa_rankings_general')
+        .select('*')
+        .order('time_taken_seconds', { ascending: true })
+        .limit(10); // Mostrar el top 10
+
+    hideLoader();
+
+    if (error) {
+        console.error("Error fetching ranking:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al Cargar Ranking',
+            text: 'No se pudo cargar el ranking. Por favor, intenta de nuevo.',
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' }
+        });
+        return;
+    }
+
+    let rankingHtml = `
+        <div class="ranking-modal-content">
+            <h2><i class="fas fa-trophy"></i> Top 10 Sopa de Letras General</h2>
+            <div class="ranking-table-container">
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Jugador</th>
+                            <th>Tiempo</th>
+                            <th>Palabras</th>
+                            <th>Oro</th>
+                            <th>Diamantes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+
+    if (data.length === 0) {
+        rankingHtml += `<tr><td colspan="6">No hay resultados aún. ¡Sé el primero en jugar!</td></tr>`;
+    } else {
+        data.forEach((entry, index) => {
+            const minutes = Math.floor(entry.time_taken_seconds / 60);
+            const seconds = entry.time_taken_seconds % 60;
+            const timeFormatted = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            rankingHtml += `
+                <tr>
+                    <td class="rank-number" data-label="#">${index + 1}</td>
+                    <td data-label="Jugador">${entry.username || 'Anónimo'}</td>
+                    <td class="time-taken" data-label="Tiempo">${timeFormatted}</td>
+                    <td data-label="Palabras">${entry.words_found_count}</td>
+                    <td data-label="Oro">${entry.gold_earned} <i class="fas fa-coins"></i></td>
+                    <td data-label="Diamantes">${entry.diamonds_earned} <i class="fas fa-gem"></i></td>
+                </tr>
+            `;
+        });
+    }
+
+    rankingHtml += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    Swal.fire({
+        html: rankingHtml,
+        showConfirmButton: true,
+        confirmButtonText: 'Cerrar',
+        customClass: {
+            popup: 'swal2-custom-ranking-modal',
+            confirmButton: 'swal2-confirm-button'
+        },
+        width: '80%',
+        didOpen: () => {
+            // Asegurarse de que el botón de ranking esté visible si se cierra el modal
+            rankingButton.style.display = 'flex';
+        }
+    });
+}
+
 
 // ====================================================================================
 // INICIALIZACIÓN AL CARGAR EL DOM
@@ -732,6 +899,12 @@ document.addEventListener('DOMContentLoaded', () => {
     timerDisplay = document.getElementById('timer-display');
     goldScoreDisplay = document.getElementById('gold-score-display');
     diamondsScoreDisplay = document.getElementById('diamonds-score-display');
+    rankingButton = document.getElementById('ranking-button');
+
+    // Añadir event listener al botón de ranking
+    if (rankingButton) {
+        rankingButton.addEventListener('click', showRanking);
+    }
 
     // Mostrar el loader inmediatamente
     showLoader('Generando Sopa de Letras...');
