@@ -1,4 +1,6 @@
-/ sopa_general_game.js - Lógica para el juego de Sopa de Letras (Tema General)
+// ====================================================================================
+// CONFIGURACIÓN Y ESTADO DEL JUEGO
+// ====================================================================================
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
