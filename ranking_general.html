@@ -235,47 +235,74 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Responsive para la tabla: Mantener horizontal con scroll si es necesario */
+        /* Responsive para la tabla: Ahora cada fila es una "tarjeta" en móvil */
         @media (max-width: 600px) {
             .ranking-table-wrapper {
-                /* Permitir desplazamiento horizontal */
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+                overflow-x: hidden; /* Oculta el scroll horizontal si la tabla se apila */
             }
             .ranking-table {
-                /* Asegura un ancho mínimo para que la tabla sea legible */
-                /* Ajusta este valor si las columnas se ven muy apretadas */
-                min-width: 550px; 
-                /* Vuelve a los valores por defecto para que se comporte como tabla */
-                display: table; 
+                min-width: unset; /* Elimina el min-width en móviles */
             }
             .ranking-table thead {
-                display: table-header-group; /* Muestra el encabezado */
+                display: none; /* Oculta el encabezado en pantallas pequeñas */
             }
-            .ranking-table tbody, 
-            .ranking-table tr, 
-            .ranking-table td {
-                /* Vuelve al comportamiento de tabla por defecto */
-                display: table-row-group; /* tbody */
-                display: table-row; /* tr */
-                display: table-cell; /* td */
+            .ranking-table, .ranking-table tbody, .ranking-table tr, .ranking-table td {
+                display: block;
+                width: 100%;
             }
             .ranking-table tr {
-                /* Elimina estilos de apilamiento vertical */
-                margin-bottom: 0; 
-                border: none; 
-                box-shadow: none; 
+                margin-bottom: 15px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                padding: 10px 0; /* Añade padding a la fila para espacio interno */
+                position: relative; /* Para posicionar el número de ranking */
             }
             .ranking-table td {
-                text-align: left; /* Vuelve a la alineación izquierda */
-                padding-left: 15px; /* Ajusta el padding */
-                position: static; /* Elimina el posicionamiento relativo */
-                padding-top: 15px; /* Restaura el padding original */
-                padding-bottom: 15px; /* Restaura el padding original */
+                text-align: right;
+                padding-left: 50%; /* Espacio para el data-label */
+                position: relative;
+                padding-top: 8px; /* Ajuste de padding para mejor espaciado */
+                padding-bottom: 8px;
+                border-bottom: none; /* Elimina el borde entre celdas apiladas */
+            }
+            .ranking-table td:last-child {
+                border-bottom: none; /* Asegura que la última celda no tenga borde */
             }
             .ranking-table td::before {
-                content: none; /* Oculta los data-labels que se usaban para el apilamiento */
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: calc(50% - 30px);
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 700;
+                color: #777;
+                top: 50%; /* Centrar verticalmente */
+                transform: translateY(-50%);
             }
+            /* Estilo específico para el número de ranking en móvil */
+            .ranking-table td.rank-number {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: auto; /* Ancho automático */
+                height: auto; /* Altura automática */
+                padding: 10px 15px;
+                background-color: #8A2BE2; /* Fondo morado */
+                color: white; /* Texto blanco */
+                border-radius: 10px 0 10px 0; /* Esquina superior izquierda y inferior derecha redondeadas */
+                font-size: 1.2em; /* Tamaño más grande */
+                font-weight: 900;
+                text-align: center;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                transform: none; /* Elimina cualquier transformación previa */
+            }
+            .ranking-table td.rank-number::before {
+                content: none; /* Oculta el data-label para el número de ranking */
+            }
+
             .ranking-container {
                 padding: 20px;
             }
