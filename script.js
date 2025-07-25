@@ -5,13 +5,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
-// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo
-// y solo si el elemento existe en la página actual.
+// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
 let initialOptionsDiv, signupFormDiv, loginFormDiv;
 let signupEmail, signupPassword, registerBtn;
 let loginEmail, loginPassword, loginSubmitBtn;
@@ -21,14 +20,12 @@ let forgotPasswordLink;
 
 let dashboardDiv;
 let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard;
-let userRankingDashboardDisplay; // Para mostrar la posición en el ranking en el dashboard
 let profileBtnDashboard, logoutBtnDashboard;
 
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
 let goldDisplayProfile, diamondsDisplayProfile;
-let userRankingProfileDisplay; // Para mostrar la posición en el ranking en el perfil
 
 let loaderDiv, loaderText;
 
@@ -166,107 +163,60 @@ async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
 
     try {
-        // 1. Obtener los datos del perfil del usuario (oro, diamantes, nombre de usuario, país)
-        const { data: profileData, error: profileError } = await supabase
+        const { data, error } = await supabase
             .from('profiles')
             .select('username, country, gold, diamonds')
             .eq('id', userId)
             .single();
 
-        if (profileError) {
-            console.error('Error al cargar perfil básico:', profileError);
-            if (profileError.code === 'PGRST116') { // No se encontraron filas (el perfil no existe)
+        if (error) {
+            console.error('Error al cargar perfil:', error);
+            
+            // Si el perfil no se encuentra (PGRST116), intenta crearlo
+            if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
                 console.log('Perfil no encontrado, intentando crear uno básico.');
                 const { error: insertError } = await supabase
                     .from('profiles')
                     .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
-
+                
                 if (insertError) {
                     console.error('Error al crear perfil básico:', insertError);
-                    if (insertError.code === '23505') { // Violación de unicidad de PostgreSQL (conflicto)
+                    // Si el error es un conflicto (409), significa que el perfil ya existe (ej. creado por otra sesión)
+                    // En este caso, intenta cargar de nuevo el perfil en lugar de mostrar un error crítico.
+                    if (insertError.code === '23505') { // PostgreSQL unique_violation (código para 409 Conflict)
                         console.warn('Conflicto al crear perfil (ya existe). Intentando cargar de nuevo.');
                         await loadUserProfile(userId); // Recargar el perfil
-                        return;
+                        return; // Salir para evitar la ejecución del resto del bloque
                     } else {
                         showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta: ' + insertError.message);
                     }
                 } else {
                     showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
+                    // No es necesario recargar, los datos ya se establecieron en la inserción
+                    // y los campos se actualizarán en el 'finally' o con la siguiente carga.
                 }
-            } else {
-                showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + profileError.message);
+            } else { // Si es otro tipo de error al cargar el perfil
+                showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
-        }
-
-        // 2. Obtener la mejor entrada de ranking del usuario de sopa_rankings_general
-        let userBestRankingEntry = null;
-        const { data: userRankingData, error: userRankingError } = await supabase
-            .from('sopa_rankings_general')
-            .select('gold_earned, diamonds_earned, time_taken_seconds')
-            .eq('user_id', userId)
-            .order('gold_earned', { ascending: false })
-            .order('diamonds_earned', { ascending: false })
-            .order('time_taken_seconds', { ascending: true })
-            .limit(1); // Solo necesitamos el mejor resultado de este usuario
-
-        if (userRankingError) {
-            console.error('Error al obtener el mejor ranking del usuario:', userRankingError);
-        } else if (userRankingData && userRankingData.length > 0) {
-            userBestRankingEntry = userRankingData[0];
-        }
-
-        // 3. Obtener todos los rankings para determinar la posición del usuario
-        let userRank = 'N/A';
-        if (userBestRankingEntry) { // Solo si el usuario tiene un registro de ranking
-            const { data: allRankings, error: allRankingsError } = await supabase
-                .from('sopa_rankings_general')
-                .select('user_id, gold_earned, diamonds_earned, time_taken_seconds')
-                .not('gold_earned', 'is', null) // Filtrar entradas sin datos de juego
-                .not('diamonds_earned', 'is', null)
-                .order('gold_earned', { ascending: false })
-                .order('diamonds_earned', { ascending: false })
-                .order('time_taken_seconds', { ascending: true });
-
-            if (allRankingsError) {
-                console.error('Error al obtener todos los rankings:', allRankingsError);
-            } else if (allRankings) {
-                // Iterar para encontrar la posición del mejor resultado del usuario
-                for (let i = 0; i < allRankings.length; i++) {
-                    const rankEntry = allRankings[i];
-                    // Comparar el mejor resultado del usuario con las entradas del ranking global
-                    // Se compara por todos los campos de ordenación para asegurar que la posición sea correcta
-                    if (rankEntry.user_id === userId &&
-                        rankEntry.gold_earned === userBestRankingEntry.gold_earned &&
-                        rankEntry.diamonds_earned === userBestRankingEntry.diamonds_earned &&
-                        rankEntry.time_taken_seconds === userBestRankingEntry.time_taken_seconds) {
-                        userRank = i + 1; // La posición es el índice + 1 (basado en 1)
-                        break;
-                    }
-                }
-            }
-        }
-
-        // 4. Actualizar los elementos del DOM
-        if (profileData) { // Si los datos del perfil fueron obtenidos o creados exitosamente
+        } 
+        
+        // Si no hubo error en la carga inicial (data existe) O si se creó el perfil exitosamente
+        // (en cuyo caso 'data' podría ser null si no se hizo un select después del insert,
+        // pero se asume que si no hubo insertError, el perfil está listo para ser cargado en la siguiente iteración
+        // o ya se cargó si el 409 lo disparó).
+        // Para simplificar, si 'data' existe, actualizamos los displays.
+        if (data) {
             // Actualizar datos en el dashboard (si es la página actual)
             if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
-            if (usernameDisplayDashboard) usernameDisplayDashboard.textContent = profileData.username || 'N/A';
-            if (countryDisplayDashboard) countryDisplayDashboard.textContent = profileData.country || 'N/A';
-            if (goldDisplayDashboard) goldDisplayDashboard.textContent = profileData.gold;
-            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = profileData.diamonds;
-            if (userRankingDashboardDisplay) {
-                userRankingDashboardDisplay.innerHTML = `<i class="fas fa-trophy"></i> Posición: <strong>${userRank}</strong>`;
-            }
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
+            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
 
             // Actualizar datos en la página de perfil (si es la página actual)
             if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
-            if (usernameInputProfile) usernameInputProfile.value = profileData.username || '';
-            if (countryInputProfile) countryInputProfile.value = profileData.country || '';
-            if (goldDisplayProfile) goldDisplayProfile.textContent = profileData.gold;
-            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = profileData.diamonds;
-            if (userRankingProfileDisplay) {
-                userRankingProfileDisplay.innerHTML = `<i class="fas fa-trophy"></i> Posición: <strong>${userRank}</strong>`;
-            }
+            if (usernameInputProfile) usernameInputProfile.value = data.username || '';
+            if (countryInputProfile) countryInputProfile.value = data.country || '';
+            if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
+            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
         }
     } catch (e) {
         console.error("Error inesperado en loadUserProfile:", e);
@@ -274,134 +224,14 @@ async function loadUserProfile(userId) {
     } finally {
         hideLoader(); // Esto se ejecutará SIEMPRE.
         // Aseguramos que la tarjeta de perfil/dashboard sea visible DESPUÉS de ocultar el loader
-        // Estas variables solo se asignarán si el elemento existe en la página actual.
-        if (profileCard) { 
-            profileCard.classList.remove('profile-hidden'); 
+        if (profileCard) {
+            profileCard.classList.remove('dashboard-hidden');
         }
-        if (dashboardDiv) { 
+        if (dashboardDiv) { // También para el dashboard
             dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
 }
-
-// --- 6. Inicialización al Cargar el DOM ---
-document.addEventListener('DOMContentLoaded', async () => {
-    // Asignar referencias a elementos DOM de forma condicional, según la página actual.
-    // Esto asegura que solo se intenten obtener elementos que existen en el HTML actual.
-    loaderDiv = document.getElementById('loader-wrapper');
-    loaderText = loaderDiv ? loaderDiv.querySelector('h1') : null; // Asumiendo que el h1 está dentro del loader-wrapper
-
-    const path = window.location.pathname;
-
-    if (path.includes('dashboard.html')) {
-        // Asignar elementos DOM específicos de dashboard.html
-        dashboardDiv = document.getElementById('dashboard-div');
-        userEmailDashboardSpan = document.getElementById('user-email-dashboard');
-        usernameDisplayDashboard = document.getElementById('username-display-dashboard');
-        countryDisplayDashboard = document.getElementById('country-display-dashboard');
-        goldDisplayDashboard = document.getElementById('gold-display-dashboard');
-        diamondsDisplayDashboard = document.getElementById('diamonds-display-dashboard');
-        userRankingDashboardDisplay = document.getElementById('user-ranking-display-dashboard');
-        profileBtnDashboard = document.getElementById('profile-btn-dashboard');
-        logoutBtnDashboard = document.getElementById('logout-button');
-
-        const { data: { user }, error } = await supabase.auth.getUser();
-
-        if (error || !user) {
-            console.error('No user logged in or error getting user:', error);
-            window.location.href = 'index.html'; // Redirigir al login si no está autenticado
-            return;
-        }
-
-        await loadUserProfile(user.id);
-
-        // Añadir listeners específicos para dashboard.html
-        if (logoutBtnDashboard) {
-            logoutBtnDashboard.addEventListener('click', signOut);
-        }
-
-    } else if (path.includes('profile.html')) {
-        // Asignar elementos DOM específicos de profile.html
-        profileCard = document.getElementById('profile-card');
-        userEmailProfileSpan = document.getElementById('user-email-profile');
-        usernameInputProfile = document.getElementById('username-input-profile');
-        countryInputProfile = document.getElementById('country-input-profile');
-        goldDisplayProfile = document.getElementById('gold-display-profile');
-        diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
-        userRankingProfileDisplay = document.getElementById('user-ranking-display-profile');
-        saveProfileBtn = document.getElementById('update-profile-button');
-        backToDashboardBtn = document.getElementById('back-to-dashboard-button'); 
-        configureBtn = document.getElementById('configure-button'); // Si existe
-
-        const { data: { user }, error } = await supabase.auth.getUser();
-
-        if (error || !user) {
-            console.error('No user logged in or error getting user:', error);
-            window.location.href = 'index.html'; // Redirigir al login si no está autenticado
-            return;
-        }
-
-        await loadUserProfile(user.id);
-
-        // Añadir listeners específicos para profile.html
-        if (saveProfileBtn) {
-            saveProfileBtn.addEventListener('click', async () => {
-                showLoader('Guardando perfil...');
-                const newUsername = usernameInputProfile.value;
-                const newCountry = countryInputProfile.value;
-
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ username: newUsername, country: newCountry })
-                    .eq('id', user.id);
-
-                hideLoader();
-                if (updateError) {
-                    console.error('Error al actualizar perfil:', updateError);
-                    showSwal('error', 'Error', 'No se pudo actualizar el perfil: ' + updateError.message);
-                } else {
-                    showSwal('success', '¡Éxito!', 'Perfil actualizado correctamente.');
-                }
-            });
-        }
-
-    } else if (path.includes('index.html') || path === '/') {
-        // Asignar elementos DOM específicos de index.html
-        initialOptionsDiv = document.getElementById('initial-options');
-        signupFormDiv = document.getElementById('signup-form');
-        loginFormDiv = document.getElementById('login-form');
-        showSignupBtn = document.getElementById('show-signup-btn');
-        showLoginBtn = document.getElementById('show-login-btn');
-        backToOptionsFromSignup = document.getElementById('back-to-options-signup');
-        backToOptionsFromLogin = document.getElementById('back-to-options-login');
-        forgotPasswordLink = document.getElementById('forgot-password-link');
-
-        signupEmail = document.getElementById('signup-email');
-        signupPassword = document.getElementById('signup-password');
-        registerBtn = document.getElementById('register-btn');
-
-        loginEmail = document.getElementById('login-email');
-        loginPassword = document.getElementById('login-password');
-        loginSubmitBtn = document.getElementById('login-submit-btn');
-
-        // Comprobar si el usuario ya está logueado en index.html
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            window.location.href = 'dashboard.html'; // Redirigir al dashboard si ya está logueado
-        } else {
-            showInitialOptions(); // Mostrar opciones iniciales si no está logueado
-        }
-
-        // Añadir listeners específicos para index.html
-        if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
-        if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
-        if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
-        if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-        if (registerBtn) registerBtn.addEventListener('click', signUp);
-        if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
-    }
-});
-
 
 async function saveProfile() {
     const { data: { user } } = await supabase.auth.getUser();
