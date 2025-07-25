@@ -235,63 +235,86 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Responsive para la tabla: Mantener horizontal con scroll si es necesario */
+        /* Responsive para la tabla: Cada fila es una "tarjeta" horizontalmente desplazable */
         @media (max-width: 600px) {
             .ranking-table-wrapper {
-                /* Permitir desplazamiento horizontal */
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
+                overflow-x: hidden; /* Oculta el scroll horizontal del wrapper */
+                overflow-y: auto; /* Mantiene el scroll vertical para la lista de tarjetas */
             }
             .ranking-table {
-                /* Asegura un ancho mínimo para que la tabla sea legible */
-                /* Ajusta este valor si las columnas se ven muy apretadas */
-                min-width: 550px; /* Puedes aumentar este valor si las columnas se superponen */
-                /* Vuelve a los valores por defecto para que se comporte como tabla */
-                display: table; 
+                width: 100%; /* Ocupa el 100% del contenedor */
+                min-width: unset; /* Elimina el min-width fijo */
+                display: block; /* La tabla se comporta como un bloque */
+                border-collapse: separate; /* Permite border-spacing */
+                border-spacing: 0 15px; /* Espacio entre las "tarjetas" de fila */
             }
             .ranking-table thead {
-                display: table-header-group; /* Muestra el encabezado */
+                display: none; /* Oculta el encabezado en pantallas pequeñas */
             }
-            .ranking-table tbody, 
-            .ranking-table tr, 
-            .ranking-table td {
-                /* Vuelve al comportamiento de tabla por defecto */
-                display: table-row-group; /* tbody */
-                display: table-row; /* tr */
-                display: table-cell; /* td */
+            .ranking-table tbody {
+                display: block; /* El cuerpo de la tabla se comporta como un bloque */
             }
             .ranking-table tr {
-                /* Elimina estilos de apilamiento vertical */
-                margin-bottom: 0; 
-                border: none; 
-                box-shadow: none; 
+                display: flex; /* Cada fila es un contenedor flex */
+                flex-wrap: nowrap; /* Evita que los elementos se envuelvan */
+                overflow-x: auto; /* **Permite el desplazamiento horizontal dentro de cada fila** */
+                -webkit-overflow-scrolling: touch; /* Desplazamiento suave en iOS */
+                
+                margin-bottom: 15px; /* Espacio entre filas/tarjetas */
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                padding: 10px; /* Padding interno de la tarjeta */
+                align-items: center; /* Alinea verticalmente los elementos en la fila */
+                position: relative; /* Para el posicionamiento del número de ranking */
             }
+            /* Estilo para el número de ranking (posición) */
+            .ranking-table td.rank-number {
+                flex-shrink: 0; /* Evita que se encoja */
+                width: 45px; /* Ancho fijo para el círculo del número */
+                height: 45px; /* Altura fija para el círculo del número */
+                background-color: #8A2BE2; /* Fondo morado */
+                color: white; /* Texto blanco */
+                border-radius: 50%; /* Forma circular */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 1.2em; /* Tamaño de fuente más grande */
+                font-weight: 900;
+                margin-right: 15px; /* Espacio a la derecha del número */
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                padding: 0; /* Elimina padding extra */
+                border-bottom: none; /* Asegura que no tenga borde inferior */
+            }
+            .ranking-table td.rank-number::before {
+                content: none; /* Oculta el data-label para el número de ranking */
+            }
+
+            /* Estilo para las demás celdas de datos */
             .ranking-table td {
-                text-align: left; /* Vuelve a la alineación izquierda */
-                padding-left: 15px; /* Ajusta el padding */
-                position: static; /* Elimina el posicionamiento relativo */
-                padding-top: 15px; /* Restaura el padding original */
-                padding-bottom: 15px; /* Restaura el padding original */
+                flex-shrink: 0; /* Evita que se encojan */
+                display: flex; /* Cada celda de dato es un flex container */
+                flex-direction: column; /* Apila el label y el valor si es necesario */
+                justify-content: center;
+                align-items: flex-start; /* Alinea el contenido a la izquierda dentro de la celda */
+                min-width: 90px; /* Ancho mínimo para cada columna de datos */
+                padding: 8px 10px; /* Padding ajustado */
+                border-bottom: none; /* Elimina el borde entre celdas */
+                text-align: left; /* Alineación de texto */
+                position: static; /* Elimina posicionamiento relativo */
             }
             .ranking-table td::before {
-                content: none; /* Oculta los data-labels que se usaban para el apilamiento */
-            }
-            /* El estilo para td.rank-number se hereda del estilo de escritorio, 
-               así que solo necesitamos asegurarnos de que no haya overrides de móvil. */
-            .ranking-table td.rank-number {
-                /* Asegúrate de que no haya estilos de posicionamiento absoluto o tamaño fijo aquí */
-                position: static; /* Anula cualquier posición absoluta previa */
-                width: auto; /* Anula cualquier ancho fijo previo */
-                height: auto; /* Anula cualquier altura fija previa */
-                padding: 15px 20px; /* Restaura el padding estándar de celda */
-                background-color: transparent; /* Elimina el fondo de "esquina" */
-                color: #8A2BE2; /* Mantiene el color morado del escritorio */
-                border-radius: 0; /* Elimina el border-radius de "esquina" */
-                font-size: 1.1em; /* Mantiene el tamaño de fuente del escritorio */
-                font-weight: 800; /* Mantiene el peso de fuente del escritorio */
-                text-align: left; /* Mantiene la alineación izquierda */
-                box-shadow: none; /* Elimina la sombra de "esquina" */
-                transform: none; /* Elimina cualquier transformación previa */
+                content: attr(data-label); /* Muestra el data-label como encabezado */
+                display: block; /* Hace que el label sea un bloque */
+                font-weight: 700;
+                color: #777;
+                font-size: 0.85em; /* Tamaño de fuente más pequeño para el label */
+                margin-bottom: 3px; /* Espacio entre label y valor */
+                position: static; /* Elimina posicionamiento absoluto */
+                width: auto; /* Ancho automático */
+                padding-right: 0; /* Elimina padding extra */
+                text-align: left; /* Alineación de texto */
+                transform: none; /* Elimina transformaciones previas */
             }
 
             .ranking-container {
