@@ -5,12 +5,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
-// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
+// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo
+// y solo si el elemento existe en la página actual.
 let initialOptionsDiv, signupFormDiv, loginFormDiv;
 let signupEmail, signupPassword, registerBtn;
 let loginEmail, loginPassword, loginSubmitBtn;
@@ -20,14 +21,14 @@ let forgotPasswordLink;
 
 let dashboardDiv;
 let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard;
-let userRankingDashboardDisplay; // NUEVO: Para mostrar la posición en el ranking en el dashboard
+let userRankingDashboardDisplay; // Para mostrar la posición en el ranking en el dashboard
 let profileBtnDashboard, logoutBtnDashboard;
 
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
 let goldDisplayProfile, diamondsDisplayProfile;
-let userRankingProfileDisplay; // NUEVO: Para mostrar la posición en el ranking en el perfil
+let userRankingProfileDisplay; // Para mostrar la posición en el ranking en el perfil
 
 let loaderDiv, loaderText;
 
@@ -273,10 +274,11 @@ async function loadUserProfile(userId) {
     } finally {
         hideLoader(); // Esto se ejecutará SIEMPRE.
         // Aseguramos que la tarjeta de perfil/dashboard sea visible DESPUÉS de ocultar el loader
-        if (profileCard) { // Para profile.html
-            profileCard.classList.remove('profile-hidden'); // Asegúrate de que la clase sea 'profile-hidden' si aplica
+        // Estas variables solo se asignarán si el elemento existe en la página actual.
+        if (profileCard) { 
+            profileCard.classList.remove('profile-hidden'); 
         }
-        if (dashboardDiv) { // Para dashboard.html
+        if (dashboardDiv) { 
             dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
@@ -284,72 +286,64 @@ async function loadUserProfile(userId) {
 
 // --- 6. Inicialización al Cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
-    // Asignar referencias a elementos DOM (solo para la página actual)
+    // Asignar referencias a elementos DOM de forma condicional, según la página actual.
     // Esto asegura que solo se intenten obtener elementos que existen en el HTML actual.
     loaderDiv = document.getElementById('loader-wrapper');
     loaderText = loaderDiv ? loaderDiv.querySelector('h1') : null; // Asumiendo que el h1 está dentro del loader-wrapper
 
-    // Para index.html
-    initialOptionsDiv = document.getElementById('initial-options');
-    signupFormDiv = document.getElementById('signup-form');
-    loginFormDiv = document.getElementById('login-form');
-    showSignupBtn = document.getElementById('show-signup-btn');
-    showLoginBtn = document.getElementById('show-login-btn');
-    backToOptionsFromSignup = document.getElementById('back-to-options-signup');
-    backToOptionsFromLogin = document.getElementById('back-to-options-login');
-    forgotPasswordLink = document.getElementById('forgot-password-link');
-
-    signupEmail = document.getElementById('signup-email');
-    signupPassword = document.getElementById('signup-password');
-    registerBtn = document.getElementById('register-btn');
-
-    loginEmail = document.getElementById('login-email');
-    loginPassword = document.getElementById('login-password');
-    loginSubmitBtn = document.getElementById('login-submit-btn');
-
-    // Para dashboard.html
-    dashboardDiv = document.getElementById('dashboard-div');
-    userEmailDashboardSpan = document.getElementById('user-email-dashboard');
-    usernameDisplayDashboard = document.getElementById('username-display-dashboard');
-    countryDisplayDashboard = document.getElementById('country-display-dashboard');
-    goldDisplayDashboard = document.getElementById('gold-display-dashboard');
-    diamondsDisplayDashboard = document.getElementById('diamonds-display-dashboard');
-    userRankingDashboardDisplay = document.getElementById('user-ranking-display-dashboard'); // NUEVO
-    profileBtnDashboard = document.getElementById('profile-btn-dashboard');
-    logoutBtnDashboard = document.getElementById('logout-button');
-
-    // Para profile.html
-    profileCard = document.getElementById('profile-card');
-    userEmailProfileSpan = document.getElementById('user-email-profile');
-    usernameInputProfile = document.getElementById('username-input-profile');
-    countryInputProfile = document.getElementById('country-input-profile');
-    goldDisplayProfile = document.getElementById('gold-display-profile');
-    diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
-    userRankingProfileDisplay = document.getElementById('user-ranking-display-profile'); // NUEVO
-    saveProfileBtn = document.getElementById('update-profile-button');
-    backToDashboardBtn = document.getElementById('back-to-dashboard-button'); // Asumiendo que existe este ID en profile.html
-    configureBtn = document.getElementById('configure-button'); // Asumiendo que existe este ID en profile.html
-
-
-    // Lógica de enrutamiento y carga inicial
     const path = window.location.pathname;
 
-    if (path.includes('dashboard.html') || path.includes('profile.html')) {
+    if (path.includes('dashboard.html')) {
+        // Asignar elementos DOM específicos de dashboard.html
+        dashboardDiv = document.getElementById('dashboard-div');
+        userEmailDashboardSpan = document.getElementById('user-email-dashboard');
+        usernameDisplayDashboard = document.getElementById('username-display-dashboard');
+        countryDisplayDashboard = document.getElementById('country-display-dashboard');
+        goldDisplayDashboard = document.getElementById('gold-display-dashboard');
+        diamondsDisplayDashboard = document.getElementById('diamonds-display-dashboard');
+        userRankingDashboardDisplay = document.getElementById('user-ranking-display-dashboard');
+        profileBtnDashboard = document.getElementById('profile-btn-dashboard');
+        logoutBtnDashboard = document.getElementById('logout-button');
+
         const { data: { user }, error } = await supabase.auth.getUser();
 
         if (error || !user) {
             console.error('No user logged in or error getting user:', error);
-            window.location.href = 'index.html'; // Redirect to login if not authenticated
+            window.location.href = 'index.html'; // Redirigir al login si no está autenticado
             return;
         }
 
         await loadUserProfile(user.id);
 
-        // Add event listeners specific to dashboard.html
+        // Añadir listeners específicos para dashboard.html
         if (logoutBtnDashboard) {
             logoutBtnDashboard.addEventListener('click', signOut);
         }
-        // Add event listeners specific to profile.html
+
+    } else if (path.includes('profile.html')) {
+        // Asignar elementos DOM específicos de profile.html
+        profileCard = document.getElementById('profile-card');
+        userEmailProfileSpan = document.getElementById('user-email-profile');
+        usernameInputProfile = document.getElementById('username-input-profile');
+        countryInputProfile = document.getElementById('country-input-profile');
+        goldDisplayProfile = document.getElementById('gold-display-profile');
+        diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+        userRankingProfileDisplay = document.getElementById('user-ranking-display-profile');
+        saveProfileBtn = document.getElementById('update-profile-button');
+        backToDashboardBtn = document.getElementById('back-to-dashboard-button'); 
+        configureBtn = document.getElementById('configure-button'); // Si existe
+
+        const { data: { user }, error } = await supabase.auth.getUser();
+
+        if (error || !user) {
+            console.error('No user logged in or error getting user:', error);
+            window.location.href = 'index.html'; // Redirigir al login si no está autenticado
+            return;
+        }
+
+        await loadUserProfile(user.id);
+
+        // Añadir listeners específicos para profile.html
         if (saveProfileBtn) {
             saveProfileBtn.addEventListener('click', async () => {
                 showLoader('Guardando perfil...');
@@ -372,25 +366,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
     } else if (path.includes('index.html') || path === '/') {
-        // Add event listeners specific to index.html
+        // Asignar elementos DOM específicos de index.html
+        initialOptionsDiv = document.getElementById('initial-options');
+        signupFormDiv = document.getElementById('signup-form');
+        loginFormDiv = document.getElementById('login-form');
+        showSignupBtn = document.getElementById('show-signup-btn');
+        showLoginBtn = document.getElementById('show-login-btn');
+        backToOptionsFromSignup = document.getElementById('back-to-options-signup');
+        backToOptionsFromLogin = document.getElementById('back-to-options-login');
+        forgotPasswordLink = document.getElementById('forgot-password-link');
+
+        signupEmail = document.getElementById('signup-email');
+        signupPassword = document.getElementById('signup-password');
+        registerBtn = document.getElementById('register-btn');
+
+        loginEmail = document.getElementById('login-email');
+        loginPassword = document.getElementById('login-password');
+        loginSubmitBtn = document.getElementById('login-submit-btn');
+
+        // Comprobar si el usuario ya está logueado en index.html
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            window.location.href = 'dashboard.html'; // Redirigir al dashboard si ya está logueado
+        } else {
+            showInitialOptions(); // Mostrar opciones iniciales si no está logueado
+        }
+
+        // Añadir listeners específicos para index.html
         if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
         if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
         if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
         if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-
         if (registerBtn) registerBtn.addEventListener('click', signUp);
         if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
-        // if (forgotPasswordLink) forgotPasswordLink.addEventListener('click', handleForgotPassword); // Implement if needed
-
-        // Check if user is already logged in on index.html
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            window.location.href = 'dashboard.html'; // Redirect to dashboard if already logged in
-        } else {
-            showInitialOptions(); // Show initial options if not logged in
-        }
     }
 });
+
 
 async function saveProfile() {
     const { data: { user } } = await supabase.auth.getUser();
