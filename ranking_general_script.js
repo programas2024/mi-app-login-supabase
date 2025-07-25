@@ -15,6 +15,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ====================================================================================
 let loaderWrapper;
 let rankingTableBody;
+let helpButton; // Nueva referencia al botón de ayuda
 
 // ====================================================================================
 // FUNCIONES DE UTILIDAD
@@ -118,6 +119,32 @@ async function fetchAndDisplayRanking() {
 }
 
 // ====================================================================================
+// LÓGICA DEL BOTÓN DE AYUDA
+// ====================================================================================
+
+/**
+ * Muestra el modal de ayuda con información sobre el ranking.
+ */
+function showHelpModal() {
+    Swal.fire({
+        title: '¡Bienvenido al Ranking General!',
+        html: `
+            <p>Descubre qué tanta agilidad tienes para encontrar todas las palabras en el menor tiempo.</p>
+            <p>Aquí encontrarás a los mejores jugadores.</p>
+            <p>Cada paso hoy, mañana es tu éxito.</p>
+        `,
+        icon: 'info', // Puedes cambiar el icono a 'question' si lo prefieres
+        confirmButtonText: '¡Entendido!',
+        customClass: {
+            popup: 'swal2-custom-help-modal', // Clase CSS personalizada
+            title: 'swal2-title',
+            htmlContainer: 'swal2-html-container',
+            confirmButton: 'swal2-confirm'
+        }
+    });
+}
+
+// ====================================================================================
 // INICIALIZACIÓN AL CARGAR EL DOM
 // ====================================================================================
 
@@ -125,6 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Referencias a elementos del DOM
     loaderWrapper = document.getElementById('loader-wrapper');
     rankingTableBody = document.getElementById('ranking-table-body');
+    helpButton = document.getElementById('help-button'); // Obtener referencia al botón de ayuda
+
+    // Añadir event listener al botón de ayuda
+    if (helpButton) {
+        helpButton.addEventListener('click', showHelpModal);
+    }
 
     // Cargar y mostrar el ranking al cargar la página
     fetchAndDisplayRanking();

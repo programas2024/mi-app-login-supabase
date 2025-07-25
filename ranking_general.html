@@ -31,7 +31,7 @@
             width: 90%;
             max-width: 900px;
             text-align: center;
-            position: relative;
+            position: relative; /* Importante para posicionar el botón de ayuda */
             animation: fadeInScale 0.8s ease-out forwards;
         }
 
@@ -47,6 +47,33 @@
             margin-bottom: 25px;
             font-weight: 900;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para el nuevo botón de ayuda */
+        .help-button {
+            position: absolute;
+            top: 20px; /* Ajusta según sea necesario */
+            right: 20px; /* Ajusta según sea necesario */
+            background-color: #6A0DAD; /* Morado oscuro */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Botón redondo */
+            width: 45px;
+            height: 45px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            z-index: 10; /* Asegura que esté por encima de otros elementos */
+        }
+
+        .help-button:hover {
+            background-color: #8A2BE2; /* Morado más claro al pasar el ratón */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
         .ranking-table-wrapper {
@@ -247,6 +274,56 @@
             .ranking-container h1 {
                 font-size: 2.5em;
             }
+            /* Ajuste para el botón de ayuda en móviles */
+            .help-button {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
+            }
+        }
+
+        /* SweetAlert2 Custom Styling */
+        .swal2-custom-help-modal {
+            background-color: #f8faff !important; /* Fondo claro */
+            border-radius: 20px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+            color: #333 !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+
+        .swal2-custom-help-modal .swal2-title {
+            color: #8A2BE2 !important; /* Morado */
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 800 !important;
+            font-size: 2em !important;
+            margin-bottom: 15px !important;
+        }
+
+        .swal2-custom-help-modal .swal2-html-container {
+            font-size: 1.1em !important;
+            line-height: 1.6 !important;
+            color: #555 !important;
+            padding: 0 20px !important;
+            margin-bottom: 25px !important;
+        }
+
+        .swal2-custom-help-modal .swal2-confirm {
+            background-color: #6A0DAD !important; /* Morado oscuro */
+            color: white !important;
+            border-radius: 10px !important;
+            padding: 12px 30px !important;
+            font-size: 1.1em !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+            transition: background-color 0.3s ease, transform 0.2s ease !important;
+        }
+
+        .swal2-custom-help-modal .swal2-confirm:hover {
+            background-color: #8A2BE2 !important; /* Morado más claro */
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
         }
     </style>
 </head>
@@ -260,6 +337,10 @@
 
     <div class="ranking-container">
         <h1><i class="fas fa-trophy"></i> Ranking Sopa de Letras General</h1>
+        <!-- Botón de ayuda añadido aquí -->
+        <button id="help-button" class="help-button" aria-label="Ayuda para el Ranking">
+            <i class="fas fa-question"></i>
+        </button>
         <div class="ranking-table-wrapper">
             <table class="ranking-table">
                 <thead>
