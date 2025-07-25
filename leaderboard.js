@@ -1,12 +1,61 @@
 // leaderboard.js
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+// ====================================================================================
+// CONFIGURACIÓN SUPABASE
+// ====================================================================================
+const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ====================================================================================
+// REFERENCIAS A ELEMENTOS DEL DOM
+// ====================================================================================
+let loaderLeaderboard;
+let leaderboardTableBody;
+let backToDashboardButton;
+
+// ====================================================================================
+// FUNCIONES DE UTILIDAD
+// ====================================================================================
+
 /**
- * Función para cargar y mostrar la tabla de clasificación desde Supabase.
+ * Muestra el loader de la página.
+ * @param {string} message - Mensaje a mostrar en el loader.
+ */
+function showLoader(message = 'Cargando clasificación...') {
+    if (loaderLeaderboard) {
+        const loaderText = loaderLeaderboard.querySelector('p'); // Asumiendo que el texto está en un <p>
+        if (loaderText) {
+            loaderText.textContent = message;
+        }
+        loaderLeaderboard.classList.remove('loader-hidden');
+    }
+}
+
+/**
+ * Oculta el loader de la página.
+ */
+function hideLoader() {
+    if (loaderLeaderboard) {
+        loaderLeaderboard.classList.add('loader-hidden');
+    }
+}
+
+// ====================================================================================
+// LÓGICA DE CLASIFICACIÓN
+// ====================================================================================
+
+/**
+ * Función para cargar y mostrar la tabla de clasificación global desde la tabla 'profiles'.
+ * Muestra el oro y los diamantes acumulados por cada jugador.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {HTMLElement} [loaderElement=null] - Opcional: El elemento loader específico de la página.
  * @param {string} [currentUserId=null] - Opcional: El ID del usuario actualmente logueado para resaltarlo.
  */
-export async function loadLeaderboard(supabase, loaderElement = null, currentUserId = null) { // <-- Añadido currentUserId
+export async function loadLeaderboard(supabase, loaderElement = null, currentUserId = null) {
     const leaderboardTableBody = document.querySelector('.leaderboard-table tbody');
     if (!leaderboardTableBody) {
         console.error("No se encontró el cuerpo de la tabla de clasificación (.leaderboard-table tbody).");
@@ -17,14 +66,18 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
     if (loaderElement) {
         loaderElement.classList.remove('loader-hidden');
         const loaderText = loaderElement.querySelector('p');
-        if (loaderText) loaderText.textContent = 'Cargando clasificación...'; // Mensaje específico
+        if (loaderText) loaderText.textContent = 'Cargando clasificación global...'; // Mensaje específico
     }
 
     try {
-        const { data: users, error } = await supabase
+        // CAMBIO CLAVE: Consultar la tabla 'profiles'
+        const { data: profiles, error } = await supabase
             .from('profiles')
-            .select('id, username, gold, country, diamonds')
-            .order('gold', { ascending: false });
+            .select('id, username, gold, diamonds') // Seleccionar id, username, gold, diamonds directamente de profiles
+            // Ordenar por 'gold' (descendente) y luego por 'diamonds' (descendente) para el ranking global
+            .order('gold', { ascending: false })
+            .order('diamonds', { ascending: false })
+            .limit(100); // Puedes ajustar el límite si quieres mostrar más o menos jugadores
 
         if (error) {
             throw error;
@@ -32,19 +85,20 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 
         leaderboardTableBody.innerHTML = ''; // Limpia cualquier fila existente
 
-        if (users && users.length > 0) {
-            users.forEach((user, index) => {
+        if (profiles && profiles.length > 0) {
+            profiles.forEach((profile, index) => { // Cambiado 'entry' a 'profile' para mayor claridad
                 const row = leaderboardTableBody.insertRow();
                 // Determina si esta fila es la del usuario actual
-                const isCurrentUser = currentUserId && user.id === currentUserId;
+                const isCurrentUser = currentUserId && profile.id === currentUserId; // Usar profile.id
                 if (isCurrentUser) {
                     row.classList.add('current-user-row'); // Añade la clase de resaltado
                 }
 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td class="player-name-cell" data-user-id="${user.id}">${user.username || 'Desconocido'}</td>
-                    <td>${user.gold || 0}</td>
+                    <td class="player-name-cell" data-user-id="${profile.id}">${profile.username || 'Desconocido'}</td>
+                    <td>${profile.gold || 0} <i class="fas fa-coins"></i></td>
+                    <td>${profile.diamonds || 0} <i class="fas fa-gem"></i></td>
                 `;
             });
 
@@ -70,13 +124,15 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 
         } else {
             const row = leaderboardTableBody.insertRow();
-            row.innerHTML = `<td colspan="3">No hay datos en la clasificación. ¡Sé el primero en jugar!</td>`;
+            // Colspan ajustado a 4 columnas
+            row.innerHTML = `<td colspan="4">No hay datos en la clasificación. ¡Sé el primero en jugar!</td>`;
         }
 
     } catch (error) {
-        console.error('Error al cargar la tabla de clasificación:', error.message);
+        console.error('Error al cargar la tabla de clasificación global:', error.message);
         const row = leaderboardTableBody.insertRow();
-        row.innerHTML = `<td colspan="3">Error al cargar la clasificación: ${error.message}</td>`;
+        // Colspan ajustado a 4 columnas
+        row.innerHTML = `<td colspan="4">Error al cargar la clasificación: ${error.message}</td>`;
     } finally {
         if (loaderElement) {
             loaderElement.classList.add('loader-hidden');
@@ -86,6 +142,7 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 
 /**
  * Función para mostrar los detalles de un jugador en un SweetAlert2 modal.
+ * Esta función sigue consultando la tabla 'profiles' para los detalles generales del usuario.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {string} userId - El ID del usuario cuyo perfil se va a mostrar.
  */
@@ -101,7 +158,7 @@ async function showPlayerDetails(supabase, userId) {
     try {
         const { data: userProfile, error } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold')
+            .select('username, country, diamonds, gold') // Estas columnas están en 'profiles'
             .eq('id', userId)
             .single();
 
@@ -160,7 +217,7 @@ function getCountryFlagEmoji(countryName) {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
-        'Argentina': '🇦🇷',
+        'Argentina': '🇦�',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
         // Añade más países según necesites
