@@ -2,12 +2,9 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-// ====================================================================================
-// CONFIGURACIÓN SUPABASE
-// ====================================================================================
+// --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ====================================================================================
@@ -72,7 +69,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 // ====================================================================================
 
 /**
- * Carga y muestra la tabla de clasificación global desde la tabla 'profiles'.
+ * Función para cargar y mostrar la tabla de clasificación global desde la tabla 'profiles'.
  * Muestra el oro y los diamantes acumulados por cada jugador.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {HTMLElement} [loaderElement=null] - Opcional: El elemento loader específico de la página.
@@ -93,6 +90,7 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
     }
 
     try {
+        // Consultar la tabla 'profiles'
         const { data: profiles, error } = await supabase
             .from('profiles')
             .select('id, username, gold, diamonds') // Seleccionar id, username, gold, diamonds directamente de profiles
@@ -185,7 +183,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold')
+            .select('username, country, diamonds, gold') // Estas columnas están en 'profiles'
             .eq('id', targetUserId)
             .single();
 
