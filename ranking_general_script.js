@@ -64,21 +64,18 @@ function formatTime(totalSeconds) {
 async function fetchAndDisplayRanking() {
     showLoader('Cargando Ranking...');
     
-    // Obtener el ID del usuario actual
+    // Obtener el ID del usuario actual para resaltar su fila en el ranking
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const currentUserId = session?.user?.id || null;
 
-    // CONSULTA A LA TABLA 'PROFILES' PARA EL RANKING
+    // CONSULTA A LA TABLA 'sopa_rankings_general' PARA EL RANKING
     const { data, error } = await supabase
-        .from('profiles')
-        .select('id, username, best_time_taken_seconds, best_words_found_count, best_gold_earned_game, best_diamonds_earned_game')
-        // Filtrar perfiles que no tienen datos de juego (opcional, pero ayuda a limpiar el ranking)
-        .not('best_gold_earned_game', 'is', null) 
-        .not('best_diamonds_earned_game', 'is', null)
-        // ORDENACIÓN: Primero por el mejor oro (desc), luego por los mejores diamantes (desc), luego por el mejor tiempo (asc)
-        .order('best_gold_earned_game', { ascending: false })      // Mayor oro primero
-        .order('best_diamonds_earned_game', { ascending: false }) // Luego mayor diamantes
-        .order('best_time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
+        .from('sopa_rankings_general')
+        .select('*') // Selecciona todas las columnas, ya que esta tabla es específica para el ranking
+        // ORDENACIÓN: Primero por oro (desc), luego por diamantes (desc), luego por tiempo (asc)
+        .order('gold_earned', { ascending: false })      // Mayor oro primero
+        .order('diamonds_earned', { ascending: false }) // Luego mayor diamantes
+        .order('time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
         .limit(10); // Mostrar el top 10
 
     hideLoader();
@@ -96,14 +93,15 @@ async function fetchAndDisplayRanking() {
     } else {
         data.forEach((entry, index) => {
             // Comprobar si esta entrada pertenece al usuario actual
-            const isCurrentUser = currentUserId && entry.id === currentUserId; // Usar entry.id ahora, ya que es el ID del perfil
+            const isCurrentUser = currentUserId && entry.user_id === currentUserId; // Usar entry.user_id para esta tabla
             const rowClass = isCurrentUser ? 'current-player-rank' : '';
 
             // Asegurarse de que los valores no sean nulos antes de mostrarlos
-            const time = entry.best_time_taken_seconds !== null ? formatTime(entry.best_time_taken_seconds) : 'N/A';
-            const words = entry.best_words_found_count !== null ? entry.best_words_found_count : 'N/A';
-            const gold = entry.best_gold_earned_game !== null ? entry.best_gold_earned_game : 'N/A';
-            const diamonds = entry.best_diamonds_earned_game !== null ? entry.best_diamonds_earned_game : 'N/A';
+            // Aunque las columnas están NOT NULL, es buena práctica para evitar 'null' en la UI si algo falla
+            const time = entry.time_taken_seconds !== null ? formatTime(entry.time_taken_seconds) : 'N/A';
+            const words = entry.words_found_count !== null ? entry.words_found_count : 'N/A';
+            const gold = entry.gold_earned !== null ? entry.gold_earned : 'N/A';
+            const diamonds = entry.diamonds_earned !== null ? entry.diamonds_earned : 'N/A';
 
             const row = rankingTableBody.insertRow();
             row.className = rowClass; // Añadir la clase a la fila
