@@ -7,7 +7,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // ====================================================================================
 
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBojyWvYCrR5nLo'; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const GRID_SIZE = 12; // Cuadrícula de 12x12
@@ -273,7 +274,7 @@ function renderWordList() {
 }
 
 // ====================================================================================
-// LÓGICA DE INTERACCIÓN DEL USUARIO (SELECCIÓN DE PALABRAS)
+// USER INTERACTION LOGIC (WORD SELECTION)
 // ====================================================================================
 
 /**
@@ -487,34 +488,34 @@ async function checkSelectedWord(selectedWordText, cells) {
 }
 
 // ====================================================================================
-// LÓGICA DEL JUEGO (INICIALIZACIÓN, TEMPORIZADOR, FIN DEL JUEGO)
+// GAME LOGIC (INITIALIZATION, TIMER, GAME OVER)
 // ====================================================================================
 
 /**
- * Calcula las recompensas finales basadas en las palabras encontradas y el tiempo restante.
- * @param {number} wordsFound - Número de palabras principales encontradas.
- * @param {number} timeLeftAtEnd - Tiempo restante en segundos.
- * @param {number} baseGold - Oro base acumulado por palabra.
- * @param {number} baseDiamonds - Diamantes base acumulados por palabras sorpresa.
- * @returns {{gold: number, diamonds: number}} Las recompensas totales.
+ * Calculates final rewards based on words found and time left.
+ * @param {number} wordsFound - Number of main words found.
+ * @param {number} timeLeftAtEnd - Time left in seconds.
+ * @param {number} baseGold - Base gold accumulated per word.
+ * @param {number} baseDiamonds - Base diamonds accumulated per surprise word.
+ * @returns {{gold: number, diamonds: number}} Total rewards.
  */
 function calculateFinalRewards(wordsFound, timeLeftAtEnd, baseGold, baseDiamonds) {
     let totalGold = baseGold;
     let totalDiamonds = baseDiamonds;
 
-    // Bonificación por tiempo restante
-    totalGold += Math.floor(timeLeftAtEnd / 5); // 1 oro por cada 5 segundos restantes
-    totalDiamonds += Math.floor(timeLeftAtEnd / 10); // 1 diamante por cada 10 segundos restantes
+    // Bonus for remaining time
+    totalGold += Math.floor(timeLeftAtEnd / 5); // 1 gold for every 5 seconds remaining
+    totalDiamonds += Math.floor(timeLeftAtEnd / 10); // 1 diamond for every 10 seconds remaining
 
-    // Bonificaciones escalonadas por cantidad de palabras principales encontradas
-    // MAIN_WORDS.length es el total de palabras principales
+    // Tiered bonuses for number of main words found
+    // MAIN_WORDS.length is the total number of main words
     if (wordsFound === totalMainWords) {
         totalGold += 200;
         totalDiamonds += 190;
-    } else if (wordsFound >= 9) { // Más de 8 palabras
+    } else if (wordsFound >= 9) { // More than 8 words
         totalGold += 90;
         totalDiamonds += 50;
-    } else if (wordsFound >= 7) { // Más de 6 palabras
+    } else if (wordsFound >= 7) { // More than 6 words
         totalGold += 60;
         totalDiamonds += 20;
     }
@@ -524,15 +525,15 @@ function calculateFinalRewards(wordsFound, timeLeftAtEnd, baseGold, baseDiamonds
 
 
 /**
- * Inicializa el juego de Sopa de Letras.
+ * Initializes the Word Search game.
  */
 async function initializeGame() {
-    showLoader('Generando Sopa de Letras...'); // Mostrar loader al inicio de la inicialización
+    showLoader('Generando Sopa de Letras...'); // Show loader at start of initialization
     
     currentGold = 0;
     currentDiamonds = 0;
     foundWordsCount = 0;
-    timeLeft = 180; // Reiniciar tiempo a 3 minutos
+    timeLeft = 180; // Reset time to 3 minutes
     gameStartedTime = Date.now();
 
     goldScoreDisplay.textContent = currentGold;
@@ -544,25 +545,25 @@ async function initializeGame() {
     renderWordList();
     startTimer();
 
-    // Ocultar el botón de ranking al inicio del juego
+    // Hide ranking button at game start
     rankingButton.style.display = 'none';
 
-    // Añadir event listeners para la interacción con la cuadrícula
+    // Add event listeners for grid interaction
     wordGridElement.addEventListener('mousedown', handleMouseDown);
     wordGridElement.addEventListener('mousemove', handleMouseMove);
     wordGridElement.addEventListener('mouseup', handleMouseUp);
-    // Para dispositivos táctiles
+    // For touch devices
     wordGridElement.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Prevenir scroll
+        e.preventDefault(); // Prevent scroll
         const touch = e.touches[0];
-        // Usar elementFromPoint para obtener el elemento en la posición del toque
+        // Use elementFromPoint to get the element at the touch position
         const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
         if (targetElement && targetElement.classList.contains('grid-cell')) {
             handleMouseDown({ target: targetElement });
         }
     }, { passive: false });
     wordGridElement.addEventListener('touchmove', (e) => {
-        e.preventDefault(); // Prevenir scroll
+        e.preventDefault(); // Prevent scroll
         const touch = e.touches[0];
         const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
         if (targetElement && targetElement.classList.contains('grid-cell')) {
@@ -571,11 +572,11 @@ async function initializeGame() {
     }, { passive: false });
     wordGridElement.addEventListener('touchend', handleMouseUp);
 
-    hideLoader(); // Ocultar loader al finalizar la inicialización
+    hideLoader(); // Hide loader after initialization
 }
 
 /**
- * Inicia el temporizador del juego.
+ * Starts the game timer.
  */
 function startTimer() {
     clearInterval(timerInterval);
@@ -590,7 +591,7 @@ function startTimer() {
 }
 
 /**
- * Actualiza la visualización del temporizador.
+ * Updates the timer display.
  */
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -599,13 +600,13 @@ function updateTimerDisplay() {
 }
 
 /**
- * Verifica si el juego ha terminado (todas las palabras principales encontradas).
+ * Checks if the game has ended (all main words found).
  */
 async function checkGameEnd() {
     if (foundWordsCount === totalMainWords) {
         clearInterval(timerInterval);
-        const timeRemaining = Math.max(0, timeLeft); // Asegura que no sea negativo
-        const timeTaken = (Date.now() - gameStartedTime) / 1000; // Tiempo en segundos
+        const timeRemaining = Math.max(0, timeLeft); // Ensure it's not negative
+        const timeTaken = (Date.now() - gameStartedTime) / 1000; // Time in seconds
 
         const finalRewards = calculateFinalRewards(foundWordsCount, timeRemaining, currentGold, currentDiamonds);
 
@@ -629,30 +630,30 @@ async function checkGameEnd() {
             allowOutsideClick: false
         }).then((result) => {
             if (result.isConfirmed) {
-                initializeGame(); // Reinicia el juego
+                initializeGame(); // Restart game
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                showRanking(); // Muestra el ranking
+                showRanking(); // Show ranking
             }
         });
     }
 }
 
 /**
- * Maneja el fin del juego, específicamente cuando el tiempo se agota.
- * @param {string} message - Mensaje a mostrar (ej. "¡Se acabó el tiempo!").
+ * Handles game over, specifically when time runs out.
+ * @param {string} message - Message to display (e.g., "Time's up!").
  */
 async function handleGameOver(message) { 
     clearInterval(timerInterval);
-    const timeTaken = (Date.now() - gameStartedTime) / 1000; // Tiempo en segundos
+    const timeTaken = (Date.now() - gameStartedTime) / 1000; // Time in seconds
 
-    // Calcular las recompensas finales incluyendo las bonificaciones por cantidad de palabras
-    const finalRewards = calculateFinalRewards(foundWordsCount, 0, currentGold, currentDiamonds); // Tiempo restante es 0 si se agota
+    // Calculate final rewards including bonuses for word count
+    const finalRewards = calculateFinalRewards(foundWordsCount, 0, currentGold, currentDiamonds); // Time left is 0 if it runs out
 
-    await updatePlayerBalance(finalRewards.gold, finalRewards.diamonds); // Actualiza el balance del jugador
-    await saveGameResultToRanking(timeTaken, foundWordsCount, finalRewards.gold, finalRewards.diamonds); // Guarda el resultado en el ranking
+    await updatePlayerBalance(finalRewards.gold, finalRewards.diamonds); // Update player balance
+    await saveGameResultToRanking(timeTaken, foundWordsCount, finalRewards.gold, finalRewards.diamonds); // Save result to ranking
 
     Swal.fire({
-        icon: 'error', // Icono para tiempo agotado/derrota
+        icon: 'error', // Icon for time out/defeat
         title: '¡Tiempo Agotado!',
         html: `${message}<br>Has ganado <strong>${finalRewards.gold} Oro <i class="fas fa-coins"></i></strong> y <strong>${finalRewards.diamonds} Diamantes <i class="fas fa-gem"></i></strong> por las palabras que encontraste.<br>¡Inténtalo de nuevo para mejorar tu puntaje!`,
         confirmButtonText: 'Jugar de Nuevo',
@@ -661,14 +662,14 @@ async function handleGameOver(message) {
         customClass: {
             confirmButton: 'swal2-confirm-button',
             cancelButton: 'swal2-cancel-button',
-            popup: 'swal2-custom-game-over' // Estilo para fin de juego
+            popup: 'swal2-custom-game-over' // Game over style
         },
         allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
-            initializeGame(); // Reinicia el juego
+            initializeGame(); // Restart game
         } else if (result.dismiss === Swal.DismissReason.cancel) {
-            showRanking(); // Muestra el ranking
+            showRanking(); // Show ranking
         }
     });
 }
@@ -678,16 +679,16 @@ async function handleGameOver(message) {
 // ====================================================================================
 
 /**
- * Actualiza el balance de oro y diamantes del jugador en la base de datos (Supabase).
- * @param {number} gold - Cantidad de oro a añadir.
- * @param {number} diamonds - Cantidad de diamantes a añadir.
+ * Updates the player's gold and diamond balance in the database (Supabase).
+ * @param {number} gold - Amount of gold to add.
+ * @param {number} diamonds - Amount of diamonds to add.
  */
 async function updatePlayerBalance(gold = 0, diamonds = 0) {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const user = session?.user;
 
     if (sessionError) {
-        console.error("Error getting session (Sopa de Letras):", sessionError);
+        console.error("Error getting session (Word Search):", sessionError);
         Swal.fire({
             icon: 'error',
             title: 'Error de Sesión',
@@ -699,7 +700,7 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
     }
 
     if (!user) {
-        console.warn("No user logged in (Sopa de Letras). Cannot update balance.");
+        console.warn("No user logged in (Word Search). Cannot update balance.");
         Swal.fire({
             icon: 'info',
             title: 'Inicia Sesión para Guardar',
@@ -717,7 +718,7 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
         .single();
 
     if (fetchError) {
-        console.error("Error fetching current profile (Sopa de Letras):", fetchError);
+        console.error("Error fetching current profile (Word Search):", fetchError);
         Swal.fire({
             icon: 'error',
             title: 'Error al Obtener Perfil',
@@ -737,7 +738,7 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
         .eq('id', user.id);
 
     if (error) {
-        console.error("Error updating player balance (Sopa de Letras):", error);
+        console.error("Error updating player balance (Word Search):", error);
         Swal.fire({
             icon: 'error',
             title: 'Error al Guardar Recompensa',
@@ -746,189 +747,125 @@ async function updatePlayerBalance(gold = 0, diamonds = 0) {
             customClass: { popup: 'swal2-custom-game-over' }
         });
     } else {
-        console.log(`Balance actualizado (Sopa de Letras): +${gold} Oro, +${diamonds} Diamantes. Nuevo total: ${newGold} Oro, ${newDiamonds} Diamantes.`);
+        console.log(`Balance updated (Word Search): +${gold} Gold, +${diamonds} Diamonds. New total: ${newGold} Gold, ${newDiamonds} Diamonds.`);
     }
 }
 
 /**
- * Guarda o actualiza el resultado del juego en la tabla de rankings.
- * Prioriza la actualización si el tiempo es mejor para usuarios logueados.
- * @param {number} timeTaken - Tiempo en segundos para completar el juego.
- * @param {number} wordsFound - Número de palabras encontradas.
- * @param {number} goldEarned - Oro ganado en esta partida.
- * @param {number} diamondsEarned - Diamantes ganados en esta partida.
+ * Saves or updates the game result in the profiles table.
+ * Prioritizes updating if the combined score (gold + diamonds) is better,
+ * or if the time is better in case of a tie in combined score.
+ * @param {number} timeTaken - Time in seconds to complete the game.
+ * @param {number} wordsFound - Number of words found.
+ * @param {number} goldEarned - Gold earned in this specific game.
+ * @param {number} diamondsEarned - Diamonds earned in this specific game.
  */
 async function saveGameResultToRanking(timeTaken, wordsFound, goldEarned, diamondsEarned) {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const user = session?.user;
     
-    let userId = user?.id || null;
-    let username = "Anónimo";
+    // If no user is logged in, we cannot save a persistent best score.
+    // The game will still run, but ranking will only be for logged-in users.
+    if (!user) {
+        console.warn("No user logged in. Best game result not saved to ranking.");
+        Swal.fire({
+            icon: 'info',
+            title: 'Inicia Sesión para Guardar tu Mejor Puntaje',
+            text: 'Tu puntaje de esta partida no se guardará en el ranking global porque no has iniciado sesión.',
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-warning' }
+        });
+        return;
+    }
 
-    if (user) {
-        const { data: profile, error: profileError } = await supabase
+    let username = "Anónimo"; // Default username if not fetched
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('username, best_time_taken_seconds, best_words_found_count, best_gold_earned_game, best_diamonds_earned_game')
+        .eq('id', user.id)
+        .single();
+
+    if (profileError) {
+        console.error("Error fetching profile for ranking:", profileError);
+        // If profile fetch fails, we cannot save/update the best game result.
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al Obtener Perfil para Ranking',
+            text: 'Hubo un problema al cargar tu perfil para guardar el mejor resultado. Por favor, contacta soporte.',
+            confirmButtonText: 'Entendido',
+            customClass: { popup: 'swal2-custom-game-over' }
+        });
+        return;
+    }
+
+    if (profile && profile.username) {
+        username = profile.username;
+    }
+
+    const newCombinedScore = goldEarned + diamondsEarned;
+    const existingCombinedScore = (profile.best_gold_earned_game || 0) + (profile.best_diamonds_earned_game || 0);
+
+    let shouldUpdate = false;
+    // Check if the new score is better than the existing best score
+    if (newCombinedScore > existingCombinedScore) {
+        shouldUpdate = true;
+    } else if (newCombinedScore === existingCombinedScore) {
+        // If combined scores are equal, check if the new time is better (lower)
+        if (Math.floor(timeTaken) < (profile.best_time_taken_seconds || Infinity)) { // Use Infinity if no previous time
+            shouldUpdate = true;
+        }
+    }
+
+    if (shouldUpdate) {
+        const { error: updateError } = await supabase
             .from('profiles')
-            .select('username')
-            .eq('id', user.id)
-            .single();
+            .update({
+                best_time_taken_seconds: Math.floor(timeTaken),
+                best_words_found_count: wordsFound,
+                best_gold_earned_game: goldEarned,
+                best_diamonds_earned_game: diamondsEarned
+            })
+            .eq('id', user.id);
 
-        if (profileError) {
-            console.error("Error fetching profile for ranking:", profileError);
-        } else if (profile && profile.username) {
-            username = profile.username;
-        }
-
-        // --- Lógica para usuarios logueados: Actualizar si es mejor tiempo ---
-        // Obtener el mejor tiempo existente para este usuario
-        const { data: existingRankings, error: fetchRankingError } = await supabase
-            .from('sopa_rankings_general')
-            .select('*')
-            .eq('user_id', userId)
-            .order('time_taken_seconds', { ascending: true }) 
-            .limit(1); 
-
-        let existingRanking = null;
-        if (existingRankings && existingRankings.length > 0) {
-            existingRanking = existingRankings[0];
-        }
-
-        if (fetchRankingError && fetchRankingError.code !== 'PGRST116') { // PGRST116 means "no rows found"
-            console.error("Error fetching existing ranking for user:", fetchRankingError);
-            // Si hay un error al buscar, intentamos insertar como si fuera nuevo para no perder el resultado
-            const { error: insertError } = await supabase
-                .from('sopa_rankings_general')
-                .insert([
-                    {
-                        user_id: userId,
-                        username: username,
-                        time_taken_seconds: Math.floor(timeTaken),
-                        words_found_count: wordsFound,
-                        gold_earned: goldEarned,
-                        diamonds_earned: diamondsEarned
-                    }
-                ]);
-            if (insertError) {
-                console.error("Error inserting new ranking after fetch error:", insertError);
-            } else {
-                console.log("New ranking inserted after fetch error.");
-            }
-            return;
-        }
-
-        if (existingRanking) {
-            // Si ya existe un ranking para este usuario
-            if (Math.floor(timeTaken) < existingRanking.time_taken_seconds) {
-                // Si el nuevo tiempo es mejor, actualizamos el registro existente
-                const { error: updateError } = await supabase
-                    .from('sopa_rankings_general')
-                    .update({
-                        time_taken_seconds: Math.floor(timeTaken),
-                        words_found_count: wordsFound,
-                        gold_earned: goldEarned,
-                        diamonds_earned: diamondsEarned,
-                        created_at: new Date().toISOString() // Actualizar la fecha de la última mejora
-                    })
-                    .eq('id', existingRanking.id); // Usar el ID del registro existente para la actualización
-
-                if (updateError) {
-                    console.error("Error updating game result in ranking:", updateError);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error al Actualizar Ranking',
-                        text: 'Hubo un problema al actualizar tu mejor resultado en el ranking. Intenta de nuevo.',
-                        confirmButtonText: 'Entendido',
-                        customClass: { popup: 'swal2-custom-game-over' }
-                    });
-                } else {
-                    console.log("Game result updated in ranking (better time).");
-                }
-            } else {
-                // Si el nuevo tiempo no es mejor, no hacemos nada en el ranking
-                console.log("New game time is not better than existing best time. Ranking not updated.");
-            }
-        } else {
-            // Si no existe un ranking para este usuario, insertamos uno nuevo
-            const { error: insertError } = await supabase
-                .from('sopa_rankings_general')
-                .insert([
-                    {
-                        user_id: userId,
-                        username: username,
-                        time_taken_seconds: Math.floor(timeTaken),
-                        words_found_count: wordsFound,
-                        gold_earned: goldEarned,
-                        diamonds_earned: diamondsEarned
-                    }
-                ]);
-
-            if (insertError) {
-                console.error("Error inserting new game result to ranking:", insertError);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al Guardar Ranking',
-                    text: 'Hubo un problema al guardar tu resultado en el ranking. Intenta de nuevo.',
-                    confirmButtonText: 'Entendido',
-                    customClass: { popup: 'swal2-custom-game-over' }
-                });
-            } else {
-                console.log("New game result inserted into ranking.");
-            }
-        }
-    } else {
-        // --- Lógica para usuarios anónimos: Siempre insertar nuevo ---
-        // Para usuarios anónimos, siempre insertamos un nuevo registro.
-        // Esto evita que un "Anónimo" sobrescriba el ranking de otro "Anónimo"
-        // dado que no hay una identidad persistente para ellos.
-        console.warn("No user session found. Inserting new ranking as Anónimo.");
-        const { error: insertAnonError } = await supabase
-            .from('sopa_rankings_general')
-            .insert([
-                {
-                    user_id: null, // user_id es null para anónimos
-                    username: username, // Será "Anónimo"
-                    time_taken_seconds: Math.floor(timeTaken),
-                    words_found_count: wordsFound,
-                    gold_earned: goldEarned,
-                    diamonds_earned: diamondsEarned
-                }
-            ]);
-
-        if (insertAnonError) {
-            console.error("Error inserting anonymous game result to ranking:", insertAnonError);
+        if (updateError) {
+            console.error("Error updating best game result in profiles:", updateError);
             Swal.fire({
                 icon: 'error',
-                title: 'Error al Guardar Ranking',
-                text: 'Hubo un problema al guardar tu resultado anónimo en el ranking. Intenta de nuevo.',
+                title: 'Error al Actualizar Mejor Puntaje',
+                text: 'Hubo un problema al guardar tu mejor resultado en el ranking. Intenta de nuevo.',
                 confirmButtonText: 'Entendido',
                 customClass: { popup: 'swal2-custom-game-over' }
             });
         } else {
-            console.log("Anonymous game result inserted into ranking.");
+            console.log("Best game result updated in profiles (better score/time).");
         }
+    } else {
+        console.log("New game score/time is not better than existing best. Ranking not updated.");
     }
 }
 
 /**
- * Muestra el ranking de la Sopa de Letras General en un modal.
- */
-/**
- * Muestra el ranking de la Sopa de Letras General en un modal.
+ * Displays the General Word Search ranking in a modal.
  */
 async function showRanking() {
     showLoader('Cargando Ranking...');
     
-    // Obtener el ID del usuario actual
+    // Get current user ID
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const currentUserId = session?.user?.id || null;
 
+    // Query the profiles table for ranking data
     const { data, error } = await supabase
-        .from('sopa_rankings_general')
-        .select('*')
-        // ORDENACIÓN CORREGIDA: Primero por oro (desc), luego por diamantes (desc), luego por tiempo (asc)
-        .order('gold_earned', { ascending: false })      // Mayor oro primero
-        .order('diamonds_earned', { ascending: false }) // Luego mayor diamantes
-        .order('time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
-        .limit(10); // Mostrar el top 10
+        .from('profiles')
+        .select('username, best_time_taken_seconds, best_words_found_count, best_gold_earned_game, best_diamonds_earned_game')
+        // Filter out profiles with no game data (optional, but good for clean ranking)
+        .not('best_gold_earned_game', 'is', null) 
+        .not('best_diamonds_earned_game', 'is', null)
+        // ORDERING: First by best gold (desc), then by best diamonds (desc), then by best time (asc)
+        .order('best_gold_earned_game', { ascending: false })      // Higher gold first
+        .order('best_diamonds_earned_game', { ascending: false }) // Then higher diamonds
+        .order('best_time_taken_seconds', { ascending: true }) // Finally lower time (for tie-breaking)
+        .limit(10); // Show top 10
 
     hideLoader();
 
@@ -966,18 +903,24 @@ async function showRanking() {
         rankingHtml += `<tr><td colspan="6">No hay resultados aún. ¡Sé el primero en jugar!</td></tr>`;
     } else {
         data.forEach((entry, index) => {
-            // Comprobar si esta entrada pertenece al usuario actual
-            const isCurrentUser = currentUserId && entry.user_id === currentUserId;
+            // Check if this entry belongs to the current user
+            const isCurrentUser = currentUserId && entry.id === currentUserId; // Use entry.id now, as it's the profile ID
             const rowClass = isCurrentUser ? 'current-player-rank' : '';
+
+            // Ensure values are not null before displaying
+            const time = entry.best_time_taken_seconds !== null ? formatTime(entry.best_time_taken_seconds) : 'N/A';
+            const words = entry.best_words_found_count !== null ? entry.best_words_found_count : 'N/A';
+            const gold = entry.best_gold_earned_game !== null ? entry.best_gold_earned_game : 'N/A';
+            const diamonds = entry.best_diamonds_earned_game !== null ? entry.best_diamonds_earned_game : 'N/A';
 
             rankingHtml += `
                 <tr class="${rowClass}">
                     <td class="rank-number" data-label="#">${index + 1}</td>
                     <td data-label="Jugador">${entry.username || 'Anónimo'}</td>
-                    <td class="time-taken" data-label="Tiempo">${formatTime(entry.time_taken_seconds)}</td>
-                    <td data-label="Palabras">${entry.words_found_count}</td>
-                    <td data-label="Oro">${entry.gold_earned} <i class="fas fa-coins"></i></td>
-                    <td data-label="Diamantes">${entry.diamonds_earned} <i class="fas fa-gem"></i></td>
+                    <td class="time-taken" data-label="Tiempo">${time}</td>
+                    <td data-label="Palabras">${words}</td>
+                    <td data-label="Oro">${gold} <i class="fas fa-coins"></i></td>
+                    <td data-label="Diamantes">${diamonds} <i class="fas fa-gem"></i></td>
                 </tr>
             `;
         });
@@ -995,29 +938,29 @@ async function showRanking() {
         showConfirmButton: true,
         confirmButtonText: 'Cerrar',
         customClass: {
-            popup: 'swal2-custom-ranking-modal', // Clase CSS personalizada para el modal
+            popup: 'swal2-custom-ranking-modal', // Custom CSS class for the modal
             confirmButton: 'swal2-confirm-button'
         },
-        width: '80%', // Ancho del modal
+        width: '80%', // Modal width
         didOpen: () => {
-            // Asegurarse de que el botón de ranking esté visible si se cierra el modal
+            // Ensure ranking button is visible if modal is closed
             rankingButton.style.display = 'flex';
         }
     }).then((result) => {
-        // Al cerrar el modal, recargar la página
+        // On modal close, reload page
         if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
-            location.reload(); // Recarga la página
+            location.reload(); // Reloads the page
         }
     });
 }
 
 
 // ====================================================================================
-// INICIALIZACIÓN AL CARGAR EL DOM
+// DOM CONTENT LOADED INITIALIZATION
 // ====================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Referencias a elementos del DOM
+    // DOM element references
     loaderWrapper = document.getElementById('loader-wrapper');
     wordGridElement = document.getElementById('word-grid');
     wordListElement = document.getElementById('word-list');
@@ -1026,16 +969,16 @@ document.addEventListener('DOMContentLoaded', () => {
     diamondsScoreDisplay = document.getElementById('diamonds-score-display');
     rankingButton = document.getElementById('ranking-button');
 
-    // Añadir event listener al botón de ranking
+    // Add event listener to ranking button
     if (rankingButton) {
         rankingButton.addEventListener('click', showRanking);
     }
 
-    // Mostrar el loader inmediatamente
+    // Show loader immediately
     showLoader('Generando Sopa de Letras...');
 
-    // Inicializar el juego después de un breve retraso (para que el loader sea visible)
+    // Initialize game after a short delay (so loader is visible)
     setTimeout(() => {
         initializeGame();
-    }, 500); // Pequeño retraso para que el loader se muestre antes de la generación
+    }, 500); // Small delay for loader to show before generation
 });

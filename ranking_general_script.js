@@ -6,6 +6,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // CONFIGURACIÓN SUPABASE
 // ====================================================================================
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -67,13 +68,17 @@ async function fetchAndDisplayRanking() {
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const currentUserId = session?.user?.id || null;
 
+    // CONSULTA A LA TABLA 'PROFILES' PARA EL RANKING
     const { data, error } = await supabase
-        .from('sopa_rankings_general')
-        .select('*')
-        // ORDENACIÓN CORREGIDA: Primero por oro (desc), luego por diamantes (desc), luego por tiempo (asc)
-        .order('gold_earned', { ascending: false })      // Mayor oro primero
-        .order('diamonds_earned', { ascending: false }) // Luego mayor diamantes
-        .order('time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
+        .from('profiles')
+        .select('id, username, best_time_taken_seconds, best_words_found_count, best_gold_earned_game, best_diamonds_earned_game')
+        // Filtrar perfiles que no tienen datos de juego (opcional, pero ayuda a limpiar el ranking)
+        .not('best_gold_earned_game', 'is', null) 
+        .not('best_diamonds_earned_game', 'is', null)
+        // ORDENACIÓN: Primero por el mejor oro (desc), luego por los mejores diamantes (desc), luego por el mejor tiempo (asc)
+        .order('best_gold_earned_game', { ascending: false })      // Mayor oro primero
+        .order('best_diamonds_earned_game', { ascending: false }) // Luego mayor diamantes
+        .order('best_time_taken_seconds', { ascending: true }) // Finalmente menor tiempo (para desempate)
         .limit(10); // Mostrar el top 10
 
     hideLoader();
@@ -91,18 +96,24 @@ async function fetchAndDisplayRanking() {
     } else {
         data.forEach((entry, index) => {
             // Comprobar si esta entrada pertenece al usuario actual
-            const isCurrentUser = currentUserId && entry.user_id === currentUserId;
+            const isCurrentUser = currentUserId && entry.id === currentUserId; // Usar entry.id ahora, ya que es el ID del perfil
             const rowClass = isCurrentUser ? 'current-player-rank' : '';
+
+            // Asegurarse de que los valores no sean nulos antes de mostrarlos
+            const time = entry.best_time_taken_seconds !== null ? formatTime(entry.best_time_taken_seconds) : 'N/A';
+            const words = entry.best_words_found_count !== null ? entry.best_words_found_count : 'N/A';
+            const gold = entry.best_gold_earned_game !== null ? entry.best_gold_earned_game : 'N/A';
+            const diamonds = entry.best_diamonds_earned_game !== null ? entry.best_diamonds_earned_game : 'N/A';
 
             const row = rankingTableBody.insertRow();
             row.className = rowClass; // Añadir la clase a la fila
             row.innerHTML = `
                 <td class="rank-number" data-label="#">${index + 1}</td>
                 <td data-label="Jugador">${entry.username || 'Anónimo'}</td>
-                <td class="time-taken" data-label="Tiempo">${formatTime(entry.time_taken_seconds)}</td>
-                <td data-label="Palabras">${entry.words_found_count}</td>
-                <td data-label="Oro">${entry.gold_earned} <i class="fas fa-coins"></i></td>
-                <td data-label="Diamantes">${entry.diamonds_earned} <i class="fas fa-gem"></i></td>
+                <td class="time-taken" data-label="Tiempo">${time}</td>
+                <td data-label="Palabras">${words}</td>
+                <td data-label="Oro">${gold} <i class="fas fa-coins"></i></td>
+                <td data-label="Diamantes">${diamonds} <i class="fas fa-gem"></i></td>
             `;
         });
     }
