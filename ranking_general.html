@@ -20,7 +20,7 @@
             font-family: 'Poppins', sans-serif;
             padding: 40px 20px;
             box-sizing: border-box;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Evita el scroll horizontal en el body */
         }
 
         .ranking-container {
@@ -77,9 +77,9 @@
         }
 
         .ranking-table-wrapper {
-            max-height: 600px; /* Altura máxima para la tabla con scroll */
+            max-height: 600px; /* Altura máxima para la tabla con scroll vertical */
             overflow-y: auto;
-            overflow-x: hidden; /* Oculta la barra de desplazamiento horizontal */
+            overflow-x: hidden; /* Oculta la barra de desplazamiento horizontal por defecto */
             margin-top: 30px;
             border: 1px solid #e0e0e0;
             border-radius: 15px;
@@ -91,7 +91,7 @@
             width: 100%;
             border-collapse: collapse;
             font-family: 'Poppins', sans-serif;
-            min-width: 600px; /* Asegura que la tabla no se haga demasiado pequeña */
+            min-width: 600px; /* Asegura que la tabla no se haga demasiado pequeña en escritorio */
         }
 
         .ranking-table th, .ranking-table td {
@@ -235,27 +235,36 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
 
-        /* Responsive para la tabla */
+        /* Responsive para la tabla: Mantener horizontal con scroll si es necesario */
         @media (max-width: 600px) {
             .ranking-table-wrapper {
-                overflow-x: auto; /* Permite el desplazamiento horizontal */
+                /* Permitir desplazamiento horizontal */
+                overflow-x: auto; 
                 -webkit-overflow-scrolling: touch; /* Para un desplazamiento suave en iOS */
             }
             .ranking-table {
-                min-width: 550px; /* Asegura un ancho mínimo para que la tabla sea legible */
-                /* Eliminar display: block y related styles */
-                display: table; /* Vuelve al comportamiento de tabla por defecto */
+                /* Asegura un ancho mínimo para que la tabla sea legible */
+                /* Ajusta este valor si las columnas se ven muy apretadas */
+                min-width: 550px; 
+                /* Vuelve a los valores por defecto para que se comporte como tabla */
+                display: table; 
             }
             .ranking-table thead {
                 display: table-header-group; /* Muestra el encabezado */
             }
-            .ranking-table tbody, .ranking-table tr, .ranking-table td {
-                display: table-row-group; /* Vuelve al comportamiento de tabla por defecto */
+            .ranking-table tbody, 
+            .ranking-table tr, 
+            .ranking-table td {
+                /* Vuelve al comportamiento de tabla por defecto */
+                display: table-row-group; /* tbody */
+                display: table-row; /* tr */
+                display: table-cell; /* td */
             }
             .ranking-table tr {
-                margin-bottom: 0; /* Elimina el margen inferior si se usaba para el apilamiento */
-                border: none; /* Elimina bordes si se usaban para el apilamiento */
-                box-shadow: none; /* Elimina sombras si se usaban para el apilamiento */
+                /* Elimina estilos de apilamiento vertical */
+                margin-bottom: 0; 
+                border: none; 
+                box-shadow: none; 
             }
             .ranking-table td {
                 text-align: left; /* Vuelve a la alineación izquierda */
@@ -265,7 +274,7 @@
                 padding-bottom: 15px; /* Restaura el padding original */
             }
             .ranking-table td::before {
-                content: none; /* Oculta los data-labels */
+                content: none; /* Oculta los data-labels que se usaban para el apilamiento */
             }
             .ranking-container {
                 padding: 20px;
