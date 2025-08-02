@@ -1,73 +1,49 @@
-// socialLogic.js
+// socialLogic.js - Lógica para las funcionalidades sociales (amigos, solicitudes, mensajes)
 
-// ranking_general_script.js - Lógica para la página de Ranking de Sopa de Letras General
+// Importaciones necesarias para este módulo: Supabase
+import { supabase } from './supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-// ====================================================================================
-// CONFIGURACIÓN SUPABASE
-// ====================================================================================
-const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Referencias a elementos del DOM que serán inicializados externamente
-let loaderElement;
+// Referencias a elementos del DOM que este script gestiona
+let loaderDiv;
 let friendRequestsBadge;
 let messagesBadge;
 let friendsListContainer;
 
 // ====================================================================================
-// FUNCIONES DE UTILIDAD GENERALES (Exportadas para ser usadas en script.js)
+// FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
 
 /**
- * Inicializa los elementos DOM necesarios para las funciones de este script.
- * Debe llamarse después de que el DOM esté completamente cargado.
- * @param {HTMLElement} loaderRef - Referencia al elemento loader.
- * @param {HTMLElement} friendRequestsBadgeRef - Referencia al badge de solicitudes de amistad.
- * @param {HTMLElement} messagesBadgeRef - Referencia al badge de mensajes.
- * @param {HTMLElement} friendsListContainerRef - Referencia al contenedor de la lista de amigos.
- */
-export function initializeSocialDOMElements(loaderRef, friendRequestsBadgeRef, messagesBadgeRef, friendsListContainerRef) {
-    loaderElement = loaderRef;
-    friendRequestsBadge = friendRequestsBadgeRef;
-    messagesBadge = messagesBadgeRef;
-    friendsListContainer = friendsListContainerRef;
-}
-
-/**
- * Muestra el loader de la página.
+ * Muestra el loader de la página (local a socialLogic.js).
  * @param {string} message - Mensaje a mostrar en el loader.
  */
-export function showLoader(message = 'Cargando...') {
-    if (loaderElement) {
-        const loaderText = loaderElement.querySelector('p');
+function showLoader(message = 'Cargando...') {
+    if (loaderDiv) {
+        const loaderText = loaderDiv.querySelector('p');
         if (loaderText) {
             loaderText.textContent = message;
         }
-        loaderElement.classList.remove('loader-hidden');
+        loaderDiv.classList.remove('loader-hidden');
     }
 }
 
 /**
- * Oculta el loader de la página.
+ * Oculta el loader de la página (local a socialLogic.js).
  */
-export function hideLoader() {
-    if (loaderElement) {
-        loaderElement.classList.add('loader-hidden');
+function hideLoader() {
+    if (loaderDiv) {
+        loaderDiv.classList.add('loader-hidden');
     }
 }
 
 /**
- * Helper para mostrar SweetAlert2 con estilos personalizados.
+ * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
  * @param {string} icon - 'success', 'error', 'info', 'warning', 'question'
  * @param {string} title - Título del modal.
  * @param {string} text - Contenido del modal.
  * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
  */
-export function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
+function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
     Swal.fire({
         icon: icon,
         title: title,
@@ -84,11 +60,11 @@ export function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido
 }
 
 /**
- * Obtiene el emoji de la bandera de un país.
+ * Obtiene el emoji de la bandera de un país (local a socialLogic.js).
  * @param {string} countryName - Nombre del país.
  * @returns {string} Emoji de la bandera o cadena vacía.
  */
-export function getCountryFlagEmoji(countryName) {
+function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
         'Colombia': '🇨🇴',
@@ -138,7 +114,7 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
  * Muestra un modal con las solicitudes de amistad pendientes para el usuario actual.
  */
 export async function showFriendRequestsModal() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } = {} } = await supabase.auth.getUser(); // Añadir valor por defecto para user
     if (!user) {
         showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver las solicitudes de amistad.');
         return;
@@ -407,7 +383,7 @@ export async function loadUnreadMessagesCount(currentUserId) {
  * Muestra un modal con las conversaciones de chat del usuario.
  */
 export async function showMessagesModal() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } = {} } = await supabase.auth.getUser(); // Añadir valor por defecto para user
     if (!user) {
         showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver tus mensajes.');
         return;
@@ -591,3 +567,17 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
         showCustomSwal('error', 'Error', 'No se pudo enviar el mensaje.');
     }
 }
+
+// ====================================================================================
+// INICIALIZACIÓN DE socialLogic.js AL CARGAR EL DOM
+// ====================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Asignar referencias a elementos DOM específicos de este script
+    loaderDiv = document.getElementById('loader'); // Obtener referencia al loader global
+    friendRequestsBadge = document.getElementById('friend-requests-badge');
+    messagesBadge = document.getElementById('messages-badge');
+    friendsListContainer = document.getElementById('friends-list-container');
+
+    // Aquí no hay listeners directos para botones, ya que script.js los manejará
+    // y llamará a las funciones exportadas de este módulo.
+});
