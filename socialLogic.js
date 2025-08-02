@@ -4,6 +4,7 @@
 import { supabase } from '/supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
 // Referencias a elementos del DOM que este script gestiona
+// loaderDiv ya no es necesario aquí
 let friendRequestsBadge;
 let messagesBadge;
 let friendsListContainer;
@@ -21,6 +22,7 @@ let friendsListContainer;
  * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
  */
 function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
+    // Asegurarse de que Swal esté disponible antes de usarlo
     if (typeof Swal === 'undefined') {
         console.error('SweetAlert2 (Swal) no está definido. Asegúrate de que SweetAlert2 se cargue antes de socialLogic.js.');
         alert(`${title}: ${text}`); // Fallback simple si Swal no está disponible
@@ -543,6 +545,7 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
 // ====================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     // Asignar referencias a elementos DOM específicos de este script
+    // loaderDiv ya no se inicializa aquí
     friendRequestsBadge = document.getElementById('friend-requests-badge');
     messagesBadge = document.getElementById('messages-badge');
     friendsListContainer = document.getElementById('friends-list-container');
@@ -550,4 +553,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Aquí no hay listeners directos para botones, ya que script.js los manejará
     // y llamará a las funciones exportadas de este módulo.
 });
-
