@@ -118,7 +118,7 @@ export async function showFriendRequestsModal() {
 
     try {
         // ESPECIFICAR LA RELACIÓN PARA EL REMITENTE (sender_id)
-        // Usamos 'friend_requests_sender_id_fkey' que nos has proporcionado en la definición de la tabla.
+        // Usamos 'profiles!friend_requests_sender_id_fkey' que definimos en el SQL
         const { data: requests, error } = await supabase
             .from('friend_requests')
             .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username)')
@@ -201,9 +201,11 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
         }
 
         // Insertar la relación bidireccional en la tabla 'friends'
+        // Aseguramos que user1_id sea siempre menor que user2_id para la restricción UNIQUE
+        const [id1, id2] = [receiverId, senderId].sort();
+
         const { error: insertError } = await supabase.from('friends').insert([
-            { user1_id: receiverId, user2_id: senderId },
-            { user1_id: senderId, user2_id: receiverId }
+            { user1_id: id1, user2_id: id2 }
         ]);
 
         if (insertError) {
@@ -273,16 +275,15 @@ export async function loadFriendsList(currentUserId) {
 
     try {
         // OBTENER IDs de amigos de la tabla 'friends'
-        // Usamos los nombres de las claves foráneas más probables basados en tu tabla friend_requests.
-        // Si sigues teniendo problemas, POR FAVOR, verifica estos nombres EXACTOS
-        // en tu panel de Supabase -> Database -> Table Editor -> Tabla 'friends' -> Pestaña 'Foreign Keys'.
+        // Usamos los nombres de las claves foráneas que definimos en el SQL:
+        // 'profiles!friends_user1_id_fkey' y 'profiles!friends_user2_id_fkey'
         const { data: friendsData, error: friendsError } = await supabase
             .from('friends')
             .select(`
                 user1_id,
                 user2_id,
-                profiles_user1_id:profiles!friends_user1_id_fkey(username, gold, diamonds, country),
-                profiles_user2_id:profiles!friends_user2_id_fkey(username, gold, diamonds, country)
+                user1_profile:profiles!friends_user1_id_fkey(username, gold, diamonds, country),
+                user2_profile:profiles!friends_user2_id_fkey(username, gold, diamonds, country)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -293,16 +294,17 @@ export async function loadFriendsList(currentUserId) {
         const uniqueFriends = new Map(); // Usar un Map para evitar duplicados y almacenar el perfil completo
         friendsData.forEach(friendship => {
             let friendProfile = null;
+            // Determinar cuál de los dos usuarios en la amistad es el "otro"
             if (friendship.user1_id === currentUserId) {
-                // El amigo es user2_id
-                friendProfile = friendship.profiles_user2_id;
+                friendProfile = friendship.user2_profile;
             } else if (friendship.user2_id === currentUserId) {
-                // El amigo es user1_id
-                friendProfile = friendship.profiles_user1_id;
+                friendProfile = friendship.user1_profile;
             }
 
             if (friendProfile && friendProfile.username) {
-                uniqueFriends.set(friendProfile.username, friendProfile);
+                // Usar el ID del perfil como clave para el Map para asegurar unicidad
+                const friendId = friendship.user1_id === currentUserId ? friendship.user2_id : friendship.user1_id;
+                uniqueFriends.set(friendId, friendProfile);
             }
         });
 
@@ -428,7 +430,7 @@ export async function showMessagesModal() {
         messages.forEach(msg => {
             const participant1 = msg.sender_id;
             const participant2 = msg.receiver_id;
-            // Crear una clave de conversación consistente
+            // Crear una clave de conversación consistente, ordenando los IDs
             const convoKey = [participant1, participant2].sort().join('-');
             
             if (!conversations[convoKey]) {
@@ -462,9 +464,9 @@ export async function showMessagesModal() {
                     const otherUserId = item.dataset.otherUserId;
                     const otherUsername = item.dataset.otherUsername;
                     Swal.close(); // Cierra el modal de conversaciones
-                    showChatWindow(user.id, otherUserId, otherUsername, conversations[
-                        [user.id, otherUserId].sort().join('-')
-                    ].messages);
+                    // Asegurarse de pasar los mensajes correctos para esta conversación
+                    const convoKeyForChat = [user.id, otherUserId].sort().join('-');
+                    showChatWindow(user.id, otherUserId, otherUsername, conversations[convoKeyForChat].messages);
                 });
             });
         });
@@ -516,7 +518,9 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername, 
                 sender: { username: 'Tú' }, // Simular para display inmediato
                 receiver: { username: otherUsername }
             };
-            showChatWindow(currentUserId, otherUserId, otherUsername, messages.concat([newMessage]));
+            // Para asegurar que los mensajes se muestren en orden, concatena y ordena
+            const updatedMessages = messages.concat([newMessage]).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            showChatWindow(currentUserId, otherUserId, otherUsername, updatedMessages);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             // Si el usuario cierra el chat, puede que quiera volver a la lista de conversaciones
             showMessagesModal();
