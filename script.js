@@ -6,7 +6,7 @@
 import { supabase } from './supabaseConfig.js';
 
 // Importa las funciones necesarias de chestLogic.js
-import { updateCurrencyDisplay, openChest } from './chestLogic.js'; // openChest también es una función exportada
+import { updateCurrencyDisplay, openChest } from './chestLogic.js';
 
 // Importa las funciones necesarias de socialLogic.js
 import {
@@ -167,7 +167,7 @@ async function signIn() {
     if (error) {
         showCustomSwal('error', 'Error de Inicio de Sesión', error.message);
     } else {
-        // Redirección manejada por onAuthStateChange
+        // La redirección se maneja en onAuthStateChange
     }
 }
 
@@ -178,7 +178,7 @@ async function signOut() {
         if (error) {
             throw error;
         }
-        window.location.href = 'index.html'; // Redirigir a la página de inicio de sesión
+        // La redirección a index.html se maneja en onAuthStateChange
     } catch (error) {
         console.error('Error al cerrar sesión:', error.message);
         showCustomSwal('error', 'Error al Cerrar Sesión', `No se pudo cerrar la sesión: ${error.message}`);
@@ -345,9 +345,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     loaderDiv = document.getElementById('loader');
     loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
 
+    // Listener para cambios de estado de autenticación (GLOBAL para todas las páginas)
+    supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log(`[Auth State Change] Event: ${event}, Session:`, session);
+
+        if (session && session.user) {
+            // Usuario autenticado
+            console.log(`[Auth State Change] Usuario autenticado: ${session.user.id}`);
+            if (currentPage === 'index.html' || currentPage === '') {
+                // Si está en la página de inicio y se autentica, redirigir al dashboard
+                console.log('[Auth State Change] Redirigiendo a dashboard.html...');
+                window.location.href = 'dashboard.html';
+            } else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
+                // Si ya está en dashboard/profile y la sesión es válida, cargar perfil
+                console.log(`[Auth State Change] En ${currentPage}, cargando perfil...`);
+                await loadUserProfile(session.user.id);
+            }
+        } else {
+            // Usuario no autenticado o sesión cerrada
+            console.log('[Auth State Change] Usuario no autenticado o sesión cerrada.');
+            if (currentPage !== 'index.html' && currentPage !== '') {
+                // Si no está en la página de inicio y no hay sesión, redirigir a inicio
+                console.log('[Auth State Change] Redirigiendo a index.html...');
+                window.location.href = 'index.html';
+            } else {
+                // Si ya está en la página de inicio, simplemente mostrar las opciones de autenticación
+                console.log('[Auth State Change] Ya en index.html, mostrando opciones de autenticación.');
+                showInitialOptions();
+            }
+        }
+    });
+
     // --- Lógica para index.html ---
     if (currentPage === 'index.html' || currentPage === '') {
-        console.log('Cargando lógica de index.html');
+        console.log('Cargando lógica específica de index.html');
 
         // Asignar referencias a elementos de index.html
         initialOptionsDiv = document.getElementById('initial-options');
@@ -365,71 +396,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
         forgotPasswordLink = document.getElementById('forgot-password');
 
-        // Primero, verifica si el usuario ya está autenticado
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            console.log('Usuario ya logueado al cargar index.html. Redirigiendo a dashboard.html...');
-            window.location.href = 'dashboard.html';
-            return; // Detener la ejecución del resto de la lógica de index.html
-        } else {
-            // Si no hay usuario, muestra las opciones de inicio/registro
-            showInitialOptions();
-
-            // Configura los event listeners solo si los elementos existen (estamos en index.html)
-            if (registerBtn) registerBtn.addEventListener('click', signUp);
-            if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
-            if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
-            if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
-            if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
-            if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
-            
-            if (forgotPasswordLink) {
-                forgotPasswordLink.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const { value: emailToReset } = await Swal.fire({
-                        title: 'Restablecer Contraseña',
-                        input: 'email',
-                        inputLabel: 'Ingresa tu correo electrónico',
-                        inputPlaceholder: 'ejemplo@correo.com',
-                        showCancelButton: true,
-                        confirmButtonText: 'Enviar enlace',
-                        cancelButtonText: 'Cancelar',
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return '¡Necesitas ingresar un correo electrónico!';
-                            }
-                            return null;
+        // Configura los event listeners solo si los elementos existen (estamos en index.html)
+        if (registerBtn) registerBtn.addEventListener('click', signUp);
+        if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
+        if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
+        if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
+        if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
+        if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
+        
+        if (forgotPasswordLink) {
+            forgotPasswordLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const { value: emailToReset } = await Swal.fire({
+                    title: 'Restablecer Contraseña',
+                    input: 'email',
+                    inputLabel: 'Ingresa tu correo electrónico',
+                    inputPlaceholder: 'ejemplo@correo.com',
+                    showCancelButton: true,
+                    confirmButtonText: 'Enviar enlace',
+                    cancelButtonText: 'Cancelar',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return '¡Necesitas ingresar un correo electrónico!';
                         }
-                    });
-
-                    if (emailToReset) {
-                        showLoader('Enviando enlace de recuperación...');
-                        const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-                            redirectTo: window.location.origin + '/reset-password.html'
-                        });
-                        hideLoader();
-
-                        if (error) {
-                            showCustomSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
-                        } else {
-                            showCustomSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
-                        }
+                        return null;
                     }
                 });
-            }
 
-            supabase.auth.onAuthStateChange((event, session) => {
-                console.log('Auth event in index.html:', event, 'Session:', session);
-                if (session && session.user && (currentPage === 'index.html' || currentPage === '')) {
-                    console.log('Usuario autenticado. Redirigiendo a dashboard.html desde onAuthStateChange...');
-                    window.location.href = 'dashboard.html';
+                if (emailToReset) {
+                    showLoader('Enviando enlace de recuperación...');
+                    const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+                        redirectTo: window.location.origin + '/reset-password.html'
+                    });
+                    hideLoader();
+
+                    if (error) {
+                        showCustomSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
+                    } else {
+                        showCustomSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                    }
                 }
             });
         }
     }
     // --- Lógica para dashboard.html y profile.html ---
     else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
-        console.log(`Cargando lógica de ${currentPage}`);
+        console.log(`Cargando lógica específica de ${currentPage}`);
 
         // Asignar referencias a elementos del dashboard/perfil
         dashboardDiv = document.getElementById('dashboard');
@@ -455,57 +467,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         goldDisplayProfile = document.getElementById('gold-display-profile');
         diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
 
-        // Siempre verifica la sesión al cargar estas páginas
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (user) {
-            // Usuario autenticado: Cargar perfil y mostrar contenido
-            await loadUserProfile(user.id);
-
-            // Configurar listeners específicos de dashboard.html
-            if (currentPage === 'dashboard.html') {
-                if (profileBtnDashboard) {
-                    profileBtnDashboard.addEventListener('click', () => {
-                        window.location.href = 'profile.html';
-                    });
-                }
-                if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
-                // Listeners para botones sociales en dashboard (llaman a funciones de socialLogic.js)
-                if (friendRequestsBtn) friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
-                if (messagesBtn) messagesBtn.addEventListener('click', showMessagesModal);
-                // Listener para el botón del cofre (llama a función de chestLogic.js)
-                if (chestBtn) chestBtn.addEventListener('click', openChest);
-            }
-            // Configurar listeners específicos de profile.html
-            else if (currentPage === 'profile.html') {
-                if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
-                if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
-                    window.location.href = 'dashboard.html';
+        // Configurar listeners específicos de dashboard.html
+        if (currentPage === 'dashboard.html') {
+            if (profileBtnDashboard) {
+                profileBtnDashboard.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
                 });
-                if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
             }
-
-            // Listeners para botones de navegación globales (si existen en la página actual)
-            const playBtn = document.getElementById('play-btn');
-            if (playBtn) playBtn.addEventListener('click', () => { window.location.href = 'games.html'; });
-            if (showRankingsBtn) showRankingsBtn.addEventListener('click', () => { window.location.href = 'rankings.html'; });
-            if (showLeaderboardBtn) showLeaderboardBtn.addEventListener('click', () => { window.location.href = 'leaderboard-full.html'; });
-
-
-            // Listener global para cerrar sesión desde cualquier página autenticada
-            supabase.auth.onAuthStateChange((event, session) => {
-                console.log(`Auth event in ${currentPage}. Session:`, session);
-                if (event === 'SIGNED_OUT' || !session) {
-                    console.log(`Sesión terminada en ${currentPage}. Redirigiendo a index.html.`);
-                    window.location.href = 'index.html';
-                }
-            });
-
-        } else {
-            // No hay usuario autenticado: Redirigir a la página de inicio
-            console.log(`No hay usuario autenticado en ${currentPage}. Redirigiendo a index.html`);
-            window.location.href = 'index.html';
+            if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+            // Listeners para botones sociales en dashboard (llaman a funciones de socialLogic.js)
+            if (friendRequestsBtn) friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
+            if (messagesBtn) messagesBtn.addEventListener('click', showMessagesModal);
+            // Listener para el botón del cofre (llama a función de chestLogic.js)
+            if (chestBtn) chestBtn.addEventListener('click', openChest);
         }
+        // Configurar listeners específicos de profile.html
+        else if (currentPage === 'profile.html') {
+            if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+            if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+            if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
+        }
+
+        // Listeners para botones de navegación globales (si existen en la página actual)
+        const playBtn = document.getElementById('play-btn');
+        if (playBtn) playBtn.addEventListener('click', () => { window.location.href = 'games.html'; });
+        if (showRankingsBtn) showRankingsBtn.addEventListener('click', () => { window.location.href = 'rankings.html'; });
+        if (showLeaderboardBtn) showLeaderboardBtn.addEventListener('click', () => { window.location.href = 'leaderboard-full.html'; });
     }
     // NOTA: Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
     // Solo deberían cargar sus respectivos scripts de lógica de juego.
