@@ -74,7 +74,7 @@ let diamondsDisplayProfile;
  * @param {string} message - Mensaje a mostrar en el loader.
  * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
  */
-/*
+
 function showLoader(message = 'Cargando...') {
     if (loaderDiv) {
         const loaderTextElement = loaderDiv.querySelector('p');
@@ -84,19 +84,19 @@ function showLoader(message = 'Cargando...') {
         loaderDiv.classList.remove('loader-hidden');
     }
 }
-*/
+
 
 /**
  * Oculta el loader de la página (local a script.js).
  * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
  */
-/*
+
 function hideLoader() {
     if (loaderDiv) {
         loaderDiv.classList.add('loader-hidden');
     }
 }
-*/
+
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a script.js).
