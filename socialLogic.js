@@ -62,7 +62,6 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
  * @param {string} userId - ID del usuario actual.
  */
 export async function loadPendingFriendRequestsCount(userId) {
-    // === ELIMINADA LÓGICA DE LOADER ===
     if (!userId) {
         console.error('loadPendingFriendRequestsCount: userId es nulo o indefinido. No se puede cargar el conteo de solicitudes.');
         return;
@@ -106,7 +105,7 @@ export async function showFriendRequestsModal() {
     }
 
     // Limpiar lista antes de cargar
-    friendRequestsListContainer.innerHTML = '<p>Cargando solicitudes...</p>';
+    friendRequestsListContainer.innerHTML = '<p>Cargando solicitudes...</p>'; // Este "Cargando solicitudes..." es un placeholder temporal, no un loader persistente
 
     // Mostrar modal
     friendRequestsModal.classList.remove('hidden');
@@ -325,7 +324,7 @@ export async function loadFriendsList(userId) {
         return;
     }
 
-    friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>';
+    friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Este "Cargando lista de amigos..." es un placeholder temporal
 
     try {
         // Obtener amigos donde user1_id es el usuario actual
@@ -453,7 +452,7 @@ export async function showMessagesModal() {
     }
 
     // Limpiar lista antes de cargar
-    messagesListContainer.innerHTML = '<p>Cargando mensajes...</p>';
+    messagesListContainer.innerHTML = '<p>Cargando mensajes...</p>'; // Este "Cargando mensajes..." es un placeholder temporal
 
     // Mostrar modal
     messagesModal.classList.remove('hidden');
@@ -643,4 +642,3 @@ async function markMessageAsRead(messageId) {
         console.error('Error al marcar mensaje como leído:', error.message);
     }
 }
-
