@@ -340,7 +340,7 @@ export async function loadFriendsList(currentUserId) {
                         <th>Amigo</th>
                         <th>Oro</th>
                         <th>Diamantes</th>
-                        
+                        <th>País</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -351,7 +351,7 @@ export async function loadFriendsList(currentUserId) {
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
-                   
+                    <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
                 </tr>
             `;
         });
