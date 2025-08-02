@@ -338,12 +338,9 @@
     display: none; /* Oculta el badge si no hay notificaciones */
 }
 
-/* --- Estilos para el Loader (SIMPLIFICADOS) --- */
-/* Si el loader no se va a usar para ocultar/mostrar, estas clases son menos relevantes */
-/* Sin embargo, mantengo una base si quieres usarlo de otra forma */
+/* --- Estilos para el Loader (AHORA OCULTO POR DEFECTO) --- */
 .loader-overlay {
-    /* Puedes dejarlo con display: none; si no lo vas a usar */
-    display: none; /* Oculto por defecto si no se usa para transiciones */
+    display: none; /* ¡Este es el cambio clave! Oculto por defecto. */
     position: fixed;
     top: 0;
     left: 0;
@@ -385,7 +382,7 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- LOADER: Simplificado y oculto por defecto en CSS si no se usa con JS -->
+        <!-- LOADER: Ahora con display: none; en el CSS para que no aparezca. -->
         <div id="loader" class="loader-overlay">
             <div class="loader-content">
                 <div class="spinner"></div>
@@ -393,7 +390,7 @@
             </div>
         </div>
 
-        <!-- DASHBOARD CONTENT: Ahora sin la clase dashboard-hidden para que sea visible por defecto -->
+        <!-- DASHBOARD CONTENT: Visible por defecto -->
         <div id="dashboard" class="dashboard-main-content">
 
             <div class="welcome-message" title="Información de tu sesión actual.">
