@@ -53,7 +53,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '🇨🇴',
+        'Colombia': '�🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
@@ -148,29 +148,46 @@ export async function showFriendRequestsModal() {
             requestsHtml = '<p>No tienes solicitudes de amistad pendientes.</p>';
         }
 
-        showCustomSwal('info', 'Solicitudes de Amistad', `<div class="friend-requests-list">${requestsHtml}</div>`).then(() => {
-            // Después de cerrar el modal, asegúrate de recargar los contadores
+        // El .then() se ejecuta cuando el modal se cierra, no cuando se abre.
+        // Los event listeners deben adjuntarse después de que el modal se haya renderizado.
+        // SweetAlert2 tiene un hook `didOpen` para esto.
+        Swal.fire({
+            icon: 'info',
+            title: 'Solicitudes de Amistad',
+            html: `<div class="friend-requests-list">${requestsHtml}</div>`,
+            confirmButtonText: 'Cerrar', // Un botón de cierre general para el modal
+            customClass: {
+                popup: 'swal2-profile-popup',
+                title: 'swal2-profile-title',
+                htmlContainer: 'swal2-profile-html',
+                confirmButton: 'swal2-profile-confirm-button'
+            },
+            buttonsStyling: false,
+            showCancelButton: false, // No mostrar botón de cancelar
+            didOpen: (popup) => {
+                // Añadir event listeners a los botones de aceptar y rechazar dentro del modal de SweetAlert
+                popup.querySelectorAll('.accept-btn').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const requestId = event.currentTarget.dataset.requestId;
+                        const senderId = event.currentTarget.dataset.senderId;
+                        const senderUsername = event.currentTarget.dataset.senderUsername;
+                        await handleAcceptFriendRequest(requestId, senderId, senderUsername, user.id);
+                        Swal.close(); // Cierra el modal después de aceptar
+                    });
+                });
+                popup.querySelectorAll('.reject-btn').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const requestId = event.currentTarget.dataset.requestId;
+                        const senderUsername = event.currentTarget.dataset.senderUsername;
+                        await handleRejectFriendRequest(requestId, senderUsername, user.id);
+                        Swal.close(); // Cierra el modal después de rechazar
+                    });
+                });
+            }
+        }).then(() => {
+            // Este .then() se ejecuta cuando el modal se cierra (por el botón "Cerrar" o por clic fuera)
             loadPendingFriendRequestsCount(user.id);
             loadFriendsList(user.id);
-
-            // Añadir event listeners a los botones de aceptar y rechazar dentro del modal de SweetAlert
-            document.querySelectorAll('.accept-btn').forEach(button => {
-                button.addEventListener('click', async (event) => {
-                    const requestId = event.target.dataset.requestId;
-                    const senderId = event.target.dataset.senderId;
-                    const senderUsername = event.target.dataset.senderUsername;
-                    await handleAcceptFriendRequest(requestId, senderId, senderUsername, user.id);
-                    Swal.close(); // Cierra el modal después de aceptar
-                });
-            });
-            document.querySelectorAll('.reject-btn').forEach(button => {
-                button.addEventListener('click', async (event) => {
-                    const requestId = event.target.dataset.requestId;
-                    const senderUsername = event.target.dataset.senderUsername;
-                    await handleRejectFriendRequest(requestId, senderUsername, user.id);
-                    Swal.close(); // Cierra el modal después de rechazar
-                });
-            });
         });
 
     } catch (error) {
@@ -235,18 +252,19 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
  */
 export async function handleRejectFriendRequest(requestId, senderUsername, receiverId) {
     try {
-        const { error: updateError } = await supabase
+        // Cambiado de update a delete, según la solicitud del usuario
+        const { error: deleteError } = await supabase
             .from('friend_requests')
-            .update({ status: 'rejected', updated_at: new Date().toISOString() })
+            .delete() // Eliminar la solicitud
             .eq('id', requestId)
             .eq('receiver_id', receiverId)
-            .eq('status', 'pending');
+            .eq('status', 'pending'); // Asegurarse de que solo se eliminen las pendientes
 
-        if (updateError) {
-            throw updateError;
+        if (deleteError) {
+            throw deleteError;
         }
 
-        showCustomSwal('info', 'Solicitud Rechazada', `Has rechazado la solicitud de amistad de <strong>${senderUsername}</strong>.`);
+        showCustomSwal('info', 'Solicitud Rechazada', `Has rechazado la solicitud de amistad de <strong>${senderUsername}</strong>. ¡La solicitud ha sido eliminada!`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo
     } catch (error) {
         console.error('Error al rechazar solicitud de amistad:', error.message);
