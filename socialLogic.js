@@ -14,6 +14,7 @@ let messagesBtn; // Referencia al botón de mensajes
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
 
+
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
  * @param {string} icon - 'success', 'error', 'info', 'warning', 'question'
@@ -53,7 +54,7 @@ function getCountryFlagEmoji(countryName) {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
-        'Argentina': '�🇷',
+        'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
         // Añade más países según necesites
@@ -114,9 +115,10 @@ export async function showFriendRequestsModal() {
     }
 
     try {
+        // CAMBIO CLAVE AQUÍ: Especificar explícitamente la relación para el remitente
         const { data: requests, error } = await supabase
             .from('friend_requests')
-            .select('id, sender_id, profiles(username)') // Selecciona el username del remitente
+            .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username)') // Usar un alias y especificar la FK
             .eq('receiver_id', user.id)
             .eq('status', 'pending');
 
@@ -128,12 +130,12 @@ export async function showFriendRequestsModal() {
         if (requests && requests.length > 0) {
             requestsHtml = requests.map(req => `
                 <div class="friend-request-item">
-                    <p><i class="fas fa-user-plus"></i> <strong>${req.profiles ? req.profiles.username : 'Usuario Desconocido'}</strong> te ha enviado una solicitud.</p>
+                    <p><i class="fas fa-user-plus"></i> <strong>${req.sender_profile ? req.sender_profile.username : 'Usuario Desconocido'}</strong> te ha enviado una solicitud.</p>
                     <div class="request-actions">
-                        <button class="accept-btn" data-request-id="${req.id}" data-sender-id="${req.sender_id}" data-sender-username="${req.profiles ? req.profiles.username : 'Usuario Desconocido'}">
+                        <button class="accept-btn" data-request-id="${req.id}" data-sender-id="${req.sender_id}" data-sender-username="${req.sender_profile ? req.sender_profile.username : 'Usuario Desconocido'}">
                             <i class="fas fa-check"></i> Aceptar
                         </button>
-                        <button class="reject-btn" data-request-id="${req.id}" data-sender-username="${req.profiles ? req.profiles.username : 'Usuario Desconocido'}">
+                        <button class="reject-btn" data-request-id="${req.id}" data-sender-username="${req.sender_profile ? req.sender_profile.username : 'Usuario Desconocido'}">
                             <i class="fas fa-times"></i> Rechazar
                         </button>
                     </div>
