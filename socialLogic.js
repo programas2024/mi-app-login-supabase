@@ -4,15 +4,15 @@
 import { supabase } from '/supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
 // Referencias a elementos del DOM que este script gestiona
-// loaderDiv ya no es necesario aquí
 let friendRequestsBadge;
 let messagesBadge;
 let friendsListContainer;
+let friendRequestsBtn; // Referencia al botón de solicitudes de amistad
+let messagesBtn; // Referencia al botón de mensajes
 
 // ====================================================================================
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
-
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
@@ -22,7 +22,6 @@ let friendsListContainer;
  * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
  */
 function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
-    // Asegurarse de que Swal esté disponible antes de usarlo
     if (typeof Swal === 'undefined') {
         console.error('SweetAlert2 (Swal) no está definido. Asegúrate de que SweetAlert2 se cargue antes de socialLogic.js.');
         alert(`${title}: ${text}`); // Fallback simple si Swal no está disponible
@@ -54,7 +53,7 @@ function getCountryFlagEmoji(countryName) {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
-        'Argentina': '🇦🇷',
+        'Argentina': '�🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
         // Añade más países según necesites
@@ -75,6 +74,11 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
     friendRequestsBadge = document.getElementById('friend-requests-badge');
     if (!friendRequestsBadge) {
         console.warn('Elemento #friend-requests-badge no encontrado. No se puede actualizar el conteo de solicitudes.');
+        return;
+    }
+    if (!currentUserId) {
+        console.warn('loadPendingFriendRequestsCount: currentUserId es nulo. No se puede cargar el conteo.');
+        friendRequestsBadge.classList.add('hidden'); // Ocultar si no hay usuario
         return;
     }
     try {
@@ -256,6 +260,11 @@ export async function loadFriendsList(currentUserId) {
         console.warn('Elemento #friends-list-container no encontrado. No se puede cargar la lista de amigos.');
         return;
     }
+    if (!currentUserId) {
+        console.warn('loadFriendsList: currentUserId es nulo. No se puede cargar la lista de amigos.');
+        friendsListContainer.innerHTML = '<p>No estás autenticado para ver la lista de amigos.</p>';
+        return;
+    }
 
     friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Mensaje de carga
 
@@ -349,6 +358,11 @@ export async function loadUnreadMessagesCount(currentUserId) {
     messagesBadge = document.getElementById('messages-badge');
     if (!messagesBadge) {
         console.warn('Elemento #messages-badge no encontrado. No se puede actualizar el conteo de mensajes no leídos.');
+        return;
+    }
+    if (!currentUserId) {
+        console.warn('loadUnreadMessagesCount: currentUserId es nulo. No se puede cargar el conteo.');
+        messagesBadge.classList.add('hidden'); // Ocultar si no hay usuario
         return;
     }
     try {
@@ -545,11 +559,21 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
 // ====================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     // Asignar referencias a elementos DOM específicos de este script
-    // loaderDiv ya no se inicializa aquí
     friendRequestsBadge = document.getElementById('friend-requests-badge');
     messagesBadge = document.getElementById('messages-badge');
     friendsListContainer = document.getElementById('friends-list-container');
+    friendRequestsBtn = document.getElementById('friend-requests-btn');
+    messagesBtn = document.getElementById('messages-btn');
 
-    // Aquí no hay listeners directos para botones, ya que script.js los manejará
-    // y llamará a las funciones exportadas de este módulo.
+    // Añadir event listeners a los botones si existen
+    if (friendRequestsBtn) {
+        friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
+    }
+    if (messagesBtn) {
+        messagesBtn.addEventListener('click', showMessagesModal);
+    }
+
+    // Cargar los conteos iniciales si el usuario ya está autenticado
+    // Esto se manejará mejor a través de la función loadUserProfile en script.js
+    // que se llama en el onAuthStateChange.
 });
