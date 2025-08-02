@@ -483,7 +483,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
             // Listeners para botones sociales en dashboard (llaman a funciones de socialLogic.js)
             if (friendRequestsBtn) friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
-            if (messagesBtn) messagesBtn.SaddEventListener('click', showMessagesModal);
+            // CORRECCIÓN: Cambiado 'SaddEventListener' a 'addEventListener'
+            if (messagesBtn) messagesBtn.addEventListener('click', showMessagesModal); 
             // Listener para el botón del cofre (llama a función de chestLogic.js)
             if (chestBtn) chestBtn.addEventListener('click', openChest);
         }
