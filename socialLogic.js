@@ -13,28 +13,6 @@ let friendsListContainer;
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
 
-/**
- * Muestra el loader de la página (local a socialLogic.js).
- * @param {string} message - Mensaje a mostrar en el loader.
- */
-function showLoader(message = 'Cargando...') {
-    if (loaderDiv) {
-        const loaderText = loaderDiv.querySelector('p');
-        if (loaderText) {
-            loaderText.textContent = message;
-        }
-        loaderDiv.classList.remove('loader-hidden');
-    }
-}
-
-/**
- * Oculta el loader de la página (local a socialLogic.js).
- */
-function hideLoader() {
-    if (loaderDiv) {
-        loaderDiv.classList.add('loader-hidden');
-    }
-}
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
