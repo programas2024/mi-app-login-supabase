@@ -1,14 +1,7 @@
-// ranking_general_script.js - Lógica para la página de Ranking de Sopa de Letras General
+// socialLogic.js
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-// ====================================================================================
-// CONFIGURACIÓN SUPABASE
-// ====================================================================================
-const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Importaciones necesarias para este módulo: Supabase
+import { supabase } from './supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
 // Referencias a elementos del DOM que serán inicializados externamente
 let loaderElement;
@@ -33,7 +26,6 @@ export function initializeSocialDOMElements(loaderRef, friendRequestsBadgeRef, m
     friendRequestsBadge = friendRequestsBadgeRef;
     messagesBadge = messagesBadgeRef;
     friendsListContainer = friendsListContainerRef;
-    console.log('Social DOM Elements Initialized:', { loaderElement, friendRequestsBadge, messagesBadge, friendsListContainer });
 }
 
 /**
@@ -47,7 +39,6 @@ export function showLoader(message = 'Cargando...') {
             loaderText.textContent = message;
         }
         loaderElement.classList.remove('loader-hidden');
-        console.log('Loader shown:', message);
     }
 }
 
@@ -57,7 +48,6 @@ export function showLoader(message = 'Cargando...') {
 export function hideLoader() {
     if (loaderElement) {
         loaderElement.classList.add('loader-hidden');
-        console.log('Loader hidden.');
     }
 }
 
@@ -92,7 +82,7 @@ export function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido
 export function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '�🇴',
+        'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
@@ -112,10 +102,7 @@ export function getCountryFlagEmoji(countryName) {
  * @param {string} currentUserId - ID del usuario actual.
  */
 export async function loadPendingFriendRequestsCount(currentUserId) {
-    if (!friendRequestsBadge) {
-        console.warn('friendRequestsBadge element not found. Cannot update badge count.');
-        return; // Asegurarse de que el badge exista
-    }
+    if (!friendRequestsBadge) return; // Asegurarse de que el badge exista
     try {
         const { count, error } = await supabase
             .from('friend_requests')
@@ -133,7 +120,6 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
         } else {
             friendRequestsBadge.classList.add('hidden');
         }
-        console.log(`Pending friend requests count for ${currentUserId}: ${count}`);
     } catch (error) {
         console.error('Error al cargar conteo de solicitudes pendientes:', error.message);
     }
@@ -143,7 +129,6 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
  * Muestra un modal con las solicitudes de amistad pendientes para el usuario actual.
  */
 export async function showFriendRequestsModal() {
-    console.log('Attempting to show friend requests modal...');
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver las solicitudes de amistad.');
@@ -214,7 +199,6 @@ export async function showFriendRequestsModal() {
                 });
             }
         });
-        console.log('Friend requests modal displayed.');
 
     } catch (error) {
         console.error('Error al cargar solicitudes de amistad:', error.message);
@@ -249,7 +233,6 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
         showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo del badge
         await loadFriendsList(receiverId); // Recargar lista de amigos en el dashboard
-        console.log(`Friend request ${requestId} accepted. Friend: ${senderUsername}`);
     } catch (error) {
         console.error('Error al aceptar solicitud de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudo aceptar la solicitud de amistad: ${error.message}`);
@@ -280,7 +263,6 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
 
         showCustomSwal('info', 'Solicitud Rechazada', `Has rechazado la solicitud de amistad de <strong>${senderUsername}</strong>.`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo
-        console.log(`Friend request ${requestId} rejected. Friend: ${senderUsername}`);
     } catch (error) {
         console.error('Error al rechazar solicitud de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudo rechazar la solicitud de amistad: ${error.message}`);
@@ -294,10 +276,7 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
  * @param {string} currentUserId - ID del usuario actual.
  */
 export async function loadFriendsList(currentUserId) {
-    if (!friendsListContainer) {
-        console.warn('friendsListContainer element not found. Cannot load friends list.');
-        return; // Asegurarse de que el contenedor exista
-    }
+    if (!friendsListContainer) return; // Asegurarse de que el contenedor exista
 
     friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Mensaje de carga
 
@@ -325,7 +304,6 @@ export async function loadFriendsList(currentUserId) {
 
         if (friendIds.size === 0) {
             friendsListContainer.innerHTML = '<p>Aún no tienes amigos. ¡Envía algunas solicitudes!</p>';
-            console.log('No friends found for current user.');
             return;
         }
 
@@ -370,10 +348,8 @@ export async function loadFriendsList(currentUserId) {
                 </table>
             `;
             friendsListContainer.innerHTML = tableHtml;
-            console.log('Friends list loaded and displayed.');
         } else {
             friendsListContainer.innerHTML = '<p>No se encontraron perfiles para tus amigos.</p>';
-            console.log('Friends profiles not found for loaded friend IDs.');
         }
 
     } catch (error) {
@@ -393,10 +369,7 @@ export async function loadFriendsList(currentUserId) {
  * @param {string} currentUserId - ID del usuario actual.
  */
 export async function loadUnreadMessagesCount(currentUserId) {
-    if (!messagesBadge) {
-        console.warn('messagesBadge element not found. Cannot update message count.');
-        return; // Asegurarse de que el badge exista
-    }
+    if (!messagesBadge) return; // Asegurarse de que el badge exista
     try {
         // Asumiendo que tienes una columna 'is_read' en tu tabla 'chat_messages'
         // Si no la tienes, esta función solo contará todos los mensajes recibidos.
@@ -416,7 +389,6 @@ export async function loadUnreadMessagesCount(currentUserId) {
         } else {
             messagesBadge.classList.add('hidden');
         }
-        console.log(`Unread messages count for ${currentUserId}: ${count}`);
     } catch (error) {
         console.error('Error al cargar conteo de mensajes no leídos:', error.message);
     }
@@ -426,7 +398,6 @@ export async function loadUnreadMessagesCount(currentUserId) {
  * Muestra un modal con las conversaciones de chat del usuario.
  */
 export async function showMessagesModal() {
-    console.log('Attempting to show messages modal...');
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
         showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver tus mensajes.');
@@ -509,7 +480,6 @@ export async function showMessagesModal() {
                 });
             }
         });
-        console.log('Messages modal displayed.');
 
     } catch (error) {
         console.error('Error al cargar mensajes:', error.message);
@@ -574,8 +544,6 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername, 
             const messageText = result.value;
             await handleSendMessage(currentUserId, otherUserId, messageText);
             // Después de enviar, recargar la ventana de chat para ver el nuevo mensaje
-            // Esto es un poco rústico, para un chat en tiempo real se usarían suscripciones de Supabase
-            // Para una actualización instantánea, podríamos añadir el mensaje al array local y volver a llamar showChatWindow
             const newMessage = {
                 sender_id: currentUserId,
                 receiver_id: otherUserId,

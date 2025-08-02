@@ -3,11 +3,16 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
+
+
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+
 
 // --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
 // Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
