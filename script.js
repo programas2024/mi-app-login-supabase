@@ -21,10 +21,6 @@ import {
 // REFERENCIAS A ELEMENTOS DEL DOM (Declaradas globalmente para accesibilidad en este script)
 // ====================================================================================
 
-// Elementos globales/comunes para este script
-// loaderDiv; // Ya no es necesario si el loader no se controla con JS
-// loaderText; // Ya no es necesario si el loader no se controla con JS
-
 // Elementos específicos de index.html
 let initialOptionsDiv;
 let signupFormDiv;
@@ -70,35 +66,6 @@ let diamondsDisplayProfile;
 // ====================================================================================
 
 /**
- * Muestra el loader de la página (local a script.js).
- * @param {string} message - Mensaje a mostrar en el loader.
- * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
- */
-/*
-function showLoader(message = 'Cargando...') {
-    if (loaderDiv) {
-        const loaderTextElement = loaderDiv.querySelector('p');
-        if (loaderTextElement) {
-            loaderTextElement.textContent = message;
-        }
-        loaderDiv.classList.remove('loader-hidden');
-    }
-}
-*/
-
-/**
- * Oculta el loader de la página (local a script.js).
- * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
- */
-/*
-function hideLoader() {
-    if (loaderDiv) {
-        loaderDiv.classList.add('loader-hidden');
-    }
-}
-*/
-
-/**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a script.js).
  * @param {string} icon - 'success', 'error', 'info', 'warning', 'question'
  * @param {string} title - Título del modal.
@@ -106,6 +73,12 @@ function hideLoader() {
  * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
  */
 function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
+    // Verificar si SweetAlert2 (Swal) está disponible
+    if (typeof Swal === 'undefined') {
+        console.error('SweetAlert2 (Swal) no está definido. Asegúrate de que SweetAlert2 se cargue antes de este script.');
+        alert(`${title}: ${text}`); // Fallback simple si Swal no está disponible
+        return;
+    }
     Swal.fire({
         icon: icon,
         title: title,
@@ -150,9 +123,7 @@ async function signUp() {
         showCustomSwal('error', 'Error', 'Por favor, ingresa un email y una contraseña.');
         return;
     }
-    // showLoader('Registrando...'); // Ya no se usa el loader
     const { error } = await supabase.auth.signUp({ email, password });
-    // hideLoader(); // Ya no se usa el loader
     if (error) {
         showCustomSwal('error', 'Error de Registro', error.message);
     } else {
@@ -167,9 +138,7 @@ async function signIn() {
         showCustomSwal('error', 'Error', 'Por favor, ingresa tu email y contraseña.');
         return;
     }
-    // showLoader('Iniciando sesión...'); // Ya no se usa el loader
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    // hideLoader(); // Ya no se usa el loader
     if (error) {
         showCustomSwal('error', 'Error de Inicio de Sesión', error.message);
     } else {
@@ -178,7 +147,6 @@ async function signIn() {
 }
 
 async function signOut() {
-    // showLoader('Cerrando sesión...'); // Ya no se usa el loader
     try {
         const { error } = await supabase.auth.signOut();
         if (error) {
@@ -188,8 +156,6 @@ async function signOut() {
     } catch (error) {
         console.error('Error al cerrar sesión:', error.message);
         showCustomSwal('error', 'Error al Cerrar Sesión', `No se pudo cerrar la sesión: ${error.message}`);
-    } finally {
-        // hideLoader(); // Ya no se usa el loader
     }
 }
 
@@ -202,8 +168,6 @@ async function signOut() {
  * También carga la lista de amigos y el conteo de solicitudes pendientes.
  */
 async function loadUserProfile(userId) {
-    // showLoader('Cargando perfil...'); // Ya no se usa el loader
-
     try {
         let profileData;
         const { data: profile, error: profileError } = await supabase
@@ -281,7 +245,6 @@ async function loadUserProfile(userId) {
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = profileData.diamonds || 0;
 
             // Cargar datos sociales (amigos, solicitudes, mensajes)
-            // Estas funciones ahora obtienen sus propios elementos DOM
             await loadFriendsList(userId);
             await loadPendingFriendRequestsCount(userId);
             await loadUnreadMessagesCount(userId);
@@ -290,11 +253,6 @@ async function loadUserProfile(userId) {
     } catch (error) {
         console.error('Error general en loadUserProfile:', error.message);
         showCustomSwal('error', 'Error de Carga', `No se pudo cargar tu perfil: ${error.message}`);
-    } finally {
-        // hideLoader(); // Ya no se usa el loader
-        // Aseguramos que el dashboard/perfil sea visible DESPUÉS de ocultar el loader
-        // if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden'); // Ya no es necesario, el dashboard es visible por defecto
-        // if (profileCard) profileCard.classList.remove('dashboard-hidden'); // Ya no es necesario, el perfil es visible por defecto
     }
 }
 
@@ -316,7 +274,6 @@ async function saveProfile() {
         return;
     }
 
-    // showLoader('Guardando perfil...'); // Ya no se usa el loader
     try {
         const { error: updateError } = await supabase
             .from('profiles')
@@ -331,8 +288,6 @@ async function saveProfile() {
     } catch (updateError) {
         console.error('Error al actualizar el perfil:', updateError.message);
         showCustomSwal('error', 'Error', `No se pudo actualizar tu perfil: ${updateError.message}`);
-    } finally {
-        // hideLoader(); // Ya no se usa el loader
     }
 }
 
@@ -346,10 +301,6 @@ function showConfigureOptions() {
 // ====================================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     const currentPage = window.location.pathname.split('/').pop();
-
-    // --- Inicializar referencias a elementos del DOM globales para script.js ---
-    // loaderDiv = document.getElementById('loader'); // Ya no es necesario
-    // loaderText = loaderDiv ? loaderDiv.querySelector('p') : null; // Ya no es necesario
 
     // Listener para cambios de estado de autenticación (GLOBAL para todas las páginas)
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -430,11 +381,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 if (emailToReset) {
-                    // showLoader('Enviando enlace de recuperación...'); // Ya no se usa el loader
                     const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
                         redirectTo: window.location.origin + '/reset-password.html'
                     });
-                    // hideLoader(); // Ya no se usa el loader
 
                     if (error) {
                         showCustomSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
@@ -485,7 +434,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (friendRequestsBtn) friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
             if (messagesBtn) messagesBtn.addEventListener('click', showMessagesModal); 
             // Listener para el botón del cofre (llama a función de chestLogic.js)
-            if (chestBtn) chestBtn.addEventListener('click', openChest);
+            if (chestBtn) chestBtn.addEventListener('click', async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    await openChest(user.id);
+                    await loadUserProfile(user.id); // Recargar el perfil para actualizar oro/diamantes
+                } else {
+                    showCustomSwal('warning', 'Error', 'Debes iniciar sesión para abrir cofres.');
+                }
+            });
         }
         // Configurar listeners específicos de profile.html
         else if (currentPage === 'profile.html') {
