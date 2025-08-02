@@ -340,7 +340,7 @@ export async function loadFriendsList(currentUserId) {
                         <th>Amigo</th>
                         <th>Oro</th>
                         <th>Diamantes</th>
-                        <th>País</th>
+                        
                     </tr>
                 </thead>
                 <tbody>

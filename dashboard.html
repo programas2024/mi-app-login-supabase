@@ -341,16 +341,16 @@
     display: none; /* Oculta el badge si no hay notificaciones */
 }
 
-* Custom styles for SweetAlert2 modals, especially for social features */
+/* Custom styles for SweetAlert2 modals, especially for social features */
 .swal2-profile-popup {
-    background-color: #2c2c2c !important; /* Darker background */
+    background-color: #2c2c2c !important; /* Fondo oscuro */
     border-radius: 15px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     border: 1px solid #444 !important;
 }
 
 .swal2-profile-title {
-    color: #e0e0e0 !important; /* Light gray text for title */
+    color: #ffffff !important; /* Blanco puro para el título */
     font-family: 'Inter', sans-serif !important;
     font-size: 1.8em !important;
     padding-bottom: 10px;
@@ -359,17 +359,17 @@
 }
 
 .swal2-profile-html {
-    color: #c0c0c0 !important; /* Lighter gray for content */
+    color: #f0f0f0 !important; /* Gris muy claro para el contenido general */
     font-family: 'Inter', sans-serif !important;
     font-size: 1.1em !important;
     line-height: 1.6;
-    max-height: 400px; /* Limit height for scroll */
-    overflow-y: auto; /* Add scroll if content overflows */
-    padding-right: 10px; /* Space for scrollbar */
+    max-height: 400px; /* Limitar altura para scroll */
+    overflow-y: auto; /* Añadir scroll si el contenido se desborda */
+    padding-right: 10px; /* Espacio para la barra de desplazamiento */
 }
 
 .swal2-profile-confirm-button {
-    background-color: #4CAF50 !important; /* Green for confirm */
+    background-color: #4CAF50 !important; /* Verde para confirmar */
     color: white !important;
     border: none !important;
     border-radius: 8px !important;
@@ -406,7 +406,7 @@
 
 .friend-request-item p {
     margin: 0;
-    color: #e0e0e0;
+    color: #f0f0f0; /* Texto claro para la solicitud */
     font-size: 1.05em;
     display: flex;
     align-items: center;
@@ -414,12 +414,12 @@
 
 .friend-request-item p i {
     margin-right: 10px;
-    color: #88b04b; /* A nice green for icons */
+    color: #88b04b; /* Un verde bonito para los iconos */
 }
 
 .request-actions {
     display: flex;
-    justify-content: flex-end; /* Align buttons to the right */
+    justify-content: flex-end; /* Alinear botones a la derecha */
     gap: 10px;
     margin-top: 10px;
 }
@@ -443,7 +443,7 @@
 }
 
 .accept-btn {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50; /* Verde */
     color: white;
 }
 
@@ -453,7 +453,7 @@
 }
 
 .reject-btn {
-    background-color: #f44336; /* Red */
+    background-color: #f44336; /* Rojo */
     color: white;
 }
 
@@ -481,6 +481,7 @@
     transition: background-color 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     border: 1px solid #555;
+    color: #f0f0f0; /* Texto claro para el nombre de usuario */
 }
 
 .conversation-item:hover {
@@ -488,14 +489,14 @@
 }
 
 .conversation-item i {
-    color: #64b5f6; /* Blue for messages icon */
+    color: #64b5f6; /* Azul para el icono de mensajes */
     font-size: 1.2em;
 }
 
 .last-message-preview {
     font-size: 0.9em;
-    color: #909090;
-    margin-left: auto; /* Push to the right */
+    color: #c0c0c0; /* Un gris más claro para la vista previa del mensaje */
+    margin-left: auto; /* Empujar a la derecha */
 }
 
 /* Chat window specific styles */
@@ -509,7 +510,7 @@
     background-color: #333;
     border-radius: 10px;
     padding: 15px;
-    max-height: 300px; /* Fixed height for chat history */
+    max-height: 300px; /* Altura fija para el historial de chat */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -527,27 +528,27 @@
 }
 
 .chat-message.sent {
-    background-color: #007bff; /* Blue for sent messages */
+    background-color: #007bff; /* Azul para mensajes enviados */
     color: white;
-    align-self: flex-end; /* Align to right */
+    align-self: flex-end; /* Alinear a la derecha */
     border-bottom-right-radius: 5px;
 }
 
 .chat-message.received {
-    background-color: #555; /* Gray for received messages */
+    background-color: #555; /* Gris para mensajes recibidos */
     color: white;
-    align-self: flex-start; /* Align to left */
+    align-self: flex-start; /* Alinear a la izquierda */
     border-bottom-left-radius: 5px;
 }
 
 .message-sender {
     font-weight: bold;
     margin-right: 5px;
-    color: #e0e0e0;
+    color: #ffffff; /* Blanco para el remitente en el chat */
 }
 
 .message-text {
-    color: #f0f0f0;
+    color: #ffffff; /* Blanco para el texto del mensaje */
 }
 
 .message-time {
@@ -559,7 +560,7 @@
 }
 
 .chat-input {
-    width: calc(100% - 20px) !important; /* Adjust width for padding */
+    width: calc(100% - 20px) !important; /* Ajustar ancho para el padding */
     padding: 12px !important;
     border-radius: 8px !important;
     border: 1px solid #666 !important;
@@ -567,13 +568,14 @@
     color: #f0f0f0 !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 1em !important;
-    resize: vertical; /* Allow vertical resizing */
+    resize: vertical; /* Permitir redimensionamiento vertical */
     min-height: 60px;
 }
 
 .chat-input::placeholder {
     color: #999 !important;
 }
+
 </style>
 </head>
 <body>
