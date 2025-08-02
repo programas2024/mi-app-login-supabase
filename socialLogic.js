@@ -55,7 +55,7 @@ function getCountryFlagEmoji(countryName) {
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '�🇽',
+        'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
@@ -117,10 +117,11 @@ export async function showFriendRequestsModal() {
     }
 
     try {
-        // CAMBIO CLAVE AQUÍ: Especificar explícitamente la relación para el remitente
+        // ESPECIFICAR LA RELACIÓN PARA EL REMITENTE (sender_id)
+        // Usamos 'friend_requests_sender_id_fkey' que nos has proporcionado en la definición de la tabla.
         const { data: requests, error } = await supabase
             .from('friend_requests')
-            .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username)') // Usar un alias y especificar la FK
+            .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username)')
             .eq('receiver_id', user.id)
             .eq('status', 'pending');
 
@@ -153,8 +154,6 @@ export async function showFriendRequestsModal() {
             loadFriendsList(user.id);
 
             // Añadir event listeners a los botones de aceptar y rechazar dentro del modal de SweetAlert
-            // Esto debe hacerse después de que el modal se haya renderizado
-            // No es necesario un setTimeout si SweetAlert2 ya maneja el DOM correctamente
             document.querySelectorAll('.accept-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const requestId = event.target.dataset.requestId;
@@ -219,7 +218,8 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
         showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo del badge
         await loadFriendsList(receiverId); // Recargar lista de amigos en el dashboard
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error al aceptar solicitud de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudo aceptar la solicitud de amistad: ${error.message}`);
     }
@@ -272,9 +272,10 @@ export async function loadFriendsList(currentUserId) {
     friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Mensaje de carga
 
     try {
-        // Obtener IDs de amigos de la tabla 'friends'
-        // Esto asume que la tabla 'friends' tiene entradas bidireccionales
-        // o que una consulta OR es suficiente para encontrar a todos los amigos.
+        // OBTENER IDs de amigos de la tabla 'friends'
+        // Usamos los nombres de las claves foráneas más probables basados en tu tabla friend_requests.
+        // Si sigues teniendo problemas, POR FAVOR, verifica estos nombres EXACTOS
+        // en tu panel de Supabase -> Database -> Table Editor -> Tabla 'friends' -> Pestaña 'Foreign Keys'.
         const { data: friendsData, error: friendsError } = await supabase
             .from('friends')
             .select(`
@@ -456,7 +457,6 @@ export async function showMessagesModal() {
             // Después de cerrar el modal, asegúrate de recargar los contadores
             loadUnreadMessagesCount(user.id);
             // Añadir event listeners a los elementos de conversación dentro del modal de SweetAlert
-            // No es necesario un setTimeout si SweetAlert2 ya maneja el DOM correctamente
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const otherUserId = item.dataset.otherUserId;
