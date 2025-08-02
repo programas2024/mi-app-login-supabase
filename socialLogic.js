@@ -4,7 +4,7 @@
 import { supabase } from '/supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
 // Referencias a elementos del DOM que este script gestiona
-let loaderDiv;
+// loaderDiv ya no es necesario aquí
 let friendRequestsBadge;
 let messagesBadge;
 let friendsListContainer;
@@ -48,7 +48,7 @@ function getCountryFlagEmoji(countryName) {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
-        'Argentina': '🇦🇷',
+        'Argentina': '🇦�',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
         // Añade más países según necesites
@@ -98,7 +98,7 @@ export async function showFriendRequestsModal() {
         return;
     }
 
-    showLoader('Cargando solicitudes de amistad...');
+    // Eliminado: showLoader('Cargando solicitudes de amistad...');
 
     try {
         const { data: requests, error } = await supabase
@@ -167,7 +167,7 @@ export async function showFriendRequestsModal() {
         console.error('Error al cargar solicitudes de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudieron cargar las solicitudes: ${error.message}`);
     } finally {
-        hideLoader();
+        // Eliminado: hideLoader();
     }
 }
 
@@ -179,7 +179,7 @@ export async function showFriendRequestsModal() {
  * @param {string} receiverId - El ID del usuario que está aceptando la solicitud.
  */
 export async function handleAcceptFriendRequest(requestId, senderId, senderUsername, receiverId) {
-    showLoader('Aceptando solicitud...');
+    // Eliminado: showLoader('Aceptando solicitud...');
     try {
         const { error: updateError } = await supabase
             .from('friend_requests')
@@ -200,7 +200,7 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
         console.error('Error al aceptar solicitud de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudo aceptar la solicitud de amistad: ${error.message}`);
     } finally {
-        hideLoader();
+        // Eliminado: hideLoader();
     }
 }
 
@@ -211,7 +211,7 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
  * @param {string} receiverId - El ID del usuario que está rechazando la solicitud.
  */
 export async function handleRejectFriendRequest(requestId, senderUsername, receiverId) {
-    showLoader('Rechazando solicitud...');
+    // Eliminado: showLoader('Rechazando solicitud...');
     try {
         const { error: updateError } = await supabase
             .from('friend_requests')
@@ -230,7 +230,7 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
         console.error('Error al rechazar solicitud de amistad:', error.message);
         showCustomSwal('error', 'Error', `No se pudo rechazar la solicitud de amistad: ${error.message}`);
     } finally {
-        hideLoader();
+        // Eliminado: hideLoader();
     }
 }
 
@@ -367,7 +367,7 @@ export async function showMessagesModal() {
         return;
     }
 
-    showLoader('Cargando mensajes...');
+    // Eliminado: showLoader('Cargando mensajes...');
 
     try {
         // Obtener todos los mensajes donde el usuario es remitente o receptor
@@ -448,7 +448,7 @@ export async function showMessagesModal() {
         console.error('Error al cargar mensajes:', error.message);
         showCustomSwal('error', 'Error', `No se pudieron cargar los mensajes: ${error.message}`);
     } finally {
-        hideLoader();
+        // Eliminado: hideLoader();
     }
 }
 
@@ -551,7 +551,7 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
 // ====================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     // Asignar referencias a elementos DOM específicos de este script
-    loaderDiv = document.getElementById('loader'); // Obtener referencia al loader global
+    // loaderDiv ya no se inicializa aquí
     friendRequestsBadge = document.getElementById('friend-requests-badge');
     messagesBadge = document.getElementById('messages-badge');
     friendsListContainer = document.getElementById('friends-list-container');
