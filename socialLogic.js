@@ -17,18 +17,20 @@ let messagesBtn; // Referencia al botón de mensajes
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
+ * Siempre devuelve una Promesa para evitar errores .then().
  * @param {string} icon - 'success', 'error', 'info', 'warning', 'question'
  * @param {string} title - Título del modal.
  * @param {string} text - Contenido del modal.
  * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
+ * @returns {Promise<any>} Una promesa que resuelve cuando el modal se cierra.
  */
 function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
     if (typeof Swal === 'undefined') {
         console.error('SweetAlert2 (Swal) no está definido. Asegúrate de que SweetAlert2 se cargue antes de socialLogic.js.');
         alert(`${title}: ${text}`); // Fallback simple si Swal no está disponible
-        return;
+        return Promise.resolve({ isConfirmed: true }); // Devuelve una promesa resuelta para evitar el error .then()
     }
-    Swal.fire({
+    return Swal.fire({
         icon: icon,
         title: title,
         html: text,
@@ -53,7 +55,7 @@ function getCountryFlagEmoji(countryName) {
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '🇲🇽',
+        'Mexico': '�🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
@@ -149,11 +151,10 @@ export async function showFriendRequestsModal() {
             // Después de cerrar el modal, asegúrate de recargar los contadores
             loadPendingFriendRequestsCount(user.id);
             loadFriendsList(user.id);
-        });
 
-        // Añadir event listeners a los botones de aceptar y rechazar dentro del modal de SweetAlert
-        // Esto debe hacerse después de que el modal se haya renderizado
-        setTimeout(() => { // Pequeño retraso para asegurar que el DOM del modal esté listo
+            // Añadir event listeners a los botones de aceptar y rechazar dentro del modal de SweetAlert
+            // Esto debe hacerse después de que el modal se haya renderizado
+            // No es necesario un setTimeout si SweetAlert2 ya maneja el DOM correctamente
             document.querySelectorAll('.accept-btn').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const requestId = event.target.dataset.requestId;
@@ -171,7 +172,7 @@ export async function showFriendRequestsModal() {
                     Swal.close(); // Cierra el modal después de rechazar
                 });
             });
-        }, 100); // Un pequeño retraso puede ser útil para asegurar que el DOM del modal esté listo
+        });
 
     } catch (error) {
         console.error('Error al cargar solicitudes de amistad:', error.message);
@@ -454,10 +455,8 @@ export async function showMessagesModal() {
         showCustomSwal('info', 'Tus Mensajes', `<div class="conversations-list">${conversationsHtml}</div>`).then(() => {
             // Después de cerrar el modal, asegúrate de recargar los contadores
             loadUnreadMessagesCount(user.id);
-        });
-
-        // Añadir event listeners a los elementos de conversación dentro del modal de SweetAlert
-        setTimeout(() => { // Pequeño retraso para asegurar que el DOM del modal esté listo
+            // Añadir event listeners a los elementos de conversación dentro del modal de SweetAlert
+            // No es necesario un setTimeout si SweetAlert2 ya maneja el DOM correctamente
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const otherUserId = item.dataset.otherUserId;
@@ -468,7 +467,7 @@ export async function showMessagesModal() {
                     ].messages);
                 });
             });
-        }, 100); // Un pequeño retraso puede ser útil para asegurar que el DOM del modal esté listo
+        });
 
     } catch (error) {
         console.error('Error al cargar mensajes:', error.message);
