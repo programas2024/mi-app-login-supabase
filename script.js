@@ -3,10 +3,10 @@
 // con los módulos de lógica social y de cofre, adaptándose a la página actual.
 
 // Importa la instancia de Supabase configurada desde el archivo central
-import { supabase } from './supabaseConfig.js';
+import { supabase } from 'supabaseConfig.js';
 
 // Importa las funciones necesarias de chestLogic.js
-import { updateCurrencyDisplay, openChest } from './chestLogic.js';
+import { updateCurrencyDisplay, openChest } from 'chestLogic.js';
 
 // Importa las funciones necesarias de socialLogic.js
 import {
@@ -15,7 +15,7 @@ import {
     loadFriendsList,
     loadUnreadMessagesCount,
     showMessagesModal
-} from './socialLogic.js';
+} from 'socialLogic.js';
 
 // ====================================================================================
 // REFERENCIAS A ELEMENTOS DEL DOM (Declaradas globalmente para accesibilidad en este script)

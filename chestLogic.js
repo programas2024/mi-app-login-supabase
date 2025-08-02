@@ -1,7 +1,7 @@
 // chestLogic.js
 
 // Importaciones necesarias para este módulo: Supabase y Confetti
-import { supabase } from './supabaseConfig.js'; // Importa la instancia de Supabase configurada
+import { supabase } from 'supabaseConfig.js'; // Importa la instancia de Supabase configurada
 import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
 
 // --- Elementos del DOM específicos para el cofre ---
