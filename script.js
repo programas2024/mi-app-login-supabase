@@ -22,8 +22,8 @@ import {
 // ====================================================================================
 
 // Elementos globales/comunes para este script
-let loaderDiv;
-let loaderText;
+// loaderDiv; // Ya no es necesario si el loader no se controla con JS
+// loaderText; // Ya no es necesario si el loader no se controla con JS
 
 // Elementos específicos de index.html
 let initialOptionsDiv;
@@ -72,7 +72,9 @@ let diamondsDisplayProfile;
 /**
  * Muestra el loader de la página (local a script.js).
  * @param {string} message - Mensaje a mostrar en el loader.
+ * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
  */
+/*
 function showLoader(message = 'Cargando...') {
     if (loaderDiv) {
         const loaderTextElement = loaderDiv.querySelector('p');
@@ -82,15 +84,19 @@ function showLoader(message = 'Cargando...') {
         loaderDiv.classList.remove('loader-hidden');
     }
 }
+*/
 
 /**
  * Oculta el loader de la página (local a script.js).
+ * NOTA: Esta función ya no es necesaria si el loader no se controla con JS.
  */
+/*
 function hideLoader() {
     if (loaderDiv) {
         loaderDiv.classList.add('loader-hidden');
     }
 }
+*/
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a script.js).
@@ -144,9 +150,9 @@ async function signUp() {
         showCustomSwal('error', 'Error', 'Por favor, ingresa un email y una contraseña.');
         return;
     }
-    showLoader('Registrando...');
+    // showLoader('Registrando...'); // Ya no se usa el loader
     const { error } = await supabase.auth.signUp({ email, password });
-    hideLoader();
+    // hideLoader(); // Ya no se usa el loader
     if (error) {
         showCustomSwal('error', 'Error de Registro', error.message);
     } else {
@@ -161,9 +167,9 @@ async function signIn() {
         showCustomSwal('error', 'Error', 'Por favor, ingresa tu email y contraseña.');
         return;
     }
-    showLoader('Iniciando sesión...');
+    // showLoader('Iniciando sesión...'); // Ya no se usa el loader
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    hideLoader();
+    // hideLoader(); // Ya no se usa el loader
     if (error) {
         showCustomSwal('error', 'Error de Inicio de Sesión', error.message);
     } else {
@@ -172,7 +178,7 @@ async function signIn() {
 }
 
 async function signOut() {
-    showLoader('Cerrando sesión...');
+    // showLoader('Cerrando sesión...'); // Ya no se usa el loader
     try {
         const { error } = await supabase.auth.signOut();
         if (error) {
@@ -183,7 +189,7 @@ async function signOut() {
         console.error('Error al cerrar sesión:', error.message);
         showCustomSwal('error', 'Error al Cerrar Sesión', `No se pudo cerrar la sesión: ${error.message}`);
     } finally {
-        hideLoader();
+        // hideLoader(); // Ya no se usa el loader
     }
 }
 
@@ -196,7 +202,7 @@ async function signOut() {
  * También carga la lista de amigos y el conteo de solicitudes pendientes.
  */
 async function loadUserProfile(userId) {
-    showLoader('Cargando perfil...');
+    // showLoader('Cargando perfil...'); // Ya no se usa el loader
 
     try {
         let profileData;
@@ -285,10 +291,10 @@ async function loadUserProfile(userId) {
         console.error('Error general en loadUserProfile:', error.message);
         showCustomSwal('error', 'Error de Carga', `No se pudo cargar tu perfil: ${error.message}`);
     } finally {
-        hideLoader();
+        // hideLoader(); // Ya no se usa el loader
         // Aseguramos que el dashboard/perfil sea visible DESPUÉS de ocultar el loader
-        if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden');
-        if (profileCard) profileCard.classList.remove('dashboard-hidden');
+        // if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden'); // Ya no es necesario, el dashboard es visible por defecto
+        // if (profileCard) profileCard.classList.remove('dashboard-hidden'); // Ya no es necesario, el perfil es visible por defecto
     }
 }
 
@@ -310,7 +316,7 @@ async function saveProfile() {
         return;
     }
 
-    showLoader('Guardando perfil...');
+    // showLoader('Guardando perfil...'); // Ya no se usa el loader
     try {
         const { error: updateError } = await supabase
             .from('profiles')
@@ -326,7 +332,7 @@ async function saveProfile() {
         console.error('Error al actualizar el perfil:', updateError.message);
         showCustomSwal('error', 'Error', `No se pudo actualizar tu perfil: ${updateError.message}`);
     } finally {
-        hideLoader();
+        // hideLoader(); // Ya no se usa el loader
     }
 }
 
@@ -342,8 +348,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentPage = window.location.pathname.split('/').pop();
 
     // --- Inicializar referencias a elementos del DOM globales para script.js ---
-    loaderDiv = document.getElementById('loader');
-    loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
+    // loaderDiv = document.getElementById('loader'); // Ya no es necesario
+    // loaderText = loaderDiv ? loaderDiv.querySelector('p') : null; // Ya no es necesario
 
     // Listener para cambios de estado de autenticación (GLOBAL para todas las páginas)
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -424,11 +430,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
 
                 if (emailToReset) {
-                    showLoader('Enviando enlace de recuperación...');
+                    // showLoader('Enviando enlace de recuperación...'); // Ya no se usa el loader
                     const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
                         redirectTo: window.location.origin + '/reset-password.html'
                     });
-                    hideLoader();
+                    // hideLoader(); // Ya no se usa el loader
 
                     if (error) {
                         showCustomSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
@@ -477,7 +483,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
             // Listeners para botones sociales en dashboard (llaman a funciones de socialLogic.js)
             if (friendRequestsBtn) friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
-            if (messagesBtn) messagesBtn.addEventListener('click', showMessagesModal);
+            if (messagesBtn) messagesBtn.SaddEventListener('click', showMessagesModal);
             // Listener para el botón del cofre (llama a función de chestLogic.js)
             if (chestBtn) chestBtn.addEventListener('click', openChest);
         }

@@ -338,40 +338,31 @@
     display: none; /* Oculta el badge si no hay notificaciones */
 }
 
-/* --- Estilos para el Loader (NUEVOS/ACTUALIZADOS) --- */
+/* --- Estilos para el Loader (SIMPLIFICADOS) --- */
+/* Si el loader no se va a usar para ocultar/mostrar, estas clases son menos relevantes */
+/* Sin embargo, mantengo una base si quieres usarlo de otra forma */
 .loader-overlay {
+    /* Puedes dejarlo con display: none; si no lo vas a usar */
+    display: none; /* Oculto por defecto si no se usa para transiciones */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.75); /* Fondo oscuro semitransparente */
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.75);
     align-items: center;
     justify-content: center;
-    z-index: 9999; /* Asegura que esté por encima de todo */
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* Transición suave */
-}
-
-.loader-hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none; /* Permite clics a través del overlay cuando está oculto */
-}
-
-.loader-content {
-    text-align: center;
-    color: white;
+    z-index: 9999;
 }
 
 .spinner {
     border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff; /* Color del spinner */
+    border-top: 4px solid #fff;
     border-radius: 50%;
     width: 50px;
     height: 50px;
-    animation: spin 1s linear infinite; /* Animación de giro */
-    margin: 0 auto 15px auto; /* Centra y añade espacio */
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
 }
 
 @keyframes spin {
@@ -382,9 +373,11 @@
 .loader-text {
     font-size: 1.2em;
     font-weight: bold;
+    color: white;
 }
 
-/* Clase para ocultar el contenido del dashboard/perfil inicialmente (NUEVA) */
+/* Clase para ocultar el contenido del dashboard/perfil inicialmente (ELIMINADA SU USO EN EL HTML) */
+/* La mantengo aquí por si la usas en otros lugares o decides reintroducirla */
 .dashboard-hidden {
     display: none;
 }
@@ -392,16 +385,16 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- LOADER: Ahora con las clases y estructura correctas para el script.js -->
-        <div id="loader" class="loader-overlay loader-hidden">
+        <!-- LOADER: Simplificado y oculto por defecto en CSS si no se usa con JS -->
+        <div id="loader" class="loader-overlay">
             <div class="loader-content">
                 <div class="spinner"></div>
                 <p class="loader-text">Cargando...</p>
             </div>
         </div>
 
-        <!-- DASHBOARD CONTENT: Ahora con la clase dashboard-hidden para ocultarlo inicialmente -->
-        <div id="dashboard" class="dashboard-main-content dashboard-hidden">
+        <!-- DASHBOARD CONTENT: Ahora sin la clase dashboard-hidden para que sea visible por defecto -->
+        <div id="dashboard" class="dashboard-main-content">
 
             <div class="welcome-message" title="Información de tu sesión actual.">
                 <span>Bienvenido, <span id="user-email">Cargando...</span></span>
