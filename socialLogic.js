@@ -1,7 +1,16 @@
 // socialLogic.js
 
-// Importaciones necesarias para este módulo: Supabase
-import { supabase } from './supabaseConfig.js'; // Importa la instancia de Supabase configurada
+// ranking_general_script.js - Lógica para la página de Ranking de Sopa de Letras General
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+// ====================================================================================
+// CONFIGURACIÓN SUPABASE
+// ====================================================================================
+const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+// ¡CLAVE PROPORCIONADA POR EL USUARIO - ASEGÚRATE DE QUE SEA EXACTAMENTE LA DE TU PROYECTO!
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Referencias a elementos del DOM que serán inicializados externamente
 let loaderElement;
