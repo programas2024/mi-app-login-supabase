@@ -8,34 +8,11 @@ import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
 let chestBtn;
 let goldDisplay;
 let diamondsDisplay;
-let loaderDiv; // Necesario para showLoader/hideLoader local
+// loaderDiv ya no es necesario aquí
 
 // ====================================================================================
 // FUNCIONES DE UTILIDAD LOCALES PARA chestLogic.js
 // ====================================================================================
-
-/**
- * Muestra el loader de la página (local a chestLogic.js).
- * @param {string} message - Mensaje a mostrar en el loader.
- */
-function showLoader(message = 'Cargando...') {
-    if (loaderDiv) {
-        const loaderText = loaderDiv.querySelector('p');
-        if (loaderText) {
-            loaderText.textContent = message;
-        }
-        loaderDiv.classList.remove('loader-hidden');
-    }
-}
-
-/**
- * Oculta el loader de la página (local a chestLogic.js).
- */
-function hideLoader() {
-    if (loaderDiv) {
-        loaderDiv.classList.add('loader-hidden');
-    }
-}
 
 /**
  * Helper para mostrar SweetAlert2 con estilos personalizados (local a chestLogic.js).
@@ -75,17 +52,23 @@ export async function updateCurrencyDisplay() {
         return;
     }
 
-    const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('gold, diamonds')
-        .eq('id', user.id)
-        .single();
+    try {
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('gold, diamonds')
+            .eq('id', user.id)
+            .single();
 
-    if (error) {
+        if (error) {
+            throw error;
+        }
+
+        if (profile) {
+            if (goldDisplay) goldDisplay.textContent = profile.gold || 0;
+            if (diamondsDisplay) diamondsDisplay.textContent = profile.diamonds || 0;
+        }
+    } catch (error) {
         console.error('Error al actualizar la vista de moneda:', error.message);
-    } else if (profile) {
-        if (goldDisplay) goldDisplay.textContent = profile.gold || 0;
-        if (diamondsDisplay) diamondsDisplay.textContent = profile.diamonds || 0;
     }
 }
 
@@ -102,9 +85,8 @@ export async function openChest() {
     // Deshabilitar el botón mientras se procesa
     if (chestBtn) {
         chestBtn.disabled = true;
-        chestBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Abriendo...`;
+        // Eliminado: chestBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Abriendo...`;
     }
-    showLoader('Abriendo cofre...');
 
     try {
         // Generar recompensas aleatorias
@@ -182,9 +164,8 @@ export async function openChest() {
         // Habilitar el botón de nuevo
         if (chestBtn) {
             chestBtn.disabled = false;
-            chestBtn.innerHTML = `<i class="fas fa-box-open"></i> Cofre Gratis`;
+            // Eliminado: chestBtn.innerHTML = `<i class="fas fa-box-open"></i> Cofre Gratis`;
         }
-        hideLoader();
     }
 }
 
@@ -196,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chestBtn = document.getElementById('chest-btn');
     goldDisplay = document.getElementById('gold-display');
     diamondsDisplay = document.getElementById('diamonds-display');
-    loaderDiv = document.getElementById('loader'); // Obtener referencia al loader global
-
+    // loaderDiv ya no se inicializa aquí
+    
     // Añadir event listener para el botón del cofre
     if (chestBtn) {
         chestBtn.addEventListener('click', openChest);
