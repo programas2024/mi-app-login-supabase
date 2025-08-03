@@ -59,7 +59,7 @@ function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
         'Colombia': '🇨🇴',
-        'España': '🇪�',
+        'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
@@ -784,22 +784,26 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 <div class="chat-window">
                     <div class="chat-messages-display"></div>
                     <textarea id="chat-input" class="swal2-input chat-input" placeholder="Escribe tu mensaje..."></textarea>
+                    <button id="send-chat-message-btn" class="swal-custom-btn swal-btn-message mt-2"><i class="fas fa-paper-plane"></i> Enviar</button>
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: 'Enviar',
+            // Eliminado: confirmButtonText: 'Enviar', para que no cierre el modal
             cancelButtonText: 'Regresar a Mensajes',
             customClass: {
                 popup: 'swal2-profile-popup',
                 title: 'swal2-profile-title',
                 htmlContainer: 'swal2-profile-html',
-                confirmButton: 'swal2-profile-confirm-button',
+                // Eliminada la clase confirmButton ya que no es el botón de confirmación por defecto
                 cancelButton: 'swal2-profile-cancel-button'
             },
             buttonsStyling: false,
             didOpen: async (popup) => {
-                await renderChatMessages(initialMessages); // Render initial messages and mark as read
+                await renderChatMessages(initialMessages); // Renderiza mensajes iniciales y marca como leídos
                 const messageInput = popup.querySelector('#chat-input');
+                const sendButton = popup.querySelector('#send-chat-message-btn'); // Obtener el nuevo botón de enviar
+
+                // Event listener para la tecla Enter
                 if (messageInput) {
                     messageInput.focus();
                     messageInput.addEventListener('keydown', async (e) => {
@@ -808,38 +812,41 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                             const messageText = messageInput.value.trim();
                             if (messageText) {
                                 await handleSendMessage(currentUserId, otherUserId, messageText);
-                                messageInput.value = ''; // Clear input after sending
+                                messageInput.value = ''; // Limpiar input después de enviar
                             } else {
                                 showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
                             }
                         }
                     });
                 }
+
+                // Event listener para el nuevo botón de Enviar
+                if (sendButton) {
+                    sendButton.addEventListener('click', async () => {
+                        const messageText = messageInput.value.trim();
+                        if (messageText) {
+                            await handleSendMessage(currentUserId, otherUserId, messageText);
+                            messageInput.value = ''; // Limpiar input después de enviar
+                        } else {
+                            showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
+                        }
+                    });
+                }
             }
         }).then(async (result) => {
-            // Unsubscribe when the chat modal closes
+            // Cancelar la suscripción cuando el modal de chat se cierra (solo por cancelar o clic fuera)
             if (chatSubscription) {
                 chatSubscription.unsubscribe();
-                chatSubscription = null; // Clear the reference
+                chatSubscription = null; // Limpiar la referencia
                 console.log('Suscripción de chat cancelada al cerrar el modal.');
             }
 
-            // --- CAMBIO CLAVE: Ya no se reabre el chat aquí si se confirmó el envío ---
-            if (result.isConfirmed) {
-                const messageInput = Swal.getPopup().querySelector('#chat-input');
-                const messageText = messageInput ? messageInput.value.trim() : '';
-                if (!messageText) {
-                    showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
-                    // Si el mensaje está vacío, el modal no se cierra.
-                    // El usuario debe corregir el mensaje o cancelar.
-                    return; 
-                }
-                await handleSendMessage(currentUserId, otherUserId, messageText);
-                // El Realtime listener se encargará de actualizar la UI del chat
-                // y el campo de texto ya se borró en el keydown listener o aquí si se usó el botón.
-            } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
+            // Este bloque .then() solo se ejecutará si el modal se cierra mediante el botón 'Regresar a Mensajes'
+            // o haciendo clic fuera (si allowOutsideClick lo permite).
+            // Ya no se activa al enviar un mensaje.
+            if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
                 // Si el usuario cierra el chat, puede que quiera volver a la lista de conversaciones
-                await showMessagesModal(); // Re-open the main messages modal
+                await showMessagesModal(); // Reabrir el modal principal de mensajes
             }
         });
 
