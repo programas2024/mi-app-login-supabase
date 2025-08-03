@@ -60,7 +60,7 @@ function getCountryFlagEmoji(countryName) {
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '🇲�',
+        'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
