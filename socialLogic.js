@@ -55,10 +55,10 @@ function getCountryFlagEmoji(countryName) {
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '🇲�',
+        'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
-        'Canada': '🇨🇦'
+        'Canada': '�🇦'
         // Añade más países según necesites
     };
     return flags[countryName] || '';
@@ -234,7 +234,7 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
             }
         }
 
-        // --- INICIO: NUEVA LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
+        // --- INICIO: LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
         // 1. Obtener el nombre de usuario del que acepta la solicitud (receiverId)
         const { data: receiverProfile, error: receiverProfileError } = await supabase
             .from('profiles')
@@ -266,7 +266,7 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
             console.error('Error al enviar mensaje de notificación de amistad aceptada:', messageError.message);
             // No lanzamos un error aquí para no detener la aceptación de amistad
         }
-        // --- FIN: NUEVA LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
+        // --- FIN: LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
 
 
         showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
@@ -330,7 +330,9 @@ export async function loadFriendsList(currentUserId) {
         <p class="loading-text">Cargando lista de amigos...</p>
     `;
 
-    console.time('Tiempo de carga de amigos'); // Iniciar el temporizador
+    console.log('--- Iniciando carga de lista de amigos ---');
+    console.log('ID de usuario actual:', currentUserId);
+    console.time('Tiempo de consulta Supabase para amigos'); // Iniciar el temporizador para la consulta
 
     try {
         // OBTENER IDs de amigos de la tabla 'friends'
@@ -346,9 +348,13 @@ export async function loadFriendsList(currentUserId) {
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
+        console.timeEnd('Tiempo de consulta Supabase para amigos'); // Finalizar el temporizador de la consulta
+
         if (friendsError) {
             throw friendsError;
         }
+
+        console.log('Datos crudos de amistad recibidos de Supabase:', friendsData);
 
         const uniqueFriends = new Map(); // Usar un Map para evitar duplicados y almacenar el perfil completo
         friendsData.forEach(friendship => {
@@ -368,6 +374,7 @@ export async function loadFriendsList(currentUserId) {
         });
 
         const friends = Array.from(uniqueFriends.values());
+        console.log('Lista de amigos procesada (únicos):', friends);
 
         if (friends.length === 0) {
             friendsListContainer.innerHTML = '<p>Aún no tienes amigos. ¡Envía algunas solicitudes!</p>';
@@ -406,7 +413,7 @@ export async function loadFriendsList(currentUserId) {
         console.error('Error al cargar la lista de amigos:', error.message);
         friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
     } finally {
-        console.timeEnd('Tiempo de carga de amigos'); // Finalizar el temporizador
+        console.log('--- Fin de carga de lista de amigos ---');
     }
 }
 
