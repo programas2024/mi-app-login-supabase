@@ -56,7 +56,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '🇨�',
+        'Colombia': '🇨🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
@@ -346,8 +346,8 @@ export async function loadFriendsList(currentUserId) {
             .select(`
                 user1_id,
                 user2_id,
-                user1_profile:profiles!friends_user1_id_fkey(username, gold, diamonds, country),
-                user2_profile:profiles!friends_user2_id_fkey(username, gold, diamonds, country)
+                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, country),
+                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, country)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -362,17 +362,19 @@ export async function loadFriendsList(currentUserId) {
         const uniqueFriends = new Map(); // Usar un Map para evitar duplicados y almacenar el perfil completo
         friendsData.forEach(friendship => {
             let friendProfile = null;
+            let friendId = null;
             // Determinar cuál de los dos usuarios en la amistad es el "otro"
             if (friendship.user1_id === currentUserId) {
                 friendProfile = friendship.user2_profile;
+                friendId = friendship.user2_id;
             } else if (friendship.user2_id === currentUserId) {
                 friendProfile = friendship.user1_profile;
+                friendId = friendship.user1_id;
             }
 
             if (friendProfile && friendProfile.username) {
                 // Usar el ID del perfil como clave para el Map para asegurar unicidad
-                const friendId = friendship.user1_id === currentUserId ? friendship.user2_id : friendship.user1_id;
-                uniqueFriends.set(friendId, friendProfile);
+                uniqueFriends.set(friendId, { id: friendId, ...friendProfile });
             }
         });
 
@@ -398,7 +400,7 @@ export async function loadFriendsList(currentUserId) {
         `;
         friends.forEach(friend => {
             tableHtml += `
-                <tr>
+                <tr class="friend-row" data-friend-id="${friend.id}" data-friend-username="${friend.username}">
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
@@ -411,6 +413,20 @@ export async function loadFriendsList(currentUserId) {
             </table>
         `;
         friendsListContainer.innerHTML = tableHtml;
+
+        // Add event listeners to the new rows
+        document.querySelectorAll('.friends-table tbody .friend-row').forEach(row => {
+            row.addEventListener('click', async (event) => {
+                const friendId = event.currentTarget.dataset.friendId;
+                const friendUsername = event.currentTarget.dataset.friendUsername;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    showFriendProfileModal(user.id, friendId, friendUsername);
+                } else {
+                    showCustomSwal('error', 'Error', 'No hay sesión activa para ver el perfil del amigo.');
+                }
+            });
+        });
 
     } catch (error) {
         console.error('Error al cargar la lista de amigos:', error.message);
@@ -451,6 +467,63 @@ export function setupFriendsRealtimeSubscription() {
         .subscribe();
 
     console.log('Suscripción Realtime a "friends" establecida.');
+}
+
+/**
+ * Muestra un modal con el perfil de un amigo y opciones para chatear.
+ * @param {string} currentUserId - ID del usuario actual.
+ * @param {string} friendId - ID del amigo cuyo perfil se va a mostrar.
+ * @param {string} friendUsername - Nombre de usuario del amigo.
+ */
+export async function showFriendProfileModal(currentUserId, friendId, friendUsername) {
+    try {
+        const { data: friendProfile, error } = await supabase
+            .from('profiles')
+            .select('username, gold, diamonds, country')
+            .eq('id', friendId)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        const profileHtml = `
+            <div class="friend-profile-card">
+                <h3>${friendProfile.username || 'Desconocido'}</h3>
+                <p><strong>Oro:</strong> ${friendProfile.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></p>
+                <p><strong>Diamantes:</strong> ${friendProfile.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></p>
+                <p><strong>País:</strong> ${getCountryFlagEmoji(friendProfile.country)} ${friendProfile.country || 'N/A'}</p>
+                <button id="message-friend-btn" class="swal-custom-btn swal-btn-message"><i class="fas fa-comment-dots"></i> Enviar Mensaje</button>
+            </div>
+        `;
+
+        Swal.fire({
+            icon: 'info',
+            title: 'Perfil de Amigo',
+            html: profileHtml,
+            confirmButtonText: 'Cerrar',
+            customClass: {
+                popup: 'swal2-profile-popup',
+                title: 'swal2-profile-title',
+                htmlContainer: 'swal2-profile-html',
+                confirmButton: 'swal2-profile-confirm-button'
+            },
+            buttonsStyling: false,
+            didOpen: (popup) => {
+                const messageBtn = popup.querySelector('#message-friend-btn');
+                if (messageBtn) {
+                    messageBtn.addEventListener('click', async () => {
+                        Swal.close(); // Close profile modal
+                        await showChatWindow(currentUserId, friendId, friendProfile.username);
+                    });
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al cargar el perfil del amigo:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo cargar el perfil del amigo: ${error.message}`);
+    }
 }
 
 
@@ -559,20 +632,34 @@ export async function showMessagesModal() {
             conversationsHtml = '<p>No tienes conversaciones. ¡Envía un mensaje a un amigo!</p>';
         }
 
-        showCustomSwal('info', 'Tus Mensajes', `<div class="conversations-list">${conversationsHtml}</div>`).then(() => {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tus Mensajes',
+            html: `<div class="conversations-list">${conversationsHtml}</div>`,
+            confirmButtonText: 'Cerrar', // Un botón de cierre general para el modal
+            customClass: {
+                popup: 'swal2-profile-popup',
+                title: 'swal2-profile-title',
+                htmlContainer: 'swal2-profile-html',
+                confirmButton: 'swal2-profile-confirm-button'
+            },
+            buttonsStyling: false,
+            showCancelButton: false, // No mostrar botón de cancelar
+            didOpen: (popup) => {
+                // Añadir event listeners a los elementos de conversación dentro del modal de SweetAlert
+                popup.querySelectorAll('.conversation-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const otherUserId = item.dataset.otherUserId;
+                        const otherUsername = item.dataset.otherUsername;
+                        Swal.close(); // Cierra el modal de conversaciones
+                        // showChatWindow ahora carga sus propios mensajes
+                        showChatWindow(user.id, otherUserId, otherUsername);
+                    });
+                });
+            }
+        }).then(() => {
             // Después de cerrar el modal, asegúrate de recargar los contadores
             loadUnreadMessagesCount(user.id);
-            // Añadir event listeners a los elementos de conversación dentro del modal de SweetAlert
-            document.querySelectorAll('.conversation-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const otherUserId = item.dataset.otherUserId;
-                    const otherUsername = item.dataset.otherUsername;
-                    Swal.close(); // Cierra el modal de conversaciones
-                    // Asegurarse de pasar los mensajes correctos para esta conversación
-                    const convoKeyForChat = [user.id, otherUserId].sort().join('-');
-                    showChatWindow(user.id, otherUserId, otherUsername, conversations[convoKeyForChat].messages);
-                });
-            });
         });
 
     } catch (error) {
@@ -586,59 +673,103 @@ export async function showMessagesModal() {
  * @param {string} currentUserId - ID del usuario actual.
  * @param {string} otherUserId - ID del otro participante en la conversación.
  * @param {string} otherUsername - Nombre de usuario del otro participante.
- * @param {Array} messages - Array de mensajes de esta conversación.
  */
-export async function showChatWindow(currentUserId, otherUserId, otherUsername, messages) {
-    let chatMessagesHtml = messages.map(msg => `
-        <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
-            <span class="message-sender">${msg.sender_id === currentUserId ? 'Tú' : (msg.sender ? msg.sender.username : 'Desconocido')}:</span>
-            <span class="message-text">${msg.message}</span>
-            <span class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</span>
-        </div>
-    `).join('');
+export async function showChatWindow(currentUserId, otherUserId, otherUsername) {
+    // Fetch messages for this specific conversation
+    try {
+        const { data: messages, error } = await supabase
+            .from('chat_messages')
+            .select(`
+                id,
+                message,
+                created_at,
+                sender_id,
+                receiver_id,
+                sender:profiles!chat_messages_sender_id_fkey(username),
+                receiver:profiles!chat_messages_receiver_id_fkey(username)
+            `)
+            .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`)
+            .order('created_at', { ascending: true });
 
-    showCustomSwal('info', `Chat con <strong>${otherUsername}</strong>`, `
-        <div class="chat-window">
-            <div class="chat-messages-display">${chatMessagesHtml}</div>
-            <textarea id="chat-input" class="swal2-input chat-input" placeholder="Escribe tu mensaje..."></textarea>
-        </div>
-    `, 'Enviar').then(async (result) => {
-        if (result.isConfirmed) {
-            const messageInput = Swal.getPopup().querySelector('#chat-input');
-            const messageText = messageInput ? messageInput.value : '';
-            if (!messageText || messageText.trim() === '') {
-                showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
-                // Reabrir el chat si el mensaje está vacío
-                showChatWindow(currentUserId, otherUserId, otherUsername, messages);
-                return;
+        if (error) {
+            throw error;
+        }
+
+        let chatMessagesHtml = messages.map(msg => `
+            <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
+                <span class="message-sender">${msg.sender_id === currentUserId ? 'Tú' : (msg.sender ? msg.sender.username : 'Desconocido')}:</span>
+                <span class="message-text">${msg.message}</span>
+                <span class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</span>
+            </div>
+        `).join('');
+
+        Swal.fire({
+            title: `Chat con <strong>${otherUsername}</strong>`,
+            html: `
+                <div class="chat-window">
+                    <div class="chat-messages-display">${chatMessagesHtml}</div>
+                    <textarea id="chat-input" class="swal2-input chat-input" placeholder="Escribe tu mensaje..."></textarea>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Enviar',
+            cancelButtonText: 'Regresar a Mensajes', // Cambiado para claridad
+            customClass: {
+                popup: 'swal2-profile-popup',
+                title: 'swal2-profile-title',
+                htmlContainer: 'swal2-profile-html',
+                confirmButton: 'swal2-profile-confirm-button',
+                cancelButton: 'swal2-profile-cancel-button'
+            },
+            buttonsStyling: false,
+            didOpen: (popup) => {
+                const chatDisplay = popup.querySelector('.chat-messages-display');
+                if (chatDisplay) {
+                    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+                }
+                const messageInput = popup.querySelector('#chat-input');
+                if (messageInput) {
+                    messageInput.focus();
+                    messageInput.addEventListener('keydown', async (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            const messageText = messageInput.value.trim();
+                            if (messageText) {
+                                await handleSendMessage(currentUserId, otherUserId, messageText);
+                                // Re-fetch messages and update chat window
+                                await showChatWindow(currentUserId, otherUserId, otherUsername);
+                            } else {
+                                showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
+                            }
+                        }
+                    });
+                }
             }
-            await handleSendMessage(currentUserId, otherUserId, messageText);
-            // Después de enviar, recargar la ventana de chat para ver el nuevo mensaje
-            const newMessage = {
-                sender_id: currentUserId,
-                receiver_id: otherUserId,
-                message: messageText,
-                created_at: new Date().toISOString(),
-                sender: { username: 'Tú' }, // Simular para display inmediato
-                receiver: { username: otherUsername }
-            };
-            // Para asegurar que los mensajes se muestren en orden, concatena y ordena
-            const updatedMessages = messages.concat([newMessage]).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            showChatWindow(currentUserId, otherUserId, otherUsername, updatedMessages);
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // Si el usuario cierra el chat, puede que quiera volver a la lista de conversaciones
-            showMessagesModal();
-        }
-    });
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const messageInput = Swal.getPopup().querySelector('#chat-input');
+                const messageText = messageInput ? messageInput.value.trim() : '';
+                if (!messageText) {
+                    showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
+                    // Reabrir el chat si el mensaje está vacío
+                    await showChatWindow(currentUserId, otherUserId, otherUsername);
+                    return;
+                }
+                await handleSendMessage(currentUserId, otherUserId, messageText);
+                // After sending, re-open the chat window to show the new message
+                await showChatWindow(currentUserId, otherUserId, otherUsername);
+            } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
+                // If the user closes the chat, they might want to return to the conversations list
+                await showMessagesModal(); // Re-open the main messages modal
+            }
+        });
 
-    // Scroll al final del chat después de que el modal se abra
-    setTimeout(() => {
-        const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
-        if (chatDisplay) {
-            chatDisplay.scrollTop = chatDisplay.scrollHeight;
-        }
-    }, 150); // Un pequeño retraso para asegurar que el DOM del modal esté listo
+    } catch (error) {
+        console.error('Error al cargar la ventana de chat:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo cargar la conversación: ${error.message}`);
+    }
 }
+
 
 /**
  * Envía un mensaje y lo guarda en la base de datos.
