@@ -10,6 +10,9 @@ let friendsListContainer;
 let friendRequestsBtn; // Referencia al botón de solicitudes de amistad
 let messagesBtn; // Referencia al botón de mensajes
 
+// Variable para almacenar la suscripción a Realtime
+let friendsSubscription = null;
+
 // ====================================================================================
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
@@ -53,12 +56,12 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '🇨🇴',
+        'Colombia': '🇨�',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
-        'Canada': '�🇦'
+        'Canada': '🇨🇦'
         // Añade más países según necesites
     };
     return flags[countryName] || '';
@@ -187,7 +190,7 @@ export async function showFriendRequestsModal() {
         }).then(() => {
             // Este .then() se ejecuta cuando el modal se cierra (por el botón "Cerrar" o por clic fuera)
             loadPendingFriendRequestsCount(user.id);
-            loadFriendsList(user.id);
+            // loadFriendsList(user.id); // Ya no es necesario llamar aquí gracias a Realtime
         });
 
     } catch (error) {
@@ -271,7 +274,7 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
 
         showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo del badge
-        await loadFriendsList(receiverId); // Recargar lista de amigos en el dashboard
+        // await loadFriendsList(receiverId); // Ya no es necesario llamar aquí gracias a Realtime
     }
     catch (error) {
         console.error('Error al aceptar solicitud de amistad:', error.message);
@@ -415,6 +418,39 @@ export async function loadFriendsList(currentUserId) {
     } finally {
         console.log('--- Fin de carga de lista de amigos ---');
     }
+}
+
+/**
+ * Configura la suscripción a Supabase Realtime para la tabla 'friends'.
+ * Esto asegura que la lista de amigos se actualice automáticamente cuando hay cambios.
+ */
+export function setupFriendsRealtimeSubscription() {
+    // Si ya existe una suscripción, la cancelamos para evitar duplicados
+    if (friendsSubscription) {
+        friendsSubscription.unsubscribe();
+        console.log('Suscripción a amigos existente cancelada.');
+    }
+
+    console.log('Configurando suscripción Realtime para la tabla "friends"...');
+
+    friendsSubscription = supabase
+        .channel('public:friends') // Nombre del canal, puede ser cualquiera
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'friends' }, // Escucha INSERT y UPDATE
+            (payload) => {
+                console.log('Cambio Realtime detectado en tabla friends:', payload);
+                // Cuando se inserta o actualiza una fila en 'friends', recargamos la lista
+                // Esto es crucial para que el amigo aparezca instantáneamente
+                const user = supabase.auth.user();
+                if (user) {
+                    loadFriendsList(user.id);
+                }
+            }
+        )
+        .subscribe();
+
+    console.log('Suscripción Realtime a "friends" establecida.');
 }
 
 
