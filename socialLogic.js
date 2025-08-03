@@ -59,7 +59,7 @@ function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
         'Colombia': '🇨🇴',
-        'España': '🇪🇸',
+        'España': '🇪�',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
@@ -821,14 +821,14 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 const messageText = messageInput ? messageInput.value.trim() : '';
                 if (!messageText) {
                     showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
-                    // Reabrir el chat si el mensaje está vacío
-                    await showChatWindow(currentUserId, otherUserId, otherUsername);
+                    // No reabrir el chat, solo mostrar la advertencia y mantener el modal abierto
                     return;
                 }
                 await handleSendMessage(currentUserId, otherUserId, messageText);
                 // No es necesario reabrir el chat aquí, el Realtime listener lo actualizará
+                // y el campo de texto ya se borró en el keydown listener o aquí si se usó el botón.
             } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
-                // If the user closes the chat, they might want to return to the conversations list
+                // Si el usuario cierra el chat, puede que quiera volver a la lista de conversaciones
                 await showMessagesModal(); // Re-open the main messages modal
             }
         });
