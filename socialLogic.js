@@ -10,8 +10,10 @@ let friendsListContainer;
 let friendRequestsBtn; // Referencia al botón de solicitudes de amistad
 let messagesBtn; // Referencia al botón de mensajes
 
-// Variable para almacenar la suscripción a Realtime
+// Variable para almacenar la suscripción a Realtime para la lista de amigos
 let friendsSubscription = null;
+// Variable para almacenar la suscripción a Realtime para el chat activo
+let chatSubscription = null;
 
 // ====================================================================================
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
@@ -58,7 +60,7 @@ function getCountryFlagEmoji(countryName) {
     const flags = {
         'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '🇲🇽',
+        'Mexico': '🇲�',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
@@ -513,7 +515,7 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
                 const messageBtn = popup.querySelector('#message-friend-btn');
                 if (messageBtn) {
                     messageBtn.addEventListener('click', async () => {
-                        Swal.close(); // Close profile modal
+                        Swal.close(); // Cierra el modal de perfil
                         await showChatWindow(currentUserId, friendId, friendProfile.username);
                     });
                 }
@@ -675,9 +677,24 @@ export async function showMessagesModal() {
  * @param {string} otherUsername - Nombre de usuario del otro participante.
  */
 export async function showChatWindow(currentUserId, otherUserId, otherUsername) {
-    // Fetch messages for this specific conversation
+    // Función interna para renderizar los mensajes y hacer scroll
+    const renderChatMessages = (msgs) => {
+        const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
+        if (!chatDisplay) return;
+
+        chatDisplay.innerHTML = msgs.map(msg => `
+            <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
+                <span class="message-sender">${msg.sender_id === currentUserId ? 'Tú' : (msg.sender ? msg.sender.username : 'Desconocido')}:</span>
+                <span class="message-text">${msg.message}</span>
+                <span class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</span>
+            </div>
+        `).join('');
+        chatDisplay.scrollTop = chatDisplay.scrollHeight;
+    };
+
+    // Fetch initial messages for this specific conversation
     try {
-        const { data: messages, error } = await supabase
+        const { data: initialMessages, error } = await supabase
             .from('chat_messages')
             .select(`
                 id,
@@ -695,25 +712,75 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
             throw error;
         }
 
-        let chatMessagesHtml = messages.map(msg => `
-            <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
-                <span class="message-sender">${msg.sender_id === currentUserId ? 'Tú' : (msg.sender ? msg.sender.username : 'Desconocido')}:</span>
-                <span class="message-text">${msg.message}</span>
-                <span class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</span>
-            </div>
-        `).join('');
+        // Cancel any existing chat subscription before creating a new one
+        if (chatSubscription) {
+            chatSubscription.unsubscribe();
+            console.log('Suscripción de chat anterior cancelada.');
+        }
+
+        // Setup Realtime subscription for the current chat
+        chatSubscription = supabase
+            .channel(`chat:${currentUserId}-${otherUserId}`) // Unique channel for this conversation
+            .on(
+                'postgres_changes',
+                {
+                    event: '*', // Listen for INSERT, UPDATE, DELETE
+                    schema: 'public',
+                    table: 'chat_messages',
+                    filter: `(sender_id=eq.${currentUserId}&receiver_id=eq.${otherUserId})| (sender_id=eq.${otherUserId}&receiver_id=eq.${currentUserId})`
+                },
+                async (payload) => {
+                    console.log('Realtime chat message detected:', payload);
+                    // Re-fetch all messages to ensure correct order and full data
+                    const { data: updatedMessages, error: fetchError } = await supabase
+                        .from('chat_messages')
+                        .select(`
+                            id,
+                            message,
+                            created_at,
+                            sender_id,
+                            receiver_id,
+                            sender:profiles!chat_messages_sender_id_fkey(username),
+                            receiver:profiles!chat_messages_receiver_id_fkey(username)
+                        `)
+                        .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`)
+                        .order('created_at', { ascending: true });
+
+                    if (fetchError) {
+                        console.error('Error re-fetching messages on realtime update:', fetchError.message);
+                        return;
+                    }
+
+                    renderChatMessages(updatedMessages);
+
+                    // Mark message as read if it was received by the current user
+                    if (payload.eventType === 'INSERT' && payload.new.receiver_id === currentUserId && payload.new.is_read === false) {
+                        const { error: readError } = await supabase
+                            .from('chat_messages')
+                            .update({ is_read: true })
+                            .eq('id', payload.new.id);
+                        if (readError) {
+                            console.error('Error marking message as read:', readError.message);
+                        } else {
+                            // After marking as read, update the unread count
+                            loadUnreadMessagesCount(currentUserId);
+                        }
+                    }
+                }
+            )
+            .subscribe();
 
         Swal.fire({
             title: `Chat con <strong>${otherUsername}</strong>`,
             html: `
                 <div class="chat-window">
-                    <div class="chat-messages-display">${chatMessagesHtml}</div>
+                    <div class="chat-messages-display"></div>
                     <textarea id="chat-input" class="swal2-input chat-input" placeholder="Escribe tu mensaje..."></textarea>
                 </div>
             `,
             showCancelButton: true,
             confirmButtonText: 'Enviar',
-            cancelButtonText: 'Regresar a Mensajes', // Cambiado para claridad
+            cancelButtonText: 'Regresar a Mensajes',
             customClass: {
                 popup: 'swal2-profile-popup',
                 title: 'swal2-profile-title',
@@ -723,10 +790,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
             },
             buttonsStyling: false,
             didOpen: (popup) => {
-                const chatDisplay = popup.querySelector('.chat-messages-display');
-                if (chatDisplay) {
-                    chatDisplay.scrollTop = chatDisplay.scrollHeight;
-                }
+                renderChatMessages(initialMessages); // Render initial messages
                 const messageInput = popup.querySelector('#chat-input');
                 if (messageInput) {
                     messageInput.focus();
@@ -736,8 +800,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                             const messageText = messageInput.value.trim();
                             if (messageText) {
                                 await handleSendMessage(currentUserId, otherUserId, messageText);
-                                // Re-fetch messages and update chat window
-                                await showChatWindow(currentUserId, otherUserId, otherUsername);
+                                messageInput.value = ''; // Clear input after sending
                             } else {
                                 showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
                             }
@@ -746,6 +809,13 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 }
             }
         }).then(async (result) => {
+            // Unsubscribe when the chat modal closes
+            if (chatSubscription) {
+                chatSubscription.unsubscribe();
+                chatSubscription = null; // Clear the reference
+                console.log('Suscripción de chat cancelada al cerrar el modal.');
+            }
+
             if (result.isConfirmed) {
                 const messageInput = Swal.getPopup().querySelector('#chat-input');
                 const messageText = messageInput ? messageInput.value.trim() : '';
@@ -756,8 +826,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                     return;
                 }
                 await handleSendMessage(currentUserId, otherUserId, messageText);
-                // After sending, re-open the chat window to show the new message
-                await showChatWindow(currentUserId, otherUserId, otherUsername);
+                // No es necesario reabrir el chat aquí, el Realtime listener lo actualizará
             } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
                 // If the user closes the chat, they might want to return to the conversations list
                 await showMessagesModal(); // Re-open the main messages modal
@@ -787,7 +856,8 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
             throw insertError;
         }
         console.log('Mensaje enviado con éxito.');
-        // No recargamos el badge del receptor aquí, se hará al reabrir el modal de mensajes
+        // El Realtime listener se encargará de actualizar la UI del chat
+        // y de recargar el badge de mensajes no leídos del receptor.
     } catch (error) {
         console.error('Error al enviar mensaje:', error.message);
         showCustomSwal('error', 'Error', 'No se pudo enviar el mensaje.');
