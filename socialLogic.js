@@ -53,7 +53,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '🇨🇴',
+        'Colombia': '�🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
@@ -289,13 +289,7 @@ export async function loadFriendsList(currentUserId) {
         return;
     }
 
-    // Mostrar un mensaje de carga claro inmediatamente
-    friendsListContainer.innerHTML = `
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Cargando lista de amigos...</p>
-    `;
-
-    console.time('Tiempo de carga de amigos'); // Iniciar el temporizador
+    friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Mensaje de carga
 
     try {
         // OBTENER IDs de amigos de la tabla 'friends'
@@ -370,8 +364,6 @@ export async function loadFriendsList(currentUserId) {
     } catch (error) {
         console.error('Error al cargar la lista de amigos:', error.message);
         friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
-    } finally {
-        console.timeEnd('Tiempo de carga de amigos'); // Finalizar el temporizador
     }
 }
 
