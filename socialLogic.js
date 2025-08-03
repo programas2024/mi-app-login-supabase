@@ -59,11 +59,11 @@ function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
         'Colombia': '🇨🇴',
-        'España': '🇪�',
+        'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
-        'Canada': '🇨🇦'
+        'Canada': '�🇦'
         // Añade más países según necesites
     };
     return flags[countryName] || '';
@@ -678,7 +678,7 @@ export async function showMessagesModal() {
  */
 export async function showChatWindow(currentUserId, otherUserId, otherUsername) {
     // Función interna para renderizar los mensajes y hacer scroll
-    const renderChatMessages = (msgs) => {
+    const renderChatMessages = async (msgs) => { // Made async to handle mark as read
         const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
         if (!chatDisplay) return;
 
@@ -690,6 +690,26 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
             </div>
         `).join('');
         chatDisplay.scrollTop = chatDisplay.scrollHeight;
+
+        // --- NUEVA LÓGICA: Marcar mensajes como leídos al renderizarlos ---
+        const unreadMessagesToMark = msgs.filter(msg => 
+            msg.receiver_id === currentUserId && msg.is_read === false
+        );
+
+        if (unreadMessagesToMark.length > 0) {
+            const messageIdsToMark = unreadMessagesToMark.map(msg => msg.id);
+            const { error: readError } = await supabase
+                .from('chat_messages')
+                .update({ is_read: true })
+                .in('id', messageIdsToMark); // Actualiza todos los mensajes no leídos en esta vista
+
+            if (readError) {
+                console.error('Error marking messages as read:', readError.message);
+            } else {
+                console.log(`Marcados ${unreadMessagesToMark.length} mensajes como leídos.`);
+                loadUnreadMessagesCount(currentUserId); // Actualiza el badge después de marcar
+            }
+        }
     };
 
     // Fetch initial messages for this specific conversation
@@ -702,6 +722,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 created_at,
                 sender_id,
                 receiver_id,
+                is_read, // Asegúrate de seleccionar la columna is_read
                 sender:profiles!chat_messages_sender_id_fkey(username),
                 receiver:profiles!chat_messages_receiver_id_fkey(username)
             `)
@@ -740,6 +761,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                             created_at,
                             sender_id,
                             receiver_id,
+                            is_read, // Asegúrate de seleccionar la columna is_read
                             sender:profiles!chat_messages_sender_id_fkey(username),
                             receiver:profiles!chat_messages_receiver_id_fkey(username)
                         `)
@@ -751,21 +773,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                         return;
                     }
 
-                    renderChatMessages(updatedMessages);
-
-                    // Mark message as read if it was received by the current user
-                    if (payload.eventType === 'INSERT' && payload.new.receiver_id === currentUserId && payload.new.is_read === false) {
-                        const { error: readError } = await supabase
-                            .from('chat_messages')
-                            .update({ is_read: true })
-                            .eq('id', payload.new.id);
-                        if (readError) {
-                            console.error('Error marking message as read:', readError.message);
-                        } else {
-                            // After marking as read, update the unread count
-                            loadUnreadMessagesCount(currentUserId);
-                        }
-                    }
+                    renderChatMessages(updatedMessages); // Renderiza y marca como leído
                 }
             )
             .subscribe();
@@ -789,8 +797,8 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 cancelButton: 'swal2-profile-cancel-button'
             },
             buttonsStyling: false,
-            didOpen: (popup) => {
-                renderChatMessages(initialMessages); // Render initial messages
+            didOpen: async (popup) => { // Made didOpen async
+                await renderChatMessages(initialMessages); // Render initial messages and mark as read
                 const messageInput = popup.querySelector('#chat-input');
                 if (messageInput) {
                     messageInput.focus();
@@ -822,7 +830,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 if (!messageText) {
                     showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
                     // No reabrir el chat, solo mostrar la advertencia y mantener el modal abierto
-                    return;
+                    return; // Importante para no cerrar el modal si el mensaje está vacío
                 }
                 await handleSendMessage(currentUserId, otherUserId, messageText);
                 // No es necesario reabrir el chat aquí, el Realtime listener lo actualizará
