@@ -68,7 +68,7 @@ function getCountryFlagEmoji(countryName) {
 // LÓGICA DE SOLICITUDES DE AMISTAD (Exportadas)
 // ====================================================================================
 
-/**
+/**´
  * Carga y actualiza el badge de solicitudes de amistad pendientes.
  * @param {string} currentUserId - ID del usuario actual.
  */
