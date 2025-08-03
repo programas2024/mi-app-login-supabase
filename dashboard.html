@@ -600,6 +600,225 @@
 }
 
 
+
+/* Estilos para SweetAlert2 personalizados */
+.swal2-profile-popup {
+    background-color: #2c3e50 !important; /* Fondo oscuro */
+    color: #ecf0f1 !important; /* Texto claro */
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid #34495e;
+}
+
+.swal2-profile-title {
+    color: #f39c12 !important; /* Título dorado */
+    font-size: 1.8em !important;
+    font-weight: bold !important;
+    margin-bottom: 15px !important;
+}
+
+.swal2-profile-html {
+    color: #ecf0f1 !important;
+    font-size: 1.1em !important;
+    line-height: 1.6 !important;
+    padding: 0 20px !important;
+}
+
+.swal2-profile-confirm-button,
+.swal2-profile-cancel-button {
+    background-color: #3498db !important; /* Azul para botones de acción */
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 25px !important;
+    font-size: 1.1em !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+    margin: 0 10px !important;
+}
+
+.swal2-profile-confirm-button:hover,
+.swal2-profile-cancel-button:hover {
+    background-color: #2980b9 !important;
+}
+
+.swal-custom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    margin: 10px auto;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    color: white;
+    width: 80%; /* Ajusta el ancho */
+    max-width: 300px;
+}
+
+.swal-btn-message {
+    background-color: #2ecc71; /* Verde para mensaje */
+}
+
+.swal-btn-message:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para la tabla de amigos */
+.friends-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #34495e; /* Fondo de tabla */
+    border-radius: 10px;
+    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
+}
+
+.friends-table th, .friends-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #4a627a; /* Separador de filas */
+    color: #ecf0f1;
+}
+
+.friends-table th {
+    background-color: #2c3e50; /* Encabezado de tabla más oscuro */
+    color: #f39c12; /* Texto del encabezado dorado */
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.friends-table tbody tr:hover {
+    background-color: #4a627a; /* Resaltar fila al pasar el ratón */
+    cursor: pointer;
+}
+
+.friends-table tbody tr:last-child {
+    border-bottom: none; /* No hay borde en la última fila */
+}
+
+/* Estilos para el perfil del amigo en el modal */
+.friend-profile-card {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.friend-profile-card h3 {
+    color: #f39c12;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+}
+
+.friend-profile-card p {
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+/* Estilos para la ventana de chat */
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 350px; /* Altura fija para el chat */
+    max-height: 70vh; /* Máximo 70% del viewport height */
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: #2c3e50; /* Fondo del chat */
+    border: 1px solid #34495e;
+}
+
+.chat-messages-display {
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll para los mensajes */
+    padding: 15px;
+    background-color: #34495e; /* Fondo de los mensajes */
+    border-bottom: 1px solid #4a627a;
+}
+
+.chat-message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word; /* Para que el texto largo se ajuste */
+    font-size: 0.95em;
+}
+
+.chat-message.sent {
+    background-color: #3498db; /* Azul para mensajes enviados */
+    color: white;
+    align-self: flex-end;
+    margin-left: auto;
+    text-align: right;
+}
+
+.chat-message.received {
+    background-color: #2ecc71; /* Verde para mensajes recibidos */
+    color: white;
+    align-self: flex-start;
+    margin-right: auto;
+    text-align: left;
+}
+
+.message-sender {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
+.message-time {
+    font-size: 0.75em;
+    opacity: 0.6;
+    display: block;
+    margin-top: 5px;
+}
+
+.chat-input {
+    width: calc(100% - 30px); /* Ancho completo menos padding */
+    padding: 10px 15px;
+    margin: 15px;
+    border: 1px solid #4a627a;
+    border-radius: 8px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    resize: none; /* Evitar que el usuario redimensione el textarea */
+    font-size: 1em;
+}
+
+.chat-input::placeholder {
+    color: #95a5a6;
+}
+
+/* Spinner de carga */
+.loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #f39c12;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto 10px auto;
+}
+
+.loading-text {
+    text-align: center;
+    color: #ecf0f1;
+    font-size: 1.1em;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 </style>
 </head>
 <body>
