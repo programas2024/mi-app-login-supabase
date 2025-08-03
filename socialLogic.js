@@ -58,7 +58,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '🇨🇴',
+        'Colombia': '�🇴',
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
@@ -678,9 +678,12 @@ export async function showMessagesModal() {
  */
 export async function showChatWindow(currentUserId, otherUserId, otherUsername) {
     // Función interna para renderizar los mensajes y hacer scroll
-    const renderChatMessages = async (msgs) => { // Made async to handle mark as read
+    const renderChatMessages = async (msgs) => { 
         const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
-        if (!chatDisplay) return;
+        if (!chatDisplay) {
+            console.error('Chat display element not found in current Swal popup. Cannot render messages.');
+            return;
+        }
 
         chatDisplay.innerHTML = msgs.map(msg => `
             <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
@@ -739,19 +742,26 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
             console.log('Suscripción de chat anterior cancelada.');
         }
 
-        // Setup Realtime subscription for the current chat
+        // --- CAMBIO CLAVE AQUÍ: Suscripción Realtime Simplificada ---
         chatSubscription = supabase
-            .channel(`chat:${currentUserId}-${otherUserId}`) // Unique channel for this conversation
+            .channel(`chat_messages_channel_${currentUserId}_${otherUserId}`) // Canal único para esta conversación
             .on(
                 'postgres_changes',
-                {
-                    event: '*', // Listen for INSERT, UPDATE, DELETE
-                    schema: 'public',
-                    table: 'chat_messages',
-                    filter: `(sender_id=eq.${currentUserId}&receiver_id=eq.${otherUserId})| (sender_id=eq.${otherUserId}&receiver_id=eq.${currentUserId})`
-                },
+                { event: '*', schema: 'public', table: 'chat_messages' },
                 async (payload) => {
-                    console.log('Realtime chat message detected:', payload);
+                    console.log('Realtime chat message detected (unfiltered from Supabase):', payload);
+
+                    // Filtra los mensajes relevantes en el lado del cliente
+                    const isRelevant = 
+                        (payload.new.sender_id === currentUserId && payload.new.receiver_id === otherUserId) ||
+                        (payload.new.sender_id === otherUserId && payload.new.receiver_id === currentUserId);
+
+                    if (!isRelevant) {
+                        console.log('Mensaje no relevante para esta ventana de chat, ignorando.');
+                        return;
+                    }
+                    console.log('Mensaje relevante detectado, re-cargando conversación...');
+
                     // Re-fetch all messages to ensure correct order and full data
                     const { data: updatedMessages, error: fetchError } = await supabase
                         .from('chat_messages')
@@ -772,7 +782,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                         console.error('Error re-fetching messages on realtime update:', fetchError.message);
                         return;
                     }
-
+                    console.log('Mensajes después de la re-carga por Realtime:', updatedMessages);
                     await renderChatMessages(updatedMessages); // Renderiza y marca como leído
                 }
             )
@@ -811,6 +821,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                             e.preventDefault();
                             const messageText = messageInput.value.trim();
                             if (messageText) {
+                                console.log('Enviando mensaje por Enter:', messageText);
                                 await handleSendMessage(currentUserId, otherUserId, messageText);
                                 messageInput.value = ''; // Limpiar input después de enviar
                             } else {
@@ -825,6 +836,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                     sendButton.addEventListener('click', async () => {
                         const messageText = messageInput.value.trim();
                         if (messageText) {
+                            console.log('Enviando mensaje por botón:', messageText);
                             await handleSendMessage(currentUserId, otherUserId, messageText);
                             messageInput.value = ''; // Limpiar input después de enviar
                         } else {
@@ -872,7 +884,7 @@ export async function handleSendMessage(senderId, receiverId, messageText) {
         if (insertError) {
             throw insertError;
         }
-        console.log('Mensaje enviado con éxito.');
+        console.log('Mensaje enviado con éxito a la base de datos.');
         // El Realtime listener se encargará de actualizar la UI del chat
         // y de recargar el badge de mensajes no leídos del receptor.
     } catch (error) {
