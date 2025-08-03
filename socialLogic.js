@@ -62,8 +62,8 @@ function getCountryFlagEmoji(countryName) {
         'España': '🇪🇸',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
-        'USA': '🇺🇸',
-        'Canada': '�🇦'
+        'USA': '🇺�',
+        'Canada': '🇨🇦'
         // Añade más países según necesites
     };
     return flags[countryName] || '';
@@ -691,7 +691,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
         `).join('');
         chatDisplay.scrollTop = chatDisplay.scrollHeight;
 
-        // --- NUEVA LÓGICA: Marcar mensajes como leídos al renderizarlos ---
+        // --- LÓGICA: Marcar mensajes como leídos al renderizarlos ---
         const unreadMessagesToMark = msgs.filter(msg => 
             msg.receiver_id === currentUserId && msg.is_read === false
         );
@@ -722,7 +722,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 created_at,
                 sender_id,
                 receiver_id,
-                is_read, // Asegúrate de seleccionar la columna is_read
+                is_read,
                 sender:profiles!chat_messages_sender_id_fkey(username),
                 receiver:profiles!chat_messages_receiver_id_fkey(username)
             `)
@@ -761,7 +761,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                             created_at,
                             sender_id,
                             receiver_id,
-                            is_read, // Asegúrate de seleccionar la columna is_read
+                            is_read,
                             sender:profiles!chat_messages_sender_id_fkey(username),
                             receiver:profiles!chat_messages_receiver_id_fkey(username)
                         `)
@@ -773,7 +773,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                         return;
                     }
 
-                    renderChatMessages(updatedMessages); // Renderiza y marca como leído
+                    await renderChatMessages(updatedMessages); // Renderiza y marca como leído
                 }
             )
             .subscribe();
@@ -797,7 +797,7 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 cancelButton: 'swal2-profile-cancel-button'
             },
             buttonsStyling: false,
-            didOpen: async (popup) => { // Made didOpen async
+            didOpen: async (popup) => {
                 await renderChatMessages(initialMessages); // Render initial messages and mark as read
                 const messageInput = popup.querySelector('#chat-input');
                 if (messageInput) {
