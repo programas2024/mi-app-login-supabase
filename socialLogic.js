@@ -59,10 +59,10 @@ function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
         'Colombia': '🇨🇴',
-        'España': '🇪🇸',
+        'España': '🇪�',
         'Mexico': '🇲🇽',
         'Argentina': '🇦🇷',
-        'USA': '🇺�',
+        'USA': '🇺🇸',
         'Canada': '🇨🇦'
         // Añade más países según necesites
     };
@@ -824,16 +824,18 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 console.log('Suscripción de chat cancelada al cerrar el modal.');
             }
 
+            // --- CAMBIO CLAVE: Ya no se reabre el chat aquí si se confirmó el envío ---
             if (result.isConfirmed) {
                 const messageInput = Swal.getPopup().querySelector('#chat-input');
                 const messageText = messageInput ? messageInput.value.trim() : '';
                 if (!messageText) {
                     showCustomSwal('warning', 'Atención', 'El mensaje no puede estar vacío.');
-                    // No reabrir el chat, solo mostrar la advertencia y mantener el modal abierto
-                    return; // Importante para no cerrar el modal si el mensaje está vacío
+                    // Si el mensaje está vacío, el modal no se cierra.
+                    // El usuario debe corregir el mensaje o cancelar.
+                    return; 
                 }
                 await handleSendMessage(currentUserId, otherUserId, messageText);
-                // No es necesario reabrir el chat aquí, el Realtime listener lo actualizará
+                // El Realtime listener se encargará de actualizar la UI del chat
                 // y el campo de texto ya se borró en el keydown listener o aquí si se usó el botón.
             } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
                 // Si el usuario cierra el chat, puede que quiera volver a la lista de conversaciones
