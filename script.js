@@ -8,7 +8,7 @@ import {
     loadPendingFriendRequestsCount, 
     loadUnreadMessagesCount, 
     loadFriendsList, 
-    setupFriendsRealtimeSubscription // ¡Nueva importación!
+    setupFriendsRealtimeSubscription 
 } from './socialLogic.js';
 
 
@@ -473,8 +473,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Cargar conteos y listas iniciales de socialLogic.js
             await loadPendingFriendRequestsCount(user.id);
             await loadUnreadMessagesCount(user.id);
-            // La carga de loadFriendsList ahora se manejará a través de la suscripción Realtime
-            setupFriendsRealtimeSubscription(); // ¡Activa la suscripción Realtime!
+            
+            // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
+            await loadFriendsList(user.id); 
+            
+            // Luego, configura la suscripción Realtime para futuras actualizaciones
+            setupFriendsRealtimeSubscription(); 
 
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
