@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // socialLogic.js - Lógica para las funcionalidades sociales (amigos, solicitudes, mensajes)
 
 // Importaciones necesarias para este módulo: Supabase
-import { supabase } from '/supabaseConfig.js'; // Importa la instancia de Supabase configurada
+
 
 // Referencias a elementos del DOM que este script gestiona
 let friendRequestsBadge;
