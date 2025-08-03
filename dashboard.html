@@ -908,10 +908,17 @@
         </div>
     </div>
 
+   <!-- SweetAlert2 JS (debe cargarse antes de tus scripts que lo usen) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Tus scripts modulares -->
+    <!-- 1. supabaseConfig.js: Provee la instancia 'supabase' -->
     <script type="module" src="supabaseConfig.js"></script>
-    <!-- Importa los módulos JavaScript -->
-    <script type="module" src="script.js"></script>
-    <script type="module" src="chestLogic.js"></script>
+    <!-- 2. socialLogic.js: Contiene funciones que script.js importa, por lo tanto, va antes -->
     <script type="module" src="socialLogic.js"></script>
+    <!-- 3. script.js: Importa funciones de socialLogic.js y supabaseConfig.js -->
+    <script type="module" src="script.js"></script>
+    <!-- 4. chestLogic.js: Carga al final si no tiene dependencias cruzadas con los anteriores -->
+    <script type="module" src="chestLogic.js"></script>
 </body>
 </html>
