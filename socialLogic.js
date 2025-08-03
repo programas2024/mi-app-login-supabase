@@ -53,9 +53,9 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
-        'Colombia': '�🇴',
+        'Colombia': '🇨🇴',
         'España': '🇪🇸',
-        'Mexico': '🇲🇽',
+        'Mexico': '🇲�',
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
@@ -68,7 +68,7 @@ function getCountryFlagEmoji(countryName) {
 // LÓGICA DE SOLICITUDES DE AMISTAD (Exportadas)
 // ====================================================================================
 
-/**´
+/**
  * Carga y actualiza el badge de solicitudes de amistad pendientes.
  * @param {string} currentUserId - ID del usuario actual.
  */
@@ -234,6 +234,41 @@ export async function handleAcceptFriendRequest(requestId, senderId, senderUsern
             }
         }
 
+        // --- INICIO: NUEVA LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
+        // 1. Obtener el nombre de usuario del que acepta la solicitud (receiverId)
+        const { data: receiverProfile, error: receiverProfileError } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', receiverId)
+            .single();
+
+        if (receiverProfileError) {
+            console.error('Error al obtener el perfil del receptor para la notificación:', receiverProfileError.message);
+            // No lanzamos un error aquí para no detener la aceptación de amistad
+        }
+
+        const receiverUsername = receiverProfile ? receiverProfile.username : 'Un usuario';
+        const notificationMessage = `¡${receiverUsername} ha aceptado tu solicitud de amistad! Ahora son amigos.`;
+
+        // 2. Enviar un mensaje de chat al remitente (senderId)
+        const { error: messageError } = await supabase
+            .from('chat_messages')
+            .insert([
+                {
+                    sender_id: receiverId, // Quien acepta es el que envía la notificación
+                    receiver_id: senderId, // Quien envió la solicitud es el que la recibe
+                    message: notificationMessage,
+                    is_read: false // Marcar como no leído
+                }
+            ]);
+
+        if (messageError) {
+            console.error('Error al enviar mensaje de notificación de amistad aceptada:', messageError.message);
+            // No lanzamos un error aquí para no detener la aceptación de amistad
+        }
+        // --- FIN: NUEVA LÓGICA DE NOTIFICACIÓN DE AMISTAD ACEPTADA ---
+
+
         showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
         await loadPendingFriendRequestsCount(receiverId); // Recargar conteo del badge
         await loadFriendsList(receiverId); // Recargar lista de amigos en el dashboard
@@ -289,7 +324,13 @@ export async function loadFriendsList(currentUserId) {
         return;
     }
 
-    friendsListContainer.innerHTML = '<p>Cargando lista de amigos...</p>'; // Mensaje de carga
+    // Mostrar un mensaje de carga claro inmediatamente
+    friendsListContainer.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Cargando lista de amigos...</p>
+    `;
+
+    console.time('Tiempo de carga de amigos'); // Iniciar el temporizador
 
     try {
         // OBTENER IDs de amigos de la tabla 'friends'
@@ -364,6 +405,8 @@ export async function loadFriendsList(currentUserId) {
     } catch (error) {
         console.error('Error al cargar la lista de amigos:', error.message);
         friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
+    } finally {
+        console.timeEnd('Tiempo de carga de amigos'); // Finalizar el temporizador
     }
 }
 
