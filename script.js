@@ -3,6 +3,13 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
+// Importa las funciones sociales desde socialLogic.js
+import { 
+    loadPendingFriendRequestsCount, 
+    loadUnreadMessagesCount, 
+    loadFriendsList, 
+    setupFriendsRealtimeSubscription 
+} from './socialLogic.js';
 
 
 // --- 1. Configuración de Supabase ---
@@ -33,6 +40,10 @@ let saveProfileBtn, backToDashboardBtn, configureBtn;
 let goldDisplayProfile, diamondsDisplayProfile;
 
 let loaderDiv, loaderText;
+
+let avatarImg; // Nueva referencia para la imagen del avatar
+let avatarUploadInput; // Nueva referencia para el input de archivo
+let changeAvatarBtn; // Nueva referencia para el botón de cambiar avatar
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
@@ -463,6 +474,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Usuario autenticado: Cargar perfil y mostrar contenido
             await loadUserProfile(user.id);
 
+            // Cargar conteos y listas iniciales de socialLogic.js
+            await loadPendingFriendRequestsCount(user.id);
+            await loadUnreadMessagesCount(user.id);
+            
+            // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
+            await loadFriendsList(user.id); 
+            
+            // Luego, configura la suscripción Realtime para futuras actualizaciones
+            setupFriendsRealtimeSubscription(); 
+
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
                     profileBtnDashboard.addEventListener('click', () => {
@@ -500,4 +521,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
     // Solo deberían cargar sus respectivos 'orcado_THEME_specific_game.js'
 });
-
