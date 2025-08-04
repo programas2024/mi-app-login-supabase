@@ -491,8 +491,20 @@
 }
 
 .avatar-section {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 20px 0;
+    width: 100%;
+}
+
+.avatar-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 15px;
 }
 
 .avatar-image {
@@ -501,19 +513,45 @@
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #4a6fa5;
-    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: block; /* Asegura que la imagen se comporte como bloque */
+    margin: 0 auto; /* Centrado horizontal */
 }
 
 .btn-avatar {
     background: #4a6fa5;
     color: white;
     border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
+    padding: 10px 20px;
+    border-radius: 25px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: inline-block; /* Para que el botón no ocupe todo el ancho */
+    margin-top: 10px;
 }
 
 .btn-avatar:hover {
     background: #3a5a80;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo para el input file (oculto pero funcional) */
+.avatar-upload-input {
+    display: none;
+}
+
+/* Estilo adicional para el contenedor principal si es necesario */
+.profile-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
