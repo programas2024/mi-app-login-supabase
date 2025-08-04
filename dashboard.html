@@ -890,7 +890,10 @@
                         <i class="fas fa-trophy"></i> Clasificación
                     </a>
                 </div>
-
+ <!-- Botón de Afinidad (NUEVO) -->
+                <a href="afinidad.html" id="affinity-btn" class="sidebar-btn btn-custom-action" title="Ver tus conexiones de afinidad con otros jugadores">
+                    <i class="fas fa-heart"></i> Afinidad
+                </a>
                 <!-- NUEVO: Botón de Solicitudes de Amistad -->
                 <button id="friend-requests-btn" class="sidebar-btn btn-custom-action" title="Gestiona tus solicitudes de amistad.">
                     <i class="fas fa-user-friends"></i> Solicitudes <span id="friend-requests-badge" class="notification-badge hidden">0</span>
@@ -911,6 +914,8 @@
     <script type="module" src="supabaseConfig.js"></script>
     <!-- Importa los módulos JavaScript -->
     <script type="module" src="script.js"></script>
+    <script type="module" src="afinidadLogic.js"></script> <!-- Debe cargarse antes de script.js si script.js usa sus exports -->
+
     <script type="module" src="chestLogic.js"></script>
     <script type="module" src="socialLogic.js"></script>
 </body>
