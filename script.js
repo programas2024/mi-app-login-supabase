@@ -481,8 +481,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
             await loadFriendsList(user.id); 
             
-            // Luego, configura la suscripción Realtime para futuras actualizaciones
-            setupFriendsRealtimeSubscription(); 
+           // Por esto:
+const cleanupSubscription = await setupFriendsRealtimeSubscription(user.id); 
+
+// Y añade esto al final para limpiar al cerrar/cambiar de página:
+window.addEventListener('beforeunload', () => {
+    if (cleanupSubscription) cleanupSubscription();
+});
 
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {

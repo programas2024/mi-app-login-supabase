@@ -53,6 +53,33 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
     });
 }
 
+// socialLogic.js
+export const setupFriendsRealtimeSubscription = async (userId) => {
+    // 1. Crear canal de suscripción
+    const friendsChannel = supabase
+        .channel('friends_changes')
+        .on(
+            'postgres_changes',
+            {
+                event: '*', // Escucha INSERT, UPDATE, DELETE
+                schema: 'public',
+                table: 'friends',
+                filter: `user_id=eq.${userId}`
+            },
+            async (payload) => {
+                console.log('Cambio en amigos:', payload);
+                // Actualizar los datos en tiempo real
+                await loadFriendsList(userId);
+                await loadPendingFriendRequestsCount(userId);
+            }
+        )
+        .subscribe();
+
+    // 2. Retornar función para limpiar la suscripción
+    return () => {
+        supabase.removeChannel(friendsChannel);
+    };
+};
 
 /**
  * Obtiene el emoji de la bandera de un país (local a socialLogic.js).
