@@ -291,23 +291,56 @@
             ? [currentUserId, friendId] 
             : [friendId, currentUserId];
 
-        // 2. Usar una transacción para evitar condiciones de carrera
-        const { data, error } = await supabase.rpc('upsert_affinity', {
-            p_user1_id: user1,
-            p_user2_id: user2,
-            p_points_to_add: pointsToAdd
-        });
+        // 2. Primero intentar actualizar
+        const { data: updatedData, error: updateError } = await supabase
+            .from('friends')
+            .update({ 
+                affinity_points: supabase.rpc('increment', {
+                    val: pointsToAdd,
+                    col: 'affinity_points'
+                })
+            })
+            .eq('user1_id', user1)
+            .eq('user2_id', user2)
+            .select('affinity_points')
+            .single();
 
-        if (error) throw error;
-        
-        // 3. Obtener los nuevos puntos
-        const newPoints = data || pointsToAdd;
+        // 3. Si no existe, crear la relación
+        if (updateError && updateError.code === 'PGRST116') {
+            const { data: createdData, error: createError } = await supabase
+                .from('friends')
+                .insert([{
+                    user1_id: user1,
+                    user2_id: user2,
+                    affinity_points: pointsToAdd
+                }])
+                .select('affinity_points')
+                .single();
 
-        // 4. Mostrar confirmación
+            if (createError) throw createError;
+            
+            // Mostrar confirmación
+            await Swal.fire({
+                icon: 'success',
+                title: '¡Nueva afinidad creada!',
+                text: `Puntos iniciales: ${pointsToAdd}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Actualizar UI
+            await loadFriendsList();
+            return;
+        } 
+        else if (updateError) {
+            throw updateError;
+        }
+
+        // 4. Mostrar confirmación de actualización
         await Swal.fire({
             icon: 'success',
-            title: '¡Afinidad actualizada!',
-            text: `Nuevos puntos: ${newPoints}`,
+            title: '¡Afinidad aumentada!',
+            text: `Nuevos puntos: ${updatedData.affinity_points}`,
             timer: 2000,
             showConfirmButton: false
         });
@@ -327,7 +360,7 @@
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo actualizar la afinidad. Intenta nuevamente.',
+            text: error.message || 'No se pudo actualizar la afinidad',
             timer: 3000
         });
     }
