@@ -196,119 +196,160 @@
                 }
             }
 
+            // Mostrar afinidad con un amigo específico
             async function showFriendAffinity(friendId, friendName) {
-    try {
-        const noActiveAffinity = document.getElementById('no-active-affinity');
-        const activeAffinity = document.getElementById('active-affinity');
-        
-        if (!noActiveAffinity || !activeAffinity) {
-            throw new Error('Elementos del DOM no encontrados');
-        }
+                try {
+                    const noActiveAffinity = document.getElementById('no-active-affinity');
+                    const activeAffinity = document.getElementById('active-affinity');
+                    
+                    if (!noActiveAffinity || !activeAffinity) {
+                        console.error('Elementos del DOM no encontrados');
+                        return;
+                    }
 
-        // Obtener datos de afinidad
-        const [user1, user2] = currentUserId < friendId 
-            ? [currentUserId, friendId] 
-            : [friendId, currentUserId];
+                    // Obtener datos de afinidad
+                    const [user1, user2] = currentUserId < friendId 
+                        ? [currentUserId, friendId] 
+                        : [friendId, currentUserId];
 
-        const { data: friendship, error } = await supabase
-            .from('friends')
-            .select('affinity_points')
-            .eq('user1_id', user1)
-            .eq('user2_id', user2)
-            .single();
+                    const { data: friendship, error } = await supabase
+                        .from('friends')
+                        .select('affinity_points')
+                        .eq('user1_id', user1)
+                        .eq('user2_id', user2)
+                        .single();
 
-        if (error) throw error;
-        if (!friendship) throw new Error('Relación de amistad no encontrada');
+                    if (error) throw error;
+                    if (!friendship) {
+                        noActiveAffinity.classList.remove('hidden');
+                        activeAffinity.innerHTML = '';
+                        return;
+                    }
 
-        const affinityPoints = friendship.affinity_points || 0;
-        const affinityLevel = getAffinityLevel(affinityPoints);
-        const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
+                    const affinityPoints = friendship.affinity_points || 0;
+                    const affinityLevel = getAffinityLevel(affinityPoints);
+                    const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
 
-        // Actualizar UI
-        noActiveAffinity.classList.add('hidden');
-        activeAffinity.innerHTML = `
-            <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
-                <!-- Contenido de la tarjeta de afinidad -->
-                <!-- ... (mantén tu HTML existente) ... -->
-            </div>
-        `;
+                    noActiveAffinity.classList.add('hidden');
+                    activeAffinity.innerHTML = `
+                        <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0 h-16 w-16">
+                                    <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
+                                    <p class="text-sm text-gray-500">${affinityLevel.level}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2 flex justify-between">
+                                <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
+                                <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
+                            </div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                                <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
+                                    <div class="text-xs text-gray-500">Regalos</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
+                                    <div class="text-xs text-gray-500">Partidas</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
+                                    <div class="text-xs text-gray-500">Días</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error showing affinity:', error);
+                    Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
+                }
+            }
 
-    } catch (error) {
-        console.error('Error showing affinity:', error);
-        Swal.fire('Error', error.message || 'No se pudo cargar la afinidad', 'error');
-    }
-}
+            // Aumentar afinidad con un amigo
+            async function increaseAffinity(friendId) {
+                try {
+                    const pointsToAdd = 10;
+                    const [user1, user2] = currentUserId < friendId 
+                        ? [currentUserId, friendId] 
+                        : [friendId, currentUserId];
 
-          async function increaseAffinity(friendId) {
-    try {
-        const pointsToAdd = 10;
-        const [user1, user2] = currentUserId < friendId 
-            ? [currentUserId, friendId] 
-            : [friendId, currentUserId];
+                    // Verificar si existe la relación primero
+                    const { data: existing, error: fetchError } = await supabase
+                        .from('friends')
+                        .select('affinity_points')
+                        .eq('user1_id', user1)
+                        .eq('user2_id', user2)
+                        .maybeSingle();
 
-        // Verificar si existe la relación primero
-        const { data: existing, error: fetchError } = await supabase
-            .from('friends')
-            .select('affinity_points')
-            .eq('user1_id', user1)
-            .eq('user2_id', user2)
-            .maybeSingle();
+                    if (fetchError) throw fetchError;
 
-        if (fetchError) throw fetchError;
+                    let newPoints;
+                    if (!existing) {
+                        // Crear nueva relación
+                        const { error: createError } = await supabase
+                            .from('friends')
+                            .insert([{
+                                user1_id: user1,
+                                user2_id: user2,
+                                affinity_points: pointsToAdd
+                            }])
+                            .select('affinity_points')
+                            .single();
 
-        let newPoints;
-        if (!existing) {
-            // Crear nueva relación
-            const { error: createError } = await supabase
-                .from('friends')
-                .insert([{
-                    user1_id: user1,
-                    user2_id: user2,
-                    affinity_points: pointsToAdd
-                }]);
+                        if (createError) throw createError;
+                        newPoints = pointsToAdd;
+                    } else {
+                        // Actualizar relación existente
+                        newPoints = (existing.affinity_points || 0) + pointsToAdd;
+                        const { error: updateError } = await supabase
+                            .from('friends')
+                            .update({ affinity_points: newPoints })
+                            .eq('user1_id', user1)
+                            .eq('user2_id', user2)
+                            .select('affinity_points')
+                            .single();
 
-            if (createError) throw createError;
-            newPoints = pointsToAdd;
-        } else {
-            // Actualizar relación existente
-            newPoints = (existing.affinity_points || 0) + pointsToAdd;
-            const { error: updateError } = await supabase
-                .from('friends')
-                .update({ affinity_points: newPoints })
-                .eq('user1_id', user1)
-                .eq('user2_id', user2);
+                        if (updateError) throw updateError;
+                    }
 
-            if (updateError) throw updateError;
-        }
+                    // Mostrar confirmación y actualizar UI
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Afinidad aumentada!',
+                        text: `Nuevos puntos: ${newPoints}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
 
-        // Mostrar confirmación y actualizar UI
-        await Swal.fire({
-            icon: 'success',
-            title: '¡Afinidad aumentada!',
-            text: `Nuevos puntos: ${newPoints}`,
-            timer: 2000,
-            showConfirmButton: false
-        });
+                    await loadFriendsList();
+                    
+                    // Actualizar vista detallada si está abierta
+                    const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
+                    if (activeFriend) {
+                        const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
+                        await showFriendAffinity(friendId, friendName);
+                    }
 
-        await loadFriendsList();
-        
-        // Actualizar vista detallada si está abierta
-        const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
-        if (activeFriend) {
-            const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
-            await showFriendAffinity(friendId, friendName);
-        }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'Error al actualizar afinidad',
+                        timer: 3000
+                    });
+                }
+            }
 
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Error al actualizar afinidad',
-            timer: 3000
-        });
-    }
-}
             // Invitar a un nuevo amigo
             async function inviteFriend() {
                 const { value: email } = await Swal.fire({
