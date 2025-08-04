@@ -108,6 +108,7 @@
         }
 
         function calculateReward(points) {
+            if (points < 100) return 0; // No hay recompensa si tiene menos de 100 puntos
             if (points >= 400) return 800;
             if (points >= 200) return 500;
             if (points >= 100) return 300;
@@ -157,8 +158,9 @@
                     const rewardClaimed = friendship.reward_claimed || false;
                     const lastIncrease = friendship.last_increase ? new Date(friendship.last_increase) : null;
                     const now = new Date();
-                    const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 24;
-                    const canIncrease = hoursSinceLastIncrease >= 12;
+                    const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 6;
+                    const canIncrease = hoursSinceLastIncrease >= 6;
+                    const showClaimButton = affinityPoints >= 100 && !rewardClaimed;
 
                     const row = document.createElement('tr');
                     row.className = 'friend-row';
@@ -186,12 +188,12 @@
                             <button class="view-affinity-btn text-purple-600 hover:text-purple-900 mr-4" data-friend-id="${friend.id}" data-friend-name="${friend.username}">
                                 <i class="fas fa-eye mr-1"></i> Ver
                             </button>
-                            <button class="action-btn ${rewardClaimed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white px-3 py-1 rounded" 
-                                    data-friend-id="${friend.id}" ${rewardClaimed && !canIncrease ? 'disabled' : ''}>
-                                <i class="fas ${rewardClaimed ? 'fa-heart' : 'fa-gift'} mr-1"></i> 
-                                ${rewardClaimed ? 
-                                    (canIncrease ? 'Aumentar' : `${Math.ceil(12 - hoursSinceLastIncrease)}h`) : 
-                                    'Reclamar'}
+                            <button class="action-btn ${showClaimButton ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-3 py-1 rounded" 
+                                    data-friend-id="${friend.id}" ${!canIncrease ? 'disabled' : ''}>
+                                <i class="fas ${showClaimButton ? 'fa-gift' : 'fa-heart'} mr-1"></i> 
+                                ${showClaimButton ? 
+                                    'Reclamar' : 
+                                    (canIncrease ? 'Aumentar' : `${Math.ceil(6 - hoursSinceLastIncrease)}h`)}
                             </button>
                         </td>
                     `;
@@ -255,8 +257,9 @@
                 const rewardClaimed = friendship.reward_claimed || false;
                 const lastIncrease = friendship.last_increase ? new Date(friendship.last_increase) : null;
                 const now = new Date();
-                const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 24;
-                const canIncrease = hoursSinceLastIncrease >= 12;
+                const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 6;
+                const canIncrease = hoursSinceLastIncrease >= 6;
+                const showClaimButton = affinityPoints >= 100 && !rewardClaimed;
 
                 // Construir el HTML de la tarjeta de afinidad
                 affinityCardContainer.innerHTML = `
@@ -281,16 +284,16 @@
                         </div>
                         
                         <div class="text-center mb-4">
-                            <h4 class="font-semibold text-gray-700">${rewardClaimed ? 'Aumentar afinidad' : 'Recompensa disponible'}</h4>
-                            ${rewardClaimed ? '<p class="text-sm text-gray-500">Puedes aumentar +1 punto cada 12 horas</p>' : ''}
+                            <h4 class="font-semibold text-gray-700">${showClaimButton ? 'Recompensa disponible' : 'Aumentar afinidad'}</h4>
+                            ${!showClaimButton ? '<p class="text-sm text-gray-500">Puedes aumentar +1 punto cada 6 horas</p>' : ''}
                         </div>
                         
-                        <button id="friend-action-btn" class="w-full action-btn ${rewardClaimed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white py-2 rounded-lg" 
-                                ${(rewardClaimed && !canIncrease) || (!rewardClaimed && reward <= 0) ? 'disabled' : ''}>
-                            <i class="fas ${rewardClaimed ? 'fa-heart' : 'fa-gift'} mr-2"></i>
-                            ${rewardClaimed ? 
-                                (canIncrease ? 'Aumentar afinidad (+1)' : `Próximo aumento en ${Math.ceil(12 - hoursSinceLastIncrease)}h`) : 
-                                (reward > 0 ? `Reclamar ${reward} oro` : 'No hay recompensa disponible')}
+                        <button id="friend-action-btn" class="w-full action-btn ${showClaimButton ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white py-2 rounded-lg" 
+                                ${!canIncrease ? 'disabled' : ''}>
+                            <i class="fas ${showClaimButton ? 'fa-gift' : 'fa-heart'} mr-2"></i>
+                            ${showClaimButton ? 
+                                (reward > 0 ? `Reclamar ${reward} oro` : 'No hay recompensa') : 
+                                (canIncrease ? 'Aumentar afinidad (+1)' : `Próximo aumento en ${Math.ceil(6 - hoursSinceLastIncrease)}h`)}
                         </button>
                     </div>
                 `;
@@ -332,33 +335,7 @@
                 const lastIncrease = friendship.last_increase ? new Date(friendship.last_increase) : null;
                 const now = new Date();
 
-                if (rewardClaimed) {
-                    // Lógica para aumentar afinidad (+1 punto)
-                    const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 24;
-
-                    if (hoursSinceLastIncrease < 12) {
-                        throw new Error(`Podrás aumentar la afinidad nuevamente en ${Math.ceil(12 - hoursSinceLastIncrease)} horas`);
-                    }
-
-                    const { error: increaseError } = await supabase
-                        .from('friends')
-                        .update({ 
-                            affinity_points: affinityPoints + 1,
-                            last_increase: now.toISOString()
-                        })
-                        .eq('user1_id', user1)
-                        .eq('user2_id', user2);
-
-                    if (increaseError) throw increaseError;
-
-                    await Swal.fire({
-                        icon: 'success',
-                        title: '¡Afinidad aumentada!',
-                        html: `+1 punto de afinidad con este amigo<br>Total: <strong>${affinityPoints + 1} pts</strong>`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                } else if (reward > 0) {
+                if (affinityPoints >= 100 && !rewardClaimed) {
                     // Lógica para reclamar recompensa
                     const { isConfirmed } = await Swal.fire({
                         title: '¿Reclamar recompensa?',
@@ -407,7 +384,31 @@
                         showConfirmButton: false
                     });
                 } else {
-                    throw new Error('No hay recompensa disponible para este nivel de afinidad');
+                    // Lógica para aumentar afinidad (+1 punto)
+                    const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 6;
+
+                    if (hoursSinceLastIncrease < 6) {
+                        throw new Error(`Podrás aumentar la afinidad nuevamente en ${Math.ceil(6 - hoursSinceLastIncrease)} horas`);
+                    }
+
+                    const { error: increaseError } = await supabase
+                        .from('friends')
+                        .update({ 
+                            affinity_points: affinityPoints + 1,
+                            last_increase: now.toISOString()
+                        })
+                        .eq('user1_id', user1)
+                        .eq('user2_id', user2);
+
+                    if (increaseError) throw increaseError;
+
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Afinidad aumentada!',
+                        html: `+1 punto de afinidad con este amigo<br>Total: <strong>${affinityPoints + 1} pts</strong>`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
 
                 // Actualizar la interfaz
