@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil</title>
     <link rel="stylesheet" href="profile.css">
-   <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -22,24 +22,35 @@
             </button>
 
             <h2>Tu Perfil</h2>
+
+            <!-- Sección del Avatar - ¡NUEVO AQUÍ! -->
+            <div class="profile-avatar-section mb-6">
+                <img id="avatar-img" src="https://placehold.co/150x150/cccccc/000000?text=Avatar" alt="User Avatar" class="rounded-full w-32 h-32 object-cover border-4 border-yellow-400 shadow-lg mx-auto cursor-pointer">
+                <input type="file" id="avatar-upload-input" accept="image/png, image/jpeg, image/webp" class="hidden">
+                <button id="change-avatar-btn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors">
+                    <i class="fas fa-camera"></i> Cambiar Avatar
+                </button>
+            </div>
+            <!-- Fin Sección del Avatar -->
+
             <p>Correo electrónico: <span id="user-email-profile">Cargando...</span></p>
 
-           <div class="profile-info">
-    <div class="currency-card gold-card">
-        <i class="fas fa-coins currency-icon"></i>
-        <div class="currency-value-wrapper">
-            <span id="gold-display" class="currency-value">0</span>
-            <span class="currency-name">Oro</span>
-        </div>
-    </div>
-    <div class="currency-card diamond-card">
-        <i class="fas fa-gem currency-icon"></i>
-        <div class="currency-value-wrapper">
-            <span id="diamonds-display" class="currency-value">0</span>
-            <span class="currency-name">Diamantes</span>
-        </div>
-    </div>
-</div>
+            <div class="profile-info">
+                <div class="currency-card gold-card">
+                    <i class="fas fa-coins currency-icon"></i>
+                    <div class="currency-value-wrapper">
+                        <span id="gold-display" class="currency-value">0</span>
+                        <span class="currency-name">Oro</span>
+                    </div>
+                </div>
+                <div class="currency-card diamond-card">
+                    <i class="fas fa-gem currency-icon"></i>
+                    <div class="currency-value-wrapper">
+                        <span id="diamonds-display" class="currency-value">0</span>
+                        <span class="currency-name">Diamantes</span>
+                    </div>
+                </div>
+            </div>
 
             <hr class="separator">
 
@@ -51,7 +62,7 @@
             </div>
 
             <hr class="separator">
-            </div>
+        </div>
 
         <div id="loader" class="loader-hidden">
             <div class="spinner"></div>
@@ -59,6 +70,7 @@
         </div>
     </div>
 
+    <!-- Asegúrate de que script.js esté cargado como un módulo -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
