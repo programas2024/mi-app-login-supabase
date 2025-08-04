@@ -489,3 +489,31 @@
     .swal2-title { font-size: 1.5em !important; }
     .swal2-html-container { font-size: 0.9em !important; }
 }
+
+.avatar-section {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.avatar-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4a6fa5;
+    margin-bottom: 10px;
+}
+
+.btn-avatar {
+    background: #4a6fa5;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-avatar:hover {
+    background: #3a5a80;
+}
