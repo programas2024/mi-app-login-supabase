@@ -532,14 +532,3 @@ async function showConfigureOptions() {
         }
     });
 }
-
-// --- 4. Función para cerrar sesión ---
-async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.error('Error al cerrar sesión:', error);
-    } else {
-        console.log('Sesión cerrada correctamente');
-        window.location.href = 'index.html';
-    }
-}
