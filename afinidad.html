@@ -259,14 +259,17 @@
     try {
         const pointsToAdd = 10;
         
-        // 1. Verificar y crear relación si no existe
+        // 1. Determinar el orden correcto de los IDs
+        const [user1, user2] = currentUserId < friendId 
+            ? [currentUserId, friendId] 
+            : [friendId, currentUserId];
+
+        // 2. Verificar y crear relación si no existe
         let { data: friendship, error: fetchError } = await supabase
             .from('friends')
             .select('affinity_points')
-            .or(
-                `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
-                `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
-            )
+            .eq('user1_id', user1)
+            .eq('user2_id', user2)
             .maybeSingle();
 
         if (fetchError) throw fetchError;
@@ -277,8 +280,8 @@
                 .from('friends')
                 .insert([
                     {
-                        user1_id: currentUserId,
-                        user2_id: friendId,
+                        user1_id: user1,
+                        user2_id: user2,
                         affinity_points: pointsToAdd
                     }
                 ]);
@@ -291,31 +294,28 @@
             const { error: updateError } = await supabase
                 .from('friends')
                 .update({ 
-                    affinity_points: (friendship.affinity_points || 0) + pointsToAdd 
+                    affinity_points: (friendship.affinity_points || 0) + pointsToAdd,
+                    updated_at: new Date().toISOString()
                 })
-                .or(
-                    `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
-                    `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
-                );
+                .eq('user1_id', user1)
+                .eq('user2_id', user2);
             
             if (updateError) throw updateError;
         }
 
-        // 2. Obtener puntos actualizados
+        // 3. Obtener puntos actualizados
         const { data: updatedFriendship, error: finalError } = await supabase
             .from('friends')
             .select('affinity_points')
-            .or(
-                `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
-                `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
-            )
+            .eq('user1_id', user1)
+            .eq('user2_id', user2)
             .single();
 
         if (finalError) throw finalError;
 
         const newPoints = updatedFriendship?.affinity_points || pointsToAdd;
 
-        // 3. Mostrar confirmación
+        // 4. Mostrar confirmación
         await Swal.fire({
             icon: 'success',
             title: '¡Afinidad aumentada!',
@@ -324,7 +324,7 @@
             showConfirmButton: false
         });
 
-        // 4. Actualizar interfaz
+        // 5. Actualizar interfaz
         await loadFriendsList();
         
         const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
