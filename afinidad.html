@@ -255,42 +255,43 @@
                 }
             }
 
-            // Aumentar afinidad con un amigo
             async function increaseAffinity(friendId) {
-                try {
-                    const { data: friendship, error: fetchError } = await supabase
-                        .from('friends')
-                        .select('affinity_points')
-                        .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`)
-                        .single();
+    try {
+        // 1. Primero obtenemos los puntos actuales
+        const { data: friendship, error: fetchError } = await supabase
+            .from('friends')
+            .select('affinity_points')
+            .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`)
+            .single();
 
-                    if (fetchError) throw fetchError;
+        if (fetchError) throw fetchError;
 
-                    const currentPoints = friendship.affinity_points || 0;
-                    const pointsToAdd = 10; // Puntos a añadir por interacción
+        const currentPoints = friendship.affinity_points || 0;
+        const pointsToAdd = 10; // Puntos a añadir por interacción
 
-                    const { error: updateError } = await supabase
-                        .from('friends')
-                        .update({ affinity_points: currentPoints + pointsToAdd })
-                        .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`);
+        // 2. Actualizamos los puntos en la base de datos
+        const { error: updateError } = await supabase
+            .from('friends')
+            .update({ affinity_points: currentPoints + pointsToAdd })
+            .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`);
 
-                    if (updateError) throw updateError;
+        if (updateError) throw updateError;
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Afinidad aumentada!',
-                        text: `Has ganado ${pointsToAdd} puntos de afinidad`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+        // 3. Mostramos confirmación y actualizamos la lista
+        Swal.fire({
+            icon: 'success',
+            title: '¡Afinidad aumentada!',
+            text: `Has ganado ${pointsToAdd} puntos de afinidad`,
+            timer: 2000,
+            showConfirmButton: false
+        });
 
-                    loadFriendsList();
-                } catch (error) {
-                    console.error('Error increasing affinity:', error);
-                    Swal.fire('Error', 'No se pudo aumentar la afinidad', 'error');
-                }
-            }
-
+        loadFriendsList(); // Recargamos la lista para ver los cambios
+    } catch (error) {
+        console.error('Error increasing affinity:', error);
+        Swal.fire('Error', 'No se pudo aumentar la afinidad', 'error');
+    }
+}
             // Invitar a un nuevo amigo
             async function inviteFriend() {
                 const { value: email } = await Swal.fire({
