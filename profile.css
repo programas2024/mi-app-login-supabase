@@ -1,278 +1,274 @@
-/* profile.css - Versión Refinada y Consistente con Dashboard */
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
 
-/* NOTA: Asegúrate de que las variables CSS (--primary-gradient-start, --gold-card-start, etc.)
-   estén definidas en tu archivo dashboard.css o en un archivo de variables global que este CSS pueda acceder. */
-
-/* --- Contenedor específico de la página de perfil --- */
-.profile-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #e0f2f7, #f7f9fc); /* Fondo sutil, igual al del dashboard */
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
-    box-sizing: border-box;
 }
 
-/* --- Estilos de la tarjeta de perfil --- */
-#profile-card {
-    background-color: var(--bg-card-vibrant); /* Fondo blanco vibrante */
-    border-radius: var(--border-radius-large); /* Bordes redondeados grandes */
-    box-shadow: var(--shadow-deep); /* Sombra profunda, igual al dashboard */
-    padding: 40px;
-    width: 100%;
-    max-width: 550px; /* Un poco más grande para mejor presentación */
-    text-align: center;
-    box-sizing: border-box;
-    transition: all 0.3s ease-in-out;
+/* Tarjeta de perfil */
+.profile-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
     position: relative;
-    overflow: hidden;
-    padding-top: 80px; /* Suficiente espacio arriba para ambos botones */
-    border: 1px solid rgba(255, 255, 255, 0.8); /* Borde sutil */
 }
 
-/* Títulos dentro de la tarjeta */
-#profile-card h2 {
-    color: var(--text-dark-primary); /* Color de texto oscuro principal */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile-title {
+    text-align: center;
+    color: #2c3e50;
     margin-bottom: 25px;
-    font-size: 2.2em; /* Un poco más grande para énfasis */
-    font-weight: 700;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.05); /* Sombra de texto sutil */
+    font-size: 24px;
 }
 
-#profile-card p {
-    color: var(--text-muted); /* Color de texto suave */
-    font-size: 1.05em; /* Ligeramente ajustado */
-    margin-bottom: 10px;
-}
-
-#user-email-profile {
-    font-weight: 600;
-    color: var(--primary-gradient-end); /* Azul eléctrico del dashboard */
-}
-
-/* --- Contadores de oro y diamantes (¡Magia aquí!) --- */
-.profile-info {
-    display: flex;
-    justify-content: center; /* Centra los contenedores */
-    gap: 20px; /* Espacio entre ellos */
-    margin: 30px auto; /* Centra el contenedor completo */
-    padding: 0; /* Eliminamos el padding del wrapper para que las tarjetas lo definan */
-    background-color: transparent; /* Fondo transparente */
-    box-shadow: none; /* Sin sombra en el wrapper */
-    border-radius: 0; /* Sin borde redondeado en el wrapper */
-    max-width: 450px; /* Limita el ancho como en el dashboard */
-    flex-wrap: wrap; /* Permite que se envuelvan en pantallas pequeñas */
-}
-
-/* Reutilizamos los estilos de .currency-card del dashboard para consistencia */
-.profile-info .currency-card {
-    display: flex;
-    flex-direction: row; /* Icono y texto en fila */
-    align-items: center; /* Centra verticalmente el contenido */
-    justify-content: space-around; /* Distribuye espacio entre elementos */
-    padding: 12px 20px; /* Padding reducido para menor altura, consistente con dashboard */
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-deep);
-    color: var(--text-color-light);
-    flex: 1; /* Permite que las tarjetas se distribuyan equitativamente */
-    min-width: 160px; /* Ancho mínimo para cada tarjeta */
-    max-width: 230px; /* Ancho máximo para cada tarjeta */
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: default;
-    border: 1px solid rgba(255, 255, 255, 0.6); /* Borde claro para los cards */
-}
-
-.profile-info .currency-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.profile-info .currency-card .currency-icon {
-    font-size: 2.2em; /* Iconos más pequeños */
-    margin-right: 15px; /* Espacio a la derecha del icono */
-    margin-bottom: 0;
-    color: var(--text-subtle-white);
-}
-
-.profile-info .currency-card .currency-value-wrapper {
+/* Sección de avatar */
+.avatar-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Alinea el texto a la izquierda dentro del wrapper */
+    align-items: center;
+    margin: 20px 0;
 }
 
-.profile-info .currency-card .currency-value {
-    font-size: 1.8em; /* Valor numérico más pequeño */
-    font-weight: 900;
-    line-height: 1.2;
-    margin-bottom: 2px;
-    color: var(--text-color-light);
+.avatar-wrapper {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 15px;
 }
 
-.profile-info .currency-card .currency-name {
-    font-size: 0.85em; /* Nombre de la moneda más pequeño */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-subtle-white);
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4a6fa5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Colores específicos para las tarjetas de Oro y Diamantes (¡exactamente los mismos!) */
-.profile-info .gold-card {
-    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
-}
-
-.profile-info .diamond-card {
-    background: linear-gradient(135deg, var(--diamond-card-start) 0%, var(--diamond-card-end) 100%);
-}
-
-
-/* Separador (Más sutil) */
-.separator {
-    border: none;
-    border-top: 1px solid rgba(0, 0, 0, 0.08); /* Color más suave */
-    margin: 35px 0;
-}
-
-/* Formulario de edición de perfil */
-.profile-edit-form {
-    margin-bottom: 30px;
-}
-
-.profile-edit-form h3 {
-    color: var(--text-dark-primary);
-    margin-bottom: 20px;
-    font-size: 1.8em; /* Ajustado */
-    font-weight: 600;
-}
-
-.profile-edit-form input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 14px; /* Un poco más de padding */
-    margin-bottom: 18px; /* Más espacio entre inputs */
-    border: 1px solid #dee2e6; /* Borde más suave */
-    border-radius: var(--border-radius-soft); /* Bordes suaves */
-    font-size: 1.05em;
-    color: var(--text-dark-primary);
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.profile-edit-form input[type="text"]:focus {
-    border-color: var(--primary-gradient-end); /* Azul eléctrico al focus */
-    box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25); /* Sombra de focus consistente */
-    outline: none;
-}
-
-/* Botones Generales (Alineados con el estilo del dashboard) */
-.btn {
-    padding: 15px 30px; /* Buen tamaño para botones */
-    border: none;
-    border-radius: 10px; /* Bordes suaves */
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave */
-    margin: 10px 8px; /* Margen ajustado */
-    min-width: 160px;
-    display: inline-flex;
+.avatar-overlay {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Espacio entre icono y texto */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra por defecto */
-    text-transform: uppercase; /* Para darle un toque moderno */
-    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.btn:hover {
-    transform: translateY(-4px); /* Efecto de elevación */
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al hover */
+.avatar-overlay:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
 }
 
-.btn-action { /* Para guardar perfil */
-    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%); /* Azul de jugar del dashboard */
-    color: var(--text-color-light);
+.avatar-upload-input {
+    display: none;
 }
 
-.btn-action:hover {
-    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.avatar-instructions {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-top: 10px;
 }
 
-/* Nuevo estilo para el botón "Regresar" (Consistente con los botones del sidebar) */
+/* Información del perfil */
+.profile-info {
+    margin: 25px 0;
+}
+
+.profile-email {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.profile-email .icon {
+    margin-right: 10px;
+    color: #4a6fa5;
+}
+
+.currency-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+}
+
+.currency-card {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.currency-card.gold {
+    background-color: #f8f1e5;
+    border: 1px solid #f1c40f;
+}
+
+.currency-card.diamond {
+    background-color: #e8f4f8;
+    border: 1px solid #3498db;
+}
+
+.currency-card .icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.currency-card.gold .icon {
+    color: #f39c12;
+}
+
+.currency-card.diamond .icon {
+    color: #2980b9;
+}
+
+.currency-value {
+    display: flex;
+    flex-direction: column;
+}
+
+.currency-value span:first-child {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.currency-name {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Formulario de edición */
+.edit-form {
+    margin-top: 30px;
+}
+
+.form-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4a6fa5;
+}
+
+/* Botones */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .btn-back {
-    position: absolute;
-    top: 25px; /* Más espacio desde el borde superior */
-    left: 25px;
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%); /* Degradado de grises */
-    color: var(--text-color-light);
-    padding: 10px 20px; /* Un poco más de padding */
-    font-size: 0.95em;
-    min-width: unset;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background-color: #e74c3c;
+    color: white;
 }
 
 .btn-back:hover {
-    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    background-color: #c0392b;
 }
 
-/* Nuevo estilo para el botón "Configurar" (Consistente con los botones del sidebar VIP) */
 .btn-configure {
-    position: absolute;
-    top: 25px;
-    right: 25px;
-    background: linear-gradient(135deg, var(--vip-gradient-start) 0%, var(--vip-gradient-end) 100%); /* Dorado de VIP */
-    color: var(--text-dark-primary); /* Texto oscuro para contraste en dorado */
-    padding: 10px 20px;
-    font-size: 0.95em;
-    min-width: unset;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background-color: #bdc3c7;
+    color: #2c3e50;
 }
 
 .btn-configure:hover {
-    background: linear-gradient(135deg, var(--vip-gradient-end) 0%, var(--vip-gradient-start) 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3);
+    background-color: #95a5a6;
 }
 
-/* --- Loader Styles (Mantenemos la corrección y consistencia) --- */
-.loader-hidden {
-    display: none !important;
+.btn-save {
+    background-color: #2ecc71;
+    color: white;
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+    margin-top: 10px;
 }
 
-#loader {
+.btn-save:hover {
+    background-color: #27ae60;
+}
+
+/* Loader */
+.loader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* Un poco más oscuro */
+    background-color: rgba(255, 255, 255, 0.8);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    color: var(--text-color-light); /* Texto blanco */
-    font-size: 1.4em; /* Tamaño de fuente consistente */
-    transition: opacity 0.3s ease;
+    display: none;
 }
 
-.spinner {
-    border: 8px solid rgba(255, 255, 255, 0.3);
-    border-top: 8px solid var(--play-gradient-end); /* Color del spinner consistente */
+.loader-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     animation: spin 1s linear infinite;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 @keyframes spin {
@@ -280,278 +276,22 @@
     100% { transform: rotate(360deg); }
 }
 
-/* ----------------------------------------------- */
-/* --- ESTILOS MEJORADOS PARA SWEETALERT2 --- */
-/* ----------------------------------------------- */
-
-/* Contenedor de botones dentro de SweetAlert */
-.swal-custom-buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 25px;
-    width: 100%;
-    padding: 0 10px;
-    box-sizing: border-box;
+.loader-text {
+    color: #2c3e50;
+    font-size: 18px;
 }
 
-/* Estilo base para los botones personalizados de SweetAlert */
-.swal-custom-btn {
-    background: linear-gradient(45deg, var(--play-gradient-start) 0%, var(--play-gradient-end) 100%); /* Degradado principal */
-    color: var(--text-color-light);
-    border: none;
-    border-radius: 10px; /* Más consistente */
-    padding: 16px 22px; /* Buen padding */
-    font-size: 1.15em; /* Ligeramente más grande */
-    font-weight: 700; /* Más audaz */
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px; /* Más espacio para icono */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
-    text-shadow: 0 1px 3px rgba(0,0,0,0.15); /* Sombra de texto suave */
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-
-.swal-custom-btn:hover {
-    transform: translateY(-4px);
-    background: linear-gradient(45deg, var(--play-gradient-end) 0%, var(--play-gradient-start) 100%); /* Degradado inverso al hover */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.swal-custom-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilo específico para el botón de Oro (para SweetAlert, si aplica) */
-.swal-btn-gold {
-    background: linear-gradient(135deg, var(--gold-card-start) 0%, var(--gold-card-end) 100%);
-    color: var(--text-dark-primary); /* Texto oscuro para contraste */
-    text-shadow: none; /* Eliminar sombra de texto si el fondo es claro */
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
-}
-
-.swal-btn-gold:hover {
-    background: linear-gradient(135deg, var(--gold-card-end) 0%, var(--gold-card-start) 100%);
-    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
-}
-
-/* Estilo específico para el botón de Cerrar Sesión (para SweetAlert, si aplica) */
-.swal-btn-logout {
-    background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
-    color: var(--text-color-light);
-    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
-}
-
-.swal-btn-logout:hover {
-    background: linear-gradient(135deg, #C82333 0%, #A71C2B 100%);
-    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
-}
-
-/* Estilos para el popup de SweetAlert en general (para un look moderno) */
-.swal2-popup.swal2-modal { /* Aseguramos que sea el modal estándar */
-    border-radius: 18px; /* Bordes más redondeados y consistentes */
-    background: var(--bg-card-vibrant); /* Fondo consistente */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25); /* Sombra más profunda */
-    padding: 35px; /* Más padding interno */
-    border: 1px solid rgba(255, 255, 255, 0.9); /* Borde sutil */
-}
-
-.swal2-title {
-    color: var(--text-dark-primary) !important;
-    font-weight: 800 !important; /* Más audaz */
-    font-size: 2.2em !important; /* Más grande */
-    margin-bottom: 20px !important;
-}
-
-.swal2-html-container { /* Usar esta clase para el contenido, no .swal2-content */
-    color: var(--text-muted) !important;
-    font-size: 1.1em !important;
-    line-height: 1.5 !important;
-    margin: 0 !important; /* Asegura que no tenga márgenes predeterminados */
-    padding: 0 !important; /* Asegura que no tenga paddings predeterminados */
-}
-
-.swal2-icon {
-    margin-bottom: 25px !important;
-}
-
-/* Ajuste para que el HTML personalizado no tenga padding extra del swal2-html-container */
-/* Si usas swal2-html-container para tu contenido, no necesitas esto.
-   Si pones contenido HTML directamente y SweetAlert le añade padding, podrías necesitarlo.
-   Para los botones, usamos .swal-custom-buttons-container que ya maneja su padding. */
-.swal2-html-container-no-padding {
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-
-/* --- Responsividad --- */
-@media (max-width: 992px) {
-    #profile-card {
-        padding: 30px;
-        max-width: 450px;
-        padding-top: 80px; /* Ajuste si los botones absolutos se acercan mucho */
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px;
     }
-    #profile-card h2 { font-size: 1.8em; }
-    #profile-card p { font-size: 1em; }
-
-    .profile-info {
-        flex-direction: column; /* Apila las tarjetas en pantallas medianas */
-        align-items: center;
-        gap: 15px;
-        max-width: 100%; /* Ocupa el ancho completo */
-    }
-    .profile-info .currency-card {
-        width: 80%; /* Ajusta el ancho para que queden bien apiladas */
-        max-width: 280px; /* Limita el ancho máximo */
-        padding: 10px 18px;
-        flex-direction: row; /* Mantén el diseño horizontal dentro de la tarjeta */
-        justify-content: space-around;
-    }
-    .profile-info .currency-card .currency-icon { font-size: 2em; margin-right: 12px; }
-    .profile-info .currency-card .currency-value { font-size: 1.6em; }
-    .profile-info .currency-card .currency-name { font-size: 0.8em; }
-
-    .btn {
-        padding: 12px 25px;
-        font-size: 1em;
-        margin: 8px 4px;
-        min-width: 140px;
-    }
-
-    .btn-back, .btn-configure {
-        position: static; /* Quita el posicionamiento absoluto */
-        width: auto; /* Ancho automático */
-        margin: 10px auto; /* Centra y añade margen */
-        display: block; /* Ocupa su propia línea */
-        max-width: 200px; /* Limita el ancho en móviles */
-        padding: 10px 15px;
-        font-size: 0.9em;
-    }
-
-    .swal-custom-btn {
-        font-size: 1em;
-        padding: 14px 18px;
-        gap: 8px;
-    }
-    .swal2-popup.swal2-modal { padding: 25px; }
-    .swal2-title { font-size: 1.8em !important; }
-    .swal2-html-container { font-size: 1em !important; }
-}
-
-@media (max-width: 576px) {
-    .profile-page-container { padding: 10px; }
-    #profile-card {
+    
+    .profile-card {
         padding: 20px;
-        padding-top: 70px;
-        border-radius: 10px;
-        margin: 0;
     }
-    #profile-card h2 { font-size: 1.6em; }
-    #profile-card p { font-size: 0.9em; }
-
-    .profile-info .currency-card {
-        width: 95%; /* Ocupa casi todo el ancho */
-        max-width: unset; /* Sin límite de ancho */
-        padding: 8px 15px;
-        flex-direction: column; /* Apila contenido dentro de la tarjeta */
-        justify-content: center;
-        align-items: center;
+    
+    .currency-container {
+        flex-direction: column;
     }
-    .profile-info .currency-card .currency-icon { margin-right: 0; margin-bottom: 5px; font-size: 1.8em; }
-    .profile-info .currency-card .currency-value-wrapper { align-items: center; } /* Centra texto apilado */
-    .profile-info .currency-card .currency-value { font-size: 1.3em; }
-    .profile-info .currency-card .currency-name { font-size: 0.7em; }
-
-    .btn {
-        width: 100%;
-        margin: 5px 0;
-        padding: 10px 20px;
-        font-size: 0.9em;
-    }
-
-    .btn-back, .btn-configure {
-        margin: 5px auto;
-        padding: 8px 12px;
-        font-size: 0.85em;
-    }
-    .swal-custom-btn {
-        font-size: 0.95em;
-        padding: 10px 12px;
-        gap: 6px;
-    }
-    .swal2-popup.swal2-modal { padding: 15px; border-radius: 12px; }
-    .swal2-title { font-size: 1.5em !important; }
-    .swal2-html-container { font-size: 0.9em !important; }
-}
-
-.avatar-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-    width: 100%;
-}
-
-.avatar-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.avatar-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #4a6fa5;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: block; /* Asegura que la imagen se comporte como bloque */
-    margin: 0 auto; /* Centrado horizontal */
-}
-
-.btn-avatar {
-    background: #4a6fa5;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    display: inline-block; /* Para que el botón no ocupe todo el ancho */
-    margin-top: 10px;
-}
-
-.btn-avatar:hover {
-    background: #3a5a80;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilo para el input file (oculto pero funcional) */
-.avatar-upload-input {
-    display: none;
-}
-
-/* Estilo adicional para el contenedor principal si es necesario */
-.profile-avatar-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 0 20px;
-    box-sizing: border-box;
 }

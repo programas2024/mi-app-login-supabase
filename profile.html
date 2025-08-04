@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Perfil</title>
     <link rel="stylesheet" href="profile.css">
-    <link rel="stylesheet" href="dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container profile-page-container">
-        <div id="profile-card" class="card dashboard-hidden">
+    <div class="profile-container">
+        <div id="profile-card" class="profile-card">
             <div class="profile-header">
                 <button id="back-to-dashboard-btn" class="btn btn-back">
                     <i class="fas fa-arrow-left"></i> Regresar
@@ -23,10 +22,10 @@
                 </button>
             </div>
 
-            <h2>Tu Perfil</h2>
+            <h2 class="profile-title">Tu Perfil</h2>
 
-            <!-- Sección del Avatar - IDs actualizados para coincidir con script.js -->
-            <div class="profile-avatar-section">
+            <!-- Sección del Avatar -->
+            <div class="avatar-section">
                 <div class="avatar-wrapper">
                     <img id="avatar-img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
                          alt="Avatar del usuario" class="avatar-image">
@@ -39,34 +38,34 @@
                 <p class="avatar-instructions">Haz clic para cambiar tu foto de perfil</p>
             </div>
 
-            <!-- Sección de información del usuario -->
-            <div class="profile-info-section">
+            <!-- Sección de información -->
+            <div class="profile-info">
                 <div class="profile-email">
-                    <i class="fas fa-envelope"></i>
-                    <span id="user-email-profile">Cargando...</span>
+                    <i class="fas fa-envelope icon"></i>
+                    <span id="user-email-profile">usuario@ejemplo.com</span>
                 </div>
 
-                <div class="currency-display">
-                    <div class="currency-card gold-card">
-                        <i class="fas fa-coins"></i>
-                        <div>
+                <div class="currency-container">
+                    <div class="currency-card gold">
+                        <i class="fas fa-coins icon"></i>
+                        <div class="currency-value">
                             <span id="gold-display-profile">0</span>
-                            <span>Oro</span>
+                            <span class="currency-name">Oro</span>
                         </div>
                     </div>
-                    <div class="currency-card diamond-card">
-                        <i class="fas fa-gem"></i>
-                        <div>
+                    <div class="currency-card diamond">
+                        <i class="fas fa-gem icon"></i>
+                        <div class="currency-value">
                             <span id="diamonds-display-profile">0</span>
-                            <span>Diamantes</span>
+                            <span class="currency-name">Diamantes</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Formulario de edición -->
-            <div class="profile-edit-form">
-                <h3><i class="fas fa-user-edit"></i> Editar Información</h3>
+            <div class="edit-form">
+                <h3 class="form-title"><i class="fas fa-user-edit"></i> Editar Información</h3>
                 
                 <div class="form-group">
                     <label for="edit-username"><i class="fas fa-user"></i> Nombre de usuario</label>
