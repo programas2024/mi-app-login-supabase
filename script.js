@@ -8,7 +8,7 @@ import {
     loadPendingFriendRequestsCount, 
     loadUnreadMessagesCount, 
     loadFriendsList, 
-    setupFriendsRealtimeSubscription 
+    
 } from './socialLogic.js';
 
 

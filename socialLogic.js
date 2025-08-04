@@ -17,6 +17,7 @@ let friendsSubscription = null;
 // Variable para almacenar la suscripción a Realtime para el chat activo
 let chatSubscription = null;
 
+
 // ====================================================================================
 // FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
@@ -51,6 +52,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
         buttonsStyling: false,
     });
 }
+
 
 /**
  * Obtiene el emoji de la bandera de un país (local a socialLogic.js).
