@@ -291,61 +291,51 @@
             ? [currentUserId, friendId] 
             : [friendId, currentUserId];
 
-        // 2. Primero intentar actualizar
-        const { data: updatedData, error: updateError } = await supabase
+        // 2. Primero obtener los puntos actuales
+        const { data: existing, error: fetchError } = await supabase
             .from('friends')
-            .update({ 
-                affinity_points: supabase.rpc('increment', {
-                    val: pointsToAdd,
-                    col: 'affinity_points'
-                })
-            })
+            .select('affinity_points')
             .eq('user1_id', user1)
             .eq('user2_id', user2)
-            .select('affinity_points')
-            .single();
+            .maybeSingle();
 
-        // 3. Si no existe, crear la relación
-        if (updateError && updateError.code === 'PGRST116') {
-            const { data: createdData, error: createError } = await supabase
+        if (fetchError) throw fetchError;
+
+        let newPoints;
+        if (!existing) {
+            // 3. Si no existe, crear la relación
+            const { error: createError } = await supabase
                 .from('friends')
                 .insert([{
                     user1_id: user1,
                     user2_id: user2,
                     affinity_points: pointsToAdd
-                }])
-                .select('affinity_points')
-                .single();
+                }]);
 
             if (createError) throw createError;
-            
-            // Mostrar confirmación
-            await Swal.fire({
-                icon: 'success',
-                title: '¡Nueva afinidad creada!',
-                text: `Puntos iniciales: ${pointsToAdd}`,
-                timer: 2000,
-                showConfirmButton: false
-            });
+            newPoints = pointsToAdd;
+        } else {
+            // 4. Si existe, actualizar sumando los puntos
+            newPoints = (existing.affinity_points || 0) + pointsToAdd;
+            const { error: updateError } = await supabase
+                .from('friends')
+                .update({ affinity_points: newPoints })
+                .eq('user1_id', user1)
+                .eq('user2_id', user2);
 
-            // Actualizar UI
-            await loadFriendsList();
-            return;
-        } 
-        else if (updateError) {
-            throw updateError;
+            if (updateError) throw updateError;
         }
 
-        // 4. Mostrar confirmación de actualización
+        // 5. Mostrar confirmación
         await Swal.fire({
             icon: 'success',
-            title: '¡Afinidad aumentada!',
-            text: `Nuevos puntos: ${updatedData.affinity_points}`,
+            title: '¡Afinidad actualizada!',
+            text: `Nuevos puntos: ${newPoints}`,
             timer: 2000,
             showConfirmButton: false
         });
 
-        // 5. Actualizar la interfaz
+        // 6. Actualizar la interfaz
         await loadFriendsList();
         
         // Actualizar vista detallada si está abierta
