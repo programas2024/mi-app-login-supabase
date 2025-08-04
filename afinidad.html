@@ -87,12 +87,18 @@
     </div>
 
     <script>
-        // Configuración de Supabase
+        // Importa createClient directamente de la URL del CDN de Supabase
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+        // --- Configuración de Supabase para esta página ---
+        // Estas claves DEBEN COINCIDIR con las de tu script.js y tu proyecto Supabase.
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        // ¡CLAVE CORREGIDA! Asegúrate de que esta sea exactamente la misma que en script.js
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         // Crear cliente Supabase
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         let currentUserId = null;
 
         // Función para determinar el nivel de afinidad
