@@ -435,32 +435,111 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Función para mostrar opciones de configuración
+// Función para mostrar opciones de configuración con diseño mejorado
 async function showConfigureOptions() {
-    const { value: option } = await Swal.fire({
-        title: 'Opciones',
+    await Swal.fire({
+        title: '<span style="font-size: 1.5rem; color: #2d3748;">Opciones de Perfil</span>',
         html: `
-            <div class="config-options">
-                <button id="give-gold-btn" class="swal-btn gold-btn">
-                    <i class="fas fa-coins"></i> Obtener 10 de Oro
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
+                <button id="give-gold-btn" style="
+                    background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
+                    color: #1a202c;
+                    border: none;
+                    padding: 0.8rem 1.5rem;
+                    border-radius: 0.5rem;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                    box-shadow: 0 4px 6px rgba(214, 158, 46, 0.3);
+                    transition: all 0.3s ease;
+                ">
+                    <i class="fas fa-coins" style="font-size: 1.2rem;"></i>
+                    <span>Obtener 10 de Oro</span>
                 </button>
-                <button id="logout-btn" class="swal-btn logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                
+                <button id="logout-btn" style="
+                    background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+                    color: white;
+                    border: none;
+                    padding: 0.8rem 1.5rem;
+                    border-radius: 0.5rem;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                    box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);
+                    transition: all 0.3s ease;
+                ">
+                    <i class="fas fa-sign-out-alt" style="font-size: 1.2rem;"></i>
+                    <span>Cerrar Sesión</span>
                 </button>
             </div>
         `,
         showConfirmButton: false,
         showCancelButton: false,
         allowOutsideClick: true,
+        allowEscapeKey: true,
+        width: '400px',
+        padding: '1.5rem',
+        background: '#ffffff',
+        backdrop: 'rgba(0, 0, 0, 0.4)',
+        customClass: {
+            popup: 'custom-swal-popup',
+            title: 'custom-swal-title'
+        },
         didOpen: () => {
-            document.getElementById('give-gold-btn').addEventListener('click', async () => {
+            // Efectos hover para los botones
+            const goldBtn = document.getElementById('give-gold-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            goldBtn.addEventListener('mouseenter', () => {
+                goldBtn.style.transform = 'translateY(-2px)';
+                goldBtn.style.boxShadow = '0 6px 10px rgba(214, 158, 46, 0.4)';
+            });
+            
+            goldBtn.addEventListener('mouseleave', () => {
+                goldBtn.style.transform = 'translateY(0)';
+                goldBtn.style.boxShadow = '0 4px 6px rgba(214, 158, 46, 0.3)';
+            });
+            
+            logoutBtn.addEventListener('mouseenter', () => {
+                logoutBtn.style.transform = 'translateY(-2px)';
+                logoutBtn.style.boxShadow = '0 6px 10px rgba(229, 62, 62, 0.4)';
+            });
+            
+            logoutBtn.addEventListener('mouseleave', () => {
+                logoutBtn.style.transform = 'translateY(0)';
+                logoutBtn.style.boxShadow = '0 4px 6px rgba(229, 62, 62, 0.3)';
+            });
+            
+            // Event listeners para las acciones
+            goldBtn.addEventListener('click', async () => {
                 Swal.close();
                 await giveGold();
             });
-            document.getElementById('logout-btn').addEventListener('click', async () => {
+            
+            logoutBtn.addEventListener('click', async () => {
                 Swal.close();
                 await signOut();
             });
         }
     });
+}
+
+// --- 4. Función para cerrar sesión ---
+async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.error('Error al cerrar sesión:', error);
+    } else {
+        console.log('Sesión cerrada correctamente');
+        window.location.href = 'index.html';
+    }
 }
