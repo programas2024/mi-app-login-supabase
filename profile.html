@@ -13,64 +13,85 @@
 <body>
     <div class="container profile-page-container">
         <div id="profile-card" class="card dashboard-hidden">
-            <button id="back-to-dashboard-btn" class="btn btn-back">
-                <i class="fas fa-arrow-left"></i> Regresar
-            </button>
+            <div class="profile-header">
+                <button id="back-to-dashboard-btn" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i> Regresar
+                </button>
 
-            <button id="configure-btn" class="btn btn-configure">
-                <i class="fas fa-cog"></i> Configurar
-            </button>
+                <button id="configure-btn" class="btn btn-configure">
+                    <i class="fas fa-cog"></i> Configurar
+                </button>
+            </div>
 
             <h2>Tu Perfil</h2>
 
-            <!-- Sección del Avatar - ¡NUEVO AQUÍ! -->
-            <div class="profile-avatar-section mb-6">
-                <img id="avatar-img" src="https://placehold.co/150x150/cccccc/000000?text=Avatar" alt="User Avatar" class="rounded-full w-32 h-32 object-cover border-4 border-yellow-400 shadow-lg mx-auto cursor-pointer">
-                <input type="file" id="avatar-upload-input" accept="image/png, image/jpeg, image/webp" class="hidden">
-                <button id="change-avatar-btn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-colors">
-                    <i class="fas fa-camera"></i> Cambiar Avatar
+            <!-- Sección del Avatar - IDs actualizados para coincidir con script.js -->
+            <div class="profile-avatar-section">
+                <div class="avatar-wrapper">
+                    <img id="avatar-img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                         alt="Avatar del usuario" class="avatar-image">
+                    <div class="avatar-overlay" id="change-avatar-btn">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatar-upload" accept="image/png, image/jpeg, image/webp" 
+                       class="avatar-upload-input">
+                <p class="avatar-instructions">Haz clic para cambiar tu foto de perfil</p>
+            </div>
+
+            <!-- Sección de información del usuario -->
+            <div class="profile-info-section">
+                <div class="profile-email">
+                    <i class="fas fa-envelope"></i>
+                    <span id="user-email-profile">Cargando...</span>
+                </div>
+
+                <div class="currency-display">
+                    <div class="currency-card gold-card">
+                        <i class="fas fa-coins"></i>
+                        <div>
+                            <span id="gold-display-profile">0</span>
+                            <span>Oro</span>
+                        </div>
+                    </div>
+                    <div class="currency-card diamond-card">
+                        <i class="fas fa-gem"></i>
+                        <div>
+                            <span id="diamonds-display-profile">0</span>
+                            <span>Diamantes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <div class="profile-edit-form">
+                <h3><i class="fas fa-user-edit"></i> Editar Información</h3>
+                
+                <div class="form-group">
+                    <label for="edit-username"><i class="fas fa-user"></i> Nombre de usuario</label>
+                    <input type="text" id="edit-username" placeholder="Ingresa tu nombre">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-country"><i class="fas fa-globe"></i> País</label>
+                    <input type="text" id="edit-country" placeholder="Ingresa tu país">
+                </div>
+                
+                <button id="save-profile-btn" class="btn btn-save">
+                    <i class="fas fa-save"></i> Guardar Cambios
                 </button>
             </div>
-            <!-- Fin Sección del Avatar -->
-
-            <p>Correo electrónico: <span id="user-email-profile">Cargando...</span></p>
-
-            <div class="profile-info">
-                <div class="currency-card gold-card">
-                    <i class="fas fa-coins currency-icon"></i>
-                    <div class="currency-value-wrapper">
-                        <span id="gold-display" class="currency-value">0</span>
-                        <span class="currency-name">Oro</span>
-                    </div>
-                </div>
-                <div class="currency-card diamond-card">
-                    <i class="fas fa-gem currency-icon"></i>
-                    <div class="currency-value-wrapper">
-                        <span id="diamonds-display" class="currency-value">0</span>
-                        <span class="currency-name">Diamantes</span>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="separator">
-
-            <div class="profile-edit-form">
-                <h3>Editar Datos</h3>
-                <input type="text" id="edit-username" placeholder="Nuevo Nombre de Jugador">
-                <input type="text" id="edit-country" placeholder="Tu País">
-                <button id="save-profile-btn" class="btn btn-action">Guardar Cambios</button>
-            </div>
-
-            <hr class="separator">
         </div>
 
-        <div id="loader" class="loader-hidden">
-            <div class="spinner"></div>
-            <p>Cargando...</p>
+        <!-- Loader -->
+        <div id="loader" class="loader">
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Cargando perfil...</p>
         </div>
     </div>
 
-    <!-- Asegúrate de que script.js esté cargado como un módulo -->
+    <!-- Script externo -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
