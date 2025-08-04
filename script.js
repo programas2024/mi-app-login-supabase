@@ -3,13 +3,6 @@
 // Importa createClient directamente de la URL del CDN de Supabase como un módulo ES
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
-// Importa las funciones sociales desde socialLogic.js
-import { 
-    loadPendingFriendRequestsCount, 
-    loadUnreadMessagesCount, 
-    loadFriendsList, 
-    setupFriendsRealtimeSubscription // ¡Nueva importación!
-} from './socialLogic.js';
 
 
 // --- 1. Configuración de Supabase ---
@@ -470,12 +463,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Usuario autenticado: Cargar perfil y mostrar contenido
             await loadUserProfile(user.id);
 
-            // Cargar conteos y listas iniciales de socialLogic.js
-            await loadPendingFriendRequestsCount(user.id);
-            await loadUnreadMessagesCount(user.id);
-            // La carga de loadFriendsList ahora se manejará a través de la suscripción Realtime
-            setupFriendsRealtimeSubscription(); // ¡Activa la suscripción Realtime!
-
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
                     profileBtnDashboard.addEventListener('click', () => {
@@ -513,3 +500,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
     // Solo deberían cargar sus respectivos 'orcado_THEME_specific_game.js'
 });
+
