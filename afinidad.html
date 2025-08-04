@@ -41,11 +41,11 @@
                 </div>
 
                 <div id="active-affinity" class="mb-8">
-                    <!-- Aquí se cargará la afinidad activa dinámicamente -->
                     <div id="no-active-affinity" class="text-center py-8 bg-gray-50 rounded-lg">
                         <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
                         <p class="text-gray-500">Selecciona un amigo para ver vuestra afinidad</p>
                     </div>
+                    <div id="affinity-card-container" class="hidden"></div>
                 </div>
 
                 <div id="invite-section" class="text-center">
@@ -72,7 +72,6 @@
                                 </tr>
                             </thead>
                             <tbody id="friends-list" class="bg-white divide-y divide-gray-200">
-                                <!-- Aquí se cargarán los amigos dinámicamente -->
                                 <tr>
                                     <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                                         <i class="fas fa-spinner fa-spin mr-2"></i> Cargando amigos...
@@ -87,24 +86,20 @@
     </div>
 
     <script>
-    // Esperar a que todo esté cargado
     document.addEventListener('DOMContentLoaded', async () => {
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
-        // Crear cliente Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentUserId = null;
 
-        // Función para determinar el nivel de afinidad
         function getAffinityLevel(points) {
             if (points >= 500) return { level: "Confidentes", color: "bg-purple-500", icon: "fas fa-handshake" };
             if (points >= 100) return { level: "Amigos", color: "bg-pink-500", icon: "fas fa-heart" };
             return { level: "Conocidos", color: "bg-blue-500", icon: "fas fa-user-friends" };
         }
 
-        // Cargar lista de amigos
         async function loadFriendsList() {
             const { data: { user }, error: authError } = await supabase.auth.getUser();
             if (authError || !user) {
@@ -115,7 +110,6 @@
             currentUserId = user.id;
             
             try {
-                // Obtener amigos con su afinidad
                 const { data: friends, error } = await supabase
                     .from('friends')
                     .select(`
@@ -128,11 +122,6 @@
                 if (error) throw error;
 
                 const friendsList = document.getElementById('friends-list');
-                if (!friendsList) {
-                    console.error('Elemento friends-list no encontrado');
-                    return;
-                }
-
                 friendsList.innerHTML = '';
 
                 if (friends.length === 0) {
@@ -186,13 +175,16 @@
                     friendsList.appendChild(row);
                 });
 
-                // Añadir event listeners a los botones
-                document.querySelectorAll('.view-affinity-btn').forEach(btn => {
-                    btn.addEventListener('click', () => showFriendAffinity(btn.dataset.friendId, btn.dataset.friendName));
-                });
-
-                document.querySelectorAll('.increase-affinity-btn').forEach(btn => {
-                    btn.addEventListener('click', () => increaseAffinity(btn.dataset.friendId));
+                // Delegación de eventos para mejor rendimiento
+                document.getElementById('friends-list').addEventListener('click', (e) => {
+                    if (e.target.closest('.view-affinity-btn')) {
+                        const btn = e.target.closest('.view-affinity-btn');
+                        showFriendAffinity(btn.dataset.friendId, btn.dataset.friendName);
+                    }
+                    if (e.target.closest('.increase-affinity-btn')) {
+                        const btn = e.target.closest('.increase-affinity-btn');
+                        increaseAffinity(btn.dataset.friendId);
+                    }
                 });
 
             } catch (error) {
@@ -201,152 +193,133 @@
             }
         }
 
-       async function showFriendAffinity(friendId, friendName) {
-    try {
-        // Verificar que los elementos del DOM existen
-        const noActiveAffinity = document.getElementById('no-active-affinity');
-        const activeAffinity = document.getElementById('active-affinity');
-        
-        if (!noActiveAffinity || !activeAffinity) {
-            console.error('Error: No se encontraron los elementos del DOM necesarios');
-            return;
-        }
-
-        // Obtener datos de afinidad
-        const [user1, user2] = currentUserId < friendId 
-            ? [currentUserId, friendId] 
-            : [friendId, currentUserId];
-
-        const { data: friendship, error } = await supabase
-            .from('friends')
-            .select('affinity_points')
-            .eq('user1_id', user1)
-            .eq('user2_id', user2)
-            .single();
-
-        if (error) throw error;
-        
-        // Si no hay relación, mostrar el estado inicial
-        if (!friendship) {
-            noActiveAffinity.classList.remove('hidden');
-            activeAffinity.innerHTML = '';
-            return;
-        }
-
-        const affinityPoints = friendship.affinity_points || 0;
-        const affinityLevel = getAffinityLevel(affinityPoints);
-        const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
-
-        // Construir el HTML de la tarjeta de afinidad
-        const affinityCardHTML = `
-            <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
-                <div class="flex items-center mb-4">
-                    <div class="flex-shrink-0 h-16 w-16">
-                        <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
-                        <p class="text-sm text-gray-500">${affinityLevel.level}</p>
-                    </div>
-                </div>
+        async function showFriendAffinity(friendId, friendName) {
+            try {
+                const noActiveAffinity = document.getElementById('no-active-affinity');
+                const affinityCardContainer = document.getElementById('affinity-card-container');
                 
-                <div class="mb-2 flex justify-between">
-                    <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
-                    <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
-                </div>
+                if (!noActiveAffinity || !affinityCardContainer) {
+                    console.error('Elementos del DOM no encontrados');
+                    return;
+                }
+
+                // Obtener datos de afinidad
+                const [user1, user2] = currentUserId < friendId 
+                    ? [currentUserId, friendId] 
+                    : [friendId, currentUserId];
+
+                const { data: friendship, error } = await supabase
+                    .from('friends')
+                    .select('affinity_points')
+                    .eq('user1_id', user1)
+                    .eq('user2_id', user2)
+                    .single();
+
+                if (error) throw error;
                 
-                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
-                    <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                        <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
-                        <div class="text-xs text-gray-500">Regalos</div>
+                if (!friendship) {
+                    noActiveAffinity.classList.remove('hidden');
+                    affinityCardContainer.classList.add('hidden');
+                    return;
+                }
+
+                const affinityPoints = friendship.affinity_points || 0;
+                const affinityLevel = getAffinityLevel(affinityPoints);
+                const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
+
+                // Construir el HTML de la tarjeta de afinidad
+                affinityCardContainer.innerHTML = `
+                    <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 h-16 w-16">
+                                <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
+                                <p class="text-sm text-gray-500">${affinityLevel.level}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2 flex justify-between">
+                            <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
+                            <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                            <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
+                                <div class="text-xs text-gray-500">Regalos</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
+                                <div class="text-xs text-gray-500">Partidas</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
+                                <div class="text-xs text-gray-500">Días</div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
-                        <div class="text-xs text-gray-500">Partidas</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
-                        <div class="text-xs text-gray-500">Días</div>
-                    </div>
-                </div>
-            </div>
-        `;
+                `;
 
-        // Actualizar la UI de manera segura
-        noActiveAffinity.classList.add('hidden');
-        activeAffinity.innerHTML = affinityCardHTML;
+                noActiveAffinity.classList.add('hidden');
+                affinityCardContainer.classList.remove('hidden');
 
-    } catch (error) {
-        console.error('Error al mostrar afinidad:', error);
-        
-        // Restaurar el estado inicial en caso de error
-        const noActiveAffinity = document.getElementById('no-active-affinity');
-        const activeAffinity = document.getElementById('active-affinity');
-        
-        if (noActiveAffinity && activeAffinity) {
-            noActiveAffinity.classList.remove('hidden');
-            activeAffinity.innerHTML = '';
-        }
-        
-        Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
-    }
-}
-
-       async function increaseAffinity(friendId) {
-    try {
-        const pointsToAdd = 10;
-        
-        // 1. Determinar el orden correcto de los IDs
-        const [user1, user2] = currentUserId < friendId 
-            ? [currentUserId, friendId] 
-            : [friendId, currentUserId];
-
-        // 2. Usar una transacción para evitar condiciones de carrera
-        const { data, error } = await supabase.rpc('upsert_affinity', {
-            p_user1_id: user1,
-            p_user2_id: user2,
-            p_points_to_add: pointsToAdd
-        });
-
-        if (error) throw error;
-        
-        // 3. Obtener los nuevos puntos
-        const newPoints = data || pointsToAdd;
-
-        // 4. Mostrar confirmación
-        await Swal.fire({
-            icon: 'success',
-            title: '¡Afinidad actualizada!',
-            text: `Nuevos puntos: ${newPoints}`,
-            timer: 2000,
-            showConfirmButton: false
-        });
-
-        // 5. Actualizar la interfaz
-        await loadFriendsList();
-        
-        // Actualizar vista detallada si está abierta
-        const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
-        if (activeFriend) {
-            const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
-            await showFriendAffinity(friendId, friendName);
+            } catch (error) {
+                console.error('Error al mostrar afinidad:', error);
+                Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
+            }
         }
 
-    } catch (error) {
-        console.error('Error al aumentar afinidad:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'No se pudo actualizar la afinidad. Intenta nuevamente.',
-            timer: 3000
-        });
-    }
-}
-        // Invitar a un nuevo amigo
+        async function increaseAffinity(friendId) {
+            try {
+                const pointsToAdd = 10;
+                
+                const [user1, user2] = currentUserId < friendId 
+                    ? [currentUserId, friendId] 
+                    : [friendId, currentUserId];
+
+                const { data, error } = await supabase.rpc('upsert_affinity', {
+                    p_user1_id: user1,
+                    p_user2_id: user2,
+                    p_points_to_add: pointsToAdd
+                });
+
+                if (error) throw error;
+                
+                const newPoints = data || pointsToAdd;
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '¡Afinidad actualizada!',
+                    text: `Nuevos puntos: ${newPoints}`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                await loadFriendsList();
+                
+                // Actualizar vista detallada si está abierta
+                const activeFriend = document.querySelector(`[data-friend-id="${friendId}"] .view-affinity-btn`);
+                if (activeFriend) {
+                    await showFriendAffinity(friendId, activeFriend.dataset.friendName);
+                }
+
+            } catch (error) {
+                console.error('Error al aumentar afinidad:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo actualizar la afinidad. Intenta nuevamente.',
+                    timer: 3000
+                });
+            }
+        }
+
         async function inviteFriend() {
             const { value: email } = await Swal.fire({
                 title: 'Invitar amigo',
@@ -364,7 +337,6 @@
 
             if (email) {
                 try {
-                    // Primero buscamos el usuario por email
                     const { data: userToInvite, error: userError } = await supabase
                         .from('profiles')
                         .select('id, username')
@@ -375,7 +347,6 @@
                         throw new Error('Usuario no encontrado');
                     }
 
-                    // Verificamos si ya son amigos
                     const [user1, user2] = currentUserId < userToInvite.id 
                         ? [currentUserId, userToInvite.id] 
                         : [userToInvite.id, currentUserId];
@@ -392,7 +363,6 @@
                         throw new Error('Ya son amigos');
                     }
 
-                    // Enviamos la solicitud de amistad
                     const { error: inviteError } = await supabase
                         .from('friend_requests')
                         .insert([{
@@ -422,15 +392,8 @@
         // Inicializar la página
         loadFriendsList();
         
-        // Verificar que el botón existe antes de añadir el event listener
-        const inviteBtn = document.getElementById('invite-friend-btn');
-        if (inviteBtn) {
-            inviteBtn.addEventListener('click', inviteFriend);
-        } else {
-            console.error('Botón invite-friend-btn no encontrado');
-        }
-
+        document.getElementById('invite-friend-btn')?.addEventListener('click', inviteFriend);
     });
-</script>
+    </script>
 </body>
 </html>
