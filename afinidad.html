@@ -259,25 +259,22 @@
     try {
         const pointsToAdd = 10;
         
-        // 1. Llamar a la función RPC
-        const { data, error } = await supabase
+        // Llamada a la función RPC
+        const { data: newPoints, error } = await supabase
             .rpc('increment_affinity', {
                 current_user_id: currentUserId,
                 friend_id: friendId,
                 points_to_add: pointsToAdd
-            })
-            .select(); // Añade .select() para obtener los resultados
+            });
 
         if (error) throw error;
         
-        // 2. Verificar que recibimos datos
-        if (!data || data.length === 0) {
-            throw new Error('No se encontró la relación de amistad');
+        // Verificar si se encontró la relación
+        if (newPoints === -1) {
+            throw new Error('No existe relación de amistad con este usuario');
         }
 
-        const newPoints = data[0].new_affinity || data[0].affinity_points;
-
-        // 3. Mostrar confirmación
+        // Mostrar confirmación
         await Swal.fire({
             icon: 'success',
             title: '¡Afinidad aumentada!',
@@ -286,7 +283,7 @@
             showConfirmButton: false
         });
 
-        // 4. Actualizar la interfaz
+        // Actualizar la interfaz
         await loadFriendsList();
         
         // Actualizar vista detallada si está abierta
