@@ -295,3 +295,90 @@ body {
         flex-direction: column;
     }
 }
+
+/* Estilos para SweetAlert personalizado */
+.custom-swal-popup {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+}
+
+.custom-swal-html {
+    padding: 0 !important;
+}
+
+.swal-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.swal-gold-btn, .swal-logout-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.swal-gold-btn {
+    background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
+    color: #1a202c;
+    box-shadow: 0 4px 6px rgba(214, 158, 46, 0.3);
+}
+
+.swal-gold-btn:hover {
+    background: linear-gradient(135deg, #f6e05e 0%, #b7791f 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(214, 158, 46, 0.4);
+}
+
+.swal-logout-btn {
+    background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
+    color: white;
+    box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);
+}
+
+.swal-logout-btn:hover {
+    background: linear-gradient(135deg, #fc8181 0%, #c53030 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(229, 62, 62, 0.4);
+}
+
+/* Estilos para los demás botones (actualizados) */
+.btn-back {
+    background: linear-gradient(135deg, #93c5fd 0%, #3b82f6 100%);
+    color: white;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-back:hover {
+    background: linear-gradient(135deg, #93c5fd 0%, #2563eb 100%);
+}
+
+.btn-configure {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+    color: #1f2937;
+    box-shadow: 0 4px 6px rgba(156, 163, 175, 0.3);
+}
+
+.btn-configure:hover {
+    background: linear-gradient(135deg, #d1d5db 0%, #6b7280 100%);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #86efac 0%, #22c55e 100%);
+    color: white;
+    box-shadow: 0 4px 6px rgba(34, 197, 94, 0.3);
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #86efac 0%, #16a34a 100%);
+}
