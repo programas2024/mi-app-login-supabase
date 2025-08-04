@@ -157,7 +157,8 @@
                     const rewardClaimed = friendship.reward_claimed || false;
                     const lastIncrease = friendship.last_increase ? new Date(friendship.last_increase) : null;
                     const now = new Date();
-                    const canIncrease = !lastIncrease || (now - lastIncrease) > 12 * 60 * 60 * 1000;
+                    const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 24;
+                    const canIncrease = hoursSinceLastIncrease >= 12;
 
                     const row = document.createElement('tr');
                     row.className = 'friend-row';
@@ -188,7 +189,9 @@
                             <button class="action-btn ${rewardClaimed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white px-3 py-1 rounded" 
                                     data-friend-id="${friend.id}" ${rewardClaimed && !canIncrease ? 'disabled' : ''}>
                                 <i class="fas ${rewardClaimed ? 'fa-heart' : 'fa-gift'} mr-1"></i> 
-                                ${rewardClaimed ? 'Aumentar' : 'Reclamar'}
+                                ${rewardClaimed ? 
+                                    (canIncrease ? 'Aumentar' : `${Math.ceil(12 - hoursSinceLastIncrease)}h`) : 
+                                    'Reclamar'}
                             </button>
                         </td>
                     `;
@@ -252,7 +255,8 @@
                 const rewardClaimed = friendship.reward_claimed || false;
                 const lastIncrease = friendship.last_increase ? new Date(friendship.last_increase) : null;
                 const now = new Date();
-                const canIncrease = !lastIncrease || (now - lastIncrease) > 12 * 60 * 60 * 1000;
+                const hoursSinceLastIncrease = lastIncrease ? (now - lastIncrease) / (1000 * 60 * 60) : 24;
+                const canIncrease = hoursSinceLastIncrease >= 12;
 
                 // Construir el HTML de la tarjeta de afinidad
                 affinityCardContainer.innerHTML = `
@@ -282,15 +286,14 @@
                         </div>
                         
                         <button id="friend-action-btn" class="w-full action-btn ${rewardClaimed ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white py-2 rounded-lg" 
-                                ${rewardClaimed && !canIncrease ? 'disabled' : ''}>
+                                ${(rewardClaimed && !canIncrease) || (!rewardClaimed && reward <= 0) ? 'disabled' : ''}>
                             <i class="fas ${rewardClaimed ? 'fa-heart' : 'fa-gift'} mr-2"></i>
                             ${rewardClaimed ? 
-                                (canIncrease ? 'Aumentar afinidad (+1)' : `Próximo aumento en ${Math.ceil((12 - (now - lastIncrease)/(1000*60*60)))}h`) : 
+                                (canIncrease ? 'Aumentar afinidad (+1)' : `Próximo aumento en ${Math.ceil(12 - hoursSinceLastIncrease)}h`) : 
                                 (reward > 0 ? `Reclamar ${reward} oro` : 'No hay recompensa disponible')}
                         </button>
                     </div>
                 `;
-                
 
                 noActiveAffinity.classList.add('hidden');
                 affinityCardContainer.classList.remove('hidden');
@@ -424,8 +427,6 @@
                 });
             }
         }
-                
-       
 
         async function inviteFriend() {
             const { value: email } = await Swal.fire({
