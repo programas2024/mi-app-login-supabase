@@ -1,29 +1,38 @@
 // socialLogic.js - Lógica para las funcionalidades sociales (amigos, solicitudes, mensajes)
 
 // Importaciones necesarias para este módulo: Supabase
-import { supabase } from '/supabaseConfig.js';
-import { showAffinityModal } from './afinidadLogic.js';
+import { supabase } from '/supabaseConfig.js'; // Importa la instancia de Supabase configurada
 
-// Referencias a elementos del DOM
+// Referencias a elementos del DOM que este script gestiona
 let friendRequestsBadge;
 let messagesBadge;
 let friendsListContainer;
-let friendRequestsBtn;
-let messagesBtn;
+let friendRequestsBtn; // Referencia al botón de solicitudes de amistad
+let messagesBtn; // Referencia al botón de mensajes
 
-// Variables para suscripciones Realtime
-let friendsChannel = null;
+// Variable para almacenar la suscripción a Realtime para la lista de amigos
+let friendsSubscription = null;
+// Variable para almacenar la suscripción a Realtime para el chat activo
 let chatSubscription = null;
 
 // ====================================================================================
-// FUNCIONES DE UTILIDAD
+// FUNCIONES DE UTILIDAD LOCALES PARA socialLogic.js
 // ====================================================================================
 
+/**
+ * Helper para mostrar SweetAlert2 con estilos personalizados (local a socialLogic.js).
+ * Siempre devuelve una Promesa para evitar errores .then().
+ * @param {string} icon - 'success', 'error', 'info', 'warning', 'question'
+ * @param {string} title - Título del modal.
+ * @param {string} text - Contenido del modal.
+ * @param {string} [confirmButtonText='Entendido'] - Texto del botón de confirmación.
+ * @returns {Promise<any>} Una promesa que resuelve cuando el modal se cierra.
+ */
 function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
     if (typeof Swal === 'undefined') {
-        console.error('SweetAlert2 no está disponible');
-        alert(`${title}: ${text}`);
-        return Promise.resolve({ isConfirmed: true });
+        console.error('SweetAlert2 (Swal) no está definido. Asegúrate de que SweetAlert2 se cargue antes de socialLogic.js.');
+        alert(`${title}: ${text}`); // Fallback simple si Swal no está disponible
+        return Promise.resolve({ isConfirmed: true }); // Devuelve una promesa resuelta para evitar el error .then()
     }
     return Swal.fire({
         icon: icon,
@@ -31,7 +40,7 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
         html: text,
         confirmButtonText: confirmButtonText,
         customClass: {
-            popup: 'swal2-profile-popup',
+            popup: 'swal2-profile-popup', // Clases CSS para personalizar (reutilizadas del leaderboard)
             title: 'swal2-profile-title',
             htmlContainer: 'swal2-profile-html',
             confirmButton: 'swal2-profile-confirm-button'
@@ -40,6 +49,11 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
     });
 }
 
+/**
+ * Obtiene el emoji de la bandera de un país (local a socialLogic.js).
+ * @param {string} countryName - Nombre del país.
+ * @returns {string} Emoji de la bandera o cadena vacía.
+ */
 function getCountryFlagEmoji(countryName) {
     if (!countryName) return '';
     const flags = {
@@ -49,27 +63,30 @@ function getCountryFlagEmoji(countryName) {
         'Argentina': '🇦🇷',
         'USA': '🇺🇸',
         'Canada': '🇨🇦'
+        // Añade más países según necesites
     };
     return flags[countryName] || '';
 }
 
-function getAffinityRank(points) {
-    if (points >= 500) {
-        return { rank: 'Confidentes', icon: '<i class="fas fa-handshake text-purple-500"></i>' };
-    } else if (points >= 100) {
-        return { rank: 'Amigos', icon: '<i class="fas fa-heart text-red-500"></i>' };
-    } else {
-        return { rank: 'Conocidos', icon: '<i class="fas fa-user-group text-gray-500"></i>' };
-    }
-}
-
 // ====================================================================================
-// LÓGICA DE AMIGOS Y SOLICITUDES
+// LÓGICA DE SOLICITUDES DE AMISTAD (Exportadas)
 // ====================================================================================
 
+/**
+ * Carga y actualiza el badge de solicitudes de amistad pendientes.
+ * @param {string} currentUserId - ID del usuario actual.
+ */
 export async function loadPendingFriendRequestsCount(currentUserId) {
-    if (!currentUserId) return;
-    
+    friendRequestsBadge = document.getElementById('friend-requests-badge');
+    if (!friendRequestsBadge) {
+        console.warn('Elemento #friend-requests-badge no encontrado. No se puede actualizar el conteo de solicitudes.');
+        return;
+    }
+    if (!currentUserId) {
+        console.warn('loadPendingFriendRequestsCount: currentUserId es nulo. No se puede cargar el conteo.');
+        friendRequestsBadge.classList.add('hidden');
+        return;
+    }
     try {
         const { count, error } = await supabase
             .from('friend_requests')
@@ -79,23 +96,24 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
 
         if (error) throw error;
 
-        if (friendRequestsBadge) {
-            if (count > 0) {
-                friendRequestsBadge.textContent = count;
-                friendRequestsBadge.classList.remove('hidden');
-            } else {
-                friendRequestsBadge.classList.add('hidden');
-            }
+        if (count > 0) {
+            friendRequestsBadge.textContent = count;
+            friendRequestsBadge.classList.remove('hidden');
+        } else {
+            friendRequestsBadge.classList.add('hidden');
         }
     } catch (error) {
-        console.error('Error loading friend requests count:', error);
+        console.error('Error al cargar conteo de solicitudes pendientes:', error.message);
     }
 }
 
+/**
+ * Muestra un modal con las solicitudes de amistad pendientes para el usuario actual.
+ */
 export async function showFriendRequestsModal() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } = {} } = await supabase.auth.getUser();
     if (!user) {
-        showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver las solicitudes');
+        showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver las solicitudes de amistad.');
         return;
     }
 
@@ -108,21 +126,21 @@ export async function showFriendRequestsModal() {
 
         if (error) throw error;
 
-        const requestsHtml = requests.length > 0 
+        let requestsHtml = requests && requests.length > 0 
             ? requests.map(req => `
                 <div class="friend-request-item">
-                    <p><i class="fas fa-user-plus"></i> <strong>${req.sender_profile?.username || 'Usuario'}</strong> te ha enviado una solicitud.</p>
+                    <p><i class="fas fa-user-plus"></i> <strong>${req.sender_profile?.username || 'Usuario Desconocido'}</strong> te ha enviado una solicitud.</p>
                     <div class="request-actions">
-                        <button class="accept-btn" data-request-id="${req.id}" data-sender-id="${req.sender_id}">
+                        <button class="accept-btn" data-request-id="${req.id}" data-sender-id="${req.sender_id}" data-sender-username="${req.sender_profile?.username || 'Usuario Desconocido'}">
                             <i class="fas fa-check"></i> Aceptar
                         </button>
-                        <button class="reject-btn" data-request-id="${req.id}">
+                        <button class="reject-btn" data-request-id="${req.id}" data-sender-username="${req.sender_profile?.username || 'Usuario Desconocido'}">
                             <i class="fas fa-times"></i> Rechazar
                         </button>
                     </div>
                 </div>
             `).join('')
-            : '<p>No tienes solicitudes pendientes</p>';
+            : '<p>No tienes solicitudes de amistad pendientes.</p>';
 
         Swal.fire({
             icon: 'info',
@@ -136,103 +154,131 @@ export async function showFriendRequestsModal() {
                 confirmButton: 'swal2-profile-confirm-button'
             },
             buttonsStyling: false,
+            showCancelButton: false,
             didOpen: (popup) => {
-                popup.querySelectorAll('.accept-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        await handleAcceptFriendRequest(
-                            btn.dataset.requestId,
-                            btn.dataset.senderId,
-                            user.id
-                        );
+                popup.querySelectorAll('.accept-btn').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const requestId = event.currentTarget.dataset.requestId;
+                        const senderId = event.currentTarget.dataset.senderId;
+                        const senderUsername = event.currentTarget.dataset.senderUsername;
+                        await handleAcceptFriendRequest(requestId, senderId, senderUsername, user.id);
                         Swal.close();
                     });
                 });
-                popup.querySelectorAll('.reject-btn').forEach(btn => {
-                    btn.addEventListener('click', async () => {
-                        await handleRejectFriendRequest(
-                            btn.dataset.requestId,
-                            user.id
-                        );
+                popup.querySelectorAll('.reject-btn').forEach(button => {
+                    button.addEventListener('click', async (event) => {
+                        const requestId = event.currentTarget.dataset.requestId;
+                        const senderUsername = event.currentTarget.dataset.senderUsername;
+                        await handleRejectFriendRequest(requestId, senderUsername, user.id);
                         Swal.close();
                     });
                 });
             }
+        }).then(() => {
+            loadPendingFriendRequestsCount(user.id);
         });
+
     } catch (error) {
-        console.error('Error loading friend requests:', error);
-        showCustomSwal('error', 'Error', 'No se pudieron cargar las solicitudes');
+        console.error('Error al cargar solicitudes de amistad:', error.message);
+        showCustomSwal('error', 'Error', `No se pudieron cargar las solicitudes: ${error.message}`);
     }
 }
 
-export async function handleAcceptFriendRequest(requestId, senderId, receiverId) {
+/**
+ * Acepta una solicitud de amistad y actualiza el estado en la base de datos.
+ */
+export async function handleAcceptFriendRequest(requestId, senderId, senderUsername, receiverId) {
     try {
-        // 1. Actualizar solicitud
         const { error: updateError } = await supabase
             .from('friend_requests')
             .update({ status: 'accepted', updated_at: new Date().toISOString() })
-            .eq('id', requestId);
+            .eq('id', requestId)
+            .eq('sender_id', senderId)
+            .eq('receiver_id', receiverId)
+            .eq('status', 'pending');
 
         if (updateError) throw updateError;
 
-        // 2. Crear relación de amistad
-        const [id1, id2] = [senderId, receiverId].sort();
-        const { error: insertError } = await supabase
-            .from('friends')
-            .insert([{ user1_id: id1, user2_id: id2 }]);
+        const [id1, id2] = [receiverId, senderId].sort();
+        const { error: insertError } = await supabase.from('friends').insert([
+            { user1_id: id1, user2_id: id2 }
+        ]);
 
         if (insertError && insertError.code !== '23505') throw insertError;
 
-        // 3. Notificar al remitente
-        const { data: receiverProfile } = await supabase
+        // Notificación de amistad aceptada
+        const { data: receiverProfile, error: receiverProfileError } = await supabase
             .from('profiles')
             .select('username')
             .eq('id', receiverId)
             .single();
 
-        await supabase
-            .from('chat_messages')
-            .insert([{
-                sender_id: receiverId,
-                receiver_id: senderId,
-                message: `¡${receiverProfile?.username || 'Alguien'} ha aceptado tu solicitud de amistad!`,
-                is_read: false
-            }]);
+        if (!receiverProfileError) {
+            const receiverUsername = receiverProfile?.username || 'Un usuario';
+            const notificationMessage = `¡${receiverUsername} ha aceptado tu solicitud de amistad! Ahora son amigos.`;
 
-        showCustomSwal('success', '¡Solicitud aceptada!', 'Ahora son amigos');
-        loadPendingFriendRequestsCount(receiverId);
+            await supabase
+                .from('chat_messages')
+                .insert([{
+                    sender_id: receiverId,
+                    receiver_id: senderId,
+                    message: notificationMessage,
+                    is_read: false
+                }]);
+        }
+
+        showCustomSwal('success', '¡Amistad Aceptada!', `¡Ahora eres amigo de <strong>${senderUsername}</strong>!`);
+        await loadPendingFriendRequestsCount(receiverId);
     } catch (error) {
-        console.error('Error accepting friend request:', error);
-        showCustomSwal('error', 'Error', 'No se pudo aceptar la solicitud');
+        console.error('Error al aceptar solicitud de amistad:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo aceptar la solicitud de amistad: ${error.message}`);
     }
 }
 
-export async function handleRejectFriendRequest(requestId, receiverId) {
+/**
+ * Rechaza una solicitud de amistad y actualiza el estado en la base de datos.
+ */
+export async function handleRejectFriendRequest(requestId, senderUsername, receiverId) {
     try {
-        const { error } = await supabase
+        const { error: deleteError } = await supabase
             .from('friend_requests')
             .delete()
-            .eq('id', requestId);
+            .eq('id', requestId)
+            .eq('receiver_id', receiverId)
+            .eq('status', 'pending');
 
-        if (error) throw error;
+        if (deleteError) throw deleteError;
 
-        showCustomSwal('info', 'Solicitud rechazada', 'La solicitud ha sido eliminada');
-        loadPendingFriendRequestsCount(receiverId);
+        showCustomSwal('info', 'Solicitud Rechazada', `Has rechazado la solicitud de amistad de <strong>${senderUsername}</strong>. ¡La solicitud ha sido eliminada!`);
+        await loadPendingFriendRequestsCount(receiverId);
     } catch (error) {
-        console.error('Error rejecting friend request:', error);
-        showCustomSwal('error', 'Error', 'No se pudo rechazar la solicitud');
+        console.error('Error al rechazar solicitud de amistad:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo rechazar la solicitud de amistad: ${error.message}`);
     }
 }
 
+/**
+ * Carga y muestra la lista de amigos del usuario actual en una tabla.
+ */
 export async function loadFriendsList(currentUserId) {
+    friendsListContainer = document.getElementById('friends-list-container');
     if (!friendsListContainer) {
-        friendsListContainer = document.getElementById('friends-list-container');
-        if (!friendsListContainer) return;
+        console.warn('Elemento #friends-list-container no encontrado. No se puede cargar la lista de amigos.');
+        return;
+    }
+    if (!currentUserId) {
+        console.warn('loadFriendsList: currentUserId es nulo. No se puede cargar la lista de amigos.');
+        friendsListContainer.innerHTML = '<p>No estás autenticado para ver la lista de amigos.</p>';
+        return;
     }
 
-    friendsListContainer.innerHTML = '<div class="loading-spinner"></div>';
+    friendsListContainer.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Cargando lista de amigos...</p>
+    `;
 
     try {
-        const { data: friendsData, error } = await supabase
+        const { data: friendsData, error: friendsError } = await supabase
             .from('friends')
             .select(`
                 user1_id,
@@ -242,37 +288,32 @@ export async function loadFriendsList(currentUserId) {
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
-        if (error) throw error;
+        if (friendsError) throw friendsError;
 
-        const friends = await Promise.all(
-            friendsData.map(async friendship => {
-                const isUser1 = friendship.user1_id === currentUserId;
-                const friendId = isUser1 ? friendship.user2_id : friendship.user1_id;
-                const friendProfile = isUser1 ? friendship.user2_profile : friendship.user1_profile;
+        const uniqueFriends = new Map();
+        friendsData.forEach(friendship => {
+            let friendProfile = null;
+            let friendId = null;
+            if (friendship.user1_id === currentUserId) {
+                friendProfile = friendship.user2_profile;
+                friendId = friendship.user2_id;
+            } else if (friendship.user2_id === currentUserId) {
+                friendProfile = friendship.user1_profile;
+                friendId = friendship.user1_id;
+            }
 
-                if (!friendProfile) return null;
+            if (friendProfile?.username) {
+                uniqueFriends.set(friendId, { id: friendId, ...friendProfile });
+            }
+        });
 
-                const affinityPoints = await getFriendAffinity(currentUserId, friendId);
-                const { rank, icon } = getAffinityRank(affinityPoints);
-
-                return {
-                    id: friendId,
-                    ...friendProfile,
-                    affinityPoints,
-                    affinityRank: rank,
-                    affinityIcon: icon
-                };
-            })
-        );
-
-        const validFriends = friends.filter(f => f !== null);
-
-        if (validFriends.length === 0) {
-            friendsListContainer.innerHTML = '<p>Aún no tienes amigos</p>';
+        const friends = Array.from(uniqueFriends.values());
+        if (friends.length === 0) {
+            friendsListContainer.innerHTML = '<p>Aún no tienes amigos. ¡Envía algunas solicitudes!</p>';
             return;
         }
 
-        friendsListContainer.innerHTML = `
+        let tableHtml = `
             <table class="friends-table">
                 <thead>
                     <tr>
@@ -280,71 +321,97 @@ export async function loadFriendsList(currentUserId) {
                         <th>Oro</th>
                         <th>Diamantes</th>
                         <th>País</th>
-                        <th>Afinidad</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${validFriends.map(friend => `
-                        <tr class="friend-row" data-friend-id="${friend.id}" data-friend-username="${friend.username}">
-                            <td>${friend.username}</td>
-                            <td>${friend.gold || 0} <i class="fas fa-coins"></i></td>
-                            <td>${friend.diamonds || 0} <i class="fas fa-gem"></i></td>
-                            <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
-                            <td>${friend.affinityIcon} ${friend.affinityRank}</td>
-                        </tr>
-                    `).join('')}
+        `;
+        friends.forEach(friend => {
+            tableHtml += `
+                <tr class="friend-row" data-friend-id="${friend.id}" data-friend-username="${friend.username}">
+                    <td>${friend.username || 'Desconocido'}</td>
+                    <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
+                    <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
+                    <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
+                </tr>
+            `;
+        });
+        tableHtml += `
                 </tbody>
             </table>
         `;
+        friendsListContainer.innerHTML = tableHtml;
 
-        document.querySelectorAll('.friend-row').forEach(row => {
-            row.addEventListener('click', async () => {
+        document.querySelectorAll('.friends-table tbody .friend-row').forEach(row => {
+            row.addEventListener('click', async (event) => {
+                const friendId = event.currentTarget.dataset.friendId;
+                const friendUsername = event.currentTarget.dataset.friendUsername;
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
-                    showFriendProfileModal(
-                        user.id, 
-                        row.dataset.friendId, 
-                        row.dataset.friendUsername
-                    );
+                    showFriendProfileModal(user.id, friendId, friendUsername);
+                } else {
+                    showCustomSwal('error', 'Error', 'No hay sesión activa para ver el perfil del amigo.');
                 }
             });
         });
 
     } catch (error) {
-        console.error('Error loading friends list:', error);
-        friendsListContainer.innerHTML = '<p>Error al cargar amigos</p>';
+        console.error('Error al cargar la lista de amigos:', error.message);
+        friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
     }
 }
 
+/**
+ * Configura la suscripción a Supabase Realtime para la tabla 'friends'.
+ */
+export function setupFriendsRealtimeSubscription() {
+    if (friendsSubscription) {
+        friendsSubscription.unsubscribe();
+        console.log('Suscripción a amigos existente cancelada.');
+    }
+
+    friendsSubscription = supabase
+        .channel('public:friends')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'friends' },
+            (payload) => {
+                console.log('Cambio Realtime detectado en tabla friends:', payload);
+                const user = supabase.auth.user();
+                if (user) {
+                    loadFriendsList(user.id);
+                }
+            }
+        )
+        .subscribe();
+}
+
+/**
+ * Muestra un modal con el perfil de un amigo y opciones para chatear.
+ */
 export async function showFriendProfileModal(currentUserId, friendId, friendUsername) {
     try {
         const { data: friendProfile, error } = await supabase
             .from('profiles')
-            .select('username, gold, diamonds, country, avatar_url')
+            .select('username, gold, diamonds, country')
             .eq('id', friendId)
             .single();
 
         if (error) throw error;
 
+        const profileHtml = `
+            <div class="friend-profile-card">
+                <h3>${friendProfile.username || 'Desconocido'}</h3>
+                <p><strong>Oro:</strong> ${friendProfile.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></p>
+                <p><strong>Diamantes:</strong> ${friendProfile.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></p>
+                <p><strong>País:</strong> ${getCountryFlagEmoji(friendProfile.country)} ${friendProfile.country || 'N/A'}</p>
+                <button id="message-friend-btn" class="swal-custom-btn swal-btn-message"><i class="fas fa-comment-dots"></i> Enviar Mensaje</button>
+            </div>
+        `;
+
         Swal.fire({
             icon: 'info',
             title: 'Perfil de Amigo',
-            html: `
-                <div class="friend-profile-card">
-                    <img src="${friendProfile.avatar_url || 'https://placehold.co/150x150'}" 
-                         alt="Avatar" class="friend-avatar">
-                    <h3>${friendProfile.username}</h3>
-                    <p><strong>Oro:</strong> ${friendProfile.gold || 0} <i class="fas fa-coins"></i></p>
-                    <p><strong>Diamantes:</strong> ${friendProfile.diamonds || 0} <i class="fas fa-gem"></i></p>
-                    <p><strong>País:</strong> ${getCountryFlagEmoji(friendProfile.country)} ${friendProfile.country || 'N/A'}</p>
-                    <button id="message-friend-btn" class="swal-custom-btn">
-                        <i class="fas fa-comment-dots"></i> Enviar Mensaje
-                    </button>
-                    <button id="view-affinity-btn" class="swal-custom-btn">
-                        <i class="fas fa-heart"></i> Ver Afinidad
-                    </button>
-                </div>
-            `,
+            html: profileHtml,
             confirmButtonText: 'Cerrar',
             customClass: {
                 popup: 'swal2-profile-popup',
@@ -354,59 +421,40 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
             },
             buttonsStyling: false,
             didOpen: (popup) => {
-                popup.querySelector('#message-friend-btn')?.addEventListener('click', () => {
-                    Swal.close();
-                    showChatWindow(currentUserId, friendId, friendProfile.username);
-                });
-                popup.querySelector('#view-affinity-btn')?.addEventListener('click', () => {
-                    Swal.close();
-                    showAffinityModal(currentUserId, friendId, friendProfile.username);
-                });
+                const messageBtn = popup.querySelector('#message-friend-btn');
+                if (messageBtn) {
+                    messageBtn.addEventListener('click', async () => {
+                        Swal.close();
+                        await showChatWindow(currentUserId, friendId, friendProfile.username);
+                    });
+                }
             }
         });
+
     } catch (error) {
-        console.error('Error showing friend profile:', error);
-        showCustomSwal('error', 'Error', 'No se pudo cargar el perfil');
+        console.error('Error al cargar el perfil del amigo:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo cargar el perfil del amigo: ${error.message}`);
     }
 }
 
-export async function setupFriendsRealtimeSubscription(userId) {
-    if (friendsChannel) {
-        supabase.removeChannel(friendsChannel);
-    }
-
-    friendsChannel = supabase
-        .channel('friends-updates')
-        .on(
-            'postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'friends',
-                filter: `or(user1_id.eq.${userId},user2_id.eq.${userId})`
-            },
-            () => {
-                loadPendingFriendRequestsCount(userId);
-                loadFriendsList(userId);
-            }
-        )
-        .subscribe();
-
-    return () => {
-        if (friendsChannel) {
-            supabase.removeChannel(friendsChannel);
-            friendsChannel = null;
-        }
-    };
-}
-
 // ====================================================================================
-// LÓGICA DE MENSAJES
+// LÓGICA DE MENSAJES (Exportadas)
 // ====================================================================================
 
+/**
+ * Carga y actualiza el badge de mensajes no leídos.
+ */
 export async function loadUnreadMessagesCount(currentUserId) {
-    if (!currentUserId) return;
-    
+    messagesBadge = document.getElementById('messages-badge');
+    if (!messagesBadge) {
+        console.warn('Elemento #messages-badge no encontrado. No se puede actualizar el conteo de mensajes no leídos.');
+        return;
+    }
+    if (!currentUserId) {
+        console.warn('loadUnreadMessagesCount: currentUserId es nulo. No se puede cargar el conteo.');
+        messagesBadge.classList.add('hidden');
+        return;
+    }
     try {
         const { count, error } = await supabase
             .from('chat_messages')
@@ -416,23 +464,24 @@ export async function loadUnreadMessagesCount(currentUserId) {
 
         if (error) throw error;
 
-        if (messagesBadge) {
-            if (count > 0) {
-                messagesBadge.textContent = count;
-                messagesBadge.classList.remove('hidden');
-            } else {
-                messagesBadge.classList.add('hidden');
-            }
+        if (count > 0) {
+            messagesBadge.textContent = count;
+            messagesBadge.classList.remove('hidden');
+        } else {
+            messagesBadge.classList.add('hidden');
         }
     } catch (error) {
-        console.error('Error loading unread messages:', error);
+        console.error('Error al cargar conteo de mensajes no leídos:', error.message);
     }
 }
 
+/**
+ * Muestra un modal con las conversaciones de chat del usuario.
+ */
 export async function showMessagesModal() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } = {} } = await supabase.auth.getUser();
     if (!user) {
-        showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver mensajes');
+        showCustomSwal('warning', 'Error', 'Debes iniciar sesión para ver tus mensajes.');
         return;
     }
 
@@ -455,32 +504,30 @@ export async function showMessagesModal() {
 
         const conversations = {};
         messages.forEach(msg => {
-            const convoKey = [msg.sender_id, msg.receiver_id].sort().join('-');
+            const participant1 = msg.sender_id;
+            const participant2 = msg.receiver_id;
+            const convoKey = [participant1, participant2].sort().join('-');
+            
             if (!conversations[convoKey]) {
-                const isSender = msg.sender_id === user.id;
                 conversations[convoKey] = {
-                    otherUserId: isSender ? msg.receiver_id : msg.sender_id,
-                    otherUsername: isSender 
-                        ? (msg.receiver?.username || 'Usuario') 
-                        : (msg.sender?.username || 'Usuario'),
+                    otherUserId: participant1 === user.id ? participant2 : participant1,
+                    otherUsername: participant1 === user.id 
+                        ? (msg.receiver?.username || 'Desconocido') 
+                        : (msg.sender?.username || 'Desconocido'),
                     messages: []
                 };
             }
             conversations[convoKey].messages.push(msg);
         });
 
-        const conversationsHtml = Object.keys(conversations).length > 0
+        let conversationsHtml = Object.keys(conversations).length > 0
             ? Object.values(conversations).map(convo => `
-                <div class="conversation-item" 
-                     data-other-user-id="${convo.otherUserId}" 
-                     data-other-username="${convo.otherUsername}">
+                <div class="conversation-item" data-other-user-id="${convo.otherUserId}" data-other-username="${convo.otherUsername}">
                     <i class="fas fa-comment"></i> <strong>${convo.otherUsername}</strong>
-                    <span class="last-message-preview">
-                        ${convo.messages[convo.messages.length - 1].message.substring(0, 30)}...
-                    </span>
+                    <span class="last-message-preview">${convo.messages[convo.messages.length - 1].message.substring(0, 30)}...</span>
                 </div>
             `).join('')
-            : '<p>No tienes conversaciones</p>';
+            : '<p>No tienes conversaciones. ¡Envía un mensaje a un amigo!</p>';
 
         Swal.fire({
             icon: 'info',
@@ -494,59 +541,63 @@ export async function showMessagesModal() {
                 confirmButton: 'swal2-profile-confirm-button'
             },
             buttonsStyling: false,
+            showCancelButton: false,
             didOpen: (popup) => {
                 popup.querySelectorAll('.conversation-item').forEach(item => {
                     item.addEventListener('click', () => {
+                        const otherUserId = item.dataset.otherUserId;
+                        const otherUsername = item.dataset.otherUsername;
                         Swal.close();
-                        showChatWindow(
-                            user.id,
-                            item.dataset.otherUserId,
-                            item.dataset.otherUsername
-                        );
+                        showChatWindow(user.id, otherUserId, otherUsername);
                     });
                 });
             }
+        }).then(() => {
+            loadUnreadMessagesCount(user.id);
         });
+
     } catch (error) {
-        console.error('Error loading messages:', error);
-        showCustomSwal('error', 'Error', 'No se pudieron cargar los mensajes');
+        console.error('Error al cargar mensajes:', error.message);
+        showCustomSwal('error', 'Error', `No se pudieron cargar los mensajes: ${error.message}`);
     }
 }
 
+/**
+ * Muestra una ventana de chat para una conversación específica.
+ */
 export async function showChatWindow(currentUserId, otherUserId, otherUsername) {
-    const renderMessages = async (messages) => {
+    const renderChatMessages = async (msgs) => { 
         const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
         if (!chatDisplay) return;
 
-        chatDisplay.innerHTML = messages.map(msg => `
+        chatDisplay.innerHTML = msgs.map(msg => `
             <div class="chat-message ${msg.sender_id === currentUserId ? 'sent' : 'received'}">
-                <span class="message-sender">
-                    ${msg.sender_id === currentUserId ? 'Tú' : (msg.sender?.username || 'Usuario')}:
-                </span>
+                <span class="message-sender">${msg.sender_id === currentUserId ? 'Tú' : (msg.sender?.username || 'Desconocido')}:</span>
                 <span class="message-text">${msg.message}</span>
-                <span class="message-time">
-                    ${new Date(msg.created_at).toLocaleTimeString()}
-                </span>
+                <span class="message-time">${new Date(msg.created_at).toLocaleTimeString()}</span>
             </div>
         `).join('');
         chatDisplay.scrollTop = chatDisplay.scrollHeight;
 
         // Marcar mensajes como leídos
-        const unreadIds = messages
-            .filter(msg => msg.receiver_id === currentUserId && !msg.is_read)
-            .map(msg => msg.id);
+        const unreadMessagesToMark = msgs.filter(msg => 
+            msg.receiver_id === currentUserId && msg.is_read === false
+        );
 
-        if (unreadIds.length > 0) {
-            await supabase
+        if (unreadMessagesToMark.length > 0) {
+            const messageIdsToMark = unreadMessagesToMark.map(msg => msg.id);
+            const { error: readError } = await supabase
                 .from('chat_messages')
                 .update({ is_read: true })
-                .in('id', unreadIds);
-            loadUnreadMessagesCount(currentUserId);
+                .in('id', messageIdsToMark);
+
+            if (!readError) {
+                loadUnreadMessagesCount(currentUserId);
+            }
         }
     };
 
     try {
-        // Obtener mensajes iniciales
         const { data: initialMessages, error } = await supabase
             .from('chat_messages')
             .select(`
@@ -556,165 +607,193 @@ export async function showChatWindow(currentUserId, otherUserId, otherUsername) 
                 sender_id,
                 receiver_id,
                 is_read,
-                sender:profiles!chat_messages_sender_id_fkey(username)
+                sender:profiles!chat_messages_sender_id_fkey(username),
+                receiver:profiles!chat_messages_receiver_id_fkey(username)
             `)
-            .or(
-                `and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),` +
-                `and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`
-            )
+            .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`)
             .order('created_at', { ascending: true });
 
         if (error) throw error;
 
-        // Configurar suscripción Realtime
         if (chatSubscription) {
             chatSubscription.unsubscribe();
+            console.log('Suscripción de chat anterior cancelada.');
         }
 
         chatSubscription = supabase
-            .channel(`chat:${currentUserId}:${otherUserId}`)
+            .channel(`chat_messages_channel_${currentUserId}_${otherUserId}`)
             .on(
                 'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'chat_messages',
-                    filter: `or(and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`
-                },
-                async () => {
-                    const { data: updatedMessages } = await supabase
+                { event: '*', schema: 'public', table: 'chat_messages' },
+                async (payload) => {
+                    const isRelevant = 
+                        (payload.new.sender_id === currentUserId && payload.new.receiver_id === otherUserId) ||
+                        (payload.new.sender_id === otherUserId && payload.new.receiver_id === currentUserId);
+
+                    if (!isRelevant) return;
+
+                    const { data: updatedMessages, error: fetchError } = await supabase
                         .from('chat_messages')
-                        .select('*')
-                        .or(
-                            `and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),` +
-                            `and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`
-                        )
+                        .select(`
+                            id,
+                            message,
+                            created_at,
+                            sender_id,
+                            receiver_id,
+                            is_read,
+                            sender:profiles!chat_messages_sender_id_fkey(username),
+                            receiver:profiles!chat_messages_receiver_id_fkey(username)
+                        `)
+                        .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`)
                         .order('created_at', { ascending: true });
-                    
-                    if (updatedMessages) {
-                        await renderMessages(updatedMessages);
+
+                    if (!fetchError) {
+                        await renderChatMessages(updatedMessages);
                     }
                 }
             )
             .subscribe();
 
-        // Mostrar ventana de chat
         Swal.fire({
             title: `Chat con <strong>${otherUsername}</strong>`,
             html: `
                 <div class="chat-window">
                     <div class="chat-messages-display"></div>
-                    <textarea id="chat-input" class="chat-input" placeholder="Escribe tu mensaje..."></textarea>
-                    <button id="send-message-btn" class="swal-custom-btn">
-                        <i class="fas fa-paper-plane"></i> Enviar
-                    </button>
+                    <textarea id="chat-input" class="swal2-input chat-input" placeholder="Escribe tu mensaje..."></textarea>
+                    <button id="send-chat-message-btn" class="swal-custom-btn swal-btn-message mt-2"><i class="fas fa-paper-plane"></i> Enviar</button>
                 </div>
             `,
-            showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: 'Cerrar',
+            cancelButtonText: 'Regresar a Mensajes',
+            showConfirmButton: false,
             customClass: {
-                popup: 'swal2-chat-popup',
-                htmlContainer: 'swal2-chat-html',
-                cancelButton: 'swal2-chat-cancel-button'
+                popup: 'swal2-profile-popup',
+                title: 'swal2-profile-title',
+                htmlContainer: 'swal2-profile-html',
+                cancelButton: 'swal2-profile-cancel-button'
             },
+            buttonsStyling: false,
             didOpen: async (popup) => {
-                await renderMessages(initialMessages);
-                
-                const input = popup.querySelector('#chat-input');
-                const sendBtn = popup.querySelector('#send-message-btn');
-                
-                const sendMessage = async () => {
-                    const message = input.value.trim();
-                    if (!message) return;
-                    
-                    // Actualización optimista
-                    const tempMessage = {
-                        id: `temp-${Date.now()}`,
-                        message,
-                        created_at: new Date().toISOString(),
-                        sender_id: currentUserId,
-                        receiver_id: otherUserId,
-                        is_read: false,
-                        sender: { username: 'Tú' }
-                    };
-                    await renderMessages([...initialMessages, tempMessage]);
-                    input.value = '';
-                    
-                    // Enviar a la base de datos
-                    await handleSendMessage(currentUserId, otherUserId, message);
-                };
-                
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                    }
-                });
-                
-                sendBtn.addEventListener('click', sendMessage);
-            },
-            willClose: () => {
-                if (chatSubscription) {
-                    chatSubscription.unsubscribe();
-                    chatSubscription = null;
+                await renderChatMessages(initialMessages);
+                const messageInput = popup.querySelector('#chat-input');
+                const sendButton = popup.querySelector('#send-chat-message-btn');
+
+                if (messageInput) {
+                    messageInput.focus();
+                    messageInput.addEventListener('keydown', async (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            const messageText = messageInput.value.trim();
+                            if (messageText) {
+                                await handleSendMessage(currentUserId, otherUserId, messageText);
+                                messageInput.value = '';
+                            }
+                        }
+                    });
+                }
+
+                if (sendButton) {
+                    sendButton.addEventListener('click', async () => {
+                        const messageText = messageInput.value.trim();
+                        if (messageText) {
+                            await handleSendMessage(currentUserId, otherUserId, messageText);
+                            messageInput.value = '';
+                        }
+                    });
                 }
             }
+        }).then((result) => {
+            if (chatSubscription) {
+                chatSubscription.unsubscribe();
+                chatSubscription = null;
+            }
+
+            if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop) {
+                showMessagesModal();
+            }
         });
+
     } catch (error) {
-        console.error('Error showing chat:', error);
-        showCustomSwal('error', 'Error', 'No se pudo cargar el chat');
+        console.error('Error al cargar la ventana de chat:', error.message);
+        showCustomSwal('error', 'Error', `No se pudo cargar la conversación: ${error.message}`);
     }
 }
 
+/**
+ * Envía un mensaje y lo guarda en la base de datos.
+ */
 export async function handleSendMessage(senderId, receiverId, messageText) {
     try {
-        const { error } = await supabase
+        // Mensaje optimista
+        const optimisticMessage = {
+            id: `temp-${Date.now()}`,
+            sender_id: senderId,
+            receiver_id: receiverId,
+            message: messageText,
+            created_at: new Date().toISOString(),
+            is_read: false,
+            sender: { username: 'Tú' }
+        };
+
+        const chatDisplay = Swal.getPopup()?.querySelector('.chat-messages-display');
+        if (chatDisplay) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message sent';
+            messageElement.innerHTML = `
+                <span class="message-sender">Tú:</span>
+                <span class="message-text">${messageText}</span>
+                <span class="message-time">${new Date().toLocaleTimeString()}</span>
+            `;
+            chatDisplay.appendChild(messageElement);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        }
+
+        const { error: insertError } = await supabase
             .from('chat_messages')
-            .insert([{
-                sender_id: senderId,
-                receiver_id: receiverId,
-                message: messageText,
-                is_read: false
+            .insert([{ 
+                sender_id: senderId, 
+                receiver_id: receiverId, 
+                message: messageText, 
+                is_read: false 
             }]);
 
-        if (error) throw error;
+        if (insertError) throw insertError;
+
     } catch (error) {
-        console.error('Error sending message:', error);
-        showCustomSwal('error', 'Error', 'No se pudo enviar el mensaje');
+        console.error('Error al enviar mensaje:', error.message);
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+        
+        toast.fire({
+            icon: 'error',
+            title: 'Error al enviar mensaje'
+        });
     }
 }
 
 // ====================================================================================
-// INICIALIZACIÓN
+// INICIALIZACIÓN DE socialLogic.js AL CARGAR EL DOM
 // ====================================================================================
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // Inicializar referencias a elementos
+document.addEventListener('DOMContentLoaded', () => {
     friendRequestsBadge = document.getElementById('friend-requests-badge');
     messagesBadge = document.getElementById('messages-badge');
     friendsListContainer = document.getElementById('friends-list-container');
     friendRequestsBtn = document.getElementById('friend-requests-btn');
     messagesBtn = document.getElementById('messages-btn');
 
-    // Configurar event listeners
     if (friendRequestsBtn) {
         friendRequestsBtn.addEventListener('click', showFriendRequestsModal);
     }
     if (messagesBtn) {
         messagesBtn.addEventListener('click', showMessagesModal);
-    }
-
-    // Inicializar para usuario autenticado
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-        const cleanupSubscription = await setupFriendsRealtimeSubscription(user.id);
-        loadPendingFriendRequestsCount(user.id);
-        loadUnreadMessagesCount(user.id);
-        loadFriendsList(user.id);
-
-        window.addEventListener('beforeunload', () => {
-            cleanupSubscription();
-        });
     }
 });
