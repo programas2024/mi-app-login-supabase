@@ -8,7 +8,7 @@ import {
     loadPendingFriendRequestsCount, 
     loadUnreadMessagesCount, 
     loadFriendsList, 
-    
+    setupFriendsRealtimeSubscription // Añade esta línea
 } from './socialLogic.js';
 
 
@@ -481,14 +481,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
             await loadFriendsList(user.id); 
             
-           // Por esto:
-const cleanupSubscription = await setupFriendsRealtimeSubscription(user.id); 
+           // Por esto (manejo más robusto):
+let cleanupSubscription;
+try {
+    cleanupSubscription = await setupFriendsRealtimeSubscription(user.id);
+} catch (error) {
+    console.error('Error al configurar la suscripción en tiempo real:', error);
+}
 
-// Y añade esto al final para limpiar al cerrar/cambiar de página:
+// Y mantén el cleanup:
 window.addEventListener('beforeunload', () => {
     if (cleanupSubscription) cleanupSubscription();
 });
-
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
                     profileBtnDashboard.addEventListener('click', () => {

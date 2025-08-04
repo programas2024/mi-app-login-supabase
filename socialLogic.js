@@ -54,32 +54,31 @@ function showCustomSwal(icon, title, text, confirmButtonText = 'Entendido') {
 }
 
 // socialLogic.js
-export const setupFriendsRealtimeSubscription = async (userId) => {
-    // 1. Crear canal de suscripción
-    const friendsChannel = supabase
-        .channel('friends_changes')
+
+export async function setupFriendsRealtimeSubscription(userId) {
+    const subscription = supabase
+        .channel('friends-updates')
         .on(
             'postgres_changes',
             {
-                event: '*', // Escucha INSERT, UPDATE, DELETE
+                event: '*',
                 schema: 'public',
                 table: 'friends',
                 filter: `user_id=eq.${userId}`
             },
-            async (payload) => {
+            (payload) => {
                 console.log('Cambio en amigos:', payload);
-                // Actualizar los datos en tiempo real
-                await loadFriendsList(userId);
-                await loadPendingFriendRequestsCount(userId);
+                // Aquí actualizas la UI según los cambios
+                loadPendingFriendRequestsCount(userId);
+                loadFriendsList(userId);
             }
         )
         .subscribe();
 
-    // 2. Retornar función para limpiar la suscripción
     return () => {
-        supabase.removeChannel(friendsChannel);
+        supabase.removeChannel(subscription);
     };
-};
+}
 
 /**
  * Obtiene el emoji de la bandera de un país (local a socialLogic.js).
