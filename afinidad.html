@@ -282,60 +282,84 @@
         }
 
         // Aumentar afinidad con un amigo - VERSIÓN DEFINITIVA CORREGIDA
-       async function increaseAffinity(friendId) {
-    try {
-        const pointsToAdd = 10;
-        
-        // 1. Verificar autenticación primero
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            throw new Error('Usuario no autenticado');
+        async function increaseAffinity(friendId) {
+            try {
+                const pointsToAdd = 10;
+                const [user1, user2] = currentUserId < friendId 
+                    ? [currentUserId, friendId] 
+                    : [friendId, currentUserId];
+
+                // Primero intentar actualizar
+                const { data: updated, error: updateError } = await supabase
+                    .from('friends')
+                    .update({ 
+                        affinity_points: supabase.rpc('increment', {
+                            val: pointsToAdd,
+                            col: 'affinity_points'
+                        })
+                    })
+                    .eq('user1_id', user1)
+                    .eq('user2_id', user2)
+                    .select('affinity_points')
+                    .single();
+
+                // Si no existe, crear nueva relación
+                if (updateError && updateError.code === 'PGRST116') {
+                    const { data: created, error: createError } = await supabase
+                        .from('friends')
+                        .insert([{
+                            user1_id: user1,
+                            user2_id: user2,
+                            affinity_points: pointsToAdd
+                        }])
+                        .select('affinity_points')
+                        .single();
+
+                    if (createError) throw createError;
+                    
+                    // Mostrar confirmación
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Nueva afinidad creada!',
+                        text: `Puntos iniciales: ${pointsToAdd}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } 
+                else if (updateError) {
+                    throw updateError;
+                }
+                else {
+                    // Mostrar confirmación de actualización
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Afinidad aumentada!',
+                        text: `Nuevos puntos: ${updated.affinity_points}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+
+                // Actualizar la interfaz
+                await loadFriendsList();
+                
+                // Actualizar vista detallada si está abierta
+                const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
+                if (activeFriend) {
+                    const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
+                    await showFriendAffinity(friendId, friendName);
+                }
+
+            } catch (error) {
+                console.error('Error al aumentar afinidad:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'No se pudo aumentar la afinidad',
+                    timer: 3000
+                });
+            }
         }
-
-        // 2. Determinar orden de IDs
-        const [user1, user2] = user.id < friendId 
-            ? [user.id, friendId] 
-            : [friendId, user.id];
-
-        // 3. Intentar UPSERT usando rpc
-        const { data, error } = await supabase.rpc('upsert_affinity', {
-            p_user1_id: user1,
-            p_user2_id: user2,
-            p_points_to_add: pointsToAdd,
-            p_current_user_id: user.id  // Pasar ID del usuario autenticado
-        });
-
-        if (error) throw error;
-
-        // 4. Mostrar confirmación
-        await Swal.fire({
-            icon: 'success',
-            title: '¡Afinidad actualizada!',
-            text: `Nuevos puntos: ${data || pointsToAdd}`,
-            timer: 2000,
-            showConfirmButton: false
-        });
-
-        // 5. Actualizar interfaz
-        await loadFriendsList();
-        
-        // Actualizar vista detallada si está abierta
-        const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
-        if (activeFriend) {
-            const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
-            await showFriendAffinity(friendId, friendName);
-        }
-
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'No se pudo actualizar la afinidad',
-            timer: 3000
-        });
-    }
-}
 
         // Invitar a un nuevo amigo
         async function inviteFriend() {
