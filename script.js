@@ -8,7 +8,7 @@ import {
     loadPendingFriendRequestsCount, 
     loadUnreadMessagesCount, 
     loadFriendsList, 
-    setupFriendsRealtimeSubscription 
+    setupFriendsRealtimeSubscription // ¡Nueva importación!
 } from './socialLogic.js';
 
 
@@ -40,10 +40,6 @@ let saveProfileBtn, backToDashboardBtn, configureBtn;
 let goldDisplayProfile, diamondsDisplayProfile;
 
 let loaderDiv, loaderText;
-
-let avatarImg; // Nueva referencia para la imagen del avatar
-let avatarUploadInput; // Nueva referencia para el input de archivo
-let changeAvatarBtn; // Nueva referencia para el botón de cambiar avatar
 
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
@@ -477,12 +473,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Cargar conteos y listas iniciales de socialLogic.js
             await loadPendingFriendRequestsCount(user.id);
             await loadUnreadMessagesCount(user.id);
-            
-            // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
-            await loadFriendsList(user.id); 
-            
-            // Luego, configura la suscripción Realtime para futuras actualizaciones
-            setupFriendsRealtimeSubscription(); 
+            // La carga de loadFriendsList ahora se manejará a través de la suscripción Realtime
+            setupFriendsRealtimeSubscription(); // ¡Activa la suscripción Realtime!
 
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
