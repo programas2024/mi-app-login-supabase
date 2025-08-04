@@ -435,37 +435,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Función para mostrar opciones de configuración
 async function showConfigureOptions() {
-    await Swal.fire({
+    const { value: option } = await Swal.fire({
         title: 'Opciones',
         html: `
-            <div class="swal-buttons-container">
-                <button id="swal-give-gold" class="swal-gold-btn">
+            <div class="config-options">
+                <button id="give-gold-btn" class="swal-btn gold-btn">
                     <i class="fas fa-coins"></i> Obtener 10 de Oro
                 </button>
-                <button id="swal-logout" class="swal-logout-btn">
+                <button id="logout-btn" class="swal-btn logout-btn">
                     <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
                 </button>
             </div>
         `,
         showConfirmButton: false,
-        background: '#1e293b',
-        color: '#ffffff',
-        width: '350px',
-        padding: '20px',
-        customClass: {
-            popup: 'custom-swal-popup',
-            htmlContainer: 'custom-swal-html'
+        showCancelButton: false,
+        allowOutsideClick: true,
+        didOpen: () => {
+            document.getElementById('give-gold-btn').addEventListener('click', async () => {
+                Swal.close();
+                await giveGold();
+            });
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                Swal.close();
+                await signOut();
+            });
         }
-    });
-
-    document.getElementById('swal-give-gold').addEventListener('click', async () => {
-        Swal.close();
-        await giveGold();
-    });
-
-    document.getElementById('swal-logout').addEventListener('click', async () => {
-        Swal.close();
-        await signOut();
     });
 }
