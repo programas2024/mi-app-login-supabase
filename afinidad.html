@@ -259,22 +259,63 @@
     try {
         const pointsToAdd = 10;
         
-        // Llamada a la función RPC
-        const { data: newPoints, error } = await supabase
-            .rpc('increment_affinity', {
-                current_user_id: currentUserId,
-                friend_id: friendId,
-                points_to_add: pointsToAdd
-            });
+        // 1. Verificar y crear relación si no existe
+        let { data: friendship, error: fetchError } = await supabase
+            .from('friends')
+            .select('affinity_points')
+            .or(
+                `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
+                `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
+            )
+            .maybeSingle();
 
-        if (error) throw error;
+        if (fetchError) throw fetchError;
         
-        // Verificar si se encontró la relación
-        if (newPoints === -1) {
-            throw new Error('No existe relación de amistad con este usuario');
+        // Si no existe relación, crearla
+        if (!friendship) {
+            const { error: createError } = await supabase
+                .from('friends')
+                .insert([
+                    {
+                        user1_id: currentUserId,
+                        user2_id: friendId,
+                        affinity_points: pointsToAdd
+                    }
+                ]);
+            
+            if (createError) throw createError;
+            
+            friendship = { affinity_points: pointsToAdd };
+        } else {
+            // Si existe, actualizarla
+            const { error: updateError } = await supabase
+                .from('friends')
+                .update({ 
+                    affinity_points: (friendship.affinity_points || 0) + pointsToAdd 
+                })
+                .or(
+                    `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
+                    `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
+                );
+            
+            if (updateError) throw updateError;
         }
 
-        // Mostrar confirmación
+        // 2. Obtener puntos actualizados
+        const { data: updatedFriendship, error: finalError } = await supabase
+            .from('friends')
+            .select('affinity_points')
+            .or(
+                `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
+                `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
+            )
+            .single();
+
+        if (finalError) throw finalError;
+
+        const newPoints = updatedFriendship?.affinity_points || pointsToAdd;
+
+        // 3. Mostrar confirmación
         await Swal.fire({
             icon: 'success',
             title: '¡Afinidad aumentada!',
@@ -283,10 +324,9 @@
             showConfirmButton: false
         });
 
-        // Actualizar la interfaz
+        // 4. Actualizar interfaz
         await loadFriendsList();
         
-        // Actualizar vista detallada si está abierta
         const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
         if (activeFriend) {
             const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
@@ -294,11 +334,11 @@
         }
 
     } catch (error) {
-        console.error('Error al aumentar afinidad:', error);
+        console.error('Error:', error);
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: error.message || 'No se pudo aumentar la afinidad',
+            text: error.message || 'Error al actualizar afinidad',
             timer: 3000
         });
     }
