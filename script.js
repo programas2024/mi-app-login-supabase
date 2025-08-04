@@ -11,13 +11,18 @@ import {
     setupFriendsRealtimeSubscription 
 } from './socialLogic.js';
 
+
 // --- 1. Configuración de Supabase ---
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// --- 2. Referencias a Elementos HTML ---
+
+
+
+// --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
+// Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
 let initialOptionsDiv, signupFormDiv, loginFormDiv;
 let signupEmail, signupPassword, registerBtn;
 let loginEmail, loginPassword, loginSubmitBtn;
@@ -35,9 +40,14 @@ let saveProfileBtn, backToDashboardBtn, configureBtn;
 let goldDisplayProfile, diamondsDisplayProfile;
 
 let loaderDiv, loaderText;
-let avatarImg, avatarUploadInput, changeAvatarBtn;
 
-// --- 3. Funciones de Utilidad ---
+let avatarImg; // Nueva referencia para la imagen del avatar
+let avatarUploadInput; // Nueva referencia para el input de archivo
+let changeAvatarBtn; // Nueva referencia para el botón de cambiar avatar
+
+
+// --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
+
 function showLoader(message = 'Cargando...') {
     if (loaderDiv) {
         if (loaderText) {
@@ -64,89 +74,36 @@ function showSwal(icon, title, text) {
         timer: isAutoClose ? 3000 : undefined,
         timerProgressBar: isAutoClose,
         customClass: {
-            popup: 'swal2-modern',
+            popup: 'swal2-modern', // Agrega una clase personalizada para estilos CSS
             confirmButton: 'swal2-confirm-btn'
         }
     });
 }
 
-// --- 4. Funciones de Gestión de Avatar ---
-async function uploadAvatar(userId) {
-    if (!avatarUploadInput.files || avatarUploadInput.files.length === 0) {
-        showSwal('warning', 'Ningún archivo seleccionado', 'Por favor selecciona una imagen para tu avatar.');
-        return;
-    }
-
-    const file = avatarUploadInput.files[0];
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}-${Date.now()}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
-
-    showLoader('Subiendo avatar...');
-    
-    try {
-        // 1. Eliminar avatar anterior si existe
-        const { data: profileData } = await supabase
-            .from('profiles')
-            .select('avatar_url')
-            .eq('id', userId)
-            .single();
-
-        if (profileData?.avatar_url) {
-            const oldFilePath = profileData.avatar_url.split('/').pop();
-            await supabase.storage.from('avatars').remove([oldFilePath]);
-        }
-
-        // 2. Subir nuevo avatar
-        const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true
-            });
-
-        if (uploadError) throw uploadError;
-
-        // 3. Obtener URL pública
-        const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-        // 4. Actualizar perfil
-        const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ avatar_url: publicUrl })
-            .eq('id', userId);
-
-        if (updateError) throw updateError;
-
-        // 5. Actualizar visualización
-        if (avatarImg) {
-            avatarImg.src = publicUrl + '?t=' + Date.now();
-            avatarImg.style.display = 'block';
-        }
-
-        showSwal('success', '¡Avatar actualizado!', 'Tu nueva imagen de perfil se ha guardado correctamente.');
-    } catch (error) {
-        console.error('Error al subir avatar:', error);
-        showSwal('error', 'Error al subir avatar', error.message);
-    } finally {
-        hideLoader();
-        avatarUploadInput.value = '';
-    }
+// Funciones para alternar formularios en index.html
+function hideAllAuthForms() {
+    if (initialOptionsDiv) initialOptionsDiv.classList.add('form-hidden');
+    if (signupFormDiv) signupFormDiv.classList.add('form-hidden');
+    if (loginFormDiv) loginFormDiv.classList.add('form-hidden');
 }
 
-async function handleAvatarChange() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        showSwal('error', 'Error', 'No hay sesión activa.');
-        return;
-    }
-
-    await uploadAvatar(user.id);
+function showSignupForm() {
+    hideAllAuthForms();
+    if (signupFormDiv) signupFormDiv.classList.remove('form-hidden');
 }
 
-// --- 5. Funciones de Autenticación ---
+function showLoginForm() {
+    hideAllAuthForms();
+    if (loginFormDiv) loginFormDiv.classList.remove('form-hidden');
+}
+
+function showInitialOptions() {
+    hideAllAuthForms();
+    if (initialOptionsDiv) initialOptionsDiv.classList.remove('form-hidden');
+}
+
+// --- 4. Funciones de Autenticación ---
+
 async function signUp() {
     const email = signupEmail.value;
     const password = signupPassword.value;
@@ -157,25 +114,19 @@ async function signUp() {
     }
 
     showLoader('Registrando...');
-    const { data, error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-            data: {
-                username: email.split('@')[0] // Nombre de usuario por defecto
-            }
-        }
-    });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     hideLoader();
 
     if (error) {
         let errorMessage = 'Error al registrarse. Inténtalo de nuevo.';
         if (error.message.includes('User already registered')) {
             errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+        } else if (error.message.includes('AuthApiError: Password should be at least 6 characters')) {
+            errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
         }
         showSwal('error', 'Fallo en Registro', errorMessage);
     } else {
-        showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta.');
+        showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
         signupEmail.value = '';
         signupPassword.value = '';
         showLoginForm();
@@ -196,12 +147,15 @@ async function signIn() {
     hideLoader();
 
     if (error) {
-        let errorMessage = 'Credenciales incorrectas.';
-        if (error.message.includes('Email not confirmed')) {
-            errorMessage = 'Por favor verifica tu correo electrónico antes de iniciar sesión.';
+        let errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
+        if (error.message.includes('Invalid login credentials')) {
+            errorMessage = 'Correo o contraseña incorrectos.';
+        } else if (error.message.includes('Email not confirmed')) {
+            errorMessage = 'Tu cuenta aún no ha sido verificada. Revisa tu correo.';
         }
         showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
     } else {
+        showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
         window.location.href = 'dashboard.html';
     }
 }
@@ -212,171 +166,289 @@ async function signOut() {
     hideLoader();
 
     if (error) {
-        showSwal('error', 'Error', 'No se pudo cerrar la sesión: ' + error.message);
+        showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
     } else {
+        showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
         window.location.href = 'index.html';
     }
 }
 
-// --- 6. Funciones de Gestión de Perfil ---
+// --- 5. Funciones de Gestión de Perfil (usadas en dashboard.html y profile.html) ---
+
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
 
     try {
         const { data, error } = await supabase
             .from('profiles')
-            .select('username, country, gold, diamonds, avatar_url')
+            .select('username, country, gold, diamonds')
             .eq('id', userId)
             .single();
 
         if (error) {
             console.error('Error al cargar perfil:', error);
             
-            if (error.code === 'PGRST116') {
+            // Si el perfil no se encuentra (PGRST116), intenta crearlo
+            if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
+                console.log('Perfil no encontrado, intentando crear uno básico.');
                 const { error: insertError } = await supabase
                     .from('profiles')
-                    .insert([{ 
-                        id: userId, 
-                        username: 'Nuevo Jugador', 
-                        country: 'Desconocido', 
-                        gold: 0, 
-                        diamonds: 0,
-                        avatar_url: null
-                    }]);
+                    .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
                 
-                if (insertError && insertError.code !== '23505') {
-                    throw insertError;
+                if (insertError) {
+                    console.error('Error al crear perfil básico:', insertError);
+                    // Si el error es un conflicto (409), significa que el perfil ya existe (ej. creado por otra sesión)
+                    // En este caso, intenta cargar de nuevo el perfil en lugar de mostrar un error crítico.
+                    if (insertError.code === '23505') { // PostgreSQL unique_violation (código para 409 Conflict)
+                        console.warn('Conflicto al crear perfil (ya existe). Intentando cargar de nuevo.');
+                        await loadUserProfile(userId); // Recargar el perfil
+                        return; // Salir para evitar la ejecución del resto del bloque
+                    } else {
+                        showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta: ' + insertError.message);
+                    }
+                } else {
+                    showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
+                    // No es necesario recargar, los datos ya se establecieron en la inserción
+                    // y los campos se actualizarán en el 'finally' o con la siguiente carga.
                 }
-                await loadUserProfile(userId); // Recargar después de crear
-                return;
+            } else { // Si es otro tipo de error al cargar el perfil
+                showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
-            throw error;
+        } 
+        
+        // Si no hubo error en la carga inicial (data existe) O si se creó el perfil exitosamente
+        // (en cuyo caso 'data' podría ser null si no se hizo un select después del insert,
+        // pero se asume que si no hubo insertError, el perfil está listo para ser cargado en la siguiente iteración
+        // o ya se cargó si el 409 lo disparó).
+        // Para simplificar, si 'data' existe, actualizamos los displays.
+        if (data) {
+            // Actualizar datos en el dashboard (si es la página actual)
+            if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
+            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
+
+            // Actualizar datos en la página de perfil (si es la página actual)
+            if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            if (usernameInputProfile) usernameInputProfile.value = data.username || '';
+            if (countryInputProfile) countryInputProfile.value = data.country || '';
+            if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
+            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
         }
-
-        // Actualizar UI
-        const userEmail = (await supabase.auth.getUser()).data.user?.email || '';
-
-        // Dashboard
-        if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = userEmail;
-        if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
-        if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
-
-        // Perfil
-        if (userEmailProfileSpan) userEmailProfileSpan.textContent = userEmail;
-        if (usernameInputProfile) usernameInputProfile.value = data.username || '';
-        if (countryInputProfile) countryInputProfile.value = data.country || '';
-        if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
-        if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
-
-        // Avatar
-        if (avatarImg) {
-            if (data.avatar_url) {
-                avatarImg.src = data.avatar_url + '?t=' + Date.now();
-            } else {
-                avatarImg.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-            }
-            avatarImg.style.display = 'block';
-        }
-
-    } catch (error) {
-        console.error("Error cargando perfil:", error);
-        showSwal('error', 'Error', 'No se pudo cargar el perfil: ' + error.message);
+    } catch (e) {
+        console.error("Error inesperado en loadUserProfile:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
     } finally {
-        hideLoader();
-        if (profileCard) profileCard.classList.remove('dashboard-hidden');
-        if (dashboardDiv) dashboardDiv.classList.remove('dashboard-hidden');
+        hideLoader(); // Esto se ejecutará SIEMPRE.
+        // Aseguramos que la tarjeta de perfil/dashboard sea visible DESPUÉS de ocultar el loader
+        if (profileCard) {
+            profileCard.classList.remove('dashboard-hidden');
+        }
+        if (dashboardDiv) { // También para el dashboard
+            dashboardDiv.classList.remove('dashboard-hidden');
+        }
     }
 }
 
 async function saveProfile() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-        showSwal('error', 'Error', 'No hay sesión activa.');
+        showSwal('error', 'Error', 'No hay sesión activa para guardar el perfil.');
         return;
     }
 
-    const newUsername = usernameInputProfile?.value.trim() || '';
-    const newCountry = countryInputProfile?.value.trim() || '';
+    const newUsername = usernameInputProfile ? usernameInputProfile.value.trim() : '';
+    const newCountry = countryInputProfile ? countryInputProfile.value.trim() : '';
 
     if (!newUsername) {
-        showSwal('warning', 'Campo requerido', 'Por favor ingresa un nombre de usuario.');
+        showSwal('warning', 'Nombre de Usuario', 'Por favor, ingresa un nombre de jugador.');
         return;
     }
 
-    showLoader('Guardando...');
-    try {
-        const { error } = await supabase
-            .from('profiles')
-            .update({ 
-                username: newUsername, 
-                country: newCountry 
-            })
-            .eq('id', user.id);
-        
-        if (error) throw error;
-        
-        showSwal('success', '¡Guardado!', 'Tu perfil ha sido actualizado.');
-        await loadUserProfile(user.id);
-    } catch (error) {
-        showSwal('error', 'Error', 'No se pudo guardar: ' + error.message);
-    } finally {
-        hideLoader();
+    showLoader('Guardando perfil...');
+    const { error } = await supabase
+        .from('profiles')
+        .update({ username: newUsername, country: newCountry })
+        .eq('id', user.id);
+    
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
+    } else {
+        showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
+        await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
     }
 }
 
 async function giveGold() {
+    showLoader('Dando oro...');
     const { data: { user } } = await supabase.auth.getUser();
+
     if (!user) {
         showSwal('error', 'Error', 'No hay sesión activa.');
+        hideLoader();
         return;
     }
 
-    showLoader('Actualizando...');
-    try {
-        const { data: profile, error: fetchError } = await supabase
-            .from('profiles')
-            .select('gold')
-            .eq('id', user.id)
-            .single();
-        
-        if (fetchError) throw fetchError;
+    const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('gold')
+        .eq('id', user.id)
+        .single();
 
-        const newGold = (profile.gold || 0) + 10;
-        
-        const { error } = await supabase
-            .from('profiles')
-            .update({ gold: newGold })
-            .eq('id', user.id);
-        
-        if (error) throw error;
-
-        // Actualizar UI
-        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold;
-        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold;
-        
-        showSwal('success', '¡Oro obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
-    } catch (error) {
-        showSwal('error', 'Error', 'No se pudo dar oro: ' + error.message);
-    } finally {
+    if (fetchError) {
+        showSwal('error', 'Error', 'No se pudo obtener el oro actual.');
         hideLoader();
+        return;
+    }
+
+    const newGold = (currentProfile.gold || 0) + 10;
+
+    const { error } = await supabase
+        .from('profiles')
+        .update({ gold: newGold })
+        .eq('id', user.id);
+
+    hideLoader();
+
+    if (error) {
+        showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
+    } else {
+        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
+        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
+        showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
     }
 }
 
-// --- 7. Inicialización ---
+// Función para mostrar el modal de configuración
+async function showConfigureOptions() {
+    Swal.fire({
+        title: '¿Qué deseas hacer?',
+        icon: 'question',
+        showCloseButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Ok', 
+        showConfirmButton: false,
+        allowOutsideClick: true,
+        html: `
+            <div class="swal-custom-buttons-container">
+                <button id="swal-give-gold" class="swal-custom-btn swal-btn-gold"><i class="fas fa-coins"></i> Recibir 10 de Oro</button>
+                <button id="swal-logout" class="swal-custom-btn swal-btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+            </div>
+        `,
+        didOpen: () => {
+            document.getElementById('swal-give-gold').addEventListener('click', async () => {
+                Swal.close();
+                await giveGold();
+            });
+            document.getElementById('swal-logout').addEventListener('click', async () => {
+                Swal.close();
+                await signOut();
+            });
+        },
+        customClass: {
+            popup: 'swal2-modern',
+            htmlContainer: 'swal2-html-container-no-padding'
+        },
+        buttonsStyling: false
+    });
+}
+
+// --- 6. Lógica de inicialización al cargar el DOM ---
 document.addEventListener('DOMContentLoaded', async () => {
     const currentPage = window.location.pathname.split('/').pop();
 
-    // Inicializar elementos comunes
+    // --- Inicializar referencias a elementos del DOM globales ---
     loaderDiv = document.getElementById('loader');
-    loaderText = loaderDiv?.querySelector('p');
+    loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
 
-    // Lógica para index.html
+    // --- Lógica para index.html ---
     if (currentPage === 'index.html' || currentPage === '') {
-        // [Código de inicialización de index.html...]
+        console.log('Cargando lógica de index.html');
+
+        // Asignar referencias a elementos de index.html
+        initialOptionsDiv = document.getElementById('initial-options');
+        signupFormDiv = document.getElementById('signup-form');
+        loginFormDiv = document.getElementById('login-form');
+        signupEmail = document.getElementById('signup-email');
+        signupPassword = document.getElementById('signup-password');
+        registerBtn = document.getElementById('register-btn');
+        loginEmail = document.getElementById('login-email');
+        loginPassword = document.getElementById('login-password');
+        loginSubmitBtn = document.getElementById('login-submit-btn');
+        showSignupBtn = document.getElementById('show-signup-btn');
+        showLoginBtn = document.getElementById('show-login-btn');
+        backToOptionsFromSignup = document.getElementById('back-to-options-from-signup');
+        backToOptionsFromLogin = document.getElementById('back-to-options-from-login');
+        forgotPasswordLink = document.getElementById('forgot-password');
+
+        // Primero, verifica si el usuario ya está autenticado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            console.log('Usuario ya logueado al cargar index.html. Redirigiendo a dashboard.html...');
+            window.location.href = 'dashboard.html';
+            return; // Detener la ejecución del resto de la lógica de index.html
+        } else {
+            // Si no hay usuario, muestra las opciones de inicio/registro
+            showInitialOptions();
+
+            // Configura los event listeners solo si los elementos existen (estamos en index.html)
+            if (registerBtn) registerBtn.addEventListener('click', signUp);
+            if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
+            if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
+            if (showLoginBtn) showLoginBtn.addEventListener('click', showLoginForm);
+            if (backToOptionsFromSignup) backToOptionsFromSignup.addEventListener('click', showInitialOptions);
+            if (backToOptionsFromLogin) backToOptionsFromLogin.addEventListener('click', showInitialOptions);
+            
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const { value: emailToReset } = await Swal.fire({
+                        title: 'Restablecer Contraseña',
+                        input: 'email',
+                        inputLabel: 'Ingresa tu correo electrónico',
+                        inputPlaceholder: 'ejemplo@correo.com',
+                        showCancelButton: true,
+                        confirmButtonText: 'Enviar enlace',
+                        cancelButtonText: 'Cancelar',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return '¡Necesitas ingresar un correo electrónico!';
+                            }
+                            return null;
+                        }
+                    });
+
+                    if (emailToReset) {
+                        showLoader('Enviando enlace de recuperación...');
+                        const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+                            redirectTo: window.location.origin + '/reset-password.html'
+                        });
+                        hideLoader();
+
+                        if (error) {
+                            showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
+                        } else {
+                            showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                        }
+                    }
+                });
+            }
+
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('Auth event in index.html:', event, 'Session:', session);
+                if (session && session.user && currentPage === 'index.html') {
+                    console.log('Usuario autenticado. Redirigiendo a dashboard.html desde onAuthStateChange...');
+                    window.location.href = 'dashboard.html';
+                }
+            });
+        }
     } 
-    // Lógica para dashboard.html y profile.html
+    // --- Lógica para dashboard.html y profile.html ---
     else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
-        // Inicializar elementos
+        console.log(`Cargando lógica de ${currentPage}`);
+
+        // Asignar referencias a elementos del dashboard/perfil
         dashboardDiv = document.getElementById('dashboard');
         userEmailDashboardSpan = document.getElementById('user-email');
         goldDisplayDashboard = document.getElementById('gold-display');
@@ -394,141 +466,58 @@ document.addEventListener('DOMContentLoaded', async () => {
         goldDisplayProfile = document.getElementById('gold-display-profile');
         diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
 
-        // Elementos de avatar
-        avatarImg = document.getElementById('avatar-img');
-        avatarUploadInput = document.getElementById('avatar-upload');
-        changeAvatarBtn = document.getElementById('change-avatar-btn');
 
-        // Verificar autenticación
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
-        if (error || !user) {
-            window.location.href = 'index.html';
-            return;
-        }
+        // Siempre verifica la sesión al cargar estas páginas
+        const { data: { user } } = await supabase.auth.getUser();
 
-        // Cargar datos iniciales
-        await loadUserProfile(user.id);
-        await loadPendingFriendRequestsCount(user.id);
-        await loadUnreadMessagesCount(user.id);
-        await loadFriendsList(user.id);
-        setupFriendsRealtimeSubscription();
+        if (user) {
+            // Usuario autenticado: Cargar perfil y mostrar contenido
+            await loadUserProfile(user.id);
 
-        // Event listeners
-        if (currentPage === 'dashboard.html') {
-            profileBtnDashboard?.addEventListener('click', () => window.location.href = 'profile.html');
-            logoutBtnDashboard?.addEventListener('click', signOut);
-        } else if (currentPage === 'profile.html') {
-            saveProfileBtn?.addEventListener('click', saveProfile);
-            backToDashboardBtn?.addEventListener('click', () => window.location.href = 'dashboard.html');
-            configureBtn?.addEventListener('click', showConfigureOptions);
-            changeAvatarBtn?.addEventListener('click', () => avatarUploadInput.click());
-            avatarUploadInput?.addEventListener('change', handleAvatarChange);
-        }
+            // Cargar conteos y listas iniciales de socialLogic.js
+            await loadPendingFriendRequestsCount(user.id);
+            await loadUnreadMessagesCount(user.id);
+            
+            // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
+            await loadFriendsList(user.id); 
+            
+            // Luego, configura la suscripción Realtime para futuras actualizaciones
+            setupFriendsRealtimeSubscription(); 
 
-        // Manejar cambios de autenticación
-        supabase.auth.onAuthStateChange((event) => {
-            if (event === 'SIGNED_OUT') {
-                window.location.href = 'index.html';
+            if (currentPage === 'dashboard.html') {
+                if (profileBtnDashboard) {
+                    profileBtnDashboard.addEventListener('click', () => {
+                        window.location.href = 'profile.html';
+                    });
+                }
+                if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+            } else if (currentPage === 'profile.html') {
+                if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
+                if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
+                    window.location.href = 'dashboard.html';
+                });
+                if (configureBtn) configureBtn.addEventListener('click', showConfigureOptions);
             }
-        });
-    }
-});
 
-// Función para mostrar opciones de configuración con diseño mejorado
-async function showConfigureOptions() {
-    await Swal.fire({
-        title: '<span style="font-size: 1.5rem; color: #2d3748;">Opciones de Perfil</span>',
-        html: `
-            <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem;">
-                <button id="give-gold-btn" style="
-                    background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
-                    color: #1a202c;
-                    border: none;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 0.5rem;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.5rem;
-                    box-shadow: 0 4px 6px rgba(214, 158, 46, 0.3);
-                    transition: all 0.3s ease;
-                ">
-                    <i class="fas fa-coins" style="font-size: 1.2rem;"></i>
-                    <span>Obtener 10 de Oro</span>
-                </button>
-                
-                <button id="logout-btn" style="
-                    background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
-                    color: white;
-                    border: none;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 0.5rem;
-                    font-size: 1rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.5rem;
-                    box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);
-                    transition: all 0.3s ease;
-                ">
-                    <i class="fas fa-sign-out-alt" style="font-size: 1.2rem;"></i>
-                    <span>Cerrar Sesión</span>
-                </button>
-            </div>
-        `,
-        showConfirmButton: false,
-        showCancelButton: false,
-        allowOutsideClick: true,
-        allowEscapeKey: true,
-        width: '400px',
-        padding: '1.5rem',
-        background: '#ffffff',
-        backdrop: 'rgba(0, 0, 0, 0.4)',
-        customClass: {
-            popup: 'custom-swal-popup',
-            title: 'custom-swal-title'
-        },
-        didOpen: () => {
-            // Efectos hover para los botones
-            const goldBtn = document.getElementById('give-gold-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            
-            goldBtn.addEventListener('mouseenter', () => {
-                goldBtn.style.transform = 'translateY(-2px)';
-                goldBtn.style.boxShadow = '0 6px 10px rgba(214, 158, 46, 0.4)';
+            // Listener para cerrar sesión desde cualquier página autenticada
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log(`Auth event in ${currentPage}:`, event, 'Session:', session);
+                if (event === 'SIGNED_OUT' || !session) {
+                    console.log(`Sesión terminada en ${currentPage}. Redirigiendo a index.html.`);
+                    window.location.href = 'index.html';
+                }
             });
-            
-            goldBtn.addEventListener('mouseleave', () => {
-                goldBtn.style.transform = 'translateY(0)';
-                goldBtn.style.boxShadow = '0 4px 6px rgba(214, 158, 46, 0.3)';
-            });
-            
-            logoutBtn.addEventListener('mouseenter', () => {
-                logoutBtn.style.transform = 'translateY(-2px)';
-                logoutBtn.style.boxShadow = '0 6px 10px rgba(229, 62, 62, 0.4)';
-            });
-            
-            logoutBtn.addEventListener('mouseleave', () => {
-                logoutBtn.style.transform = 'translateY(0)';
-                logoutBtn.style.boxShadow = '0 4px 6px rgba(229, 62, 62, 0.3)';
-            });
-            
-            // Event listeners para las acciones
-            goldBtn.addEventListener('click', async () => {
-                Swal.close();
-                await giveGold();
-            });
-            
-            logoutBtn.addEventListener('click', async () => {
-                Swal.close();
-                await signOut();
-            });
+
+        } else {
+            // No hay usuario autenticado: Redirigir a la página de inicio
+            console.log(`No hay usuario autenticado en ${currentPage}. Redirigiendo a index.html`);
+            window.location.href = 'index.html';
         }
-    });
-}
+    }
+    // --- Lógica para páginas de juego (si este script se carga allí) ---
+    // NOTA: Idealmente, las páginas de juego solo cargarían sus propios scripts específicos (ej. orcado_vs_algo_game.js).
+    // Si este script se carga en una página de juego, la lógica de juego que estaba aquí
+    // causaría conflictos. La he ELIMINADO de este script.
+    // Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
+    // Solo deberían cargar sus respectivos 'orcado_THEME_specific_game.js'
+});
