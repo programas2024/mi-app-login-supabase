@@ -255,41 +255,72 @@
                 }
             }
 
-            async function increaseAffinity(friendId) {
+           async function increaseAffinity(friendId) {
     try {
-        // 1. Primero obtenemos los puntos actuales
+        // 1. Debug: Mostrar IDs para verificación
+        console.log(`Usuario actual: ${currentUserId}, Amigo: ${friendId}`);
+        
+        // 2. Obtener la relación de amistad
         const { data: friendship, error: fetchError } = await supabase
             .from('friends')
-            .select('affinity_points')
-            .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`)
+            .select('id, affinity_points')
+            .or(
+                `and(user1_id.eq.${currentUserId},user2_id.eq.${friendId})`,
+                `and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`
+            )
             .single();
 
         if (fetchError) throw fetchError;
+        if (!friendship) throw new Error('Relación de amistad no encontrada');
 
         const currentPoints = friendship.affinity_points || 0;
-        const pointsToAdd = 10; // Puntos a añadir por interacción
+        const pointsToAdd = 10;
+        const newPoints = currentPoints + pointsToAdd;
 
-        // 2. Actualizamos los puntos en la base de datos
+        // 3. Debug: Mostrar valores antes de actualizar
+        console.log(`Puntos actuales: ${currentPoints}, Nuevos puntos: ${newPoints}`);
+
+        // 4. Actualizar con el ID específico de la relación
         const { error: updateError } = await supabase
             .from('friends')
-            .update({ affinity_points: currentPoints + pointsToAdd })
-            .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${friendId}),and(user1_id.eq.${friendId},user2_id.eq.${currentUserId})`);
+            .update({ 
+                affinity_points: newPoints,
+                updated_at: new Date().toISOString()  // Campo opcional para tracking
+            })
+            .eq('id', friendship.id);
 
         if (updateError) throw updateError;
 
-        // 3. Mostramos confirmación y actualizamos la lista
-        Swal.fire({
+        // 5. Debug: Verificar actualización
+        console.log('Puntos actualizados correctamente');
+        
+        // 6. Mostrar confirmación
+        await Swal.fire({
             icon: 'success',
             title: '¡Afinidad aumentada!',
-            text: `Has ganado ${pointsToAdd} puntos de afinidad`,
+            text: `Ahora tienes ${newPoints} puntos con este amigo`,
             timer: 2000,
             showConfirmButton: false
         });
 
-        loadFriendsList(); // Recargamos la lista para ver los cambios
+        // 7. Actualizar la interfaz
+        await loadFriendsList();
+        
+        // Si había una afinidad mostrada, actualizarla también
+        const activeFriend = document.querySelector('.friend-row[data-friend-id="'+friendId+'"]');
+        if (activeFriend) {
+            const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
+            await showFriendAffinity(friendId, friendName);
+        }
+
     } catch (error) {
-        console.error('Error increasing affinity:', error);
-        Swal.fire('Error', 'No se pudo aumentar la afinidad', 'error');
+        console.error('Error al aumentar afinidad:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'No se pudo aumentar la afinidad',
+            timer: 3000
+        });
     }
 }
             // Invitar a un nuevo amigo
