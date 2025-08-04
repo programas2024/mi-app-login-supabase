@@ -87,342 +87,364 @@
     </div>
 
     <script>
-        // Esperar a que todo esté cargado
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Configuración de Supabase
-            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-            
-            // Crear cliente Supabase
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            let currentUserId = null;
+    // Esperar a que todo esté cargado
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        // Crear cliente Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUserId = null;
 
-            // Función para determinar el nivel de afinidad
-            function getAffinityLevel(points) {
-                if (points >= 500) return { level: "Confidentes", color: "bg-purple-500", icon: "fas fa-handshake" };
-                if (points >= 100) return { level: "Amigos", color: "bg-pink-500", icon: "fas fa-heart" };
-                return { level: "Conocidos", color: "bg-blue-500", icon: "fas fa-user-friends" };
+        // Función para determinar el nivel de afinidad
+        function getAffinityLevel(points) {
+            if (points >= 500) return { level: "Confidentes", color: "bg-purple-500", icon: "fas fa-handshake" };
+            if (points >= 100) return { level: "Amigos", color: "bg-pink-500", icon: "fas fa-heart" };
+            return { level: "Conocidos", color: "bg-blue-500", icon: "fas fa-user-friends" };
+        }
+
+        // Cargar lista de amigos
+        async function loadFriendsList() {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
+                window.location.href = 'index.html';
+                return;
             }
+            
+            currentUserId = user.id;
+            
+            try {
+                // Obtener amigos con su afinidad
+                const { data: friends, error } = await supabase
+                    .from('friends')
+                    .select(`
+                        *,
+                        user1_profile:profiles!friends_user1_id_fkey(id, username, avatar_url),
+                        user2_profile:profiles!friends_user2_id_fkey(id, username, avatar_url)
+                    `)
+                    .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
 
-            // Cargar lista de amigos
-            async function loadFriendsList() {
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
-                if (authError || !user) {
-                    window.location.href = 'index.html';
+                if (error) throw error;
+
+                const friendsList = document.getElementById('friends-list');
+                if (!friendsList) {
+                    console.error('Elemento friends-list no encontrado');
                     return;
                 }
-                
-                currentUserId = user.id;
-                
-                try {
-                    // Obtener amigos con su afinidad
-                    const { data: friends, error } = await supabase
-                        .from('friends')
-                        .select(`
-                            *,
-                            user1_profile:profiles!friends_user1_id_fkey(id, username, avatar_url),
-                            user2_profile:profiles!friends_user2_id_fkey(id, username, avatar_url)
-                        `)
-                        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
 
-                    if (error) throw error;
+                friendsList.innerHTML = '';
 
-                    const friendsList = document.getElementById('friends-list');
-                    friendsList.innerHTML = '';
-
-                    if (friends.length === 0) {
-                        friendsList.innerHTML = `
-                            <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                    No tienes amigos aún. ¡Invita a alguien!
-                                </td>
-                            </tr>
-                        `;
-                        return;
-                    }
-
-                    friends.forEach(friendship => {
-                        const isUser1 = friendship.user1_id === user.id;
-                        const friend = isUser1 ? friendship.user2_profile : friendship.user1_profile;
-                        const affinityPoints = friendship.affinity_points || 0;
-                        const affinityLevel = getAffinityLevel(affinityPoints);
-
-                        const row = document.createElement('tr');
-                        row.className = 'friend-row';
-                        row.dataset.friendId = friend.id;
-                        row.innerHTML = `
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-full" src="${friend.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(friend.username)}" alt="${friend.username}">
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">${friend.username}</div>
-                                    </div>
-                                </div>
+                if (friends.length === 0) {
+                    friendsList.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                                No tienes amigos aún. ¡Invita a alguien!
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${affinityLevel.color} text-white">
-                                    <i class="${affinityLevel.icon} mr-1"></i> ${affinityLevel.level}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">${affinityPoints} pts</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button class="view-affinity-btn text-purple-600 hover:text-purple-900 mr-4" data-friend-id="${friend.id}" data-friend-name="${friend.username}">
-                                    <i class="fas fa-eye mr-1"></i> Ver
-                                </button>
-                                <button class="increase-affinity-btn text-pink-600 hover:text-pink-900" data-friend-id="${friend.id}">
-                                    <i class="fas fa-plus-circle mr-1"></i> Aumentar
-                                </button>
-                            </td>
-                        `;
-                        friendsList.appendChild(row);
-                    });
-
-                    // Añadir event listeners a los botones
-                    document.querySelectorAll('.view-affinity-btn').forEach(btn => {
-                        btn.addEventListener('click', () => showFriendAffinity(btn.dataset.friendId, btn.dataset.friendName));
-                    });
-
-                    document.querySelectorAll('.increase-affinity-btn').forEach(btn => {
-                        btn.addEventListener('click', () => increaseAffinity(btn.dataset.friendId));
-                    });
-
-                } catch (error) {
-                    console.error('Error loading friends:', error);
-                    Swal.fire('Error', 'No se pudo cargar la lista de amigos', 'error');
+                        </tr>
+                    `;
+                    return;
                 }
-            }
 
-            // Mostrar afinidad con un amigo específico
-            async function showFriendAffinity(friendId, friendName) {
-                try {
-                    const noActiveAffinity = document.getElementById('no-active-affinity');
-                    const activeAffinity = document.getElementById('active-affinity');
-                    
-                    if (!noActiveAffinity || !activeAffinity) {
-                        console.error('Elementos del DOM no encontrados');
-                        return;
-                    }
-
-                    // Obtener datos de afinidad
-                    const [user1, user2] = currentUserId < friendId 
-                        ? [currentUserId, friendId] 
-                        : [friendId, currentUserId];
-
-                    const { data: friendship, error } = await supabase
-                        .from('friends')
-                        .select('affinity_points')
-                        .eq('user1_id', user1)
-                        .eq('user2_id', user2)
-                        .single();
-
-                    if (error) throw error;
-                    if (!friendship) {
-                        noActiveAffinity.classList.remove('hidden');
-                        activeAffinity.innerHTML = '';
-                        return;
-                    }
-
+                friends.forEach(friendship => {
+                    const isUser1 = friendship.user1_id === user.id;
+                    const friend = isUser1 ? friendship.user2_profile : friendship.user1_profile;
                     const affinityPoints = friendship.affinity_points || 0;
                     const affinityLevel = getAffinityLevel(affinityPoints);
-                    const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
 
-                    noActiveAffinity.classList.add('hidden');
-                    activeAffinity.innerHTML = `
-                        <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
-                            <div class="flex items-center mb-4">
-                                <div class="flex-shrink-0 h-16 w-16">
-                                    <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
+                    const row = document.createElement('tr');
+                    row.className = 'friend-row';
+                    row.dataset.friendId = friend.id;
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="${friend.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(friend.username)}" alt="${friend.username}">
                                 </div>
                                 <div class="ml-4">
-                                    <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
-                                    <p class="text-sm text-gray-500">${affinityLevel.level}</p>
+                                    <div class="text-sm font-medium text-gray-900">${friend.username}</div>
                                 </div>
                             </div>
-                            
-                            <div class="mb-2 flex justify-between">
-                                <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
-                                <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${affinityLevel.color} text-white">
+                                <i class="${affinityLevel.icon} mr-1"></i> ${affinityLevel.level}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">${affinityPoints} pts</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button class="view-affinity-btn text-purple-600 hover:text-purple-900 mr-4" data-friend-id="${friend.id}" data-friend-name="${friend.username}">
+                                <i class="fas fa-eye mr-1"></i> Ver
+                            </button>
+                            <button class="increase-affinity-btn text-pink-600 hover:text-pink-900" data-friend-id="${friend.id}">
+                                <i class="fas fa-plus-circle mr-1"></i> Aumentar
+                            </button>
+                        </td>
+                    `;
+                    friendsList.appendChild(row);
+                });
+
+                // Añadir event listeners a los botones
+                document.querySelectorAll('.view-affinity-btn').forEach(btn => {
+                    btn.addEventListener('click', () => showFriendAffinity(btn.dataset.friendId, btn.dataset.friendName));
+                });
+
+                document.querySelectorAll('.increase-affinity-btn').forEach(btn => {
+                    btn.addEventListener('click', () => increaseAffinity(btn.dataset.friendId));
+                });
+
+            } catch (error) {
+                console.error('Error loading friends:', error);
+                Swal.fire('Error', 'No se pudo cargar la lista de amigos', 'error');
+            }
+        }
+
+        // Mostrar afinidad con un amigo específico
+        async function showFriendAffinity(friendId, friendName) {
+            try {
+                const noActiveAffinity = document.getElementById('no-active-affinity');
+                const activeAffinity = document.getElementById('active-affinity');
+                
+                if (!noActiveAffinity || !activeAffinity) {
+                    console.error('Elementos del DOM no encontrados');
+                    return;
+                }
+
+                // Obtener datos de afinidad
+                const [user1, user2] = currentUserId < friendId 
+                    ? [currentUserId, friendId] 
+                    : [friendId, currentUserId];
+
+                const { data: friendship, error } = await supabase
+                    .from('friends')
+                    .select('affinity_points')
+                    .eq('user1_id', user1)
+                    .eq('user2_id', user2)
+                    .single();
+
+                if (error) throw error;
+                
+                // Si no hay relación, mostrar mensaje
+                if (!friendship) {
+                    noActiveAffinity.classList.remove('hidden');
+                    activeAffinity.innerHTML = '';
+                    return;
+                }
+
+                const affinityPoints = friendship.affinity_points || 0;
+                const affinityLevel = getAffinityLevel(affinityPoints);
+                const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
+
+                noActiveAffinity.classList.add('hidden');
+                activeAffinity.innerHTML = `
+                    <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 h-16 w-16">
+                                <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
                             </div>
-                            
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
-                                <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
-                            </div>
-                            
-                            <div class="grid grid-cols-3 gap-4 text-center">
-                                <div>
-                                    <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
-                                    <div class="text-xs text-gray-500">Regalos</div>
-                                </div>
-                                <div>
-                                    <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
-                                    <div class="text-xs text-gray-500">Partidas</div>
-                                </div>
-                                <div>
-                                    <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
-                                    <div class="text-xs text-gray-500">Días</div>
-                                </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
+                                <p class="text-sm text-gray-500">${affinityLevel.level}</p>
                             </div>
                         </div>
-                    `;
-                } catch (error) {
-                    console.error('Error showing affinity:', error);
-                    Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
-                }
+                        
+                        <div class="mb-2 flex justify-between">
+                            <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
+                            <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                            <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
+                                <div class="text-xs text-gray-500">Regalos</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
+                                <div class="text-xs text-gray-500">Partidas</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
+                                <div class="text-xs text-gray-500">Días</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error showing affinity:', error);
+                Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
             }
+        }
 
-            // Aumentar afinidad con un amigo
-            async function increaseAffinity(friendId) {
-                try {
-                    const pointsToAdd = 10;
-                    const [user1, user2] = currentUserId < friendId 
-                        ? [currentUserId, friendId] 
-                        : [friendId, currentUserId];
+        // Aumentar afinidad con un amigo - VERSIÓN DEFINITIVA CORREGIDA
+        async function increaseAffinity(friendId) {
+            try {
+                const pointsToAdd = 10;
+                const [user1, user2] = currentUserId < friendId 
+                    ? [currentUserId, friendId] 
+                    : [friendId, currentUserId];
 
-                    // Verificar si existe la relación primero
-                    const { data: existing, error: fetchError } = await supabase
+                // Primero intentar actualizar
+                const { data: updated, error: updateError } = await supabase
+                    .from('friends')
+                    .update({ 
+                        affinity_points: supabase.rpc('increment', {
+                            val: pointsToAdd,
+                            col: 'affinity_points'
+                        })
+                    })
+                    .eq('user1_id', user1)
+                    .eq('user2_id', user2)
+                    .select('affinity_points')
+                    .single();
+
+                // Si no existe, crear nueva relación
+                if (updateError && updateError.code === 'PGRST116') {
+                    const { data: created, error: createError } = await supabase
                         .from('friends')
+                        .insert([{
+                            user1_id: user1,
+                            user2_id: user2,
+                            affinity_points: pointsToAdd
+                        }])
                         .select('affinity_points')
+                        .single();
+
+                    if (createError) throw createError;
+                    
+                    // Mostrar confirmación
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Nueva afinidad creada!',
+                        text: `Puntos iniciales: ${pointsToAdd}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } 
+                else if (updateError) {
+                    throw updateError;
+                }
+                else {
+                    // Mostrar confirmación de actualización
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '¡Afinidad aumentada!',
+                        text: `Nuevos puntos: ${updated.affinity_points}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+
+                // Actualizar la interfaz
+                await loadFriendsList();
+                
+                // Actualizar vista detallada si está abierta
+                const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
+                if (activeFriend) {
+                    const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
+                    await showFriendAffinity(friendId, friendName);
+                }
+
+            } catch (error) {
+                console.error('Error al aumentar afinidad:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'No se pudo aumentar la afinidad',
+                    timer: 3000
+                });
+            }
+        }
+
+        // Invitar a un nuevo amigo
+        async function inviteFriend() {
+            const { value: email } = await Swal.fire({
+                title: 'Invitar amigo',
+                input: 'email',
+                inputLabel: 'Correo electrónico del amigo',
+                inputPlaceholder: 'ejemplo@correo.com',
+                showCancelButton: true,
+                confirmButtonText: 'Enviar invitación',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (!value) return '¡Necesitas ingresar un correo!';
+                    if (!/^\S+@\S+\.\S+$/.test(value)) return 'Ingresa un correo válido';
+                }
+            });
+
+            if (email) {
+                try {
+                    // Primero buscamos el usuario por email
+                    const { data: userToInvite, error: userError } = await supabase
+                        .from('profiles')
+                        .select('id, username')
+                        .ilike('email', email)
+                        .single();
+
+                    if (userError || !userToInvite) {
+                        throw new Error('Usuario no encontrado');
+                    }
+
+                    // Verificamos si ya son amigos
+                    const [user1, user2] = currentUserId < userToInvite.id 
+                        ? [currentUserId, userToInvite.id] 
+                        : [userToInvite.id, currentUserId];
+
+                    const { data: existingFriendship, error: friendshipError } = await supabase
+                        .from('friends')
+                        .select('*')
                         .eq('user1_id', user1)
                         .eq('user2_id', user2)
                         .maybeSingle();
 
-                    if (fetchError) throw fetchError;
-
-                    let newPoints;
-                    if (!existing) {
-                        // Crear nueva relación
-                        const { error: createError } = await supabase
-                            .from('friends')
-                            .insert([{
-                                user1_id: user1,
-                                user2_id: user2,
-                                affinity_points: pointsToAdd
-                            }])
-                            .select('affinity_points')
-                            .single();
-
-                        if (createError) throw createError;
-                        newPoints = pointsToAdd;
-                    } else {
-                        // Actualizar relación existente
-                        newPoints = (existing.affinity_points || 0) + pointsToAdd;
-                        const { error: updateError } = await supabase
-                            .from('friends')
-                            .update({ affinity_points: newPoints })
-                            .eq('user1_id', user1)
-                            .eq('user2_id', user2)
-                            .select('affinity_points')
-                            .single();
-
-                        if (updateError) throw updateError;
+                    if (friendshipError) throw friendshipError;
+                    if (existingFriendship) {
+                        throw new Error('Ya son amigos');
                     }
 
-                    // Mostrar confirmación y actualizar UI
-                    await Swal.fire({
+                    // Enviamos la solicitud de amistad
+                    const { error: inviteError } = await supabase
+                        .from('friend_requests')
+                        .insert([{
+                            sender_id: currentUserId,
+                            receiver_id: userToInvite.id,
+                            status: 'pending'
+                        }]);
+
+                    if (inviteError) throw inviteError;
+
+                    Swal.fire({
                         icon: 'success',
-                        title: '¡Afinidad aumentada!',
-                        text: `Nuevos puntos: ${newPoints}`,
+                        title: 'Invitación enviada',
+                        text: `Se ha enviado una solicitud de amistad a ${userToInvite.username}`,
                         timer: 2000,
                         showConfirmButton: false
                     });
 
-                    await loadFriendsList();
-                    
-                    // Actualizar vista detallada si está abierta
-                    const activeFriend = document.querySelector(`[data-friend-id="${friendId}"]`);
-                    if (activeFriend) {
-                        const friendName = activeFriend.querySelector('.view-affinity-btn').dataset.friendName;
-                        await showFriendAffinity(friendId, friendName);
-                    }
-
+                    loadFriendsList();
                 } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.message || 'Error al actualizar afinidad',
-                        timer: 3000
-                    });
+                    console.error('Error inviting friend:', error);
+                    Swal.fire('Error', error.message || 'No se pudo enviar la invitación', 'error');
                 }
             }
+        }
 
-            // Invitar a un nuevo amigo
-            async function inviteFriend() {
-                const { value: email } = await Swal.fire({
-                    title: 'Invitar amigo',
-                    input: 'email',
-                    inputLabel: 'Correo electrónico del amigo',
-                    inputPlaceholder: 'ejemplo@correo.com',
-                    showCancelButton: true,
-                    confirmButtonText: 'Enviar invitación',
-                    cancelButtonText: 'Cancelar',
-                    inputValidator: (value) => {
-                        if (!value) return '¡Necesitas ingresar un correo!';
-                        if (!/^\S+@\S+\.\S+$/.test(value)) return 'Ingresa un correo válido';
-                    }
-                });
-
-                if (email) {
-                    try {
-                        // Primero buscamos el usuario por email
-                        const { data: userToInvite, error: userError } = await supabase
-                            .from('profiles')
-                            .select('id, username')
-                            .ilike('email', email)
-                            .single();
-
-                        if (userError || !userToInvite) {
-                            throw new Error('Usuario no encontrado');
-                        }
-
-                        // Verificamos si ya son amigos
-                        const { data: existingFriendship, error: friendshipError } = await supabase
-                            .from('friends')
-                            .select('*')
-                            .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${userToInvite.id}),and(user1_id.eq.${userToInvite.id},user2_id.eq.${currentUserId})`)
-                            .maybeSingle();
-
-                        if (friendshipError) throw friendshipError;
-                        if (existingFriendship) {
-                            throw new Error('Ya son amigos');
-                        }
-
-                        // Enviamos la solicitud de amistad
-                        const { error: inviteError } = await supabase
-                            .from('friend_requests')
-                            .insert([{
-                                sender_id: currentUserId,
-                                receiver_id: userToInvite.id,
-                                status: 'pending'
-                            }]);
-
-                        if (inviteError) throw inviteError;
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Invitación enviada',
-                            text: `Se ha enviado una solicitud de amistad a ${userToInvite.username}`,
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-
-                        loadFriendsList();
-                    } catch (error) {
-                        console.error('Error inviting friend:', error);
-                        Swal.fire('Error', error.message || 'No se pudo enviar la invitación', 'error');
-                    }
-                }
-            }
-
-            // Inicializar la página
-            loadFriendsList();
-            
-            document.getElementById('invite-friend-btn').addEventListener('click', inviteFriend);
-        });
-    </script>
+        // Inicializar la página
+        loadFriendsList();
+        
+        // Verificar que el botón existe antes de añadir el event listener
+        const inviteBtn = document.getElementById('invite-friend-btn');
+        if (inviteBtn) {
+            inviteBtn.addEventListener('click', inviteFriend);
+        } else {
+            console.error('Botón invite-friend-btn no encontrado');
+        }
+    });
+</script>
 </body>
 </html>
