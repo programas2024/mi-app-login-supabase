@@ -293,78 +293,91 @@
             }
         }
 
-        async function claimReward(friendId) {
-            try {
-                const [user1, user2] = currentUserId < friendId 
-                    ? [currentUserId, friendId] 
-                    : [friendId, currentUserId];
+       async function claimReward(friendId) {
+    try {
+        const [user1, user2] = currentUserId < friendId 
+            ? [currentUserId, friendId] 
+            : [friendId, currentUserId];
 
-                // Obtener los puntos de afinidad
-                const { data: friendship, error: getError } = await supabase
-                    .from('friends')
-                    .select('affinity_points')
-                    .eq('user1_id', user1)
-                    .eq('user2_id', user2)
-                    .single();
+        // Obtener los puntos de afinidad
+        const { data: friendship, error: getError } = await supabase
+            .from('friends')
+            .select('affinity_points')
+            .eq('user1_id', user1)
+            .eq('user2_id', user2)
+            .single();
 
-                if (getError) throw getError;
-                if (!friendship) throw new Error('No se encontró la relación de amistad');
+        if (getError) throw getError;
+        if (!friendship) throw new Error('No se encontró la relación de amistad');
 
-                const affinityPoints = friendship.affinity_points || 0;
-                const reward = calculateReward(affinityPoints);
+        const affinityPoints = friendship.affinity_points || 0;
+        const reward = calculateReward(affinityPoints);
 
-                if (reward <= 0) {
-                    throw new Error('No hay recompensa disponible para este nivel de afinidad');
-                }
-
-                // Mostrar confirmación con SweetAlert
-                const { isConfirmed } = await Swal.fire({
-                    title: '¿Reclamar recompensa?',
-                    html: `Recibirás <strong>${reward} oro</strong> por tu amistad`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: '¡Sí, reclamar!',
-                    cancelButtonText: 'Cancelar'
-                });
-
-                if (!isConfirmed) return;
-
-                // Actualizar el oro en el perfil del usuario
-                const { error: goldError } = await supabase
-                    .from('profiles')
-                    .update({ gold: supabase.rpc('increment', { val: reward }) })
-                    .eq('id', currentUserId);
-
-                if (goldError) throw goldError;
-
-                // Mostrar confirmación
-                await Swal.fire({
-                    icon: 'success',
-                    title: '¡Recompensa reclamada!',
-                    html: `Has recibido <strong>${reward} oro</strong> por tu amistad`,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-
-                // Actualizar la interfaz
-                await loadFriendsList();
-                
-                // Actualizar vista detallada si está abierta
-                const activeFriend = document.querySelector(`[data-friend-id="${friendId}"] .view-affinity-btn`);
-                if (activeFriend) {
-                    await showFriendAffinity(friendId, activeFriend.dataset.friendName);
-                }
-
-            } catch (error) {
-                console.error('Error al reclamar recompensa:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message || 'No se pudo reclamar la recompensa',
-                    timer: 3000
-                });
-            }
+        if (reward <= 0) {
+            throw new Error('No hay recompensa disponible para este nivel de afinidad');
         }
+
+        // Mostrar confirmación con SweetAlert
+        const { isConfirmed } = await Swal.fire({
+            title: '¿Reclamar recompensa?',
+            html: `Recibirás <strong>${reward} oro</strong> por tu amistad`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '¡Sí, reclamar!',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!isConfirmed) return;
+
+        // PRIMERO: Obtener el gold actual del usuario
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('gold')
+            .eq('id', currentUserId)
+            .single();
+
+        if (profileError) throw profileError;
+
+        // Calcular nuevo total
+        const currentGold = profile.gold || 0;
+        const newGold = currentGold + reward;
+
+        // SEGUNDO: Actualizar el gold en el perfil del usuario
+        const { error: goldError } = await supabase
+            .from('profiles')
+            .update({ gold: newGold })
+            .eq('id', currentUserId);
+
+        if (goldError) throw goldError;
+
+        // Mostrar confirmación
+        await Swal.fire({
+            icon: 'success',
+            title: '¡Recompensa reclamada!',
+            html: `Has recibido <strong>${reward} oro</strong><br>Total: <strong>${newGold} oro</strong>`,
+            timer: 2000,
+            showConfirmButton: false
+        });
+
+        // Actualizar la interfaz
+        await loadFriendsList();
+        
+        // Actualizar vista detallada si está abierta
+        const activeFriend = document.querySelector(`[data-friend-id="${friendId}"] .view-affinity-btn`);
+        if (activeFriend) {
+            await showFriendAffinity(friendId, activeFriend.dataset.friendName);
+        }
+
+    } catch (error) {
+        console.error('Error al reclamar recompensa:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'No se pudo reclamar la recompensa',
+            timer: 3000
+        });
+    }
+}
 
         async function inviteFriend() {
             const { value: email } = await Swal.fire({
