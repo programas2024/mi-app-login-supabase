@@ -201,85 +201,100 @@
             }
         }
 
-        // Mostrar afinidad con un amigo específico
-        async function showFriendAffinity(friendId, friendName) {
-            try {
-                const noActiveAffinity = document.getElementById('no-active-affinity');
-                const activeAffinity = document.getElementById('active-affinity');
-                
-                if (!noActiveAffinity || !activeAffinity) {
-                    console.error('Elementos del DOM no encontrados');
-                    return;
-                }
-
-                // Obtener datos de afinidad
-                const [user1, user2] = currentUserId < friendId 
-                    ? [currentUserId, friendId] 
-                    : [friendId, currentUserId];
-
-                const { data: friendship, error } = await supabase
-                    .from('friends')
-                    .select('affinity_points')
-                    .eq('user1_id', user1)
-                    .eq('user2_id', user2)
-                    .single();
-
-                if (error) throw error;
-                
-                // Si no hay relación, mostrar mensaje
-                if (!friendship) {
-                    noActiveAffinity.classList.remove('hidden');
-                    activeAffinity.innerHTML = '';
-                    return;
-                }
-
-                const affinityPoints = friendship.affinity_points || 0;
-                const affinityLevel = getAffinityLevel(affinityPoints);
-                const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
-
-                noActiveAffinity.classList.add('hidden');
-                activeAffinity.innerHTML = `
-                    <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
-                        <div class="flex items-center mb-4">
-                            <div class="flex-shrink-0 h-16 w-16">
-                                <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
-                                <p class="text-sm text-gray-500">${affinityLevel.level}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-2 flex justify-between">
-                            <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
-                            <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
-                        </div>
-                        
-                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
-                            <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
-                        </div>
-                        
-                        <div class="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                                <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
-                                <div class="text-xs text-gray-500">Regalos</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
-                                <div class="text-xs text-gray-500">Partidas</div>
-                            </div>
-                            <div>
-                                <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
-                                <div class="text-xs text-gray-500">Días</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error showing affinity:', error);
-                Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
-            }
+       async function showFriendAffinity(friendId, friendName) {
+    try {
+        // Verificar que los elementos del DOM existen
+        const noActiveAffinity = document.getElementById('no-active-affinity');
+        const activeAffinity = document.getElementById('active-affinity');
+        
+        if (!noActiveAffinity || !activeAffinity) {
+            console.error('Error: No se encontraron los elementos del DOM necesarios');
+            return;
         }
+
+        // Obtener datos de afinidad
+        const [user1, user2] = currentUserId < friendId 
+            ? [currentUserId, friendId] 
+            : [friendId, currentUserId];
+
+        const { data: friendship, error } = await supabase
+            .from('friends')
+            .select('affinity_points')
+            .eq('user1_id', user1)
+            .eq('user2_id', user2)
+            .single();
+
+        if (error) throw error;
+        
+        // Si no hay relación, mostrar el estado inicial
+        if (!friendship) {
+            noActiveAffinity.classList.remove('hidden');
+            activeAffinity.innerHTML = '';
+            return;
+        }
+
+        const affinityPoints = friendship.affinity_points || 0;
+        const affinityLevel = getAffinityLevel(affinityPoints);
+        const progressPercent = Math.min(100, (affinityPoints / 500) * 100);
+
+        // Construir el HTML de la tarjeta de afinidad
+        const affinityCardHTML = `
+            <div class="affinity-card bg-white p-6 rounded-lg border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="flex-shrink-0 h-16 w-16">
+                        <img class="h-16 w-16 rounded-full" src="https://ui-avatars.com/api/?name=${encodeURIComponent(friendName)}&background=random" alt="${friendName}">
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-gray-900">${friendName}</h3>
+                        <p class="text-sm text-gray-500">${affinityLevel.level}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-2 flex justify-between">
+                    <span class="text-sm font-medium text-gray-700">${affinityPoints} puntos</span>
+                    <span class="text-sm font-medium text-gray-700">${500 - affinityPoints} para próximo nivel</span>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                    <div class="affinity-progress h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-purple-600">${Math.floor(affinityPoints / 10)}</div>
+                        <div class="text-xs text-gray-500">Regalos</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-pink-600">${Math.floor(affinityPoints / 5)}</div>
+                        <div class="text-xs text-gray-500">Partidas</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-blue-600">${Math.floor(affinityPoints / 20)}</div>
+                        <div class="text-xs text-gray-500">Días</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Actualizar la UI de manera segura
+        noActiveAffinity.classList.add('hidden');
+        activeAffinity.innerHTML = affinityCardHTML;
+
+    } catch (error) {
+        console.error('Error al mostrar afinidad:', error);
+        
+        // Restaurar el estado inicial en caso de error
+        const noActiveAffinity = document.getElementById('no-active-affinity');
+        const activeAffinity = document.getElementById('active-affinity');
+        
+        if (noActiveAffinity && activeAffinity) {
+            noActiveAffinity.classList.remove('hidden');
+            activeAffinity.innerHTML = '';
+        }
+        
+        Swal.fire('Error', 'No se pudo cargar la afinidad con este amigo', 'error');
+    }
+}
 
        async function increaseAffinity(friendId) {
     try {
