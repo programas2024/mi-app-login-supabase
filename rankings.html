@@ -820,6 +820,51 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
+        /* Estilos para el rango misterioso y revelado */
+.rank-mystery-bg {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+    border: 2px solid #555555;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.rank-creator-bg {
+    background: linear-gradient(135deg, #000000 0%, #330066 50%, #000033 100%);
+    border: 2px solid gold;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+    animation: pulse-glow 2s infinite alternate;
+}
+
+.rank-mystery-icon {
+    color: #666666;
+}
+
+.rank-creator-icon {
+    color: gold;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+    }
+}
+
+/* Animación para el efecto de desbloqueo */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+.unlock-effect i {
+    animation: pulse 1s infinite alternate;
+}
     </style>
 </head>
 <body>
@@ -842,188 +887,346 @@
     </div>
 
     <script type="module">
-        // Importación de Supabase y Confetti
-        import { createClient } from 'https://esm.sh/@supabase/supabase-js';
-        import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm'; // Importación correcta para Confetti.js en módulos ES
+    // Importación de Supabase y Confetti
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+    import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm';
 
-        // --- Configuración de Supabase ---
-        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // --- Configuración de Supabase ---
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const RANGOS = [
-            // Rangos básicos (originales)
-            { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 0 },
-            { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 50 },
-            { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 80 },
-            { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 200 },
-            { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 300 },
-            { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 400 },
-            { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 500 },
-            { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 600 },
-            { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 700 },
-            { name: "Místico", minDiamonds: 1301, maxDiamonds: 2500, icon: "fa-star", iconClass: "rank-mystic-icon", bgClass: "rank-mystic-bg", rewardDiamonds: 1000 },
-            
-            // Nuevos rangos superiores
-            { name: "Diamante I", minDiamonds: 2501, maxDiamonds: 5000, icon: "fa-diamond", iconClass: "rank-diamond-icon", bgClass: "rank-diamond-bg", rewardDiamonds: 2000 },
-            { name: "Diamante II", minDiamonds: 5001, maxDiamonds: 10000, icon: "fa-diamond", iconClass: "rank-diamond-icon", bgClass: "rank-diamond-bg", rewardDiamonds: 3000 },
-            { name: "Élite", minDiamonds: 10001, maxDiamonds: 20000, icon: "fa-crown", iconClass: "rank-elite-icon", bgClass: "rank-elite-bg", rewardDiamonds: 5000 },
-            { name: "Legendario", minDiamonds: 20001, maxDiamonds: 40000, icon: "fa-shield-halved", iconClass: "rank-legendary-icon", bgClass: "rank-legendary-bg", rewardDiamonds: 8000 },
-            { name: "Celestial", minDiamonds: 40001, maxDiamonds: 70000, icon: "fa-cloud", iconClass: "rank-celestial-icon", bgClass: "rank-celestial-bg", rewardDiamonds: 12000 },
-            { name: "Arcángel", minDiamonds: 70001, maxDiamonds: 110000, icon: "fa-feather", iconClass: "rank-archangel-icon", bgClass: "rank-archangel-bg", rewardDiamonds: 18000 },
-            { name: "Titán", minDiamonds: 110001, maxDiamonds: 160000, icon: "fa-chess-queen", iconClass: "rank-titan-icon", bgClass: "rank-titan-bg", rewardDiamonds: 25000 },
-            { name: "Dragón", minDiamonds: 160001, maxDiamonds: 220000, icon: "fa-dragon", iconClass: "rank-dragon-icon", bgClass: "rank-dragon-bg", rewardDiamonds: 35000 },
-            { name: "Fénix", minDiamonds: 220001, maxDiamonds: 300000, icon: "fa-fire", iconClass: "rank-phoenix-icon", bgClass: "rank-phoenix-bg", rewardDiamonds: 50000 },
-            { name: "Omnipotente", minDiamonds: 300001, maxDiamonds: 500000, icon: "fa-bolt-lightning", iconClass: "rank-omnipotent-icon", bgClass: "rank-omnipotent-bg", rewardDiamonds: 75000 },
-            { name: "Infinito", minDiamonds: 500001, maxDiamonds: Infinity, icon: "fa-infinity", iconClass: "rank-infinite-icon", bgClass: "rank-infinite-bg", rewardDiamonds: 100000 }
-        ];
+    const RANGOS = [
+        // Rangos básicos (originales)
+        { name: "Bronce I", minDiamonds: 0, maxDiamonds: 20, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 0 },
+        { name: "Bronce II", minDiamonds: 21, maxDiamonds: 50, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 50 },
+        { name: "Bronce III", minDiamonds: 51, maxDiamonds: 100, icon: "fa-gem", iconClass: "rank-bronze-icon", bgClass: "rank-bronze-bg", rewardDiamonds: 80 },
+        { name: "Plata I", minDiamonds: 101, maxDiamonds: 170, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 200 },
+        { name: "Plata II", minDiamonds: 171, maxDiamonds: 250, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 300 },
+        { name: "Plata III", minDiamonds: 251, maxDiamonds: 360, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 400 },
+        { name: "Plata IV", minDiamonds: 361, maxDiamonds: 490, icon: "fa-gem", iconClass: "rank-silver-icon", bgClass: "rank-silver-bg", rewardDiamonds: 500 },
+        { name: "Oro I", minDiamonds: 491, maxDiamonds: 700, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 600 },
+        { name: "Oro II", minDiamonds: 701, maxDiamonds: 1300, icon: "fa-gem", iconClass: "rank-gold-icon", bgClass: "rank-gold-bg", rewardDiamonds: 700 },
+        { name: "Místico", minDiamonds: 1301, maxDiamonds: 2500, icon: "fa-star", iconClass: "rank-mystic-icon", bgClass: "rank-mystic-bg", rewardDiamonds: 1000 },
+        
+        // Nuevos rangos superiores
+        { name: "Diamante I", minDiamonds: 2501, maxDiamonds: 5000, icon: "fa-diamond", iconClass: "rank-diamond-icon", bgClass: "rank-diamond-bg", rewardDiamonds: 2000 },
+        { name: "Diamante II", minDiamonds: 5001, maxDiamonds: 10000, icon: "fa-diamond", iconClass: "rank-diamond-icon", bgClass: "rank-diamond-bg", rewardDiamonds: 3000 },
+        { name: "Élite", minDiamonds: 10001, maxDiamonds: 20000, icon: "fa-crown", iconClass: "rank-elite-icon", bgClass: "rank-elite-bg", rewardDiamonds: 5000 },
+        { name: "Legendario", minDiamonds: 20001, maxDiamonds: 40000, icon: "fa-shield-halved", iconClass: "rank-legendary-icon", bgClass: "rank-legendary-bg", rewardDiamonds: 8000 },
+        { name: "Celestial", minDiamonds: 40001, maxDiamonds: 70000, icon: "fa-cloud", iconClass: "rank-celestial-icon", bgClass: "rank-celestial-bg", rewardDiamonds: 12000 },
+        { name: "Arcángel", minDiamonds: 70001, maxDiamonds: 110000, icon: "fa-feather", iconClass: "rank-archangel-icon", bgClass: "rank-archangel-bg", rewardDiamonds: 18000 },
+        { name: "Titán", minDiamonds: 110001, maxDiamonds: 160000, icon: "fa-chess-queen", iconClass: "rank-titan-icon", bgClass: "rank-titan-bg", rewardDiamonds: 25000 },
+        { name: "Dragón", minDiamonds: 160001, maxDiamonds: 220000, icon: "fa-dragon", iconClass: "rank-dragon-icon", bgClass: "rank-dragon-bg", rewardDiamonds: 35000 },
+        { name: "Fénix", minDiamonds: 220001, maxDiamonds: 300000, icon: "fa-fire", iconClass: "rank-phoenix-icon", bgClass: "rank-phoenix-bg", rewardDiamonds: 50000 },
+        { name: "Omnipotente", minDiamonds: 300001, maxDiamonds: 500000, icon: "fa-bolt-lightning", iconClass: "rank-omnipotent-icon", bgClass: "rank-omnipotent-bg", rewardDiamonds: 75000 },
+        { name: "Infinito", minDiamonds: 500001, maxDiamonds: 999999, icon: "fa-infinity", iconClass: "rank-infinite-icon", bgClass: "rank-infinite-bg", rewardDiamonds: 100000 },
+        
+        // NUEVO RANGO MISTERIOSO (se revela solo cuando se alcanza)
+        { 
+            name: "???", 
+            realName: "Creador del Universo", 
+            minDiamonds: 1000000, 
+            maxDiamonds: Infinity, 
+            icon: "fa-question", 
+            realIcon: "fa-globe", 
+            iconClass: "rank-mystery-icon", 
+            realIconClass: "rank-creator-icon", 
+            bgClass: "rank-mystery-bg", 
+            realBgClass: "rank-creator-bg", 
+            rewardDiamonds: 1000000,
+            isMystery: true
+        }
+    ];
 
-        // Función para obtener el rango de un jugador basado en sus diamantes
-        function getPlayerRank(diamonds) {
-            for (let i = 0; i < RANGOS.length; i++) {
-                const rango = RANGOS[i];
-                if (diamonds >= rango.minDiamonds && diamonds <= rango.maxDiamonds) {
-                    return rango;
-                }
+    // Función para obtener el rango de un jugador basado en sus diamantes
+    function getPlayerRank(diamonds) {
+        for (let i = 0; i < RANGOS.length; i++) {
+            const rango = RANGOS[i];
+            if (diamonds >= rango.minDiamonds && diamonds <= rango.maxDiamonds) {
+                return rango;
             }
-            return null;
+        }
+        return null;
+    }
+
+    // Función para mostrar el efecto de revelación del rango misterioso
+    async function revealMysteryRank() {
+        // Efecto de sonido (opcional, necesitarías tener un archivo de sonido)
+        // const sound = new Audio('unlock-sound.mp3');
+        // sound.play();
+        
+        // Efecto de confeti especial
+        const end = Date.now() + 3000;
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        
+        const frame = () => {
+            confetti({
+                particleCount: 5,
+                angle: 60,
+                spread: 80,
+                origin: { x: 0 },
+                colors: colors,
+                shapes: ['circle', 'star'],
+                scalar: 1.5
+            });
+            
+            confetti({
+                particleCount: 5,
+                angle: 120,
+                spread: 80,
+                origin: { x: 1 },
+                colors: colors,
+                shapes: ['circle', 'star'],
+                scalar: 1.5
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        };
+        
+        frame();
+        
+        // Mostrar SweetAlert con animación especial
+        await Swal.fire({
+            title: '¡RANGO DESBLOQUEADO!',
+            html: `
+                <div class="unlock-effect" style="text-align: center;">
+                    <div style="font-size: 5rem; margin: 20px 0; animation: pulse 1s infinite alternate;">
+                        <i class="fas fa-globe" style="color: #00ff00;"></i>
+                    </div>
+                    <p style="font-size: 1.5em; color: #ffffff;">
+                        ¡Has alcanzado el rango máximo: <strong style="color: gold;">CREADOR DEL UNIVERSO</strong>!
+                    </p>
+                    <p style="font-size: 1.2em; color: #dddddd;">
+                        Recompensa: <strong style="color: #00ff00;">1,000,000 diamantes</strong>
+                    </p>
+                </div>
+            `,
+            width: 600,
+            padding: '3em',
+            background: 'radial-gradient(circle, rgba(0,0,30,0.9) 0%, rgba(0,0,0,0.9) 100%)',
+            backdrop: `
+                rgba(0,0,0,0.8)
+                url("https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif")
+                center top
+                no-repeat
+            `,
+            showConfirmButton: true,
+            confirmButtonText: '¡SOY LEGENDARIO!',
+            confirmButtonColor: '#ff0000',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            showClass: {
+                popup: 'animate__animated animate__zoomIn animate__faster'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__zoomOut animate__faster'
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const loaderElement = document.getElementById('loader-rankings');
+        const ranksListContainer = document.getElementById('ranks-list');
+
+        loaderElement.classList.remove('loader-hidden');
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            console.log('No hay usuario autenticado. Redirigiendo a index.html.');
+            window.location.href = 'index.html';
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const loaderElement = document.getElementById('loader-rankings');
-            const ranksListContainer = document.getElementById('ranks-list');
+        const backBtn = document.getElementById('back-to-dashboard-from-rankings');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+        }
 
-            loaderElement.classList.remove('loader-hidden');
+        try {
+            const { data: userProfile, error: profileError } = await supabase
+                .from('profiles')
+                .select('diamonds')
+                .eq('id', user.id)
+                .single();
 
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                console.log('No hay usuario autenticado. Redirigiendo a index.html.');
-                window.location.href = 'index.html';
-                return;
+            if (profileError) {
+                throw profileError;
             }
 
-            const backBtn = document.getElementById('back-to-dashboard-from-rankings');
-            if (backBtn) {
-                backBtn.addEventListener('click', () => {
-                    window.location.href = 'dashboard.html';
-                });
+            const currentUserDiamonds = userProfile ? userProfile.diamonds || 0 : 0;
+            const currentUserRank = getPlayerRank(currentUserDiamonds);
+
+            // Verificar si el jugador acaba de desbloquear el rango misterioso
+            const mysteryRank = RANGOS.find(r => r.isMystery);
+            const justUnlockedMystery = currentUserDiamonds >= mysteryRank.minDiamonds && 
+                                      !sessionStorage.getItem('mysteryRankRevealed');
+
+            if (justUnlockedMystery) {
+                sessionStorage.setItem('mysteryRankRevealed', 'true');
+                await revealMysteryRank();
             }
 
-            try {
-                const { data: userProfile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('diamonds')
-                    .eq('id', user.id)
-                    .single();
+            // Obtener recompensas ya reclamadas por el usuario
+            const { data: claimedRewards, error: claimedRewardsError } = await supabase
+                .from('claimed_rewards')
+                .select('rank_name')
+                .eq('user_id', user.id);
 
-                if (profileError) {
-                    throw profileError;
+            if (claimedRewardsError) {
+                throw claimedRewardsError;
+            }
+            const claimedRankNames = claimedRewards.map(r => r.rank_name);
+
+            ranksListContainer.innerHTML = '';
+
+            // Iterar sobre los rangos para mostrarlos y gestionar recompensas
+            RANGOS.forEach((rank, index) => {
+                // Para el rango misterioso, decidir si mostrarlo o no
+                if (rank.isMystery && currentUserDiamonds < rank.minDiamonds) {
+                    return; // No mostrar el rango misterioso si no se ha alcanzado
                 }
 
-                const currentUserDiamonds = userProfile ? userProfile.diamonds || 0 : 0;
-                const currentUserRank = getPlayerRank(currentUserDiamonds);
-
-                // Obtener recompensas ya reclamadas por el usuario
-                const { data: claimedRewards, error: claimedRewardsError } = await supabase
-                    .from('claimed_rewards')
-                    .select('rank_name')
-                    .eq('user_id', user.id);
-
-                if (claimedRewardsError) {
-                    throw claimedRewardsError;
-                }
-                const claimedRankNames = claimedRewards.map(r => r.rank_name);
-
-                ranksListContainer.innerHTML = '';
-
-                // Iterar sobre los rangos para mostrarlos y gestionar recompensas
-                RANGOS.forEach((rank, index) => {
-                    const li = document.createElement('li');
-                    li.classList.add('rank-item');
+                const li = document.createElement('li');
+                li.classList.add('rank-item');
+                
+                // Aplicar clases según si es el rango misterioso y si ha sido revelado
+                if (rank.isMystery) {
+                    if (currentUserDiamonds >= rank.minDiamonds) {
+                        li.classList.add(rank.realBgClass);
+                    } else {
+                        li.classList.add(rank.bgClass);
+                    }
+                } else {
                     li.classList.add(rank.bgClass);
+                }
 
-                    // Resaltar el rango actual del usuario
-                    if (currentUserRank && rank.name === currentUserRank.name) {
-                        li.classList.add('current-user-rank');
+                // Resaltar el rango actual del usuario
+                if (currentUserRank && 
+                    ((rank.isMystery && currentUserDiamonds >= rank.minDiamonds && currentUserRank.name === rank.realName) ||
+                     (!rank.isMystery && currentUserRank.name === rank.name))) {
+                    li.classList.add('current-user-rank');
+                }
+
+                const thresholdText = rank.maxDiamonds === Infinity
+                    ? `${rank.minDiamonds}+ Diamantes`
+                    : `${rank.minDiamonds} - ${rank.maxDiamonds} Diamantes`;
+
+                let rewardSection = '';
+                let rankNameDisplay = rank.name;
+                let rankIcon = rank.icon;
+
+                // Manejar la visualización del rango misterioso
+                if (rank.isMystery) {
+                    if (currentUserDiamonds >= rank.minDiamonds) {
+                        rankNameDisplay = rank.realName;
+                        rankIcon = rank.realIcon;
                     }
+                }
 
-                    const thresholdText = rank.maxDiamonds === Infinity
-                        ? `${rank.minDiamonds}+ Diamantes`
-                        : `${rank.minDiamonds} - ${rank.maxDiamonds} Diamantes`;
+                // Lógica para mostrar el botón de recompensa
+                const isRankReached = currentUserDiamonds >= rank.minDiamonds;
+                const hasReward = rank.rewardDiamonds > 0;
+                const isRewardClaimed = claimedRankNames.includes(rank.isMystery ? rank.realName : rank.name);
 
-                    let rewardSection = ''; // Inicializamos vacío
-
-                    // Lógica para mostrar el botón de recompensa
-                    const isRankReached = currentUserDiamonds >= rank.minDiamonds;
-                    const hasReward = rank.rewardDiamonds > 0;
-                    const isRewardClaimed = claimedRankNames.includes(rank.name);
-
-                    if (isRankReached && hasReward && !isRewardClaimed) {
-                        rewardSection = `
-                            <button class="claim-reward-btn" data-rank-name="${rank.name}" data-reward="${rank.rewardDiamonds}">
-                                <i class="fas fa-gem"></i> Reclamar ${rank.rewardDiamonds} Diamantes
-                            </button>
-                        `;
-                    } else if (isRankReached && hasReward && isRewardClaimed) {
-                        rewardSection = `
-                            <button class="claim-reward-btn" disabled>
-                                <i class="fas fa-check-circle"></i> Reclamado
-                            </button>
-                        `;
-                    } else if (hasReward && !isRankReached) {
-                        // Para rangos futuros con recompensa
-                         rewardSection = `
-                            <div class="rank-reward-info" style="color: #ffffff; font-size: 0.9em; margin-top: 15px;">
-                                Recompensa: ${rank.rewardDiamonds} <i class="fas fa-gem"></i>
-                            </div>
-                        `;
-                    }
-
-
-                    li.innerHTML = `
-                        <div class="rank-item-icon">
-                            <i class="fas ${rank.icon} ${rank.iconClass}"></i>
-                        </div>
-                        <div class="rank-item-info">
-                            <div class="rank-item-title">${rank.name}</div>
-                            <div class="rank-item-threshold">${thresholdText}</div>
-                            ${rewardSection}
+                if (isRankReached && hasReward && !isRewardClaimed) {
+                    rewardSection = `
+                        <button class="claim-reward-btn" data-rank-name="${rank.isMystery ? rank.realName : rank.name}" data-reward="${rank.rewardDiamonds}">
+                            <i class="fas fa-gem"></i> Reclamar ${rank.rewardDiamonds.toLocaleString()} Diamantes
+                        </button>
+                    `;
+                } else if (isRankReached && hasReward && isRewardClaimed) {
+                    rewardSection = `
+                        <button class="claim-reward-btn" disabled>
+                            <i class="fas fa-check-circle"></i> Reclamado
+                        </button>
+                    `;
+                } else if (hasReward && !isRankReached) {
+                    rewardSection = `
+                        <div class="rank-reward-info" style="color: #ffffff; font-size: 0.9em; margin-top: 15px;">
+                            Recompensa: ${rank.rewardDiamonds.toLocaleString()} <i class="fas fa-gem"></i>
                         </div>
                     `;
-                    ranksListContainer.appendChild(li);
-                });
+                }
 
-                // Añadir event listeners a los botones de reclamar
-                ranksListContainer.querySelectorAll('.claim-reward-btn:not([disabled])').forEach(button => {
-                    button.addEventListener('click', async (event) => {
-                        const btn = event.currentTarget;
-                        const rankName = btn.dataset.rankName;
-                        const rewardAmount = parseInt(btn.dataset.reward);
+                li.innerHTML = `
+                    <div class="rank-item-icon">
+                        <i class="fas ${rankIcon} ${rank.isMystery && currentUserDiamonds >= rank.minDiamonds ? rank.realIconClass : rank.iconClass}"></i>
+                    </div>
+                    <div class="rank-item-info">
+                        <div class="rank-item-title">${rankNameDisplay}</div>
+                        <div class="rank-item-threshold">${thresholdText}</div>
+                        ${rewardSection}
+                    </div>
+                `;
+                ranksListContainer.appendChild(li);
+            });
 
-                        btn.disabled = true; // Deshabilitar inmediatamente para evitar clics dobles
-                        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Reclamando...`;
+            // Añadir event listeners a los botones de reclamar
+            ranksListContainer.querySelectorAll('.claim-reward-btn:not([disabled])').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const btn = event.currentTarget;
+                    const rankName = btn.dataset.rankName;
+                    const rewardAmount = parseInt(btn.dataset.reward);
 
-                        try {
-                            // 1. Marcar la recompensa como reclamada
-                            const { error: insertError } = await supabase
-                                .from('claimed_rewards')
-                                .insert([{ user_id: user.id, rank_name: rankName }]);
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Reclamando...`;
 
-                            if (insertError) {
-                                throw insertError;
-                            }
+                    try {
+                        // 1. Marcar la recompensa como reclamada
+                        const { error: insertError } = await supabase
+                            .from('claimed_rewards')
+                            .insert([{ user_id: user.id, rank_name: rankName }]);
 
-                            // 2. Actualizar los diamantes del usuario
-                            const { data: updateProfile, error: updateError } = await supabase
-                                .from('profiles')
-                                .update({ diamonds: currentUserDiamonds + rewardAmount })
-                                .eq('id', user.id);
+                        if (insertError) {
+                            throw insertError;
+                        }
 
-                            if (updateError) {
-                                throw updateError;
-                            }
+                        // 2. Actualizar los diamantes del usuario
+                        const { data: updateProfile, error: updateError } = await supabase
+                            .from('profiles')
+                            .update({ diamonds: currentUserDiamonds + rewardAmount })
+                            .eq('id', user.id);
 
-                            // --- SWEETALERT CON EFECTOS DE DIAMANTES Y CONFETI ---
+                        if (updateError) {
+                            throw updateError;
+                        }
+
+                        // Mostrar SweetAlert especial para el rango misterioso
+                        if (rankName === "Creador del Universo") {
+                            await Swal.fire({
+                                title: '¡LOGRO ÉPICO!',
+                                html: `
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 5rem; margin: 20px 0; color: gold;">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <p style="font-size: 1.5em; color: #ffffff;">
+                                            ¡Has reclamado <strong style="color: gold;">1,000,000 diamantes</strong>!
+                                        </p>
+                                        <p style="font-size: 1.2em; color: #dddddd;">
+                                            Eres el <strong style="color: #00ff00;">Creador del Universo</strong>, el rango más alto posible.
+                                        </p>
+                                    </div>
+                                `,
+                                width: 600,
+                                background: 'radial-gradient(circle, rgba(20,0,50,0.9) 0%, rgba(0,0,0,0.9) 100%)',
+                                backdrop: `
+                                    rgba(0,0,0,0.7)
+                                    url("https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif")
+                                    center top
+                                    no-repeat
+                                `,
+                                confirmButtonText: '¡SOY EL MEJOR!',
+                                confirmButtonColor: '#ff0000'
+                            });
+                        } else {
+                            // SweetAlert normal para otros rangos
                             Swal.fire({
                                 title: '¡Recompensa Reclamada!',
                                 html: `
@@ -1031,7 +1234,7 @@
                                         <i class="fas fa-gem"></i>
                                     </div>
                                     <p style="font-size: 1.1em; margin-top: 10px; color: #bdc3c7;">
-                                        ¡Felicidades! Has recibido <strong style="color: #ffd700;">${rewardAmount} diamantes</strong>
+                                        ¡Felicidades! Has recibido <strong style="color: #ffd700;">${rewardAmount.toLocaleString()} diamantes</strong>
                                         por alcanzar el rango <strong style="color: #62c3e8;">${rankName}</strong>.
                                     </p>
                                 `,
@@ -1040,66 +1243,60 @@
                                     popup: 'swal2-dark-mode',
                                     confirmButton: 'swal2-confirm-button'
                                 },
-                                willOpen: () => { // Se ejecuta justo antes de que se muestre la alerta
-                                    // Ejecutar el efecto de confeti
+                                willOpen: () => {
                                     confetti({
-                                        particleCount: 150, // Más partículas
-                                        spread: 120, // Más dispersión
-                                        origin: { y: 0.6 }, // Desde la mitad de la pantalla hacia arriba
-                                        colors: ['#ffd700', '#ffffff', '#62c3e8', '#bb7aff'], // Colores de oro, blanco, azul, morado
-                                        shapes: ['star', 'circle', 'square'], // Formas de las partículas
-                                        scalar: 1.2, // Tamaño de las partículas
+                                        particleCount: 150,
+                                        spread: 120,
+                                        origin: { y: 0.6 },
+                                        colors: ['#ffd700', '#ffffff', '#62c3e8', '#bb7aff'],
+                                        shapes: ['star', 'circle', 'square'],
+                                        scalar: 1.2,
                                     });
                                 }
                             });
-
-                            // Actualizar el botón a "Reclamado"
-                            btn.innerHTML = `<i class="fas fa-check-circle"></i> Reclamado`;
-                            btn.style.background = '#cccccc'; // Estilo de deshabilitado permanente
-                            btn.style.cursor = 'not-allowed'; // Asegurarse que no se vea clickeable
-
-                            // Opcional: Si quieres recargar la página para que los diamantes se actualicen en el dashboard,
-                            // puedes descomentar la siguiente línea. Ten en cuenta que esto cerraría SweetAlert.
-                            // window.location.reload(); 
-
-                        } catch (error) {
-                            console.error('Error al reclamar recompensa:', error.message);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error al Reclamar',
-                                text: 'Hubo un problema al procesar tu recompensa. Intenta de nuevo. Detalles: ' + error.message, // Mostrar el error para depuración
-                                confirmButtonText: 'Entendido',
-                                customClass: {
-                                    popup: 'swal2-dark-mode',
-                                    confirmButton: 'swal2-confirm-button'
-                                }
-                            });
-                            // Revertir el estado del botón si hubo un error
-                            btn.disabled = false;
-                            btn.innerHTML = `<i class="fas fa-gem"></i> Reclamar ${rewardAmount} Diamantes`;
-                            btn.style.background = 'linear-gradient(to right, #28a745, #218838)'; // Restaurar el color
-                            btn.style.cursor = 'pointer';
                         }
-                    });
+
+                        btn.innerHTML = `<i class="fas fa-check-circle"></i> Reclamado`;
+                        btn.style.background = '#cccccc';
+                        btn.style.cursor = 'not-allowed';
+
+                    } catch (error) {
+                        console.error('Error al reclamar recompensa:', error.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error al Reclamar',
+                            text: 'Hubo un problema al procesar tu recompensa. Intenta de nuevo. Detalles: ' + error.message,
+                            confirmButtonText: 'Entendido',
+                            customClass: {
+                                popup: 'swal2-dark-mode',
+                                confirmButton: 'swal2-confirm-button'
+                            }
+                        });
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fas fa-gem"></i> Reclamar ${rewardAmount.toLocaleString()} Diamantes`;
+                        btn.style.background = 'linear-gradient(to right, #28a745, #218838)';
+                        btn.style.cursor = 'pointer';
+                    }
                 });
+            });
 
-                // Desplazar la vista hacia el rango actual si es visible
-                if (currentUserRank) {
-                    setTimeout(() => {
-                        const currentRankElement = document.querySelector('.rank-item.current-user-rank');
-                        if (currentRankElement) {
-                            currentRankElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-                        }
-                    }, 500); // Pequeño retraso para asegurar que el renderizado se complete
-                }
-
-            } catch (error) {
-                console.error('Error al cargar los rangos:', error.message);
-                ranksListContainer.innerHTML = `<p>Error al cargar los rangos: ${error.message}</p>`;
-            } finally {
-                loaderElement.classList.add('loader-hidden');
+            // Desplazar la vista hacia el rango actual si es visible
+            if (currentUserRank) {
+                setTimeout(() => {
+                    const currentRankElement = document.querySelector('.rank-item.current-user-rank');
+                    if (currentRankElement) {
+                        currentRankElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                    }
+                }, 500);
             }
-        });
-    </script>
+
+        } catch (error) {
+            console.error('Error al cargar los rangos:', error.message);
+            ranksListContainer.innerHTML = `<p>Error al cargar los rangos: ${error.message}</p>`;
+        } finally {
+            loaderElement.classList.add('loader-hidden');
+        }
+    });
+</script>
 </body>
 </html>
