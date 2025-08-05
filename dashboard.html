@@ -1248,6 +1248,7 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.15);
     position: relative;
+    overflow: hidden; /* Previene desbordamiento en bordes redondeados */
 }
 
 /* Efecto de borde luminoso */
@@ -1283,7 +1284,6 @@
     font-size: 0.9em;
     padding: 18px 25px;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    position: relative;
 }
 
 /* Celdas con efecto cristal */
@@ -1319,7 +1319,8 @@
     max-width: 450px;
     margin: 25px auto;
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Solo hidden, no auto o scroll */
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
 }
 
 .friend-profile-card::before {
@@ -1350,6 +1351,9 @@
     position: relative;
     display: inline-block;
     padding-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word; /* Previene desbordamiento de texto */
 }
 
 .friend-profile-card h3::after {
@@ -1378,6 +1382,7 @@
     padding: 12px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
+    word-wrap: break-word; /* Previene desbordamiento de texto */
 }
 
 .friend-profile-card p:last-child {
@@ -1415,7 +1420,8 @@
     
     .friend-profile-card {
         padding: 25px 20px;
-        margin: 20px auto;
+        margin: 20px 15px; /* Añadido margen lateral para móviles */
+        max-width: calc(100% - 30px); /* Asegura que no toque los bordes */
     }
     
     .friend-profile-card h3 {
@@ -1438,12 +1444,19 @@
     
     .friend-profile-card {
         padding: 20px 15px;
+        margin: 15px 10px;
+        max-width: calc(100% - 20px);
     }
     
     .friend-profile-card h3 {
         font-size: 1.6em;
     }
+    
+    .friend-profile-card p {
+        font-size: 1em;
+    }
 }
+
 /* Estilos para la ventana de chat */
 .chat-window {
     display: flex;
