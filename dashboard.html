@@ -489,7 +489,7 @@
     transform: translateY(-2px) !important;
 }
 
-/* Specific styles for friend requests list within the modal */
+/* Estilos específicos para la lista de solicitudes de amistad */
 .friend-requests-list {
     display: flex;
     flex-direction: column;
@@ -498,74 +498,125 @@
 }
 
 .friend-request-item {
-    background-color: #3a3a3a;
-    border-radius: 10px;
-    padding: 15px;
+    background: linear-gradient(145deg, #2e2e2e, #3a3a3a);
+    border-radius: 12px;
+    padding: 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid #555;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.friend-request-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    border-color: #555;
+}
+
+.friend-request-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #88b04b, #4CAF50);
 }
 
 .friend-request-item p {
     margin: 0;
-    color: #f0f0f0; /* Texto claro para la solicitud */
+    color: #f0f0f0;
     font-size: 1.05em;
     display: flex;
     align-items: center;
+    padding-left: 10px;
 }
 
 .friend-request-item p i {
-    margin-right: 10px;
-    color: #88b04b; /* Un verde bonito para los iconos */
+    margin-right: 12px;
+    color: #88b04b;
+    font-size: 1.1em;
 }
 
 .request-actions {
     display: flex;
-    justify-content: flex-end; /* Alinear botones a la derecha */
-    gap: 10px;
+    justify-content: flex-end;
+    gap: 12px;
     margin-top: 10px;
 }
 
 .request-actions button {
-    padding: 8px 15px;
+    padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.95em;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    gap: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .request-actions button i {
-    margin-right: 5px;
+    font-size: 1.1em;
 }
 
 .accept-btn {
-    background-color: #4CAF50; /* Verde */
+    background: linear-gradient(45deg, #4CAF50, #88b04b);
     color: white;
 }
 
 .accept-btn:hover {
-    background-color: #45a049;
-    transform: translateY(-1px);
+    background: linear-gradient(45deg, #45a049, #7ba343);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(76, 175, 80, 0.3);
 }
 
 .reject-btn {
-    background-color: #f44336; /* Rojo */
+    background: linear-gradient(45deg, #f44336, #e53935);
     color: white;
 }
 
 .reject-btn:hover {
-    background-color: #da190b;
-    transform: translateY(-1px);
+    background: linear-gradient(45deg, #da190b, #c62828);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(244, 67, 54, 0.3);
 }
 
+/* Efecto de acento en la tarjeta */
+.friend-request-item:hover::before {
+    width: 5px;
+    background: linear-gradient(to bottom, #a5d363, #4CAF50);
+}
+
+/* Texto del nombre de usuario resaltado */
+.friend-request-item strong {
+    color: #a5d363;
+    font-weight: 600;
+}
+
+/* Adaptación para móviles */
+@media (max-width: 600px) {
+    .friend-request-item {
+        padding: 1rem;
+    }
+    
+    .request-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .request-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+}
 /* Styles for messages modal (similar to friend requests) */
 .conversations-list {
     display: flex;
