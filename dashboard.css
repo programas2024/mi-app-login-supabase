@@ -202,9 +202,83 @@ body {
     color: rgba(255, 255, 255, 0.95);
 }
 
-/* COLORES ESPECÍFICOS PARA CADA BOTÓN */
 .btn-profile-custom {
+    /* Gradiente mejorado con transición suave */
     background-image: linear-gradient(135deg, var(--profile-gradient-start) 0%, var(--profile-gradient-end) 100%);
+    
+    /* Texto y bordes */
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 50px;
+    
+    /* Sombra y profundidad */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 
+               0 8px 25px rgba(var(--profile-gradient-start-rgb), 0.3);
+    
+    /* Transición para efectos hover */
+    transition: all 0.4s ease;
+    transform: translateY(0);
+    
+    /* Tamaño y espaciado */
+    padding: 12px 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto hover espectacular */
+.btn-profile-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 
+                0 12px 30px rgba(var(--profile-gradient-start-rgb), 0.4);
+    
+    /* Animación del gradiente */
+    background-size: 150% 150%;
+    animation: gradientShift 2s ease infinite;
+}
+
+/* Efecto de pulsación */
+.btn-profile-custom:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo al pasar el mouse */
+.btn-profile-custom::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.13);
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    transition: all 0.7s ease;
+}
+
+.btn-profile-custom:hover::after {
+    left: 100%;
+}
+
+/* Animación del gradiente */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 .btn-shop-custom {
     background-image: linear-gradient(135deg, var(--shop-gradient-start) 0%, var(--shop-gradient-end) 100%);
