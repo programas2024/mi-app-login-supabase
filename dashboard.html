@@ -1236,57 +1236,160 @@
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Estilos para la tabla de amigos */
+//* ===== TABLA DE AMIGOS (ESTILO CRISTALINO) ===== */
 .friends-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #34495e; /* Fondo de tabla */
-    border-radius: 10px;
-    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 25px;
+    background: rgba(44, 62, 80, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
 }
 
-.friends-table th, .friends-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #4a627a; /* Separador de filas */
-    color: #ecf0f1;
+/* Efecto de borde luminoso */
+.friends-table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, 
+              rgba(243, 156, 18, 0.3), 
+              rgba(52, 152, 219, 0.3)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, 
+                 linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
 }
 
+/* Encabezados con efecto dorado */
 .friends-table th {
-    background-color: #2c3e50; /* Encabezado de tabla más oscuro */
-    color: #f39c12; /* Texto del encabezado dorado */
-    font-weight: bold;
+    background: linear-gradient(135deg, 
+               rgba(243, 156, 18, 0.2), 
+               rgba(230, 126, 34, 0.2));
+    color: #f8d56b;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.9em;
+    letter-spacing: 1px;
+    font-size: 0.85em;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(243, 156, 18, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
-.friends-table tbody tr:hover {
-    background-color: #4a627a; /* Resaltar fila al pasar el ratón */
-    cursor: pointer;
+/* Efecto de brillo en encabezados */
+.friends-table th::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0) 55%
+    );
+    transform: rotate(30deg);
+    animation: headerShine 6s infinite;
 }
 
-.friends-table tbody tr:last-child {
-    border-bottom: none; /* No hay borde en la última fila */
+@keyframes headerShine {
+    0% { left: -50%; }
+    100% { left: 150%; }
 }
 
-/* Estilos para el perfil del amigo en el modal */
+/* Celdas con efecto cristal */
+.friends-table td {
+    padding: 14px 20px;
+    color: #ecf0f1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(52, 73, 94, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Efecto hover en filas */
+.friends-table tbody tr:hover td {
+    background: rgba(74, 98, 122, 0.6);
+    transform: translateX(5px);
+}
+
+/* Última fila sin borde */
+.friends-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== TARJETA DE PERFIL (ESTILO PREMIUM) ===== */
 .friend-profile-card {
     text-align: center;
-    padding: 10px 0;
+    padding: 25px;
+    background: rgba(44, 62, 80, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .friend-profile-card h3 {
-    color: #f39c12;
-    margin-bottom: 15px;
-    font-size: 1.6em;
+    color: #f8d56b;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    display: inline-block;
+}
+
+.friend-profile-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+              transparent, 
+              #f39c12, 
+              transparent);
 }
 
 .friend-profile-card p {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-size: 1.1em;
+    color: #ecf0f1;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Efectos especiales para móviles */
+@media (max-width: 768px) {
+    .friends-table {
+        border-radius: 12px;
+    }
+    
+    .friends-table th, 
+    .friends-table td {
+        padding: 12px 15px;
+    }
+    
+    .friend-profile-card {
+        padding: 20px;
+    }
+}
 /* Estilos para la ventana de chat */
 .chat-window {
     display: flex;
