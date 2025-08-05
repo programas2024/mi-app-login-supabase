@@ -996,7 +996,157 @@
 .btn-rank-custom:hover::after {
     left: 100%;
 }
+.btn-leaderboard-custom {
+    /* Gradiente realista de podio */
+    background: linear-gradient(
+        135deg, 
+        var(--leaderboard-start, #1a2a6c) 0%, 
+        var(--leaderboard-mid, #b21f1f) 50%, 
+        var(--leaderboard-end, #fdbb2d) 100%
+    );
+    
+    /* Estilo premium */
+    color: white !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    
+    /* Diseño espacial */
+    border: none;
+    border-radius: 10px;
+    padding: 14px 25px 14px 18px;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.2),
+                0 8px 25px rgba(253, 187, 45, 0.3),
+                inset 0 1px 1px rgba(255,255,255,0.2);
+    
+    /* Efectos y transiciones */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
 
+/* Contenedor del trofeo con efecto 3D */
+.trophy-container {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Icono de trofeo mejorado */
+.trophy-icon {
+    color: var(--trophy-color, #FFD700);
+    font-size: 1.4rem;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+    transition: all 0.5s ease;
+    position: relative;
+    z-index: 2;
+}
+
+/* Brillo del trofeo */
+.trophy-shine {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+/* Texto con efecto neon */
+.leaderboard-text {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* Punto de notificación pulsante */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #FFD700;
+    border-radius: 50%;
+    margin-left: auto;
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0.7);
+    animation: pulse 2s infinite;
+    opacity: 0.8;
+}
+
+/* Efecto hover épico */
+.btn-leaderboard-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 9px 0 rgba(0,0,0,0.2),
+                0 12px 35px rgba(253, 187, 45, 0.5),
+                inset 0 1px 1px rgba(255,255,255,0.3);
+}
+
+.btn-leaderboard-custom:hover .trophy-icon {
+    transform: scale(1.2) rotate(10deg);
+    color: #FFFACD;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
+}
+
+.btn-leaderboard-custom:hover .trophy-shine {
+    opacity: 0.6;
+}
+
+.btn-leaderboard-custom:hover .leaderboard-text {
+    letter-spacing: 1.2px;
+}
+
+/* Efecto activo */
+.btn-leaderboard-custom:active {
+    transform: translateY(2px);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+}
+
+/* Olas de energía (efecto hover) */
+.btn-leaderboard-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 0;
+}
+
+.btn-leaderboard-custom:hover::before {
+    opacity: 1;
+}
+
+/* Animación de pulso para notificaciones */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+    }
+}
+
+/* Variables CSS recomendadas */
+:root {
+    --leaderboard-start: #1a2a6c;  /* Azul rey */
+    --leaderboard-mid: #b21f1f;    /* Rojo intenso */
+    --leaderboard-end: #fdbb2d;     /* Amarillo dorado */
+    --trophy-color: #FFD700;       /* Oro puro */
+}
 </style>
 </head>
 <body>
@@ -1064,11 +1214,16 @@
         <span class="rank-badge">⭐</span> <!-- Opcional: muestra el rango actual -->
     </a>
 </div>
-                <div class="leaderboard-section">
-                    <a href="leaderboard-full.html" id="show-leaderboard-btn" class="sidebar-btn btn-custom-action" title="Ver la tabla de clasificación completa.">
-                        <i class="fas fa-trophy"></i> Clasificación
-                    </a>
-                </div>
+<div class="leaderboard-section">
+    <a href="leaderboard-full.html" id="show-leaderboard-btn" class="sidebar-btn btn-leaderboard-custom" title="Ver la tabla de clasificación completa.">
+        <span class="trophy-container">
+            <i class="fas fa-trophy trophy-icon"></i>
+            <span class="trophy-shine"></span>
+        </span>
+        <span class="leaderboard-text">Clasificación</span>
+        <span class="pulse-dot"></span>
+    </a>
+</div>
                 <div class="sidebar-links">
     <!-- Botón de Afinidad -->
     <a href="afinidad.html" id="affinity-btn" class="sidebar-btn" title="Ver tus conexiones de afinidad con otros jugadores">
