@@ -489,134 +489,159 @@
     transform: translateY(-2px) !important;
 }
 
-/* Estilos específicos para la lista de solicitudes de amistad */
-.friend-requests-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 10px;
+/* Estilos para el modal de solicitudes de amistad */
+.friend-requests-popup {
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2) !important;
+    border: 1px solid #ffe6f0 !important;
 }
 
-.friend-request-item {
-    background: linear-gradient(145deg, #2e2e2e, #3a3a3a);
+.friend-requests-title {
+    font-size: 1.8rem !important;
+    color: #333 !important;
+    margin-bottom: 1.5rem !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.text-gradient {
+    background: linear-gradient(45deg, #ff6b9d, #ff8e53);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
+}
+
+.friend-requests-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.friend-request-card {
+    background: white;
     border-radius: 12px;
     padding: 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid #444;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
 }
 
-.friend-request-item:hover {
+.friend-request-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    border-color: #555;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.15);
+    border-color: #ffd6e7;
 }
 
-.friend-request-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, #88b04b, #4CAF50);
-}
-
-.friend-request-item p {
-    margin: 0;
-    color: #f0f0f0;
-    font-size: 1.05em;
+.request-header {
     display: flex;
     align-items: center;
-    padding-left: 10px;
+    margin-bottom: 1rem;
 }
 
-.friend-request-item p i {
-    margin-right: 12px;
-    color: #88b04b;
-    font-size: 1.1em;
+.request-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.request-user-info {
+    margin-left: 15px;
+}
+
+.request-user-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.request-text {
+    margin: 3px 0 0;
+    color: #666;
+    font-size: 0.9rem;
 }
 
 .request-actions {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 10px;
+    justify-content: space-between;
+    gap: 10px;
 }
 
-.request-actions button {
-    padding: 0.6rem 1.2rem;
+.accept-btn, .reject-btn {
+    flex: 1;
+    padding: 0.6rem;
     border: none;
     border-radius: 8px;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 0.95em;
-    font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-}
-
-.request-actions button i {
-    font-size: 1.1em;
 }
 
 .accept-btn {
-    background: linear-gradient(45deg, #4CAF50, #88b04b);
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    color: white;
+}
+
+.reject-btn {
+    background: linear-gradient(45deg, #f44336, #ff5252);
     color: white;
 }
 
 .accept-btn:hover {
-    background: linear-gradient(45deg, #45a049, #7ba343);
+    background: linear-gradient(45deg, #3d8b40, #7cb342);
     transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(76, 175, 80, 0.3);
-}
-
-.reject-btn {
-    background: linear-gradient(45deg, #f44336, #e53935);
-    color: white;
 }
 
 .reject-btn:hover {
-    background: linear-gradient(45deg, #da190b, #c62828);
+    background: linear-gradient(45deg, #d32f2f, #ff3d3d);
     transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(244, 67, 54, 0.3);
 }
 
-/* Efecto de acento en la tarjeta */
-.friend-request-item:hover::before {
-    width: 5px;
-    background: linear-gradient(to bottom, #a5d363, #4CAF50);
+.no-requests {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
 }
 
-/* Texto del nombre de usuario resaltado */
-.friend-request-item strong {
-    color: #a5d363;
-    font-weight: 600;
+.no-requests-icon {
+    font-size: 3rem;
+    color: #ffb6c1;
+    margin-bottom: 1rem;
 }
 
-/* Adaptación para móviles */
-@media (max-width: 600px) {
-    .friend-request-item {
-        padding: 1rem;
-    }
-    
-    .request-actions {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .request-actions button {
-        width: 100%;
-        justify-content: center;
-    }
+.no-requests p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
 }
+
+.no-requests small {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* Scrollbar personalizada */
+.friend-requests-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.friend-requests-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.friend-requests-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(#ff9a9e, #fad0c4);
+    border-radius: 10px;
+}
+
 /* Styles for messages modal (similar to friend requests) */
 .conversations-list {
     display: flex;

@@ -107,9 +107,6 @@ export async function loadPendingFriendRequestsCount(currentUserId) {
     }
 }
 
-/**
- * Muestra un modal con las solicitudes de amistad pendientes para el usuario actual.
- */
 export async function showFriendRequestsModal() {
     const { data: { user } = {} } = await supabase.auth.getUser();
     if (!user) {
@@ -120,7 +117,7 @@ export async function showFriendRequestsModal() {
     try {
         const { data: requests, error } = await supabase
             .from('friend_requests')
-            .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username)')
+            .select('id, sender_id, sender_profile:profiles!friend_requests_sender_id_fkey(username, avatar_url)')
             .eq('receiver_id', user.id)
             .eq('status', 'pending');
 
@@ -128,33 +125,44 @@ export async function showFriendRequestsModal() {
 
         let requestsHtml = requests && requests.length > 0 
             ? requests.map(req => `
-                <div class="friend-request-item">
-                    <p><i class="fas fa-user-plus"></i> <strong>${req.sender_profile?.username || 'Usuario Desconocido'}</strong> te ha enviado una solicitud.</p>
+                <div class="friend-request-card">
+                    <div class="request-header">
+                        <img src="${req.sender_profile?.avatar_url || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" 
+                             alt="${req.sender_profile?.username || 'Usuario'}" 
+                             class="request-avatar">
+                        <div class="request-user-info">
+                            <h3>${req.sender_profile?.username || 'Usuario Desconocido'}</h3>
+                            <p class="request-text">Quiere ser tu amigo/a</p>
+                        </div>
+                    </div>
                     <div class="request-actions">
                         <button class="accept-btn" data-request-id="${req.id}" data-sender-id="${req.sender_id}" data-sender-username="${req.sender_profile?.username || 'Usuario Desconocido'}">
-                            <i class="fas fa-check"></i> Aceptar
+                            <i class="fas fa-check-circle"></i> Aceptar
                         </button>
                         <button class="reject-btn" data-request-id="${req.id}" data-sender-username="${req.sender_profile?.username || 'Usuario Desconocido'}">
-                            <i class="fas fa-times"></i> Rechazar
+                            <i class="fas fa-times-circle"></i> Rechazar
                         </button>
                     </div>
                 </div>
             `).join('')
-            : '<p>No tienes solicitudes de amistad pendientes.</p>';
+            : `<div class="no-requests">
+                  <i class="fas fa-user-friends no-requests-icon"></i>
+                  <p>No tienes solicitudes pendientes</p>
+                  <small>Cuando alguien te envíe una solicitud, aparecerá aquí</small>
+               </div>`;
 
         Swal.fire({
-            icon: 'info',
-            title: 'Solicitudes de Amistad',
-            html: `<div class="friend-requests-list">${requestsHtml}</div>`,
-            confirmButtonText: 'Cerrar',
+            title: '<strong>Solicitudes de <span class="text-gradient">Amistad</span></strong>',
+            html: `<div class="friend-requests-container">${requestsHtml}</div>`,
+            showConfirmButton: false,
+            background: '#fff9f9',
+            width: '500px',
+            padding: '2rem',
             customClass: {
-                popup: 'swal2-profile-popup',
-                title: 'swal2-profile-title',
-                htmlContainer: 'swal2-profile-html',
-                confirmButton: 'swal2-profile-confirm-button'
+                popup: 'friend-requests-popup',
+                title: 'friend-requests-title',
+                htmlContainer: 'friend-requests-content'
             },
-            buttonsStyling: false,
-            showCancelButton: false,
             didOpen: (popup) => {
                 popup.querySelectorAll('.accept-btn').forEach(button => {
                     button.addEventListener('click', async (event) => {
@@ -183,7 +191,6 @@ export async function showFriendRequestsModal() {
         showCustomSwal('error', 'Error', `No se pudieron cargar las solicitudes: ${error.message}`);
     }
 }
-
 /**
  * Acepta una solicitud de amistad y actualiza el estado en la base de datos.
  */
