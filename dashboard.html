@@ -819,7 +819,90 @@
     100% { transform: rotate(360deg); }
 }
 
-
+/* Estilos mejorados para los botones/enlaces */
+    .sidebar-btn {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        margin: 6px 0;
+        border-radius: 10px;
+        color: #4b5563;
+        text-decoration: none !important;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+    }
+    
+    .sidebar-btn:hover {
+        background-color: #f3f4f6;
+        transform: translateX(5px);
+    }
+    
+    .sidebar-btn i {
+        margin-right: 15px;
+        width: 24px;
+        text-align: center;
+        font-size: 22px;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-btn:hover i {
+        transform: scale(1.1);
+    }
+    
+    .notification-badge {
+        margin-left: auto;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: white;
+        border-radius: 9999px;
+        padding: 3px 9px;
+        font-size: 13px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    /* Colores específicos para cada ícono */
+    #affinity-btn i {
+        color: #ec4899; /* Rosa vibrante */
+        text-shadow: 0 2px 4px rgba(236, 72, 153, 0.2);
+    }
+    
+    #friend-requests-btn i {
+        color: #3b82f6; /* Azul brillante */
+        text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+    
+    #messages-btn i {
+        color: #10b981; /* Verde esmeralda */
+        text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Efecto hover con cambio de color */
+    #affinity-btn:hover {
+        color: #ec4899;
+    }
+    
+    #friend-requests-btn:hover {
+        color: #3b82f6;
+    }
+    
+    #messages-btn:hover {
+        color: #10b981;
+    }
+    
+    /* Efecto activo */
+    .sidebar-btn.active {
+        background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+        font-weight: 600;
+    }
 
 </style>
 </head>
@@ -838,14 +921,14 @@
 
             <aside class="sidebar-left">
                 <button id="profile-btn" class="sidebar-btn btn-profile-custom" title="Ver y editar tu perfil de jugador.">
-                    <i class="fas fa-user-edit"></i> Perfil
+                    <i class="fas fa-user-circle"></i> Perfil
                 </button>
                 <button id="shop-btn" class="sidebar-btn btn-shop-custom" title="Explorar la tienda del juego para comprar ítems.">
-                    <i class="fas fa-shopping-basket"></i> Tienda
+                    <i class="fas fa-store"></i> Tienda
                 </button>
                 <div class="game-actions">
                     <button id="chest-btn" class="sidebar-btn btn-chest-custom" title="Abre un cofre para obtener recompensas.">
-                        <i class="fas fa-gift"></i> Cofre Gratis
+                        <i class="fas fa-box-open"></i> Cofre Gratis
                     </button>
                 </div>
             </aside>
@@ -855,22 +938,22 @@
                     <div class="currency-card gold-card" title="Tu cantidad de Oro.">
                         <i class="fas fa-coins currency-icon gold-icon"></i>
                         <span id="gold-display" class="currency-value">0</span>
-                        <span class="currency-name">Oro</span>
+                        <span class="currency-name"></span>
                     </div>
                     <div class="currency-card diamond-card" title="Tu cantidad de Diamantes.">
                         <i class="fas fa-gem currency-icon diamond-icon"></i>
                         <span id="diamonds-display" class="currency-value">0</span>
-                        <span class="currency-name">Diamantes</span>
+                        <span class="currency-name"></span>
                     </div>
                 </div>
 
                 <a href="games.html" id="play-btn" class="btn-play" title="Comienza una nueva partida.">
-                    <i class="fas fa-gamepad"></i> Jugar
+                    <i class="fas fa-play-circle"></i> Jugar
                 </a>
 
                 <p class="game-slogan">¡Sumérgete en la aventura y conquista el mundo!</p>
 
-                <!-- Sección de Lista de Amigos -->
+                <!-- NUEVO: Sección de Lista de Amigos -->
                 <section class="friends-list-section dashboard-section">
                     <h2><i class="fas fa-users"></i> Tus Amigos</h2>
                     <div id="friends-list-container" class="friend-list-table-container">
@@ -883,7 +966,7 @@
             <aside class="sidebar-right">
                 <div class="ranking-section">
                     <a href="rankings.html" id="show-rankings-btn" class="sidebar-btn btn-custom-action" title="Ver tu rango y la clasificación de rangos.">
-                        <i class="fas fa-chess-king"></i> Tu Rango
+                        <i class="fas fa-trophy"></i> Tu Rango
                     </a>
                 </div>
 
@@ -892,22 +975,27 @@
                         <i class="fas fa-trophy"></i> Clasificación
                     </a>
                 </div>
-                
                 <div class="sidebar-links">
-                    <a href="afinidad.html" id="affinity-btn" class="sidebar-btn" title="Ver tus conexiones de afinidad con otros jugadores">
-                        <i class="fas fa-heart-circle-bolt"></i> Afinidad
-                    </a>
-                    
-                    <button id="friend-requests-btn" class="sidebar-btn" title="Gestiona tus solicitudes de amistad">
-                        <i class="fas fa-user-group"></i> Solicitudes
-                        <span id="friend-requests-badge" class="notification-badge hidden">0</span>
-                    </button>
-                    
-                    <button id="messages-btn" class="sidebar-btn" title="Envía y recibe mensajes de tus amigos">
-                        <i class="fas fa-comments"></i> Mensajes
-                        <span id="messages-badge" class="notification-badge hidden">0</span>
-                    </button>
-                </div>
+    <!-- Botón de Afinidad -->
+    <a href="afinidad.html" id="affinity-btn" class="sidebar-btn" title="Ver tus conexiones de afinidad con otros jugadores">
+        <i class="fas fa-heartbeat"></i>
+        <span>Afinidad</span>
+    </a>
+    
+    <!-- Botón de Solicitudes -->
+    <button id="friend-requests-btn" class="sidebar-btn" title="Gestiona tus solicitudes de amistad">
+        <i class="fas fa-user-friends"></i>
+        <span>Solicitudes</span>
+        <span id="friend-requests-badge" class="notification-badge hidden">0</span>
+    </button>
+    
+    <!-- Botón de Mensajes -->
+    <button id="messages-btn" class="sidebar-btn" title="Envía y recibe mensajes de tus amigos">
+        <i class="fas fa-comment-dots"></i>
+        <span>Mensajes</span>
+        <span id="messages-badge" class="notification-badge hidden">0</span>
+    </button>
+</div>
             </aside>
 
             <button id="logout-btn" class="btn btn-logout floating-logout-btn" title="Cerrar tu sesión actual.">
