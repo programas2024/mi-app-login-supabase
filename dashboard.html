@@ -94,130 +94,234 @@
         margin: 0 !important; /* Elimina cualquier margen que pueda estar reduciendo el ancho */
     }
 }
-/* --- Estilos para la SweetAlert del cofre (¡Más impactante y con blancos!) --- */
+/* --- Estilo VIP para SweetAlert del Cofre --- */
 .swal2-chest-popup {
-    background: linear-gradient(145deg, #191970, #4B0082) !important; /* Degradado de Azul Marino a Índigo */
-    color: #fff !important; /* ¡Cambiado a BLANCO para todo el texto principal del popup! */
-    border-radius: 25px !important; /* Bordes más redondeados */
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 5px #00BFFF !important; /* Doble sombra: profunda y un halo Azul Turquesa */
-    border: none !important;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important;
+    color: #fff !important;
+    border-radius: 30px !important;
+    box-shadow: 0 0 50px rgba(100, 149, 237, 0.8),
+                0 0 0 8px rgba(30, 144, 255, 0.5),
+                0 0 200px rgba(0, 191, 255, 0.3) inset !important;
+    border: 3px solid rgba(173, 216, 230, 0.5) !important;
     overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(10px);
 }
 
+/* Efecto de partículas cósmicas */
 .swal2-chest-popup::before {
     content: '';
     position: absolute;
-    top: -50px;
-    left: -50px;
-    right: -50px;
-    bottom: -50px;
-    background: radial-gradient(circle at center, rgba(173, 216, 230, 0.08) 0%, transparent 70%); /* Azul claro sutil */
-    animation: pulseBackgroundBlue 3s infinite alternate;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 25%);
+    animation: cosmicPulse 8s infinite alternate;
     z-index: -1;
 }
 
-@keyframes pulseBackgroundBlue {
-    0% { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(1.2); opacity: 1; }
+@keyframes cosmicPulse {
+    0% { opacity: 0.3; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.2); }
 }
 
+/* Título con efecto neón */
 .swal2-chest-popup .swal2-title {
-    color: #87CEFA !important; /* Título Azul Cielo claro (puedes ajustarlo a blanco puro si lo prefieres) */
+    color: #fff !important;
     font-weight: 900 !important;
-    text-shadow: 0 0 15px #87CEFA, 0 0 30px #ADD8E6 !important;
-    letter-spacing: 1px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(173, 216, 230, 0.3);
-}
-
-.swal2-chest-popup .swal2-html-container {
-    color: #fff !important; /* ¡Cambiado a BLANCO! */
-    font-size: 1.1em;
-}
-
-.swal2-chest-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 25px;
-    padding: 0 20px;
-}
-
-.swal2-chest-icon {
-    font-size: 6em;
-    color: #FFFFFF !important; /* ¡Cambiado a BLANCO! */
-    margin-bottom: 25px;
-    animation: fadeInScale 0.8s ease-out, shakeWobble 0.8s ease-out 0.8s;
-    text-shadow: 0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 255, 255, 0.5), 0 0 80px rgba(255, 255, 255, 0.3); /* Brillo blanco */
+    text-shadow: 
+        0 0 10px #fff,
+        0 0 20px #00bfff,
+        0 0 30px #0080ff,
+        0 0 40px #0011ff !important;
+    letter-spacing: 2px;
+    font-size: 2.5em;
+    margin-bottom: 20px;
     position: relative;
-    z-index: 1;
+    display: inline-block;
 }
 
-/* Animación de bamboleo para el icono del cofre */
-@keyframes shakeWobble {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
+.swal2-chest-popup .swal2-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, transparent);
+    animation: titleUnderline 3s infinite;
 }
 
+@keyframes titleUnderline {
+    0% { transform: scaleX(0); opacity: 0; }
+    50% { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(0); opacity: 0; }
+}
+
+/* Icono del cofre con efecto 3D */
+.swal2-chest-icon {
+    font-size: 8em !important;
+    color: #ffd700 !important;
+    margin: 30px 0;
+    text-shadow: 
+        0 0 20px #ffd700,
+        0 0 40px #ffae00,
+        0 0 60px #ff7700 !important;
+    transform-style: preserve-3d;
+    animation: 
+        chestFloat 3s ease-in-out infinite alternate,
+        chestGlow 2s ease-in-out infinite alternate;
+    position: relative;
+}
+
+@keyframes chestFloat {
+    0% { transform: translateY(0) rotateY(0deg); }
+    100% { transform: translateY(-20px) rotateY(20deg); }
+}
+
+@keyframes chestGlow {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)); }
+    100% { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9)); }
+}
+
+/* Items de recompensa con efecto holográfico */
 .swal2-reward-item {
     display: flex;
     align-items: center;
-    font-size: 1.5em;
-    margin: 8px 0;
-    color: #FFF; /* Mantiene blanco para los ítems de recompensa */
+    font-size: 1.8em;
+    margin: 15px 0;
+    color: #fff !important;
     font-weight: 700;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.3);
-    padding: 8px 15px;
-    border-radius: 10px;
-    width: 80%;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 15px 25px;
+    border-radius: 15px;
+    width: 90%;
     justify-content: center;
-    animation: slideInFromLeft 0.5s ease-out forwards;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+    animation: 
+        rewardAppear 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
+        rewardHologram 4s infinite alternate;
     opacity: 0;
-}
-.swal2-reward-item:nth-child(1) { animation-delay: 0.2s; }
-.swal2-reward-item:nth-child(2) { animation-delay: 0.4s; }
-
-@keyframes slideInFromLeft {
-    0% { transform: translateX(-50px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
+    transform: translateX(-100px);
 }
 
+@keyframes rewardAppear {
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes rewardHologram {
+    0% { box-shadow: 0 0 20px rgba(0, 191, 255, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(0, 191, 255, 0.6); }
+    100% { box-shadow: 0 0 20px rgba(0, 191, 255, 0.3); }
+}
+
+.swal2-reward-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: rewardShine 3s infinite;
+}
+
+@keyframes rewardShine {
+    100% { left: 100%; }
+}
 
 .swal2-reward-item .currency-icon {
-    font-size: 1.3em;
-    margin-right: 12px;
+    font-size: 1.5em;
+    margin-right: 15px;
+    animation: iconPulse 1.5s infinite alternate;
 }
 
-.swal2-reward-item .fa-coins { color: #FFD700; } /* El oro sigue siendo dorado para su identidad visual */
-.swal2-reward-item .fa-gem { color: #ADD8E6; } /* Diamantes en azul claro */
-
-@keyframes fadeInScale {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.2); }
 }
 
-/* Botón de confirmación de SweetAlert */
+/* Botón de confirmación estilo futurista */
 .swal2-chest-popup .swal2-confirm-button {
-    background: linear-gradient(to right, #4682B4, #6A5ACD) !important; /* Degradado de Azul Acero a Azul Pizarra Medio */
+    background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
     color: white !important;
-    border-radius: 12px !important;
-    padding: 12px 25px !important;
-    font-size: 1.2em !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;
+    border-radius: 50px !important;
+    padding: 15px 40px !important;
+    font-size: 1.3em !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
     border: none !important;
-    margin-top: 25px !important;
+    box-shadow: 
+        0 5px 15px rgba(0, 198, 255, 0.4),
+        0 0 0 2px rgba(255, 255, 255, 0.2) inset !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    position: relative;
+    overflow: hidden;
+    margin-top: 30px !important;
+    text-transform: uppercase;
 }
 
 .swal2-chest-popup .swal2-confirm-button:hover {
-    background: linear-gradient(to right, #6A5ACD, #8FBC8F) !important; /* Un toque verdoso al hacer hover para indicar "ok" */
-    transform: translateY(-3px) scale(1.05) !important;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
+    transform: translateY(-5px) scale(1.05) !important;
+    box-shadow: 
+        0 10px 25px rgba(0, 198, 255, 0.6),
+        0 0 0 2px rgba(255, 255, 255, 0.3) inset !important;
+    letter-spacing: 2px;
 }
 
+.swal2-chest-popup .swal2-confirm-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.8) 50%,
+        rgba(255, 255, 255, 0) 55%
+    );
+    transform: rotate(30deg);
+    animation: buttonShine 3s infinite;
+}
+
+@keyframes buttonShine {
+    0% { left: -50%; }
+    100% { left: 150%; }
+}
+
+/* Efecto de confeti al abrir el cofre */
+.swal2-chest-popup .swal2-success {
+    position: relative;
+    overflow: visible !important;
+}
+
+.swal2-chest-popup .swal2-success::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="%23ffd700" d="M5,0 L6,3 L9,3 L6.5,5 L7.5,8 L5,6 L2.5,8 L3.5,5 L1,3 L4,3 Z"/></svg>') repeat;
+    background-size: 20px 20px;
+    opacity: 0;
+    animation: confettiFall 3s ease-out forwards;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+@keyframes confettiFall {
+    0% { transform: translateY(-100vh); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
 /* --- Nuevos estilos para solicitudes de amistad y lista de amigos --- */
 .friend-requests-list, .friend-list-table-container {
     max-height: 350px; /* Ajusta la altura para scroll si hay muchas solicitudes/amigos */
