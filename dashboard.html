@@ -1236,18 +1236,18 @@
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-//* ===== TABLA DE AMIGOS (ESTILO CRISTALINO) ===== */
+//* ===== TABLA DE AMIGOS (ESTILO PREMIUM) ===== */
 .friends-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     margin-top: 25px;
-    background: rgba(44, 62, 80, 0.7);
-    backdrop-filter: blur(10px);
+    background: rgba(44, 62, 80, 0.85);
+    backdrop-filter: blur(8px);
     border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
 }
 
@@ -1260,12 +1260,13 @@
     right: 0;
     bottom: 0;
     border-radius: 16px;
-    border: 1px solid transparent;
+    padding: 1px;
     background: linear-gradient(135deg, 
-              rgba(243, 156, 18, 0.3), 
-              rgba(52, 152, 219, 0.3)) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, 
-                 linear-gradient(#fff 0 0);
+              rgba(243, 156, 18, 0.4), 
+              rgba(52, 152, 219, 0.4));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -1273,57 +1274,32 @@
 
 /* Encabezados con efecto dorado */
 .friends-table th {
-    background: linear-gradient(135deg, 
-               rgba(243, 156, 18, 0.2), 
-               rgba(230, 126, 34, 0.2));
+    background: linear-gradient(to right, 
+               rgba(243, 156, 18, 0.25), 
+               rgba(230, 126, 34, 0.25));
     color: #f8d56b;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 0.85em;
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(243, 156, 18, 0.3);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-size: 0.9em;
+    padding: 18px 25px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     position: relative;
-    overflow: hidden;
-}
-
-/* Efecto de brillo en encabezados */
-.friends-table th::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        to bottom right,
-        rgba(255, 255, 255, 0) 45%,
-        rgba(255, 255, 255, 0.15) 50%,
-        rgba(255, 255, 255, 0) 55%
-    );
-    transform: rotate(30deg);
-    animation: headerShine 6s infinite;
-}
-
-@keyframes headerShine {
-    0% { left: -50%; }
-    100% { left: 150%; }
 }
 
 /* Celdas con efecto cristal */
 .friends-table td {
-    padding: 14px 20px;
+    padding: 16px 25px;
     color: #ecf0f1;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(52, 73, 94, 0.4);
-    transition: all 0.3s ease;
-    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(52, 73, 94, 0.5);
+    transition: all 0.35s ease;
+    font-size: 0.95em;
 }
 
 /* Efecto hover en filas */
 .friends-table tbody tr:hover td {
-    background: rgba(74, 98, 122, 0.6);
+    background: rgba(74, 98, 122, 0.7);
     transform: translateX(5px);
 }
 
@@ -1332,63 +1308,141 @@
     border-bottom: none;
 }
 
-/* ===== TARJETA DE PERFIL (ESTILO PREMIUM) ===== */
+/* ===== TARJETA DE PERFIL (ESTILO LUJO) ===== */
 .friend-profile-card {
     text-align: center;
-    padding: 25px;
-    background: rgba(44, 62, 80, 0.8);
-    backdrop-filter: blur(8px);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(243, 156, 18, 0.3);
-    max-width: 400px;
-    margin: 0 auto;
-    overflow: visible; /* Eliminamos el scroll */
+    padding: 30px;
+    background: rgba(44, 62, 80, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(243, 156, 18, 0.4);
+    max-width: 450px;
+    margin: 25px auto;
+    position: relative;
+    overflow: visible;
+}
+
+.friend-profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, 
+              rgba(243, 156, 18, 0.4), 
+              rgba(52, 152, 219, 0.4));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
 }
 
 .friend-profile-card h3 {
     color: #f8d56b;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0 0 25px 0;
+    font-size: 2em;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     position: relative;
     display: inline-block;
+    padding-bottom: 10px;
 }
 
 .friend-profile-card h3::after {
     content: '';
     position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 100%;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
     height: 2px;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(to right, 
               transparent, 
               #f39c12, 
               transparent);
+    animation: underlinePulse 3s infinite;
+}
+
+@keyframes underlinePulse {
+    0%, 100% { opacity: 0.7; width: 50%; }
+    50% { opacity: 1; width: 60%; }
 }
 
 .friend-profile-card p {
-    margin-bottom: 12px;
-    font-size: 1.1em;
+    margin: 0 0 15px 0;
+    font-size: 1.15em;
     color: #ecf0f1;
-    padding: 8px 0;
+    padding: 12px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
 }
 
-/* Efectos especiales para móviles */
+.friend-profile-card p:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Efecto de partículas doradas */
+.friend-profile-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(243, 156, 18, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(243, 156, 18, 0.1) 0%, transparent 25%);
+    border-radius: 20px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .friends-table {
-        border-radius: 12px;
+        border-radius: 14px;
     }
     
+    .friends-table th, 
+    .friends-table td {
+        padding: 14px 20px;
+        font-size: 0.9em;
+    }
+    
+    .friend-profile-card {
+        padding: 25px 20px;
+        margin: 20px auto;
+    }
+    
+    .friend-profile-card h3 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    
+    .friend-profile-card p {
+        font-size: 1.1em;
+        padding: 10px 0;
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 480px) {
     .friends-table th, 
     .friends-table td {
         padding: 12px 15px;
     }
     
     .friend-profile-card {
-        padding: 20px;
+        padding: 20px 15px;
+    }
+    
+    .friend-profile-card h3 {
+        font-size: 1.6em;
     }
 }
 /* Estilos para la ventana de chat */
