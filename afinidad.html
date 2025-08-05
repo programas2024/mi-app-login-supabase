@@ -54,6 +54,28 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
         }
+
+        .reward-tier {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.reward-tier:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Efecto cristal para los niveles */
+.reward-tier::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+    border-radius: 0.75rem;
+    pointer-events: none;
+}
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -80,9 +102,9 @@
                 </div>
 
                 <div id="invite-section" class="text-center">
-                    <button id="invite-friend-btn" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all">
-                        <i class="fas fa-user-plus mr-2"></i> Invitar Amigo
-                    </button>
+                    <button onclick="showAffinityRewards()" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+    <i class="fas fa-gift mr-2"></i> Ver Recompensas
+</button>
                 </div>
             </div>
 
@@ -452,195 +474,89 @@
                 });
             }
         }
-
-       async function inviteFriend() {
-    const { value: username } = await Swal.fire({
-        title: '¡Haz nuevos amigos!',
-        input: 'text',
-        inputLabel: 'Busca a un jugador por su nombre',
-        inputPlaceholder: 'Escribe el nombre aquí...',
-        showCancelButton: true,
-        confirmButtonText: 'Enviar solicitud de amistad 💌',
-        cancelButtonText: 'Tal vez después',
-        inputValidator: (value) => {
-            if (!value) return '¡Oh oh! Necesitamos un nombre para buscar a tu amigo';
-            if (value.length < 3) return 'El nombre es muy corto, intenta con al menos 3 letras';
+function showAffinityRewards() {
+    Swal.fire({
+        title: '<span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 text-3xl font-bold">¡Aumenta tu Afinidad!</span>',
+        html: `
+            <div class="text-center mb-6">
+                <p class="text-lg text-gray-700 mb-6">Fortalece tus amistades y desbloquea recompensas épicas</p>
+                
+                <!-- Nivel 1 -->
+                <div class="reward-tier bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 mb-4 transform hover:scale-105 transition-all">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-medal text-blue-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-blue-800">Nivel Confidentes</h3>
+                                <p class="text-sm text-blue-600">100 Puntos de Afinidad</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+                            <i class="fas fa-coins text-yellow-500 mr-2"></i>
+                            <span class="font-bold text-yellow-700">300 Oro</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nivel 2 -->
+                <div class="reward-tier bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100 mb-4 transform hover:scale-105 transition-all">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-star text-purple-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-purple-800">Nivel Hermanos</h3>
+                                <p class="text-sm text-purple-600">200 Puntos de Afinidad</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+                            <i class="fas fa-gem text-yellow-500 mr-2"></i>
+                            <span class="font-bold text-yellow-700">500 Oro</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nivel 3 -->
+                <div class="reward-tier bg-gradient-to-r from-pink-50 to-red-50 p-4 rounded-xl border border-pink-100 mb-6 transform hover:scale-105 transition-all">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-pink-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-crown text-pink-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-pink-800">Nivel Leyenda</h3>
+                                <p class="text-sm text-pink-600">400 Puntos de Afinidad</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-yellow-100 px-3 py-1 rounded-full border border-yellow-200">
+                            <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                            <span class="font-bold text-yellow-700">800 Oro</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-xs text-gray-400 mt-4">
+                    <i class="fas fa-info-circle mr-1"></i> Gana 1 punto cada 6 horas interactuando
+                </div>
+            </div>
+        `,
+        showConfirmButton: true,
+        confirmButtonText: '<i class="fas fa-check-circle mr-2"></i> ¡Entendido!',
+        confirmButtonColor: '#7e22ce',
+        background: '#faf5ff',
+        width: '500px',
+        customClass: {
+            popup: 'animate__animated animate__fadeIn animate__faster',
+            closeButton: 'hover:bg-purple-100 rounded-full p-1'
         },
-        background: '#f8fafc',
-        imageUrl: 'https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_640.png',
-        imageWidth: 100,
-        imageAlt: 'Avatar de amigo',
-        footer: '<b>Tip:</b> Entre más amigos, más recompensas podrás ganar'
+        showCloseButton: true,
+        closeButtonHtml: '<i class="fas fa-times text-purple-400"></i>'
     });
-
-    if (username) {
-        try {
-            // Verificar que no sea el propio usuario
-            const { data: { user } } = await supabase.auth.getUser();
-            const { data: currentProfile } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', user.id)
-                .single();
-
-            if (currentProfile?.username?.toLowerCase() === username.toLowerCase()) {
-                await Swal.fire({
-                    icon: 'info',
-                    title: '¡Eres increíble tal como eres!',
-                    html: `Pero no necesitas enviarte una solicitud a ti mismo.<br><br>¿Por qué no buscas a otro jugador para hacer equipo?`,
-                    confirmButtonText: '¡Entendido! 😊',
-                    background: '#f0fdf4',
-                    confirmButtonColor: '#4ade80'
-                });
-                return;
-            }
-
-            // Buscar usuario por username (case insensitive)
-            const { data: userToInvite, error: userError } = await supabase
-                .from('profiles')
-                .select('id, username, avatar_url')
-                .ilike('username', username)
-                .single();
-
-            if (userError || !userToInvite) {
-                await Swal.fire({
-                    icon: 'question',
-                    title: '¡Ups! No encontramos a este jugador',
-                    html: `El nombre <b>"${username}"</b> no está registrado todavía.<br><br>
-                           <i>¿Seguro que lo escribiste correctamente?</i><br><br>
-                           ¡Anímales a unirse a la aventura!`,
-                    confirmButtonText: 'Intentar de nuevo',
-                    showCancelButton: true,
-                    cancelButtonText: 'Ver mis amigos',
-                    background: '#fffbeb',
-                    confirmButtonColor: '#f59e0b'
-                });
-                return;
-            }
-
-            // Verificar si ya son amigos
-            const [user1, user2] = user.id < userToInvite.id 
-                ? [user.id, userToInvite.id] 
-                : [userToInvite.id, user.id];
-
-            const { data: existingFriendship } = await supabase
-                .from('friends')
-                .select('*')
-                .eq('user1_id', user1)
-                .eq('user2_id', user2)
-                .maybeSingle();
-
-            if (existingFriendship) {
-                await Swal.fire({
-                    title: '¡Ya son amigos! 🎉',
-                    html: `¡Genial! Ya tienes a <b>${userToInvite.username}</b> en tu lista de amigos.<br><br>
-                           ¿Por qué no aumentas vuestra afinidad jugando juntos?`,
-                    imageUrl: userToInvite.avatar_url || 'https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_640.png',
-                    imageWidth: 100,
-                    imageAlt: 'Avatar de amigo',
-                    confirmButtonText: '¡A jugar! 🎮',
-                    background: '#ecfdf5',
-                    confirmButtonColor: '#10b981'
-                });
-                return;
-            }
-
-            // Verificar solicitudes existentes
-            const { data: existingRequest } = await supabase
-                .from('friend_requests')
-                .select('*')
-                .or(`and(sender_id.eq.${user.id},receiver_id.eq.${userToInvite.id}),and(sender_id.eq.${userToInvite.id},receiver_id.eq.${user.id})`)
-                .maybeSingle();
-
-            if (existingRequest) {
-                if (existingRequest.sender_id === user.id) {
-                    await Swal.fire({
-                        icon: 'info',
-                        title: 'Paciencia, gran guerrero ⏳',
-                        html: `Ya le enviaste una solicitud a <b>${userToInvite.username}</b>.<br><br>
-                               ¡Espera a que acepte tu invitación! Mientras tanto, puedes conocer a otros jugadores.`,
-                        confirmButtonText: '¡Entendido!',
-                        background: '#eff6ff',
-                        confirmButtonColor: '#3b82f6'
-                    });
-                } else {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: '¡Tienes una sorpresa! 🎁',
-                        html: `<b>${userToInvite.username}</b> ya te envió una solicitud de amistad.<br><br>
-                               ¡Acepta su invitación para empezar a ganar recompensas juntos!`,
-                        confirmButtonText: 'Ver solicitud',
-                        showCancelButton: true,
-                        cancelButtonText: 'Más tarde',
-                        background: '#fef2f2',
-                        confirmButtonColor: '#ef4444'
-                    });
-                    // Aquí podrías redirigir a la pantalla de solicitudes pendientes
-                }
-                return;
-            }
-
-            // Confirmación final con estilo
-            const { isConfirmed } = await Swal.fire({
-                title: `¿Enviar solicitud a ${userToInvite.username}?`,
-                html: `¡Haz equipo y ganen recompensas juntos!<br><br>
-                       <img src="${userToInvite.avatar_url || 'https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_640.png'}" 
-                            width="80" style="border-radius:50%;border:3px solid #c7d2fe">`,
-                showCancelButton: true,
-                confirmButtonText: '¡Sí, enviar solicitud! ✨',
-                cancelButtonText: 'Cancelar',
-                background: '#f5f3ff',
-                confirmButtonColor: '#8b5cf6',
-                footer: 'Puedes enviar hasta 10 solicitudes por día'
-            });
-
-            if (!isConfirmed) return;
-
-            // Enviar la solicitud
-            const { error: inviteError } = await supabase
-                .from('friend_requests')
-                .insert([{
-                    sender_id: user.id,
-                    receiver_id: userToInvite.id,
-                    status: 'pending',
-                    created_at: new Date().toISOString()
-                }]);
-
-            if (inviteError) throw inviteError;
-
-            // Mensaje de éxito con animación
-            await Swal.fire({
-                title: '¡Solicitud enviada con éxito! 🎉',
-                html: `<div style="position:relative;">
-                         <img src="${userToInvite.avatar_url || 'https://cdn.pixabay.com/photo/2017/01/31/21/23/avatar-2027366_640.png'}" 
-                              width="100" style="border-radius:50%;border:4px solid #a5b4fc">
-                         <div style="position:absolute; bottom:-10px; right:-10px; background:#4ade80; color:white; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; font-size:20px;">✓</div>
-                       </div>
-                       <br>
-                       <b>${userToInvite.username}</b> recibió tu solicitud.<br><br>
-                       <small>Cuando acepte, podrán comenzar a ganar puntos de afinidad juntos</small>`,
-                showConfirmButton: false,
-                timer: 2500,
-                background: '#eef2ff'
-            });
-
-            // Actualizar lista de amigos
-            loadFriendsList();
-
-        } catch (error) {
-            console.error('Error:', error);
-            await Swal.fire({
-                icon: 'error',
-                title: '¡Rayos! Algo salió mal',
-                html: `No pudimos enviar tu solicitud en este momento.<br><br>
-                       <small>Pero no te rindas, inténtalo de nuevo más tarde.</small>`,
-                confirmButtonText: 'Entendido',
-                background: '#fef2f2',
-                confirmButtonColor: '#ef4444'
-            });
-        }
-    }
 }
+      
         // Inicializar la página
         loadFriendsList();
         
