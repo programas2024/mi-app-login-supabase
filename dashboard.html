@@ -904,6 +904,99 @@
         font-weight: 600;
     }
 
+    .btn-rank-custom {
+    /* Gradiente dorado para el rango */
+    background-image: linear-gradient(
+        135deg, 
+        var(--rank-gradient-start, #FFD700) 0%, 
+        var(--rank-gradient-end, #C9B037) 100%
+    );
+    
+    /* Estilo del texto */
+    color: #2c3e50 !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    
+    /* Bordes y espaciado */
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px 12px 15px;
+    
+    /* Sombra y efectos */
+    box-shadow: 0 4px 0 rgba(201, 176, 55, 0.6),
+                0 6px 12px rgba(255, 215, 0, 0.3);
+    
+    /* Transición y alineación */
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Icono de trofeo personalizado */
+.trophy-icon {
+    color: #fff;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    transform: scale(1);
+}
+
+/* Texto del rango */
+.rank-text {
+    position: relative;
+    z-index: 2;
+}
+
+/* Badge opcional para mostrar el nivel actual */
+.rank-badge {
+    background: #2c3e50;
+    color: #FFD700;
+    border-radius: 50px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
+/* Efecto hover */
+.btn-rank-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(201, 176, 55, 0.6),
+                0 8px 16px rgba(255, 215, 0, 0.4);
+}
+
+.btn-rank-custom:hover .trophy-icon {
+    transform: scale(1.1) rotate(-15deg);
+    color: #fffacd;
+}
+
+/* Efecto activo/pulsación */
+.btn-rank-custom:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(201, 176, 55, 0.6);
+}
+
+/* Efecto de brillo dorado */
+.btn-rank-custom::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(30deg);
+    transition: all 0.7s ease;
+}
+
+.btn-rank-custom:hover::after {
+    left: 100%;
+}
+
 </style>
 </head>
 <body>
@@ -965,11 +1058,12 @@
 
             <aside class="sidebar-right">
                 <div class="ranking-section">
-                    <a href="rankings.html" id="show-rankings-btn" class="sidebar-btn btn-custom-action" title="Ver tu rango y la clasificación de rangos.">
-                        <i class="fas fa-trophy"></i> Tu Rango
-                    </a>
-                </div>
-
+    <a href="rankings.html" id="show-rankings-btn" class="sidebar-btn btn-rank-custom" title="Ver tu rango y la clasificación de rangos.">
+        <i class="fas fa-trophy trophy-icon"></i> 
+        <span class="rank-text">Tu Rango</span>
+        <span class="rank-badge">⭐</span> <!-- Opcional: muestra el rango actual -->
+    </a>
+</div>
                 <div class="leaderboard-section">
                     <a href="leaderboard-full.html" id="show-leaderboard-btn" class="sidebar-btn btn-custom-action" title="Ver la tabla de clasificación completa.">
                         <i class="fas fa-trophy"></i> Clasificación
