@@ -819,17 +819,17 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Estilos para los botones/enlaces */
+/* Estilos mejorados para los botones/enlaces */
     .sidebar-btn {
         display: flex;
         align-items: center;
-        padding: 10px 15px;
-        margin: 5px 0;
-        border-radius: 8px;
+        padding: 12px 20px;
+        margin: 6px 0;
+        border-radius: 10px;
         color: #4b5563;
-        text-decoration: none !important; /* Elimina el subrayado */
+        text-decoration: none !important;
         transition: all 0.3s ease;
-        font-size: 15px;
+        font-size: 16px;
         width: 100%;
         background: transparent;
         border: none;
@@ -839,36 +839,69 @@
     
     .sidebar-btn:hover {
         background-color: #f3f4f6;
-        color: #7c3aed;
-        transform: translateX(3px);
+        transform: translateX(5px);
     }
     
     .sidebar-btn i {
-        margin-right: 12px;
-        width: 20px;
+        margin-right: 15px;
+        width: 24px;
         text-align: center;
-        font-size: 18px;
+        font-size: 22px;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar-btn:hover i {
+        transform: scale(1.1);
     }
     
     .notification-badge {
         margin-left: auto;
-        background-color: #ef4444;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
         color: white;
         border-radius: 9999px;
-        padding: 2px 8px;
-        font-size: 12px;
+        padding: 3px 9px;
+        font-size: 13px;
         font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .hidden {
         display: none;
     }
     
-    /* Estilo especial para el botón activo */
+    /* Colores específicos para cada ícono */
+    #affinity-btn i {
+        color: #ec4899; /* Rosa vibrante */
+        text-shadow: 0 2px 4px rgba(236, 72, 153, 0.2);
+    }
+    
+    #friend-requests-btn i {
+        color: #3b82f6; /* Azul brillante */
+        text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+    
+    #messages-btn i {
+        color: #10b981; /* Verde esmeralda */
+        text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Efecto hover con cambio de color */
+    #affinity-btn:hover {
+        color: #ec4899;
+    }
+    
+    #friend-requests-btn:hover {
+        color: #3b82f6;
+    }
+    
+    #messages-btn:hover {
+        color: #10b981;
+    }
+    
+    /* Efecto activo */
     .sidebar-btn.active {
-        background-color: #ede9fe;
-        color: #7c3aed;
-        font-weight: 500;
+        background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+        font-weight: 600;
     }
 
 </style>
@@ -942,24 +975,23 @@
                         <i class="fas fa-trophy"></i> Clasificación
                     </a>
                 </div>
- <!-- Botón de Afinidad (NUEVO) -->
                 <div class="sidebar-links">
     <!-- Botón de Afinidad -->
     <a href="afinidad.html" id="affinity-btn" class="sidebar-btn" title="Ver tus conexiones de afinidad con otros jugadores">
-        <i class="fas fa-heartbeat text-pink-500"></i>
+        <i class="fas fa-heartbeat"></i>
         <span>Afinidad</span>
     </a>
     
     <!-- Botón de Solicitudes -->
     <button id="friend-requests-btn" class="sidebar-btn" title="Gestiona tus solicitudes de amistad">
-        <i class="fas fa-user-plus text-blue-500"></i>
+        <i class="fas fa-user-friends"></i>
         <span>Solicitudes</span>
         <span id="friend-requests-badge" class="notification-badge hidden">0</span>
     </button>
     
     <!-- Botón de Mensajes -->
     <button id="messages-btn" class="sidebar-btn" title="Envía y recibe mensajes de tus amigos">
-        <i class="fas fa-comment-alt text-green-500"></i>
+        <i class="fas fa-comment-dots"></i>
         <span>Mensajes</span>
         <span id="messages-badge" class="notification-badge hidden">0</span>
     </button>
