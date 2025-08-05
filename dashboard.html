@@ -1236,74 +1236,111 @@
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* ===== TABLA DE AMIGOS - DISEÑO PREMIUM ===== */
+/* ===== TABLA DE AMIGOS - DISEÑO ULTRA PREMIUM ===== */
 .friends-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    margin: 25px 0;
-    background: rgba(44, 62, 80, 0.85);
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
+    margin: 30px 0;
+    background: linear-gradient(135deg, rgba(30, 39, 107, 0.9) 0%, rgba(18, 24, 66, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
-/* Efecto de borde luminoso */
+/* Efecto neón morado/azul */
 .friends-table::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 18px;
+    background: linear-gradient(45deg, 
+              #8a2be2, 
+              #4b00ff, 
+              #00bfff);
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(5px);
+    animation: borderGlow 4s linear infinite;
+}
+
+@keyframes borderGlow {
+    0% { filter: blur(5px) hue-rotate(0deg); }
+    100% { filter: blur(5px) hue-rotate(360deg); }
+}
+
+/* Encabezados con efecto neón */
+.friends-table th {
+    background: linear-gradient(to right, 
+               rgba(138, 43, 226, 0.3), 
+               rgba(75, 0, 255, 0.3),
+               rgba(0, 191, 255, 0.3));
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+    padding: 18px 25px;
+    text-shadow: 0 0 10px rgba(138, 43, 226, 0.7),
+                 0 0 20px rgba(75, 0, 255, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid rgba(0, 191, 255, 0.3);
+}
+
+/* Celdas con efecto futurista */
+.friends-table td {
+    padding: 16px 25px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(30, 39, 107, 0.5);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 0.95em;
+    position: relative;
+}
+
+/* Efecto hover 3D */
+.friends-table tbody tr:hover td {
+    background: rgba(70, 80, 157, 0.7);
+    transform: translateX(8px) scale(1.02);
+    box-shadow: 5px 0 15px rgba(138, 43, 226, 0.3);
+    z-index: 2;
+}
+
+/* Efecto de luz en hover */
+.friends-table tbody tr:hover td::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+              #8a2be2, 
+              #00bfff);
+}
+
+/* Efecto de separación entre filas */
+.friends-table tbody tr:not(:last-child) td::after {
+    content: '';
+    position: absolute;
     bottom: 0;
-    border-radius: 12px;
-    padding: 1px;
-    background: linear-gradient(135deg, 
-              rgba(243, 156, 18, 0.3), 
-              rgba(52, 152, 219, 0.3));
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-}
-
-/* Encabezados con efecto dorado */
-.friends-table th {
+    left: 25px;
+    right: 25px;
+    height: 1px;
     background: linear-gradient(to right, 
-               rgba(243, 156, 18, 0.2), 
-               rgba(230, 126, 34, 0.2));
-    color: #f8d56b;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.85em;
-    padding: 16px 20px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* Celdas con efecto cristal */
-.friends-table td {
-    padding: 14px 20px;
-    color: #ecf0f1;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(52, 73, 94, 0.4);
-    transition: all 0.3s ease;
-    font-size: 0.95em;
-}
-
-/* Efecto hover en filas */
-.friends-table tbody tr:hover td {
-    background: rgba(74, 98, 122, 0.6);
-    transform: translateX(5px);
-    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+              transparent, 
+              rgba(0, 191, 255, 0.2), 
+              transparent);
 }
 
 /* Última fila sin borde */
@@ -1311,22 +1348,19 @@
     border-bottom: none;
 }
 
-/* Efecto de separación entre filas */
-.friends-table tbody tr:not(:last-child) td {
-    position: relative;
-}
-
-.friends-table tbody tr:not(:last-child) td::after {
+/* Efecto de partículas */
+.friends-table::after {
     content: '';
     position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
-    left: 20px;
-    right: 20px;
-    height: 1px;
-    background: linear-gradient(to right, 
-              transparent, 
-              rgba(255, 255, 255, 0.1), 
-              transparent);
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(138, 43, 226, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(0, 191, 255, 0.1) 0%, transparent 25%);
+    pointer-events: none;
+    z-index: -1;
 }
 /* Estilos para el perfil del amigo en el modal */
 .friend-profile-card {
