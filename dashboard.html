@@ -845,82 +845,103 @@
     stroke: #ff6b6b !important;
 }
 
-/* ===== LISTA DE CHATS (BORDES CELESTES Y SEPARACIÓN) ===== */
-.conversations-list {
-    width: 100%;
-    padding: 12px;
-    gap: 15px; /* Más espacio entre chats */
-}
-
-.conversation-item {
-    background: rgba(10, 25, 47, 0.7) !important;
-    border: 2px solid #4da8da !important; /* Borde celeste brillante */
-    border-radius: 12px;
-    padding: 14px;
+/* ===== ESTILO PRINCIPAL DEL CHAT ===== */
+.chat-container {
+    width: 92%;
+    max-width: 500px;
     margin: 0 auto;
-    width: 90%; /* Más compacto */
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 91, 150, 0.2);
-    position: relative;
-}
-
-/* Efecto hover en los chats */
-.conversation-item:hover {
-    border-color: #7ec1ff !important; /* Celeste más claro al pasar el mouse */
-    box-shadow: 0 4px 20px rgba(0, 150, 255, 0.3);
-    transform: translateY(-2px);
-}
-
-/* ===== VENTANA DE CHAT (SCROLL OCULTO) ===== */
-.chat-messages-display {
-    background: rgba(5, 15, 30, 0.8) !important;
-    border: 1px solid rgba(64, 115, 158, 0.3) !important;
-    border-radius: 15px;
     padding: 15px;
-    flex: 1;
-    overflow-y: auto;
-    scrollbar-width: none; /* Ocultar scroll */
+    background: rgba(8, 20, 40, 0.9);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 100, 200, 0.3);
+    border: 2px solid rgba(100, 200, 255, 0.4);
 }
 
-/* Scroll interno (solo visible al desplazar) */
-.chat-messages-display::-webkit-scrollbar {
-    width: 4px;
-    background: transparent;
+/* ===== MENSAJES CON EFECTOS ESPECTACULARES ===== */
+.chat-message {
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    border-radius: 22px;
+    max-width: 80%;
+    position: relative;
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-size: 0.95em;
+    animation: fadeIn 0.4s ease-out;
+    transition: all 0.3s ease;
 }
 
-.chat-messages-display::-webkit-scrollbar-thumb {
-    background: rgba(100, 181, 246, 0.3);
-    border-radius: 4px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== ÁREA DE ESCRITURA (MÁS COMPACTA) ===== */
-.chat-input-container {
-    width: 80% !important; /* Más estrecho */
-    margin: 15px auto 0;
+/* Mensajes recibidos - Efecto Océano */
+.chat-message.received {
+    background: linear-gradient(145deg, #1a5f9c, #2a8ac9);
+    border: 1px solid rgba(100, 200, 255, 0.6);
+    box-shadow: 0 5px 20px rgba(42, 138, 201, 0.4);
+    align-self: flex-start;
+}
+
+/* Mensajes enviados - Efecto Galaxia */
+.chat-message.sent {
+    background: linear-gradient(145deg, #5d2a9c, #8a2be2);
+    border: 1px solid rgba(170, 130, 255, 0.6);
+    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+    align-self: flex-end;
+}
+
+/* Efecto de brillo en mensajes */
+.chat-message::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 70% 30%, 
+              rgba(255, 255, 255, 0.15) 0%, 
+              transparent 50%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* ===== ÁREA DE ESCRITURA CENTRADA ===== */
+.message-input-container {
+    width: 86%;
+    margin: 20px auto 0;
     position: relative;
 }
 
-.chat-input {
-    width: 100% !important;
-    min-height: 70px !important;
-    padding: 12px 50px 12px 15px !important;
-    background: rgba(10, 25, 47, 0.8) !important;
-    border: 1px solid #4da8da !important; /* Borde celeste */
-    border-radius: 15px;
+.message-input {
+    width: 100%;
+    min-height: 75px;
+    padding: 15px 60px 15px 20px;
+    background: rgba(15, 30, 60, 0.8);
+    border: 2px solid #4da8da;
+    border-radius: 18px;
     color: white;
-    font-size: 0.95em;
+    font-size: 1em;
     resize: none;
-    box-shadow: 0 4px 15px rgba(0, 60, 120, 0.2);
+    box-shadow: 0 5px 20px rgba(0, 100, 200, 0.2);
+    transition: all 0.3s ease;
 }
 
-/* Botón de enviar (visible y accesible) */
+.message-input:focus {
+    border-color: #7ec1ff;
+    box-shadow: 0 0 0 3px rgba(100, 200, 255, 0.3);
+    outline: none;
+}
+
+/* Botón de enviar con efecto brillante */
 .send-button {
     position: absolute;
-    right: 10px;
-    bottom: 10px;
-    background: #4da8da !important; /* Celeste */
-    width: 36px;
-    height: 36px;
+    right: 12px;
+    bottom: 12px;
+    background: linear-gradient(145deg, #4da8da, #2a8ac9);
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -929,25 +950,50 @@
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 10px rgba(0, 180, 219, 0.3);
+    box-shadow: 0 4px 15px rgba(42, 138, 201, 0.5);
 }
 
 .send-button:hover {
-    background: #7ec1ff !important; /* Celeste más claro */
-    transform: translateY(-2px);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(42, 138, 201, 0.7);
 }
 
+.send-button i {
+    font-size: 1.1em;
+    margin-left: 2px;
+}
+
+/* ===== EFECTOS ESPECIALES ===== */
+/* Animación de burbujas para mensajes */
+@keyframes bubble {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.chat-message:hover {
+    animation: bubble 1.5s infinite;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .conversation-item {
-        width: 88% !important;
+    .chat-container {
+        width: 94%;
+        padding: 12px;
     }
     
-    .chat-input-container {
-        width: 88% !important;
+    .message-input-container {
+        width: 90%;
     }
     
-    .chat-input {
-        min-height: 65px !important;
+    .message-input {
+        min-height: 70px;
+        padding: 12px 55px 12px 18px;
+    }
+    
+    .send-button {
+        width: 38px;
+        height: 38px;
     }
 }
 
