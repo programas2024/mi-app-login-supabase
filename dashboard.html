@@ -1236,40 +1236,98 @@
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Estilos para la tabla de amigos */
+/* ===== TABLA DE AMIGOS - DISEÑO PREMIUM ===== */
 .friends-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #34495e; /* Fondo de tabla */
-    border-radius: 10px;
-    overflow: hidden; /* Para que los bordes redondeados se apliquen al contenido */
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 25px 0;
+    background: rgba(44, 62, 80, 0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.friends-table th, .friends-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #4a627a; /* Separador de filas */
-    color: #ecf0f1;
+/* Efecto de borde luminoso */
+.friends-table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px;
+    padding: 1px;
+    background: linear-gradient(135deg, 
+              rgba(243, 156, 18, 0.3), 
+              rgba(52, 152, 219, 0.3));
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
 }
 
+/* Encabezados con efecto dorado */
 .friends-table th {
-    background-color: #2c3e50; /* Encabezado de tabla más oscuro */
-    color: #f39c12; /* Texto del encabezado dorado */
-    font-weight: bold;
+    background: linear-gradient(to right, 
+               rgba(243, 156, 18, 0.2), 
+               rgba(230, 126, 34, 0.2));
+    color: #f8d56b;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.9em;
+    letter-spacing: 0.5px;
+    font-size: 0.85em;
+    padding: 16px 20px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.friends-table tbody tr:hover {
-    background-color: #4a627a; /* Resaltar fila al pasar el ratón */
-    cursor: pointer;
+/* Celdas con efecto cristal */
+.friends-table td {
+    padding: 14px 20px;
+    color: #ecf0f1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(52, 73, 94, 0.4);
+    transition: all 0.3s ease;
+    font-size: 0.95em;
 }
 
-.friends-table tbody tr:last-child {
-    border-bottom: none; /* No hay borde en la última fila */
+/* Efecto hover en filas */
+.friends-table tbody tr:hover td {
+    background: rgba(74, 98, 122, 0.6);
+    transform: translateX(5px);
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Última fila sin borde */
+.friends-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Efecto de separación entre filas */
+.friends-table tbody tr:not(:last-child) td {
+    position: relative;
+}
+
+.friends-table tbody tr:not(:last-child) td::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: linear-gradient(to right, 
+              transparent, 
+              rgba(255, 255, 255, 0.1), 
+              transparent);
+}
 /* Estilos para el perfil del amigo en el modal */
 .friend-profile-card {
     text-align: center;
@@ -1277,7 +1335,7 @@
 }
 
 .friend-profile-card h3 {
-    color: #f39c12;
+    color: #1299f3;
     margin-bottom: 15px;
     font-size: 1.6em;
 }
