@@ -453,75 +453,106 @@
             }
         }
 
-        async function inviteFriend() {
-            const { value: email } = await Swal.fire({
-                title: 'Invitar amigo',
-                input: 'email',
-                inputLabel: 'Correo electrónico del amigo',
-                inputPlaceholder: 'ejemplo@correo.com',
-                showCancelButton: true,
-                confirmButtonText: 'Enviar invitación',
-                cancelButtonText: 'Cancelar',
-                inputValidator: (value) => {
-                    if (!value) return '¡Necesitas ingresar un correo!';
-                    if (!/^\S+@\S+\.\S+$/.test(value)) return 'Ingresa un correo válido';
-                }
-            });
+       async function inviteFriend() {
+    const { value: username } = await Swal.fire({
+        title: 'Invitar amigo',
+        input: 'text',
+        inputLabel: 'Nombre de usuario del amigo',
+        inputPlaceholder: 'Ejemplo: jugador123',
+        showCancelButton: true,
+        confirmButtonText: 'Buscar y enviar invitación',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value) return '¡Necesitas ingresar un nombre de usuario!';
+            if (value.length < 3) return 'El nombre debe tener al menos 3 caracteres';
+        }
+    });
 
-            if (email) {
-                try {
-                    const { data: userToInvite, error: userError } = await supabase
-                        .from('profiles')
-                        .select('id, username')
-                        .ilike('email', email)
-                        .single();
+    if (username) {
+        try {
+            // Verificar que no sea el propio usuario
+            const { data: currentUser } = await supabase.auth.getUser();
+            if (currentUser.user.user_metadata?.username?.toLowerCase() === username.toLowerCase()) {
+                throw new Error('¡No puedes invitarte a ti mismo!');
+            }
 
-                    if (userError || !userToInvite) {
-                        throw new Error('Usuario no encontrado');
-                    }
+            // Buscar usuario por username (case insensitive)
+            const { data: userToInvite, error: userError } = await supabase
+                .from('profiles')
+                .select('id, username')
+                .ilike('username', username)
+                .single();
 
-                    const [user1, user2] = currentUserId < userToInvite.id 
-                        ? [currentUserId, userToInvite.id] 
-                        : [userToInvite.id, currentUserId];
+            if (userError || !userToInvite) {
+                throw new Error('Usuario no encontrado. Verifica el nombre.');
+            }
 
-                    const { data: existingFriendship, error: friendshipError } = await supabase
-                        .from('friends')
-                        .select('*')
-                        .eq('user1_id', user1)
-                        .eq('user2_id', user2)
-                        .maybeSingle();
+            const [user1, user2] = currentUserId < userToInvite.id 
+                ? [currentUserId, userToInvite.id] 
+                : [userToInvite.id, currentUserId];
 
-                    if (friendshipError) throw friendshipError;
-                    if (existingFriendship) {
-                        throw new Error('Ya son amigos');
-                    }
+            // Verificar si ya son amigos
+            const { data: existingFriendship, error: friendshipError } = await supabase
+                .from('friends')
+                .select('*')
+                .eq('user1_id', user1)
+                .eq('user2_id', user2)
+                .maybeSingle();
 
-                    const { error: inviteError } = await supabase
-                        .from('friend_requests')
-                        .insert([{
-                            sender_id: currentUserId,
-                            receiver_id: userToInvite.id,
-                            status: 'pending'
-                        }]);
+            if (friendshipError) throw friendshipError;
+            if (existingFriendship) {
+                throw new Error(`¡Ya eres amigo de ${userToInvite.username}!`);
+            }
 
-                    if (inviteError) throw inviteError;
+            // Verificar si ya hay una solicitud pendiente
+            const { data: existingRequest, error: requestError } = await supabase
+                .from('friend_requests')
+                .select('*')
+                .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${userToInvite.id}),and(sender_id.eq.${userToInvite.id},receiver_id.eq.${currentUserId})`)
+                .maybeSingle();
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Invitación enviada',
-                        text: `Se ha enviado una solicitud de amistad a ${userToInvite.username}`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    loadFriendsList();
-                } catch (error) {
-                    console.error('Error inviting friend:', error);
-                    Swal.fire('Error', error.message || 'No se pudo enviar la invitación', 'error');
+            if (requestError) throw requestError;
+            if (existingRequest) {
+                if (existingRequest.sender_id === currentUserId) {
+                    throw new Error(`Ya enviaste una solicitud a ${userToInvite.username}`);
+                } else {
+                    throw new Error(`${userToInvite.username} ya te envió una solicitud. ¡Aceptala!`);
                 }
             }
-        }
 
+            // Enviar la solicitud
+            const { error: inviteError } = await supabase
+                .from('friend_requests')
+                .insert([{
+                    sender_id: currentUserId,
+                    receiver_id: userToInvite.id,
+                    status: 'pending',
+                    created_at: new Date().toISOString()
+                }]);
+
+            if (inviteError) throw inviteError;
+
+            await Swal.fire({
+                icon: 'success',
+                title: '¡Invitación enviada!',
+                html: `Se ha enviado una solicitud de amistad a <strong>${userToInvite.username}</strong>`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Actualizar lista de amigos (por si aceptan)
+            loadFriendsList();
+        } catch (error) {
+            console.error('Error inviting friend:', error);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                timer: 3000
+            });
+        }
+    }
+}
         // Inicializar la página
         loadFriendsList();
         
