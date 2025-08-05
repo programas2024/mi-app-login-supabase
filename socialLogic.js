@@ -155,13 +155,21 @@ export async function showFriendRequestsModal() {
             title: '<strong>Solicitudes de <span class="text-gradient">Amistad</span></strong>',
             html: `<div class="friend-requests-container">${requestsHtml}</div>`,
             showConfirmButton: false,
-            background: '#fff9f9',
+            showCloseButton: true,
+            closeButtonHtml: `
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 6L18 18" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `,
+            background: 'transparent',
             width: '500px',
-            padding: '2rem',
+            padding: '0',
             customClass: {
                 popup: 'friend-requests-popup',
                 title: 'friend-requests-title',
-                htmlContainer: 'friend-requests-content'
+                htmlContainer: 'friend-requests-content',
+                closeButton: 'friend-requests-close-btn'
             },
             didOpen: (popup) => {
                 popup.querySelectorAll('.accept-btn').forEach(button => {

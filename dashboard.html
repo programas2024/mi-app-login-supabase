@@ -809,6 +809,41 @@
         height: 50px;
     }
 }
+
+/* Estilo para el botón de cerrar */
+.friend-requests-close-btn {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    opacity: 0.8 !important;
+}
+
+.friend-requests-close-btn:hover {
+    background: rgba(255, 0, 0, 0.3) !important;
+    transform: rotate(90deg) !important;
+    opacity: 1 !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.friend-requests-close-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.friend-requests-close-btn:hover svg path {
+    stroke: #ff6b6b !important;
+}
 /* Styles for messages modal (similar to friend requests) */
 .conversations-list {
     display: flex;
