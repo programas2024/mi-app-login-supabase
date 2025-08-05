@@ -819,6 +819,58 @@
     100% { transform: rotate(360deg); }
 }
 
+/* Estilos para los botones/enlaces */
+    .sidebar-btn {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        margin: 5px 0;
+        border-radius: 8px;
+        color: #4b5563;
+        text-decoration: none !important; /* Elimina el subrayado */
+        transition: all 0.3s ease;
+        font-size: 15px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+    }
+    
+    .sidebar-btn:hover {
+        background-color: #f3f4f6;
+        color: #7c3aed;
+        transform: translateX(3px);
+    }
+    
+    .sidebar-btn i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+        font-size: 18px;
+    }
+    
+    .notification-badge {
+        margin-left: auto;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 9999px;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    /* Estilo especial para el botón activo */
+    .sidebar-btn.active {
+        background-color: #ede9fe;
+        color: #7c3aed;
+        font-weight: 500;
+    }
+
 </style>
 </head>
 <body>
@@ -891,18 +943,27 @@
                     </a>
                 </div>
  <!-- Botón de Afinidad (NUEVO) -->
-                <a href="afinidad.html" id="affinity-btn" class="sidebar-btn btn-custom-action" title="Ver tus conexiones de afinidad con otros jugadores">
-                    <i class="fas fa-heart"></i> Afinidad
-                </a>
-                <!-- NUEVO: Botón de Solicitudes de Amistad -->
-                <button id="friend-requests-btn" class="sidebar-btn btn-custom-action" title="Gestiona tus solicitudes de amistad.">
-                    <i class="fas fa-user-friends"></i> Solicitudes <span id="friend-requests-badge" class="notification-badge hidden">0</span>
-                </button>
-
-                <!-- NUEVO: Botón de Mensajes -->
-                <button id="messages-btn" class="sidebar-btn btn-custom-action" title="Envía y recibe mensajes de tus amigos.">
-                    <i class="fas fa-comment-dots"></i> Mensajes <span id="messages-badge" class="notification-badge hidden">0</span>
-                </button>
+                <div class="sidebar-links">
+    <!-- Botón de Afinidad -->
+    <a href="afinidad.html" id="affinity-btn" class="sidebar-btn" title="Ver tus conexiones de afinidad con otros jugadores">
+        <i class="fas fa-heartbeat text-pink-500"></i>
+        <span>Afinidad</span>
+    </a>
+    
+    <!-- Botón de Solicitudes -->
+    <button id="friend-requests-btn" class="sidebar-btn" title="Gestiona tus solicitudes de amistad">
+        <i class="fas fa-user-plus text-blue-500"></i>
+        <span>Solicitudes</span>
+        <span id="friend-requests-badge" class="notification-badge hidden">0</span>
+    </button>
+    
+    <!-- Botón de Mensajes -->
+    <button id="messages-btn" class="sidebar-btn" title="Envía y recibe mensajes de tus amigos">
+        <i class="fas fa-comment-alt text-green-500"></i>
+        <span>Mensajes</span>
+        <span id="messages-badge" class="notification-badge hidden">0</span>
+    </button>
+</div>
             </aside>
 
             <button id="logout-btn" class="btn btn-logout floating-logout-btn" title="Cerrar tu sesión actual.">
