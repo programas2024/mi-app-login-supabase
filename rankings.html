@@ -97,310 +97,162 @@
         .swal2-popup .swal2-icon {
             display: none !important; /* Oculta el icono por defecto de SweetAlert si vas a usar uno personalizado en el html */
         }
-        :root {
-    --premium-primary: #6C5CE7;
-    --premium-secondary: #A29BFE;
-    --premium-accent: #FD79A8;
-    --premium-dark: #2D3436;
-    --premium-light: #F5F6FA;
-    --premium-gold: #FFD700;
-    --premium-silver: #C0C0C0;
-    --premium-bronze: #CD7F32;
-}
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-    font-family: 'Montserrat', sans-serif;
-    padding: 2rem;
-    margin: 0;
-}
+        .rankings-full-container {
+            background-color: var(--card-bg-color, #ffffff); /* Contenedor principal blanco o color de tarjeta */
+            border-radius: 18px; /* Bordes más suaves */
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
+            width: 100%;
+            max-width: 950px; /* Un poco más ancho para los rangos horizontales */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-.premium-rankings-container {
-    width: 100%;
-    max-width: 1200px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-}
+        .rankings-full-container h2 {
+            font-size: 2.8em; /* Título más grande */
+            color: var(--primary-color);
+            margin-bottom: 35px; /* Más espacio */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-weight: 800; /* Extra bold */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* Sombra de texto más fuerte */
+        }
 
-.premium-rankings-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: linear-gradient(90deg, 
-        var(--premium-primary) 0%, 
-        var(--premium-accent) 50%, 
-        var(--premium-secondary) 100%);
-}
+        .rankings-full-container h2 .fas {
+            font-size: 1.8em; /* Icono del título más grande */
+            color: var(--accent-color, #ffd700); /* Color acento para el icono */
+        }
 
-.premium-header {
-    padding: 2.5rem;
-    text-align: center;
-    position: relative;
-}
+        /* Contenedor de la lista de rangos para scroll horizontal */
+        .ranks-list-outer-wrapper {
+            overflow-x: auto; /* Habilitar scroll horizontal */
+            padding-bottom: 20px; /* Espacio para la barra de scroll */
+            margin-bottom: 40px; /* Más espacio antes del botón */
+            -webkit-overflow-scrolling: touch; /* Suavizar el scroll en iOS */
+            /* Estilo de la barra de scroll */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--primary-color) #f0f0f0; /* Color de scroll Firefox */
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar {
+            height: 8px; /* Altura de la barra de scroll */
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-track {
+            background: #f0f0f0; /* Fondo de la barra de scroll */
+            border-radius: 10px;
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
+            background: var(--primary-color); /* Color del "pulgar" de la barra de scroll */
+            border-radius: 10px;
+        }
+        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--button-hover-bg-color);
+        }
 
-.premium-header h2 {
-    font-size: 2.8rem;
-    font-weight: 700;
-    color: var(--premium-dark);
-    margin: 0;
-    position: relative;
-    display: inline-block;
-}
+        /* Lista de rangos con Flexbox para disposición horizontal */
+        .rankings-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 25px; /* Más espacio entre los elementos de rango */
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            min-width: fit-content;
+        }
 
-.premium-header h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background: var(--premium-accent);
-    border-radius: 2px;
-}
+        /* Estilos base para cada tarjeta de rango */
+        .rank-item {
+            flex-shrink: 0;
+            width: 200px; /* Ancho fijo más generoso para cada tarjeta */
+            border-radius: 18px; /* Bordes más redondeados */
+            padding: 25px 20px; /* Más padding */
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); /* Sombra base */
+            border: 3px solid transparent; /* Borde transparente por defecto, se define por clases de rango */
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave para todos los cambios */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-.premium-header p {
-    color: #636E72;
-    font-size: 1.1rem;
-    margin-top: 1rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-}
+        .rank-item:hover:not(.current-user-rank) {
+            transform: translateY(-8px); /* Elevación más pronunciada al pasar el ratón */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            /* El borde y fondo específicos del hover se definirán con el color de cada rango */
+        }
 
-.premium-ranks-wrapper {
-    padding: 1rem 2rem 3rem;
-    position: relative;
-}
+        .rank-item-icon {
+            font-size: 3.8em; /* Iconos más grandes y impactantes */
+            margin-bottom: 20px;
+            line-height: 1;
+            transition: color 0.4s ease; /* Transición para el color del icono */
+        }
 
-.premium-ranks-scroll {
-    overflow-x: auto;
-    padding-bottom: 2rem;
-    scrollbar-width: none;
-}
+        .rank-item-title {
+            font-weight: 800; /* Más audaz */
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #ffffff; /* Por defecto blanco para contrastar con degradados oscuros */
+        }
 
-.premium-ranks-scroll::-webkit-scrollbar {
-    display: none;
-}
+        .rank-item-threshold {
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.8); /* Blanco transparente para el umbral */
+        }
 
-.premium-ranks-list {
-    display: flex;
-    gap: 1.5rem;
-    padding: 1rem 0;
-    list-style: none;
-    margin: 0;
-    min-width: max-content;
-}
+        /* Estilos para el botón de reclamar recompensa */
+        .claim-reward-btn {
+            background: linear-gradient(to right, #28a745, #7ce7be); /* Verde vibrante */
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: calc(100% - 20px); /* Ajusta al ancho de la tarjeta */
+        }
 
-.premium-rank-card {
-    width: 260px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 2rem 1.5rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    flex-shrink: 0;
-}
+        .claim-reward-btn:hover {
+            background: linear-gradient(to right, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
 
-.premium-rank-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, var(--premium-primary), var(--premium-secondary));
-    opacity: 0.8;
-}
+        .claim-reward-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .claim-reward-btn .fas {
+            font-size: 1em;
+        }
 
-.premium-rank-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-}
-
-.premium-rank-card.current-rank {
-    border: 2px solid var(--premium-accent);
-    box-shadow: 0 0 0 4px rgba(253, 121, 168, 0.2);
-}
-
-.rank-badge {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2.5rem;
-    color: white;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.rank-badge::after {
-    content: '';
-    position: absolute;
-    inset: -5px;
-    border-radius: 50%;
-    border: 2px solid;
-    opacity: 0.3;
-}
-
-.rank-badge.gold {
-    background: linear-gradient(135deg, var(--premium-gold), #FFC200);
-    border-color: var(--premium-gold);
-}
-
-.rank-badge.silver {
-    background: linear-gradient(135deg, var(--premium-silver), #D9D9D9);
-    border-color: var(--premium-silver);
-}
-
-.rank-badge.bronze {
-    background: linear-gradient(135deg, var(--premium-bronze), #B87333);
-    border-color: var(--premium-bronze);
-}
-
-.rank-badge.other {
-    background: linear-gradient(135deg, var(--premium-primary), var(--premium-secondary));
-    border-color: var(--premium-primary);
-}
-
-.rank-title {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--premium-dark);
-    margin-bottom: 0.5rem;
-}
-
-.rank-threshold {
-    color: #636E72;
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
-}
-
-.rank-benefits {
-    text-align: left;
-    margin-bottom: 1.5rem;
-    padding-left: 1rem;
-}
-
-.rank-benefits li {
-    margin-bottom: 0.5rem;
-    position: relative;
-    padding-left: 1.5rem;
-    color: #636E72;
-    font-size: 0.9rem;
-}
-
-.rank-benefits li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--premium-primary);
-    font-weight: bold;
-}
-
-.premium-claim-btn {
-    background: linear-gradient(135deg, var(--premium-primary), var(--premium-secondary));
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 0.8rem 1.5rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
-}
-
-.premium-claim-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
-}
-
-.premium-claim-btn:active {
-    transform: translateY(0);
-}
-
-.premium-claim-btn .icon {
-    font-size: 1rem;
-}
-
-.current-rank .premium-claim-btn {
-    background: linear-gradient(135deg, var(--premium-accent), #FF6B95);
-    box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
-}
-
-.current-rank .premium-claim-btn:hover {
-    box-shadow: 0 8px 20px rgba(253, 121, 168, 0.4);
-}
-
-.rank-progress {
-    width: 100%;
-    margin-top: 1.5rem;
-}
-
-.progress-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size: 0.85rem;
-    color: #636E72;
-}
-
-.progress-bar-container {
-    height: 6px;
-    background: #EDF2F7;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--premium-primary), var(--premium-accent));
-    border-radius: 3px;
-    transition: width 0.5s ease;
-}
-
-/* Special styling for top ranks */
-.premium-rank-card:nth-child(1) {
-    transform: scale(1.05);
-    z-index: 2;
-}
-
-.premium-rank-card:nth-child(1):hover {
-    transform: scale(1.05) translateY(-8px);
-}
-
-.premium-rank-card:nth-child(2) {
-    transform: scale(1.03);
-    z-index: 1;
-}
-
-.premium-rank-card:nth-child(2):hover {
-    transform: scale(1.03) translateY(-8px);
-}
 
         /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
 
