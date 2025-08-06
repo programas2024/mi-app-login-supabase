@@ -799,7 +799,7 @@
 
         /* Estilos para el botón de reclamar en la lista de rangos */
         .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
+            background: linear-gradient(to right, #28a745, #9fc0fd); /* Verde vibrante */
             color: white;
             border: none;
             border-radius: 8px;
@@ -833,189 +833,481 @@
             transform: none; /* Evita cualquier transformación al hacer hover cuando está deshabilitado */
         }
 
-         /* Diamante */
-        .rank-diamond-bg {
-            background: linear-gradient(135deg, #00BFFF, #1E90FF); /* DeepSkyBlue a DodgerBlue */
-            border: 3px solid #FFFFFF;
-            box-shadow: 0 0 25px rgba(30, 144, 255, 0.7);
-        }
-        .rank-diamond-bg .rank-item-icon {
-            color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-        }
-        .rank-diamond-bg:hover {
-            background: linear-gradient(135deg, #87CEFA, #1E90FF); /* LightSkyBlue a DodgerBlue */
-            box-shadow: 0 0 35px rgba(30, 144, 255, 0.9);
-        }
+       /* Diamante - Ultra Brillante */
+.rank-diamond-bg {
+    background: linear-gradient(145deg, 
+                #00BFFF 0%, 
+                #1E90FF 30%, 
+                #0077FF 70%, 
+                #00BFFF 100%);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(30, 144, 255, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
 
-        /* Élite */
-        .rank-elite-bg {
-            background: linear-gradient(135deg, #9370DB, #8A2BE2); /* MediumPurple a BlueViolet */
-            border: 3px solid #FFD700;
-        }
-        .rank-elite-bg .rank-item-icon {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        .rank-elite-bg:hover {
-            background: linear-gradient(135deg, #BA55D3, #9932CC); /* MediumOrchid a DarkOrchid */
-            box-shadow: 0 0 35px rgba(154, 50, 204, 0.9);
-        }
+.rank-diamond-bg::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 55%
+    );
+    transform: rotate(30deg);
+    animation: diamondShine 4s infinite linear;
+}
 
-        /* Legendario */
-        .rank-legendary-bg {
-            background: linear-gradient(135deg, #FF8C00, #FF4500); /* DarkOrange a OrangeRed */
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 25px rgba(255, 69, 0, 0.7);
-        }
-        .rank-legendary-bg .rank-item-icon {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        .rank-legendary-bg:hover {
-            background: linear-gradient(135deg, #FFA500, #FF6347); /* Orange a Tomato */
-            box-shadow: 0 0 35px rgba(255, 69, 0, 0.9);
-        }
+@keyframes diamondShine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
+}
 
-        /* Celestial */
-        .rank-celestial-bg {
-            background: linear-gradient(135deg, #4169E1, #0000FF); /* RoyalBlue a Blue */
-            border: 3px solid #FFFFFF;
-            box-shadow: 0 0 25px rgba(65, 105, 225, 0.7);
-        }
-        .rank-celestial-bg .rank-item-icon {
-            color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-        }
-        .rank-celestial-bg:hover {
-            background: linear-gradient(135deg, #4682B4, #0000CD); /* SteelBlue a MediumBlue */
-            box-shadow: 0 0 35px rgba(70, 130, 180, 0.9);
-        }
+.rank-diamond-bg .rank-item-icon {
+    color: #FFFFFF;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9),
+                 0 0 40px rgba(0, 191, 255, 0.7);
+    filter: drop-shadow(0 0 5px #1E90FF);
+}
 
-        /* Arcángel */
-        .rank-archangel-bg {
-            background: linear-gradient(135deg, #FF1493, #C71585); /* DeepPink a MediumVioletRed */
-            border: 3px solid #FFFFFF;
-            box-shadow: 0 0 25px rgba(255, 20, 147, 0.7);
-        }
-        .rank-archangel-bg .rank-item-icon {
-            color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-        }
-        .rank-archangel-bg:hover {
-            background: linear-gradient(135deg, #FF69B4, #DB7093); /* HotPink a PaleVioletRed */
-            box-shadow: 0 0 35px rgba(255, 105, 180, 0.9);
-        }
+/* Élite - Púrpura Galáctico */
+.rank-elite-bg {
+    background: linear-gradient(145deg, 
+                #9370DB 0%, 
+                #8A2BE2 30%, 
+                #6A0DAD 70%, 
+                #9370DB 100%);
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.8),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+}
 
-        /* Titán */
-        .rank-titan-bg {
-            background: linear-gradient(135deg, #32CD32, #228B22); /* LimeGreen a ForestGreen */
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 25px rgba(50, 205, 50, 0.7);
-        }
-        .rank-titan-bg .rank-item-icon {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        .rank-titan-bg:hover {
-            background: linear-gradient(135deg, #00FA9A, #2E8B57); /* MediumSpringGreen a SeaGreen */
-            box-shadow: 0 0 35px rgba(0, 250, 154, 0.9);
-        }
+.rank-elite-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, 
+            rgba(255, 215, 0, 0.15) 0%, 
+            transparent 30%),
+        radial-gradient(circle at 80% 70%, 
+            rgba(255, 215, 0, 0.15) 0%, 
+            transparent 30%);
+    animation: elitePulse 6s infinite alternate;
+}
 
-        /* Dragón */
-        .rank-dragon-bg {
-            background: linear-gradient(135deg, #800000, #B22222); /* Maroon a FireBrick */
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 25px rgba(178, 34, 34, 0.7);
-        }
-        .rank-dragon-bg .rank-item-icon {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        .rank-dragon-bg:hover {
-            background: linear-gradient(135deg, #DC143C, #8B0000); /* Crimson a DarkRed */
-            box-shadow: 0 0 35px rgba(220, 20, 60, 0.9);
-        }
+@keyframes elitePulse {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
 
-        /* Fenix */
-        .rank-phoenix-bg {
-            background: linear-gradient(135deg, #FF4500, #FF8C00); /* OrangeRed a DarkOrange */
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 25px rgba(255, 140, 0, 0.7);
-        }
-        .rank-phoenix-bg .rank-item-icon {
-            color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        .rank-phoenix-bg:hover {
-            background: linear-gradient(135deg, #FF6347, #FF4500); /* Tomato a OrangeRed */
-            box-shadow: 0 0 35px rgba(255, 99, 71, 0.9);
-        }
+.rank-elite-bg .rank-item-icon {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(138, 43, 226, 0.6);
+    filter: drop-shadow(0 0 3px #8A2BE2);
+}
 
-        /* Omnipotente */
-        .rank-omnipotent-bg {
-            background: linear-gradient(135deg, #9400D3, #4B0082); /* DarkViolet a Indigo */
-            border: 3px solid #FFFFFF;
-            box-shadow: 0 0 25px rgba(148, 0, 211, 0.7);
-        }
-        .rank-omnipotent-bg .rank-item-icon {
-            color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-        }
-        .rank-omnipotent-bg:hover {
-            background: linear-gradient(135deg, #9932CC, #8A2BE2); /* DarkOrchid a BlueViolet */
-            box-shadow: 0 0 35px rgba(153, 50, 204, 0.9);
-        }
+/* Legendario - Fuego Lava */
+.rank-legendary-bg {
+    background: linear-gradient(145deg, 
+                #FF8C00 0%, 
+                #FF4500 30%, 
+                #FF2400 70%, 
+                #FF8C00 100%);
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(255, 69, 0, 0.8),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
 
-        /* Infinito */
-        .rank-infinite-bg {
-            background: linear-gradient(135deg, #000000, #2F4F4F); /* Black a DarkSlateGray */
-            border: 3px solid #00FFFF;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
-            position: relative;
-            overflow: hidden;
-        }
-        .rank-infinite-bg::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(0, 255, 255, 0) 0%,
-                rgba(0, 255, 255, 0.1) 50%,
-                rgba(0, 255, 255, 0) 100%
-            );
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-        .rank-infinite-bg .rank-item-icon {
-            color: #00FFFF;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
-            position: relative;
-            z-index: 1;
-        }
-        .rank-infinite-bg:hover {
-            box-shadow: 0 0 35px rgba(0, 255, 255, 0.9);
-        }
-        @keyframes shine {
-            0% { transform: rotate(45deg) translate(-30%, -30%); }
-            100% { transform: rotate(45deg) translate(30%, 30%); }
-        }
+.rank-legendary-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(255, 215, 0, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+    animation: lavaFlow 8s infinite linear;
+}
 
-        /* Efecto especial para el rango Infinito */
-        .rank-infinite-bg .rank-item-title {
-            background: linear-gradient(to right, #00FFFF, #FFFFFF, #00FFFF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: infiniteGlow 3s infinite linear;
-        }
-        @keyframes infiniteGlow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+@keyframes lavaFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.rank-legendary-bg .rank-item-icon {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(255, 69, 0, 0.6);
+    filter: drop-shadow(0 0 3px #FF4500);
+}
+
+/* Celestial - Cielo Profundo */
+.rank-celestial-bg {
+    background: linear-gradient(145deg, 
+                #4169E1 0%, 
+                #0000FF 30%, 
+                #00008B 70%, 
+                #4169E1 100%);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(65, 105, 225, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+}
+
+.rank-celestial-bg::after {
+    content: '✦';
+    position: absolute;
+    color: rgba(255, 255, 255, 0.1);
+    font-size: 3rem;
+    animation: starsMove 20s infinite linear;
+}
+
+@keyframes starsMove {
+    0% { transform: translate(0, 0); opacity: 0; }
+    10% { opacity: 0.1; }
+    90% { opacity: 0.1; }
+    100% { transform: translate(100px, 50px); opacity: 0; }
+}
+
+.rank-celestial-bg .rank-item-icon {
+    color: #FFFFFF;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9),
+                 0 0 40px rgba(65, 105, 225, 0.7);
+    filter: drop-shadow(0 0 5px #0000FF);
+}
+
+/* Arcángel - Rosa Neón */
+.rank-archangel-bg {
+    background: linear-gradient(145deg, 
+                #FF1493 0%, 
+                #C71585 30%, 
+                #8B008B 70%, 
+                #FF1493 100%);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(255, 20, 147, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.rank-archangel-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0)
+    );
+    animation: neonScan 3s infinite linear;
+}
+
+@keyframes neonScan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+
+.rank-archangel-bg .rank-item-icon {
+    color: #FFFFFF;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9),
+                 0 0 40px rgba(255, 20, 147, 0.7);
+    filter: drop-shadow(0 0 5px #C71585);
+}
+
+/* Titán - Verde Esmeralda */
+.rank-titan-bg {
+    background: linear-gradient(145deg, 
+                #32CD32 0%, 
+                #228B22 30%, 
+                #006400 70%, 
+                #32CD32 100%);
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(50, 205, 50, 0.8),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+}
+
+.rank-titan-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.05),
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 5px
+        );
+}
+
+.rank-titan-bg .rank-item-icon {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(50, 205, 50, 0.6);
+    filter: drop-shadow(0 0 3px #228B22);
+}
+
+/* Dragón - Rojo Sangre */
+.rank-dragon-bg {
+    background: linear-gradient(145deg, 
+                #800000 0%, 
+                #B22222 30%, 
+                #8B0000 70%, 
+                #800000 100%);
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(178, 34, 34, 0.8),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.rank-dragon-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(
+            ellipse at 20% 20%,
+            rgba(255, 69, 0, 0.3) 0%,
+            transparent 40%
+        ),
+        radial-gradient(
+            ellipse at 80% 80%,
+            rgba(255, 69, 0, 0.3) 0%,
+            transparent 40%
+        );
+    animation: dragonBreath 5s infinite alternate;
+}
+
+@keyframes dragonBreath {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+.rank-dragon-bg .rank-item-icon {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(178, 34, 34, 0.6);
+    filter: drop-shadow(0 0 3px #B22222);
+}
+
+/* Fénix - Llamas Ardientes */
+.rank-phoenix-bg {
+    background: linear-gradient(145deg, 
+                #FF4500 0%, 
+                #FF8C00 30%, 
+                #FF6347 70%, 
+                #FF4500 100%);
+    border: 3px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.8),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+}
+
+.rank-phoenix-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(
+            0deg,
+            rgba(255, 255, 0, 0.1) 0%,
+            rgba(255, 69, 0, 0.2) 50%,
+            rgba(255, 255, 0, 0.1) 100%
+        );
+    animation: flames 3s infinite linear;
+}
+
+@keyframes flames {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.rank-phoenix-bg .rank-item-icon {
+    color: #FFD700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                 0 0 30px rgba(255, 140, 0, 0.6);
+    filter: drop-shadow(0 0 3px #FF8C00);
+}
+
+/* Omnipotente - Púrpura Oscuro */
+.rank-omnipotent-bg {
+    background: linear-gradient(145deg, 
+                #9400D3 0%, 
+                #4B0082 30%, 
+                #2E0854 70%, 
+                #9400D3 100%);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(148, 0, 211, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+}
+
+.rank-omnipotent-bg::before {
+    content: '∞';
+    position: absolute;
+    color: rgba(255, 255, 255, 0.05);
+    font-size: 10rem;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.rank-omnipotent-bg .rank-item-icon {
+    color: #FFFFFF;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9),
+                 0 0 40px rgba(148, 0, 211, 0.7);
+    filter: drop-shadow(0 0 5px #4B0082);
+    position: relative;
+    z-index: 1;
+}
+
+/* Infinito - Espacio Profundo */
+.rank-infinite-bg {
+    background: linear-gradient(145deg, 
+                #000000 0%, 
+                #2F4F4F 30%, 
+                #000000 70%, 
+                #2F4F4F 100%);
+    border: 3px solid rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8),
+                inset 0 0 15px rgba(0, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.rank-infinite-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        linear-gradient(
+            to bottom right,
+            rgba(0, 255, 255, 0) 0%,
+            rgba(0, 255, 255, 0.2) 50%,
+            rgba(0, 255, 255, 0) 100%
+        ),
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(0, 255, 255, 0.1) 0%,
+            transparent 20%
+        ),
+        radial-gradient(
+            circle at 70% 70%,
+            rgba(0, 255, 255, 0.1) 0%,
+            transparent 20%
+        );
+    transform: rotate(45deg);
+    animation: cosmicShine 6s infinite linear;
+}
+
+@keyframes cosmicShine {
+    0% { transform: rotate(45deg) translate(-30%, -30%); }
+    100% { transform: rotate(45deg) translate(30%, 30%); }
+}
+
+.rank-infinite-bg .rank-item-icon {
+    color: #00FFFF;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.9),
+                 0 0 40px rgba(0, 255, 255, 0.7);
+    filter: drop-shadow(0 0 5px #00FFFF);
+    position: relative;
+    z-index: 1;
+    animation: iconPulse 3s infinite ease-in-out;
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+.rank-infinite-bg .rank-item-title {
+    background: linear-gradient(to right, 
+                #00FFFF, 
+                #FFFFFF, 
+                #00FFFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: infiniteGlow 3s infinite linear;
+}
+
+@keyframes infiniteGlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Text styles for all ranks */
+.rank-item-title {
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.rank-item-threshold {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Hover effects */
+.rank-item:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .rank-item-title {
+        font-size: 1.3rem;
+    }
+    .rank-item-threshold {
+        font-size: 0.9rem;
+    }
+}
         /* Estilos para el rango misterioso y revelado */
 .rank-mystery-bg {
     background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
