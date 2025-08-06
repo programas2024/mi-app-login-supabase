@@ -98,161 +98,223 @@
             display: none !important; /* Oculta el icono por defecto de SweetAlert si vas a usar uno personalizado en el html */
         }
         body {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            font-family: 'Poppins', sans-serif;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: var(--background-color, #f5f7fa);
+    color: var(--text-color, #2d3748);
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
 
-        .rankings-full-container {
-            background-color: var(--card-bg-color, #ffffff); /* Contenedor principal blanco o color de tarjeta */
-            border-radius: 18px; /* Bordes más suaves */
-            padding: 40px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
-            width: 100%;
-            max-width: 950px; /* Un poco más ancho para los rangos horizontales */
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+.rankings-full-container {
+    background-color: var(--card-bg-color, #ffffff);
+    border-radius: 24px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 1000px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-        .rankings-full-container h2 {
-            font-size: 2.8em; /* Título más grande */
-            color: var(--primary-color);
-            margin-bottom: 35px; /* Más espacio */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-weight: 800; /* Extra bold */
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* Sombra de texto más fuerte */
-        }
+.rankings-full-container h2 {
+    font-size: 2.5em;
+    color: var(--primary-color, #4a6cf7);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
 
-        .rankings-full-container h2 .fas {
-            font-size: 1.8em; /* Icono del título más grande */
-            color: var(--accent-color, #ffd700); /* Color acento para el icono */
-        }
+.rankings-full-container h2 .fas {
+    font-size: 1.5em;
+    color: var(--accent-color, #f6c90e);
+}
 
-        /* Contenedor de la lista de rangos para scroll horizontal */
-        .ranks-list-outer-wrapper {
-            overflow-x: auto; /* Habilitar scroll horizontal */
-            padding-bottom: 20px; /* Espacio para la barra de scroll */
-            margin-bottom: 40px; /* Más espacio antes del botón */
-            -webkit-overflow-scrolling: touch; /* Suavizar el scroll en iOS */
-            /* Estilo de la barra de scroll */
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: var(--primary-color) #f0f0f0; /* Color de scroll Firefox */
-        }
-        .ranks-list-outer-wrapper::-webkit-scrollbar {
-            height: 8px; /* Altura de la barra de scroll */
-        }
-        .ranks-list-outer-wrapper::-webkit-scrollbar-track {
-            background: #f0f0f0; /* Fondo de la barra de scroll */
-            border-radius: 10px;
-        }
-        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary-color); /* Color del "pulgar" de la barra de scroll */
-            border-radius: 10px;
-        }
-        .ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--button-hover-bg-color);
-        }
+/* Improved horizontal scroll container */
+.ranks-list-outer-wrapper {
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color, #4a6cf7) #f0f0f0;
+}
 
-        /* Lista de rangos con Flexbox para disposición horizontal */
-        .rankings-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            gap: 25px; /* Más espacio entre los elementos de rango */
-            flex-wrap: nowrap;
-            justify-content: flex-start;
-            min-width: fit-content;
-        }
+.ranks-list-outer-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
 
-        /* Estilos base para cada tarjeta de rango */
-        .rank-item {
-            flex-shrink: 0;
-            width: 200px; /* Ancho fijo más generoso para cada tarjeta */
-            border-radius: 18px; /* Bordes más redondeados */
-            padding: 25px 20px; /* Más padding */
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); /* Sombra base */
-            border: 3px solid transparent; /* Borde transparente por defecto, se define por clases de rango */
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave para todos los cambios */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-        }
+.ranks-list-outer-wrapper::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+    margin: 0 20px;
+}
 
-        .rank-item:hover:not(.current-user-rank) {
-            transform: translateY(-8px); /* Elevación más pronunciada al pasar el ratón */
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-            /* El borde y fondo específicos del hover se definirán con el color de cada rango */
-        }
+.ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
+    background: var(--primary-color, #4a6cf7);
+    border-radius: 10px;
+}
 
-        .rank-item-icon {
-            font-size: 3.8em; /* Iconos más grandes y impactantes */
-            margin-bottom: 20px;
-            line-height: 1;
-            transition: color 0.4s ease; /* Transición para el color del icono */
-        }
+.ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--button-hover-bg-color, #3a5bd9);
+}
 
-        .rank-item-title {
-            font-weight: 800; /* Más audaz */
-            font-size: 1.4em;
-            margin-bottom: 10px;
-            color: #ffffff; /* Por defecto blanco para contrastar con degradados oscuros */
-        }
+/* Modern rank list */
+.rankings-list {
+    list-style: none;
+    padding: 0 20px;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    min-width: fit-content;
+}
 
-        .rank-item-threshold {
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.8); /* Blanco transparente para el umbral */
-        }
+/* Enhanced rank card design */
+.rank-item {
+    flex-shrink: 0;
+    width: 220px;
+    border-radius: 20px;
+    padding: 25px 20px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
 
-        /* Estilos para el botón de reclamar recompensa */
-        .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-top: 15px;
-            font-size: 0.95em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: calc(100% - 20px); /* Ajusta al ancho de la tarjeta */
-        }
+.rank-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #4a6cf7, #f6c90e);
+}
 
-        .claim-reward-btn:hover {
-            background: linear-gradient(to right, #218838, #1e7e34);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
+.rank-item:hover:not(.current-user-rank) {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
 
-        .claim-reward-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-        .claim-reward-btn .fas {
-            font-size: 1em;
-        }
+.rank-item-icon {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+    line-height: 1;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #4a6cf7, #f6c90e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(74, 108, 247, 0.1);
+}
 
+.rank-item-title {
+    font-weight: 700;
+    font-size: 1.3em;
+    margin-bottom: 8px;
+    color: var(--text-color, #2d3748);
+}
+
+.rank-item-threshold {
+    font-size: 0.9em;
+    color: var(--text-secondary, #718096);
+    margin-bottom: 15px;
+}
+
+/* Current user highlight */
+.current-user-rank {
+    border: 2px solid var(--accent-color, #f6c90e);
+    box-shadow: 0 0 0 4px rgba(246, 201, 14, 0.2);
+    transform: scale(1.02);
+}
+
+.current-user-rank .rank-item-icon {
+    transform: scale(1.1);
+}
+
+/* Improved reward button */
+.claim-reward-btn {
+    background: linear-gradient(to right, #4a6cf7, #6a5acd);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    min-width: 150px;
+}
+
+.claim-reward-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(74, 108, 247, 0.4);
+}
+
+.claim-reward-btn:active {
+    transform: translateY(0);
+}
+
+.claim-reward-btn:disabled {
+    background: #e2e8f0;
+    color: #a0aec0;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.claim-reward-btn .fas {
+    font-size: 1em;
+}
+
+/* Progress indicator */
+.progress-indicator {
+    width: 100%;
+    height: 6px;
+    background: #edf2f7;
+    border-radius: 3px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(to right, #4a6cf7, #f6c90e);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
 
         /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
 
