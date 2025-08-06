@@ -258,46 +258,60 @@
 /* --- Premium Rank Background Styles --- */
 
 /* Bronze - Now with metallic texture effect */
+/* Bronze Rank with Silver-Style Effects */
 .rank-bronze-bg {
     background: linear-gradient(135deg, 
-                #8B4513 0%, 
-                #CD853F 30%, 
-                #B87333 70%, 
-                #8B4513 100%);
-    border: 2px solid rgba(90, 44, 10, 0.7);
+                #8B4513 0%,  /* SaddleBrown */
+                #CD853F 30%,  /* Peru */
+                #B87333 70%,  /* Bronze */
+                #8B4513 100%); /* SaddleBrown */
+    border: 2px solid rgba(112, 128, 144, 0.7); /* SlateGray border like silver */
     position: relative;
     overflow: hidden;
 }
 
+/* Silver-style metallic shine for bronze */
 .rank-bronze-bg::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        to bottom right,
-        rgba(255, 255, 255, 0) 45%,
-        rgba(255, 255, 255, 0.15) 50%,
-        rgba(255, 255, 255, 0) 55%
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 70% 30%,
+        rgba(255, 255, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 70%
     );
-    transform: rotate(30deg);
-    animation: metallicShine 6s infinite linear;
 }
 
+/* Keep original bronze icon color */
 .rank-bronze-bg .rank-item-icon { 
-    color: #FFE4C4; /* Bisque for better contrast */
+    color: #FFDAB9; /* PeachPuff - original bronze icon color */
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Hover state with silver-style effect */
 .rank-bronze-bg:hover {
     background: linear-gradient(135deg, 
-                #A0522D 0%, 
-                #DEB887 30%, 
-                #CD7F32 70%, 
-                #A0522D 100%);
-    border-color: rgba(106, 58, 27, 0.8);
+                #A0522D 0%,  /* Sienna */
+                #DEB887 30%, /* BurlyWood */
+                #CD7F32 70%, /* Bronze */
+                #A0522D 100%); /* Sienna */
+    border-color: rgba(131, 149, 163, 0.8); /* SlateGray hover border like silver */
+}
+
+/* Keep all other original bronze styles */
+.rank-bronze-bg .rank-item-title,
+.rank-bronze-bg .rank-item-threshold {
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Maintain original animations */
+@keyframes metallicShine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
 }
 
 /* Silver - Enhanced metallic effect */
