@@ -11,92 +11,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+       <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rangos del Juego</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background-color: #121212;
+            --card-bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --primary-color: #6a5acd;
+            --accent-color: #ffd700;
+            --button-bg-color: #4a90e2;
+            --button-hover-bg-color: #6a5acd;
+            --button-text-color: #ffffff;
+        }
+
         /* Estilos generales del cuerpo y contenedor principal */
-
-        .swal2-diamond-burst {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 4em; /* Icono grande */
-            color: #ffd700; /* Color oro */
-            margin-bottom: 20px;
-            position: relative;
-            animation: bounceIn 0.8s ease-out; /* Animación de entrada */
-        }
-
-        /* Animación para el icono de diamantes */
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-
-        /* Pequeñas partículas de diamante que explotan */
-        .swal2-diamond-burst::before,
-        .swal2-diamond-burst::after {
-            content: '\f219'; /* Código del icono de diamante (fa-gem) */
-            font-family: 'Font Awesome 6 Free'; /* Asegúrate de que Font Awesome esté cargado */
-            font-weight: 900; /* Solid icon */
-            position: absolute;
-            font-size: 0.5em; /* Más pequeño que el icono principal */
-            color: #ADD8E6; /* LightBlue para contraste */
-            opacity: 0;
-            animation: diamondExplode 1.5s ease-out forwards;
-        }
-
-        .swal2-diamond-burst::before {
-            transform: translate(-30px, -20px);
-            animation-delay: 0.1s;
-        }
-
-        .swal2-diamond-burst::after {
-            transform: translate(30px, 20px);
-            animation-delay: 0.2s;
-            color: #FFB6C1; /* Pink */
-        }
-
-        @keyframes diamondExplode {
-            0% { opacity: 1; transform: translate(0,0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
-        }
-        /* Custom properties para la explosión (se definirán en JS si se necesita más control) */
-
-
-        /* Estilos para el pop-up de SweetAlert para modo oscuro */
-        .swal2-dark-mode {
-            background: #2c3e50 !important; /* Un gris oscuro/azul para el fondo del pop-up */
-            color: #ecf0f1 !important; /* Texto blanco/gris claro */
-            border-radius: 15px !important;
-        }
-
-        .swal2-dark-mode .swal2-title {
-            color: #ecf0f1 !important;
-            font-weight: 700 !important;
-        }
-
-        .swal2-dark-mode .swal2-html-container {
-            color: #bdc3c7 !important; /* Color para el texto del mensaje */
-        }
-
-        .swal2-confirm-button {
-            background-color: #3498db !important; /* Azul atractivo para el botón */
-            color: white !important;
-            border-radius: 8px !important;
-            padding: 10px 20px !important;
-            font-size: 1.1em !important;
-            transition: background-color 0.3s ease, transform 0.2s ease !important;
-        }
-
-        .swal2-confirm-button:hover {
-            background-color: #2980b9 !important;
-            transform: translateY(-2px) !important;
-        }
-
-        /* Asegúrate de que SweetAlert maneje correctamente los iconos personalizados si usas HTML */
-        .swal2-popup .swal2-icon {
-            display: none !important; /* Oculta el icono por defecto de SweetAlert si vas a usar uno personalizado en el html */
-        }
         body {
             display: flex;
             justify-content: center;
@@ -108,60 +47,104 @@
             padding: 20px;
             box-sizing: border-box;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(106, 90, 205, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.15) 0%, transparent 20%);
+            background-attachment: fixed;
         }
 
         .rankings-full-container {
-            background-color: var(--card-bg-color, #ffffff); /* Contenedor principal blanco o color de tarjeta */
-            border-radius: 18px; /* Bordes más suaves */
+            background-color: var(--card-bg-color);
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada */
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(106, 90, 205, 0.3);
             width: 100%;
-            max-width: 950px; /* Un poco más ancho para los rangos horizontales */
+            max-width: 1000px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(106, 90, 205, 0.3);
+            z-index: 1;
+        }
+
+        .rankings-full-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 70%);
+            animation: rotate 60s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .rankings-full-container h2 {
-            font-size: 2.8em; /* Título más grande */
-            color: var(--primary-color);
-            margin-bottom: 35px; /* Más espacio */
+            font-size: 3em;
+            color: var(--accent-color);
+            margin-bottom: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            font-weight: 800; /* Extra bold */
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15); /* Sombra de texto más fuerte */
+            font-weight: 800;
+            text-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.5),
+                2px 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .rankings-full-container h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+            border-radius: 50%;
         }
 
         .rankings-full-container h2 .fas {
-            font-size: 1.8em; /* Icono del título más grande */
-            color: var(--accent-color, #ffd700); /* Color acento para el icono */
+            font-size: 1.8em;
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.7));
         }
 
         /* Contenedor de la lista de rangos para scroll horizontal */
         .ranks-list-outer-wrapper {
-            overflow-x: auto; /* Habilitar scroll horizontal */
-            padding-bottom: 20px; /* Espacio para la barra de scroll */
-            margin-bottom: 40px; /* Más espacio antes del botón */
-            -webkit-overflow-scrolling: touch; /* Suavizar el scroll en iOS */
-            /* Estilo de la barra de scroll */
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: var(--primary-color) #f0f0f0; /* Color de scroll Firefox */
+            overflow-x: auto;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) #2a2a2a;
         }
+        
         .ranks-list-outer-wrapper::-webkit-scrollbar {
-            height: 8px; /* Altura de la barra de scroll */
+            height: 10px;
         }
+        
         .ranks-list-outer-wrapper::-webkit-scrollbar-track {
-            background: #f0f0f0; /* Fondo de la barra de scroll */
+            background: #2a2a2a;
             border-radius: 10px;
         }
+        
         .ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary-color); /* Color del "pulgar" de la barra de scroll */
+            background: var(--accent-color);
             border-radius: 10px;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
         }
+        
         .ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--button-hover-bg-color);
+            background: #ffea00;
         }
 
         /* Lista de rangos con Flexbox para disposición horizontal */
@@ -170,7 +153,7 @@
             padding: 0;
             margin: 0;
             display: flex;
-            gap: 25px; /* Más espacio entre los elementos de rango */
+            gap: 30px;
             flex-wrap: nowrap;
             justify-content: flex-start;
             min-width: fit-content;
@@ -179,606 +162,354 @@
         /* Estilos base para cada tarjeta de rango */
         .rank-item {
             flex-shrink: 0;
-            width: 200px; /* Ancho fijo más generoso para cada tarjeta */
-            border-radius: 18px; /* Bordes más redondeados */
-            padding: 25px 20px; /* Más padding */
+            width: 220px;
+            border-radius: 20px;
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); /* Sombra base */
-            border: 3px solid transparent; /* Borde transparente por defecto, se define por clases de rango */
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transición suave para todos los cambios */
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.3),
+                inset 0 0 15px rgba(255, 255, 255, 0.05);
+            border: 3px solid transparent;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .rank-item::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05), 
+                rgba(255, 255, 255, 0.1));
+            z-index: -1;
+            border-radius: 20px;
         }
 
         .rank-item:hover:not(.current-user-rank) {
-            transform: translateY(-8px); /* Elevación más pronunciada al pasar el ratón */
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-            /* El borde y fondo específicos del hover se definirán con el color de cada rango */
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
         .rank-item-icon {
-            font-size: 3.8em; /* Iconos más grandes y impactantes */
+            font-size: 4.5em;
             margin-bottom: 20px;
             line-height: 1;
-            transition: color 0.4s ease; /* Transición para el color del icono */
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .rank-item-title {
-            font-weight: 800; /* Más audaz */
-            font-size: 1.4em;
+            font-weight: 800;
+            font-size: 1.5em;
             margin-bottom: 10px;
-            color: #ffffff; /* Por defecto blanco para contrastar con degradados oscuros */
+            color: #ffffff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
         }
 
         .rank-item-threshold {
-            font-size: 0.95em;
-            color: rgba(255, 255, 255, 0.8); /* Blanco transparente para el umbral */
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
         }
 
         /* Estilos para el botón de reclamar recompensa */
         .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
+            background: linear-gradient(to right, #28a745, #218838);
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-top: 15px;
-            font-size: 0.95em;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-top: 20px;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            width: calc(100% - 20px); /* Ajusta al ancho de la tarjeta */
+            gap: 10px;
+            width: calc(100% - 20px);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .claim-reward-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
         }
 
         .claim-reward-btn:hover {
             background: linear-gradient(to right, #218838, #1e7e34);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .claim-reward-btn:hover::before {
+            left: 100%;
         }
 
         .claim-reward-btn:disabled {
-            background: #cccccc;
+            background: #555555;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
-        }
-        .claim-reward-btn .fas {
-            font-size: 1em;
+            opacity: 0.7;
         }
 
+        .claim-reward-btn .fas {
+            font-size: 1.1em;
+        }
 
         /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
 
         /* Bronce */
         .rank-bronze-bg {
-            background: linear-gradient(135deg, #8B4513, #CD853F); /* SaddleBrown a Peru */
-            border-color: #5A2C0A; /* Marrón oscuro para el borde */
+            background: linear-gradient(135deg, #8B4513, #CD853F);
+            border-color: #5A2C0A;
         }
-        .rank-bronze-bg .rank-item-icon { color: #FFDAB9; } /* Melocotón para el icono */
+        .rank-bronze-bg .rank-item-icon { 
+            color: #FFDAB9;
+            text-shadow: 0 0 15px rgba(210, 180, 140, 0.5);
+        }
         .rank-bronze-bg:hover {
-            background: linear-gradient(135deg, #a0522d, #deb887); /* Un poco más claro al hover */
+            background: linear-gradient(135deg, #a0522d, #deb887);
             border-color: #6a3a1b;
+            box-shadow: 
+                0 0 30px rgba(205, 133, 63, 0.6),
+                0 8px 25px rgba(0, 0, 0, 0.3);
         }
-
 
         /* Plata */
         .rank-silver-bg {
-            background: linear-gradient(135deg, #A9A9A9, #C0C0C0); /* DarkGray a Silver */
-            border-color: #708090; /* SlateGray para el borde */
+            background: linear-gradient(135deg, #A9A9A9, #C0C0C0);
+            border-color: #708090;
         }
-        .rank-silver-bg .rank-item-icon { color: #E6E6FA; } /* Lavanda para el icono */
+        .rank-silver-bg .rank-item-icon { 
+            color: #E6E6FA;
+            text-shadow: 0 0 20px rgba(230, 230, 250, 0.7);
+        }
         .rank-silver-bg:hover {
-            background: linear-gradient(135deg, #B0C4DE, #DCDCDC); /* LightSteelBlue a Gainsboro al hover */
+            background: linear-gradient(135deg, #B0C4DE, #DCDCDC);
             border-color: #8395A3;
+            box-shadow: 
+                0 0 30px rgba(192, 192, 192, 0.7),
+                0 8px 25px rgba(0, 0, 0, 0.3);
         }
-
 
         /* Oro */
         .rank-gold-bg {
-            background: linear-gradient(135deg, #FFD700, #DAA520); /* Gold a Goldenrod */
-            border-color: #B8860B; /* DarkGoldenrod para el borde */
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            border-color: #B8860B;
         }
-        .rank-gold-bg .rank-item-icon { color: #FFFACD; } /* LemonChiffon para el icono */
+        .rank-gold-bg .rank-item-icon { 
+            color: #FFFACD;
+            text-shadow: 0 0 25px rgba(255, 250, 205, 0.8);
+        }
         .rank-gold-bg:hover {
-            background: linear-gradient(135deg, #FFEA00, #F0C420); /* Dorado más brillante al hover */
+            background: linear-gradient(135deg, #FFEA00, #F0C420);
             border-color: #D4AF37;
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.8),
+                0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
-
-        /* Místico - ¡Magia Pura! */
+        /* Místico */
         .rank-mystic-bg {
-            background: linear-gradient(135deg, #8A2BE2, #C71585); /* BlueViolet a MediumVioletRed */
-            border: 3px solid #FFD700; /* Borde dorado resplandeciente */
-            box-shadow: 0 0 25px rgba(138, 43, 226, 0.7), 0 0 40px rgba(255, 215, 0, 0.5); /* Sombra con glow morado y dorado */
+            background: linear-gradient(135deg, #8A2BE2, #C71585);
+            border: 3px solid #FFD700;
+            box-shadow: 
+                0 0 25px rgba(138, 43, 226, 0.7), 
+                0 0 40px rgba(255, 215, 0, 0.5);
         }
-        /* Icono Místico con degradado */
         .rank-mystic-bg .rank-item-icon {
-            background: linear-gradient(45deg, #E0BBE4, #957DAD); /* Degradado más suave para el icono sobre fondo oscuro */
+            background: linear-gradient(45deg, #E0BBE4, #957DAD);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 4.5em; /* Icono Místico aún más grande */
-        }
-        .rank-mystic-bg .rank-item-title,
-        .rank-mystic-bg .rank-item-threshold {
-            color: #ffffff; /* Texto blanco en Místico */
+            font-size: 5em;
+            text-shadow: none;
         }
         .rank-mystic-bg:hover {
-            background: linear-gradient(135deg, #9932CC, #DA70D6); /* DarkOrchid a Orchid al hover */
-            box-shadow: 0 0 35px rgba(153, 50, 204, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
+            background: linear-gradient(135deg, #9932CC, #DA70D6);
+            box-shadow: 
+                0 0 35px rgba(153, 50, 204, 0.8), 
+                0 0 50px rgba(255, 215, 0, 0.6);
         }
 
-        /* --- Estilo para el RANGO ACTUAL del usuario (Resaltado Potente) --- */
-        .rank-item.current-user-rank {
-            /* Degradado de fondo para el rango actual - puede ser un color neutro brillante o un degradado específico */
-            background: linear-gradient(135deg, var(--primary-color, #4a90e2), var(--button-hover-bg-color, #6a5acd)) !important;
-            color: #ffffff !important; /* Texto blanco para contraste */
-            border: 5px solid #FFD700 !important; /* ¡Borde dorado muy grueso y llamativo! */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3) !important; /* Sombra con fuerte glow dorado */
-            transform: scale(1.12) !important; /* Efecto "pop" MUCHO más pronunciado */
-            position: relative;
-            z-index: 5; /* Asegura que esté muy al frente */
-            animation: currentRankPulse 2s infinite alternate ease-in-out; /* Animación de pulsación más elegante */
-        }
-
-        /* Animación para el rango actual */
-        @keyframes currentRankPulse {
-            0% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
-            50% { transform: scale(1.15); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 40px #FFFA00, 0 0 80px rgba(255, 240, 0, 0.5); }
-            100% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
-        }
-
-        /* Asegurar colores de texto e icono para el rango actual */
-        .rank-item.current-user-rank .rank-item-title,
-        .rank-item.current-user-rank .rank-item-threshold {
-            color: #ffffff !important; /* Texto blanco en el rango resaltado */
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* Sombra de texto para mejorar legibilidad */
-        }
-        .rank-item.current-user-rank .rank-item-icon {
-            color: #ffffff !important; /* Icono blanco en el rango resaltado */
-            background: none !important; /* Elimina el degradado del ícono místico para que sea blanco */
-            -webkit-text-fill-color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para el icono */
-        }
-
-
-        /* Loader para esta página (sin cambios significativos) */
-        #loader-rankings {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.88); /* Más oscuro */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #f0f0f0;
-            font-size: 1.4em;
-            z-index: 1000;
-            border-radius: 18px; /* Coincide con el contenedor padre */
-            transition: opacity 0.3s ease;
-        }
-        #loader-rankings.loader-hidden {
-            opacity: 0;
-            pointer-events: none;
-            display: flex;
-        }
-        #loader-rankings .spinner {
-            border: 6px solid rgba(255, 255, 255, 0.25);
-            border-top: 6px solid var(--primary-color);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        /* Botón de Volver (sin cambios significativos) */
-        .btn-back-dashboard {
-            background-color: var(--button-bg-color);
-            color: var(--button-text-color);
-            border: none;
-            border-radius: 12px; /* Bordes más redondeados */
-            padding: 15px 30px; /* Más padding */
-            margin-top: 40px; /* Más espacio */
-            cursor: pointer;
-            font-size: 1.2em;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-back-dashboard:hover {
-            background-color: var(--button-hover-bg-color);
-            transform: translateY(-5px); /* Efecto de "levantar" más pronunciado */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
-        }
-
-        .btn-back-dashboard .fas {
-            font-size: 1.2em;
-        }
-
-        /* Media Queries para responsividad (ajustadas) */
-        @media (max-width: 768px) {
-            .rankings-full-container {
-                padding: 25px;
-                border-radius: 15px;
-            }
-            .rankings-full-container h2 {
-                font-size: 2.2em;
-                margin-bottom: 25px;
-            }
-            .ranks-list-outer-wrapper {
-                padding-bottom: 15px;
-                margin-bottom: 30px;
-            }
-            .rankings-list {
-                gap: 20px;
-            }
-            .rank-item {
-                width: 170px;
-                padding: 20px 15px;
-            }
-            .rank-item-icon {
-                font-size: 3.2em;
-            }
-            .rank-mystic-bg .rank-item-icon {
-                font-size: 4em;
-            }
-            .rank-item-title {
-                font-size: 1.2em;
-            }
-            .rank-item-threshold {
-                font-size: 0.9em;
-            }
-            .rank-item.current-user-rank {
-                transform: scale(1.1) !important;
-            }
-            @keyframes currentRankPulse {
-                0% { transform: scale(1.1); }
-                50% { transform: scale(1.12); }
-                100% { transform: scale(1.1); }
-            }
-            .btn-back-dashboard {
-                padding: 12px 25px;
-                font-size: 1.1em;
-                margin-top: 30px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .rankings-full-container {
-                padding: 15px;
-                border-radius: 12px;
-            }
-            .rankings-full-container h2 {
-                font-size: 1.8em;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-            .ranks-list-outer-wrapper {
-                padding-bottom: 10px;
-                margin-bottom: 20px;
-            }
-            .rankings-list {
-                gap: 15px;
-            }
-            .rank-item {
-                width: 140px; /* Ajuste para pantallas muy pequeñas */
-                padding: 15px 10px;
-            }
-            .rank-item-icon {
-                font-size: 2.8em;
-                margin-bottom: 15px;
-            }
-            .rank-mystic-bg .rank-item-icon {
-                font-size: 3.5em;
-            }
-            .rank-item-title {
-                font-size: 1.1em;
-                margin-bottom: 5px;
-            }
-            .rank-item-threshold {
-                font-size: 0.8em;
-            }
-            .rank-item.current-user-rank {
-                transform: scale(1.08) !important;
-                border-width: 4px !important;
-            }
-            @keyframes currentRankPulse {
-                0% { transform: scale(1.08); }
-                50% { transform: scale(1.1); }
-                100% { transform: scale(1.08); }
-            }
-            .btn-back-dashboard {
-                font-size: 0.9em;
-                padding: 10px 20px;
-                margin-top: 25px;
-            }
-        }
-
-        /* --- NUEVOS ESTILOS PARA EL EFECTO DE DIAMANTES EN LA ALERTA (SweetAlert) --- */
-        .swal2-diamond-burst {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 4em; /* Icono grande */
-            color: #ffd700; /* Color oro */
-            margin-bottom: 20px;
-            position: relative;
-            animation: bounceIn 0.8s ease-out; /* Animación de entrada */
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.4); /* Brillo */
-        }
-
-        /* Animación para el icono de diamantes */
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-
-        /* Pequeñas partículas de diamante que "explotan" desde el icono principal */
-        .swal2-diamond-burst::before,
-        .swal2-diamond-burst::after {
-            content: '\f219'; /* Código del icono de diamante (fa-gem) de Font Awesome */
-            font-family: 'Font Awesome 6 Free'; /* Asegúrate de que Font Awesome esté cargado */
-            font-weight: 900; /* Para el icono sólido */
-            position: absolute;
-            font-size: 0.5em; /* Más pequeño que el icono principal */
-            opacity: 0; /* Inicialmente invisible */
-            animation: diamondExplode 1.5s ease-out forwards; /* Animación de explosión */
-        }
-
-        .swal2-diamond-burst::before {
-            color: #ADD8E6; /* LightBlue para contraste */
-            transform: translate(-30px, -20px); /* Posición inicial */
-            animation-delay: 0.1s; /* Retraso para que aparezcan en momentos diferentes */
-            --dx: -60px; /* Desplazamiento final X */
-            --dy: -40px; /* Desplazamiento final Y */
-        }
-
-        .swal2-diamond-burst::after {
-            color: #FFB6C1; /* Pink */
-            transform: translate(30px, 20px); /* Posición inicial */
-            animation-delay: 0.2s; /* Retraso */
-            --dx: 60px; /* Desplazamiento final X */
-            --dy: 40px; /* Desplazamiento final Y */
-        }
-
-        @keyframes diamondExplode {
-            0% { opacity: 1; transform: translate(0,0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); } /* Se encogen y se desvanecen */
-        }
-
-        /* Estilos para el pop-up de SweetAlert en modo oscuro */
-        .swal2-dark-mode {
-            background: #2c3e50 !important; /* Un gris oscuro/azul para el fondo del pop-up */
-            color: #ecf0f1 !important; /* Texto blanco/gris claro */
-            border-radius: 15px !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important; /* Sombra más profunda */
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Borde sutil */
-        }
-
-        .swal2-dark-mode .swal2-title {
-            color: #ecf0f1 !important;
-            font-weight: 700 !important;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-
-        .swal2-dark-mode .swal2-html-container {
-            color: #bdc3c7 !important; /* Color para el texto del mensaje */
-        }
-
-        .swal2-confirm-button {
-            background-color: #3498db !important; /* Azul atractivo para el botón */
-            color: white !important;
-            border-radius: 8px !important;
-            padding: 10px 20px !important;
-            font-size: 1.1em !important;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .swal2-confirm-button:hover {
-            background-color: #2980b9 !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Oculta el icono por defecto de SweetAlert ya que usaremos uno personalizado en el HTML */
-        .swal2-popup .swal2-icon {
-            display: none !important;
-        }
-
-        /* Estilos para el botón de reclamar en la lista de rangos */
-        .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px; /* Espacio entre icono y texto */
-            margin-top: 10px;
-            width: fit-content; /* Se ajusta al contenido */
-        }
-
-        .claim-reward-btn:hover:not([disabled]) {
-            background: linear-gradient(to right, #218838, #1e7e34);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .claim-reward-btn[disabled] {
-            background: #cccccc; /* Gris para deshabilitado */
-            cursor: not-allowed;
-            box-shadow: none;
-            opacity: 0.7;
-        }
-
-        .claim-reward-btn[disabled]:hover {
-            transform: none; /* Evita cualquier transformación al hacer hover cuando está deshabilitado */
-        }
-
-         /* Diamante */
+        /* Diamante */
         .rank-diamond-bg {
-            background: linear-gradient(135deg, #00BFFF, #1E90FF); /* DeepSkyBlue a DodgerBlue */
+            background: linear-gradient(135deg, #00BFFF, #1E90FF);
             border: 3px solid #FFFFFF;
             box-shadow: 0 0 25px rgba(30, 144, 255, 0.7);
         }
         .rank-diamond-bg .rank-item-icon {
             color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
         }
         .rank-diamond-bg:hover {
-            background: linear-gradient(135deg, #87CEFA, #1E90FF); /* LightSkyBlue a DodgerBlue */
-            box-shadow: 0 0 35px rgba(30, 144, 255, 0.9);
+            background: linear-gradient(135deg, #87CEFA, #1E90FF);
+            box-shadow: 0 0 40px rgba(30, 144, 255, 0.9);
         }
 
         /* Élite */
         .rank-elite-bg {
-            background: linear-gradient(135deg, #9370DB, #8A2BE2); /* MediumPurple a BlueViolet */
+            background: linear-gradient(135deg, #9370DB, #8A2BE2);
             border: 3px solid #FFD700;
         }
         .rank-elite-bg .rank-item-icon {
             color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         .rank-elite-bg:hover {
-            background: linear-gradient(135deg, #BA55D3, #9932CC); /* MediumOrchid a DarkOrchid */
-            box-shadow: 0 0 35px rgba(154, 50, 204, 0.9);
+            background: linear-gradient(135deg, #BA55D3, #9932CC);
+            box-shadow: 0 0 40px rgba(154, 50, 204, 0.9);
         }
 
         /* Legendario */
         .rank-legendary-bg {
-            background: linear-gradient(135deg, #FF8C00, #FF4500); /* DarkOrange a OrangeRed */
+            background: linear-gradient(135deg, #FF8C00, #FF4500);
             border: 3px solid #FFD700;
             box-shadow: 0 0 25px rgba(255, 69, 0, 0.7);
         }
         .rank-legendary-bg .rank-item-icon {
             color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         .rank-legendary-bg:hover {
-            background: linear-gradient(135deg, #FFA500, #FF6347); /* Orange a Tomato */
-            box-shadow: 0 0 35px rgba(255, 69, 0, 0.9);
+            background: linear-gradient(135deg, #FFA500, #FF6347);
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.9);
         }
 
         /* Celestial */
         .rank-celestial-bg {
-            background: linear-gradient(135deg, #4169E1, #0000FF); /* RoyalBlue a Blue */
+            background: linear-gradient(135deg, #4169E1, #0000FF);
             border: 3px solid #FFFFFF;
             box-shadow: 0 0 25px rgba(65, 105, 225, 0.7);
         }
         .rank-celestial-bg .rank-item-icon {
             color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
         }
         .rank-celestial-bg:hover {
-            background: linear-gradient(135deg, #4682B4, #0000CD); /* SteelBlue a MediumBlue */
-            box-shadow: 0 0 35px rgba(70, 130, 180, 0.9);
+            background: linear-gradient(135deg, #4682B4, #0000CD);
+            box-shadow: 0 0 40px rgba(70, 130, 180, 0.9);
         }
 
         /* Arcángel */
         .rank-archangel-bg {
-            background: linear-gradient(135deg, #FF1493, #C71585); /* DeepPink a MediumVioletRed */
+            background: linear-gradient(135deg, #FF1493, #C71585);
             border: 3px solid #FFFFFF;
             box-shadow: 0 0 25px rgba(255, 20, 147, 0.7);
         }
         .rank-archangel-bg .rank-item-icon {
             color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
         }
         .rank-archangel-bg:hover {
-            background: linear-gradient(135deg, #FF69B4, #DB7093); /* HotPink a PaleVioletRed */
-            box-shadow: 0 0 35px rgba(255, 105, 180, 0.9);
+            background: linear-gradient(135deg, #FF69B4, #DB7093);
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.9);
         }
 
         /* Titán */
         .rank-titan-bg {
-            background: linear-gradient(135deg, #32CD32, #228B22); /* LimeGreen a ForestGreen */
+            background: linear-gradient(135deg, #32CD32, #228B22);
             border: 3px solid #FFD700;
             box-shadow: 0 0 25px rgba(50, 205, 50, 0.7);
         }
         .rank-titan-bg .rank-item-icon {
             color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         .rank-titan-bg:hover {
-            background: linear-gradient(135deg, #00FA9A, #2E8B57); /* MediumSpringGreen a SeaGreen */
-            box-shadow: 0 0 35px rgba(0, 250, 154, 0.9);
+            background: linear-gradient(135deg, #00FA9A, #2E8B57);
+            box-shadow: 0 0 40px rgba(0, 250, 154, 0.9);
         }
 
         /* Dragón */
         .rank-dragon-bg {
-            background: linear-gradient(135deg, #800000, #B22222); /* Maroon a FireBrick */
+            background: linear-gradient(135deg, #800000, #B22222);
             border: 3px solid #FFD700;
             box-shadow: 0 0 25px rgba(178, 34, 34, 0.7);
         }
         .rank-dragon-bg .rank-item-icon {
             color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         .rank-dragon-bg:hover {
-            background: linear-gradient(135deg, #DC143C, #8B0000); /* Crimson a DarkRed */
-            box-shadow: 0 0 35px rgba(220, 20, 60, 0.9);
+            background: linear-gradient(135deg, #DC143C, #8B0000);
+            box-shadow: 0 0 40px rgba(220, 20, 60, 0.9);
         }
 
         /* Fenix */
         .rank-phoenix-bg {
-            background: linear-gradient(135deg, #FF4500, #FF8C00); /* OrangeRed a DarkOrange */
+            background: linear-gradient(135deg, #FF4500, #FF8C00);
             border: 3px solid #FFD700;
             box-shadow: 0 0 25px rgba(255, 140, 0, 0.7);
         }
         .rank-phoenix-bg .rank-item-icon {
             color: #FFD700;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
         }
         .rank-phoenix-bg:hover {
-            background: linear-gradient(135deg, #FF6347, #FF4500); /* Tomato a OrangeRed */
-            box-shadow: 0 0 35px rgba(255, 99, 71, 0.9);
+            background: linear-gradient(135deg, #FF6347, #FF4500);
+            box-shadow: 0 0 40px rgba(255, 99, 71, 0.9);
         }
 
         /* Omnipotente */
         .rank-omnipotent-bg {
-            background: linear-gradient(135deg, #9400D3, #4B0082); /* DarkViolet a Indigo */
+            background: linear-gradient(135deg, #9400D3, #4B0082);
             border: 3px solid #FFFFFF;
             box-shadow: 0 0 25px rgba(148, 0, 211, 0.7);
         }
         .rank-omnipotent-bg .rank-item-icon {
             color: #FFFFFF;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
         }
         .rank-omnipotent-bg:hover {
-            background: linear-gradient(135deg, #9932CC, #8A2BE2); /* DarkOrchid a BlueViolet */
-            box-shadow: 0 0 35px rgba(153, 50, 204, 0.9);
+            background: linear-gradient(135deg, #9932CC, #8A2BE2);
+            box-shadow: 0 0 40px rgba(153, 50, 204, 0.9);
         }
 
         /* Infinito */
         .rank-infinite-bg {
-            background: linear-gradient(135deg, #000000, #2F4F4F); /* Black a DarkSlateGray */
+            background: linear-gradient(135deg, #000000, #2F4F4F);
             border: 3px solid #00FFFF;
             box-shadow: 0 0 25px rgba(0, 255, 255, 0.7);
             position: relative;
             overflow: hidden;
         }
+        
         .rank-infinite-bg::before {
             content: '';
             position: absolute;
@@ -795,15 +526,18 @@
             transform: rotate(45deg);
             animation: shine 3s infinite;
         }
+        
         .rank-infinite-bg .rank-item-icon {
             color: #00FFFF;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            text-shadow: 0 0 25px rgba(0, 255, 255, 0.9);
             position: relative;
             z-index: 1;
         }
+        
         .rank-infinite-bg:hover {
-            box-shadow: 0 0 35px rgba(0, 255, 255, 0.9);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
         }
+        
         @keyframes shine {
             0% { transform: rotate(45deg) translate(-30%, -30%); }
             100% { transform: rotate(45deg) translate(30%, 30%); }
@@ -815,56 +549,543 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: infiniteGlow 3s infinite linear;
+            background-size: 200% auto;
         }
+        
         @keyframes infiniteGlow {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
-        /* Estilos para el rango misterioso y revelado */
-.rank-mystery-bg {
-    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-    border: 2px solid #555555;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-}
 
-.rank-creator-bg {
-    background: linear-gradient(135deg, #000000 0%, #330066 50%, #000033 100%);
-    border: 2px solid gold;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-    animation: pulse-glow 2s infinite alternate;
-}
+        /* Misterioso */
+        .rank-mystery-bg {
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            border: 2px solid #555555;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+        
+        .rank-mystery-bg .rank-item-icon {
+            color: #666666;
+            text-shadow: 0 0 10px rgba(102, 102, 102, 0.5);
+        }
+        
+        .rank-mystery-bg .rank-item-title,
+        .rank-mystery-bg .rank-item-threshold {
+            color: #888888;
+        }
 
-.rank-mystery-icon {
-    color: #666666;
-}
+        /* Creador */
+        .rank-creator-bg {
+            background: linear-gradient(135deg, #000000, #330066, #000033);
+            border: 2px solid gold;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        
+        .rank-creator-bg .rank-item-icon {
+            color: gold;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+            100% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.9); }
+        }
 
-.rank-creator-icon {
-    color: gold;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-}
+        /* --- Estilo para el RANGO ACTUAL del usuario (Resaltado Potente) --- */
+        .rank-item.current-user-rank {
+            background: linear-gradient(135deg, var(--primary-color), var(--button-hover-bg-color)) !important;
+            color: #ffffff !important;
+            border: 5px solid var(--accent-color) !important;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.7), 
+                0 0 40px var(--accent-color), 
+                0 0 80px rgba(255, 230, 0, 0.4) !important;
+            transform: scale(1.15) !important;
+            position: relative;
+            z-index: 5;
+            animation: currentRankPulse 2s infinite alternate ease-in-out;
+        }
 
-@keyframes pulse-glow {
-    0% {
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    }
-    100% {
-        box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
-    }
-}
+        /* Animación para el rango actual */
+        @keyframes currentRankPulse {
+            0% { 
+                transform: scale(1.15);
+                box-shadow: 
+                    0 15px 40px rgba(0, 0, 0, 0.7), 
+                    0 0 40px var(--accent-color), 
+                    0 0 80px rgba(255, 230, 0, 0.4);
+            }
+            50% { 
+                transform: scale(1.18);
+                box-shadow: 
+                    0 20px 45px rgba(0, 0, 0, 0.8), 
+                    0 0 50px var(--accent-color), 
+                    0 0 100px rgba(255, 240, 0, 0.6);
+            }
+            100% { 
+                transform: scale(1.15);
+                box-shadow: 
+                    0 15px 40px rgba(0, 0, 0, 0.7), 
+                    0 0 40px var(--accent-color), 
+                    0 0 80px rgba(255, 230, 0, 0.4);
+            }
+        }
 
-/* Animación para el efecto de desbloqueo */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(1.2);
-    }
-}
+        /* Asegurar colores de texto e icono para el rango actual */
+        .rank-item.current-user-rank .rank-item-title,
+        .rank-item.current-user-rank .rank-item-threshold {
+            color: #ffffff !important;
+            text-shadow: 
+                1px 1px 3px rgba(0, 0, 0, 0.6),
+                0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .rank-item.current-user-rank .rank-item-icon {
+            color: #ffffff !important;
+            background: none !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.8),
+                0 0 30px var(--accent-color);
+            animation: iconPulse 2s infinite alternate;
+        }
 
-.unlock-effect i {
-    animation: pulse 1s infinite alternate;
-}
+        @keyframes iconPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* Loader para esta página */
+        #loader-rankings {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #f0f0f0;
+            font-size: 1.4em;
+            z-index: 1000;
+            border-radius: 20px;
+            transition: opacity 0.5s ease;
+        }
+        
+        #loader-rankings.loader-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        #loader-rankings .spinner {
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-top: 6px solid var(--accent-color);
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Botón de Volver */
+        .btn-back-dashboard {
+            background: linear-gradient(135deg, var(--primary-color), var(--button-hover-bg-color));
+            color: var(--button-text-color);
+            border: none;
+            border-radius: 15px;
+            padding: 16px 35px;
+            margin-top: 40px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-back-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+        
+        .btn-back-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-back-dashboard:hover::before {
+            left: 100%;
+        }
+        
+        .btn-back-dashboard .fas {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-back-dashboard:hover .fas {
+            transform: translateX(-5px);
+        }
+
+        /* Media Queries para responsividad */
+        @media (max-width: 992px) {
+            .rankings-full-container {
+                padding: 30px;
+                max-width: 90%;
+            }
+            
+            .rankings-full-container h2 {
+                font-size: 2.5em;
+            }
+            
+            .rank-item {
+                width: 200px;
+                padding: 25px 15px;
+            }
+            
+            .rank-item-icon {
+                font-size: 4em;
+            }
+            
+            .rank-mystic-bg .rank-item-icon {
+                font-size: 4.5em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rankings-full-container {
+                padding: 25px;
+                border-radius: 18px;
+            }
+            
+            .rankings-full-container h2 {
+                font-size: 2.2em;
+                margin-bottom: 30px;
+            }
+            
+            .ranks-list-outer-wrapper {
+                padding-bottom: 15px;
+                margin-bottom: 35px;
+            }
+            
+            .rankings-list {
+                gap: 20px;
+            }
+            
+            .rank-item {
+                width: 180px;
+                padding: 20px 15px;
+            }
+            
+            .rank-item-icon {
+                font-size: 3.5em;
+                margin-bottom: 15px;
+            }
+            
+            .rank-mystic-bg .rank-item-icon {
+                font-size: 4em;
+            }
+            
+            .rank-item-title {
+                font-size: 1.3em;
+            }
+            
+            .rank-item-threshold {
+                font-size: 0.95em;
+            }
+            
+            .rank-item.current-user-rank {
+                transform: scale(1.12) !important;
+            }
+            
+            @keyframes currentRankPulse {
+                0% { transform: scale(1.12); }
+                50% { transform: scale(1.15); }
+                100% { transform: scale(1.12); }
+            }
+            
+            .btn-back-dashboard {
+                padding: 14px 30px;
+                font-size: 1.1em;
+                margin-top: 35px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 15px;
+            }
+            
+            .rankings-full-container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            
+            .rankings-full-container h2 {
+                font-size: 1.8em;
+                gap: 10px;
+                margin-bottom: 25px;
+            }
+            
+            .ranks-list-outer-wrapper {
+                padding-bottom: 10px;
+                margin-bottom: 30px;
+            }
+            
+            .rankings-list {
+                gap: 15px;
+            }
+            
+            .rank-item {
+                width: 160px;
+                padding: 18px 12px;
+            }
+            
+            .rank-item-icon {
+                font-size: 3em;
+                margin-bottom: 12px;
+            }
+            
+            .rank-mystic-bg .rank-item-icon {
+                font-size: 3.5em;
+            }
+            
+            .rank-item-title {
+                font-size: 1.1em;
+                margin-bottom: 8px;
+            }
+            
+            .rank-item-threshold {
+                font-size: 0.85em;
+            }
+            
+            .claim-reward-btn {
+                padding: 10px 15px;
+                font-size: 0.9em;
+                margin-top: 15px;
+            }
+            
+            .rank-item.current-user-rank {
+                transform: scale(1.1) !important;
+                border-width: 4px !important;
+            }
+            
+            @keyframes currentRankPulse {
+                0% { transform: scale(1.1); }
+                50% { transform: scale(1.12); }
+                100% { transform: scale(1.1); }
+            }
+            
+            .btn-back-dashboard {
+                font-size: 1em;
+                padding: 12px 25px;
+                margin-top: 30px;
+            }
+        }
+
+        /* --- NUEVOS ESTILOS PARA EL EFECTO DE DIAMANTES EN LA ALERTA (SweetAlert) --- */
+        .swal2-diamond-burst {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5em;
+            color: var(--accent-color);
+            margin-bottom: 25px;
+            position: relative;
+            animation: bounceIn 0.8s ease-out;
+            text-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.8),
+                0 0 40px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Animación para el icono de diamantes */
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.3); opacity: 1; }
+            70% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        /* Pequeñas partículas de diamante que "explotan" desde el icono principal */
+        .swal2-diamond-burst::before,
+        .swal2-diamond-burst::after,
+        .swal2-diamond-burst span::before,
+        .swal2-diamond-burst span::after {
+            content: '\f219';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            font-size: 0.6em;
+            opacity: 0;
+            animation: diamondExplode 1.8s ease-out forwards;
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        .swal2-diamond-burst::before {
+            animation-delay: 0.1s;
+            --dx: -50px;
+            --dy: -30px;
+            color: #ADD8E6;
+        }
+
+        .swal2-diamond-burst::after {
+            animation-delay: 0.2s;
+            --dx: 50px;
+            --dy: 30px;
+            color: #FFB6C1;
+        }
+
+        .swal2-diamond-burst span::before {
+            animation-delay: 0.3s;
+            --dx: -35px;
+            --dy: 35px;
+            color: #98FB98;
+        }
+
+        .swal2-diamond-burst span::after {
+            animation-delay: 0.4s;
+            --dx: 35px;
+            --dy: -35px;
+            color: #FFA07A;
+        }
+
+        @keyframes diamondExplode {
+            0% { opacity: 1; transform: translate(0,0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+        }
+
+        /* Estilos para el pop-up de SweetAlert en modo oscuro */
+        .swal2-dark-mode {
+            background: #1e1e1e !important;
+            color: #ecf0f1 !important;
+            border-radius: 20px !important;
+            box-shadow: 
+                0 10px 35px rgba(0, 0, 0, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(106, 90, 205, 0.3) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .swal2-dark-mode .swal2-title {
+            color: var(--accent-color) !important;
+            font-weight: 800 !important;
+            text-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.3),
+                1px 1px 3px rgba(0, 0, 0, 0.5);
+            font-size: 1.8em !important;
+            margin-bottom: 15px !important;
+        }
+
+        .swal2-dark-mode .swal2-html-container {
+            color: #bdc3c7 !important;
+            font-size: 1.1em !important;
+            line-height: 1.6 !important;
+        }
+
+        .swal2-confirm-button {
+            background: linear-gradient(to right, var(--primary-color), var(--button-hover-bg-color)) !important;
+            color: white !important;
+            border-radius: 12px !important;
+            padding: 12px 25px !important;
+            font-size: 1.1em !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .swal2-confirm-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: 0.5s;
+        }
+
+        .swal2-confirm-button:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .swal2-confirm-button:hover::before {
+            left: 100%;
+        }
+
+        /* Oculta el icono por defecto de SweetAlert ya que usaremos uno personalizado en el HTML */
+        .swal2-popup .swal2-icon {
+            display: none !important;
+        }
+
+        /* Efecto de desbloqueo */
+        .unlock-effect i {
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        /* Efecto de confeti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            opacity: 0;
+            animation: confetti-fall 3s ease-in-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { 
+                transform: translateY(-100px) rotate(0deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(500px) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
     </style>
 </head>
 <body>
@@ -874,11 +1095,12 @@
             <p>Cargando rangos...</p>
         </div>
 
-        <h2><i class="fas fa-medal"></i> Niveles y Rangos</h2>
+        <h2><i class="fas fa-trophy"></i> Niveles y Rangos</h2>
 
         <div class="ranks-list-outer-wrapper">
             <ul class="rankings-list" id="ranks-list">
-                </ul>
+                <!-- Los rangos se cargarán dinámicamente con JavaScript -->
+            </ul>
         </div>
 
         <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
