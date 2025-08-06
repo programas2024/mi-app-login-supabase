@@ -249,63 +249,97 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* SweetAlert2 personalizado */
+        /* SweetAlert2 personalizado - Botones estilo "botonitos" */
         .swal2-popup {
             border-radius: 12px !important;
             font-family: 'Poppins', sans-serif !important;
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            padding: 25px !important;
         }
 
         .swal2-title {
             color: var(--dark) !important;
             font-size: 1.5rem !important;
             font-weight: 600 !important;
+            margin-bottom: 15px !important;
         }
 
         .swal2-html-container {
             font-size: 1rem !important;
             color: var(--text) !important;
+            margin-bottom: 20px !important;
         }
 
         .swal2-actions {
-            gap: 10px !important;
+            gap: 12px !important;
+            margin-top: 0 !important;
         }
 
-        /* Botón de Amigo */
+        /* Botón de Amigo - Estilo "botonito" */
         .swal2-confirm {
-            background: linear-gradient(to right, #4CAF50, #2E7D32) !important;
+            background: #4CAF50 !important;
             border: none !important;
-            border-radius: 8px !important;
-            padding: 10px 24px !important;
+            border-radius: 50px !important;
+            padding: 8px 20px !important;
             font-weight: 500 !important;
+            font-size: 0.9rem !important;
             transition: all 0.2s ease !important;
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
         }
 
-        /* Botón de Chat */
+        /* Botón de Chat - Estilo "botonito" */
         .swal2-deny {
-            background: linear-gradient(to right, #2196F3, #0D47A1) !important;
+            background: #2196F3 !important;
             border: none !important;
-            border-radius: 8px !important;
-            padding: 10px 24px !important;
+            border-radius: 50px !important;
+            padding: 8px 20px !important;
             font-weight: 500 !important;
+            font-size: 0.9rem !important;
             transition: all 0.2s ease !important;
+            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
         }
 
-        /* Botón Cancelar */
+        /* Botón Cancelar - Estilo "botonito" */
         .swal2-cancel {
             background: #f8f9fa !important;
             color: var(--text) !important;
             border: 1px solid #dee2e6 !important;
-            border-radius: 8px !important;
-            padding: 10px 24px !important;
+            border-radius: 50px !important;
+            padding: 8px 20px !important;
             font-weight: 500 !important;
+            font-size: 0.9rem !important;
             transition: all 0.2s ease !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
         }
 
-        .swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover {
+        .swal2-confirm:hover, .swal2-deny:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+            filter: brightness(1.1) !important;
+        }
+
+        .swal2-cancel:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+            background: #e9ecef !important;
+        }
+
+        /* Íconos en los botones */
+        .swal2-confirm i, .swal2-deny i, .swal2-cancel i {
+            font-size: 0.9rem !important;
         }
 
         /* Responsive */
@@ -321,6 +355,11 @@
             .leaderboard-table th, 
             .leaderboard-table td {
                 padding: 12px 15px;
+            }
+
+            .swal2-popup {
+                width: 90% !important;
+                padding: 20px !important;
             }
         }
 
@@ -348,6 +387,15 @@
             .leaderboard-table td {
                 padding: 10px 12px;
                 font-size: 0.85rem;
+            }
+
+            .swal2-actions {
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+
+            .swal2-confirm, .swal2-deny, .swal2-cancel {
+                width: 100% !important;
             }
         }
     </style>
