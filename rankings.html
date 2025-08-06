@@ -578,20 +578,19 @@
         }
         /* Botón de Volver (sin cambios significativos) */
         .btn-back-dashboard {
-            background-color: var(--button-bg-color);
-            color: var(--button-text-color);
+           background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
             border: none;
-            border-radius: 12px; /* Bordes más redondeados */
-            padding: 15px 30px; /* Más padding */
-            margin-top: 40px; /* Más espacio */
+            border-radius: 8px;
+            padding: 12px 24px;
+            margin-top: 25px;
             cursor: pointer;
-            font-size: 1.2em;
-            font-weight: 700;
-            display: inline-flex;
+            font-weight: 600;
+            display: flex;
             align-items: center;
-            gap: 12px;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+            gap: 8px;
+            margin-right: auto; /* Cambiado a margin-right para alinear a la izquierda */
+            transition: transform 0.2s;
         }
 
         .btn-back-dashboard:hover {
@@ -1361,7 +1360,9 @@
             <div class="spinner"></div>
             <p>Cargando rangos...</p>
         </div>
-
+  <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </button>
         <h2><i class="fas fa-medal"></i> Niveles y Rangos</h2>
 
         <div class="ranks-list-outer-wrapper">
@@ -1369,9 +1370,7 @@
                 </ul>
         </div>
 
-        <button id="back-to-dashboard-from-rankings" class="btn btn-back-dashboard">
-            <i class="fas fa-arrow-left"></i> Volver al Dashboard
-        </button>
+      
     </div>
 
     <script type="module">
