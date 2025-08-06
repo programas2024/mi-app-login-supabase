@@ -97,223 +97,309 @@
         .swal2-popup .swal2-icon {
             display: none !important; /* Oculta el icono por defecto de SweetAlert si vas a usar uno personalizado en el html */
         }
-        body {
+        :root {
+    --premium-primary: #6C5CE7;
+    --premium-secondary: #A29BFE;
+    --premium-accent: #FD79A8;
+    --premium-dark: #2D3436;
+    --premium-light: #F5F6FA;
+    --premium-gold: #FFD700;
+    --premium-silver: #C0C0C0;
+    --premium-bronze: #CD7F32;
+}
+
+body {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     min-height: 100vh;
-    background-color: var(--background-color, #f5f7fa);
-    color: var(--text-color, #2d3748);
-    font-family: 'Poppins', sans-serif;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-x: hidden;
-}
-
-.rankings-full-container {
-    background-color: var(--card-bg-color, #ffffff);
-    border-radius: 24px;
-    padding: 40px 30px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    max-width: 1000px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.rankings-full-container h2 {
-    font-size: 2.5em;
-    color: var(--primary-color, #4a6cf7);
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-.rankings-full-container h2 .fas {
-    font-size: 1.5em;
-    color: var(--accent-color, #f6c90e);
-}
-
-/* Improved horizontal scroll container */
-.ranks-list-outer-wrapper {
-    overflow-x: auto;
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary-color, #4a6cf7) #f0f0f0;
-}
-
-.ranks-list-outer-wrapper::-webkit-scrollbar {
-    height: 6px;
-}
-
-.ranks-list-outer-wrapper::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 10px;
-    margin: 0 20px;
-}
-
-.ranks-list-outer-wrapper::-webkit-scrollbar-thumb {
-    background: var(--primary-color, #4a6cf7);
-    border-radius: 10px;
-}
-
-.ranks-list-outer-wrapper::-webkit-scrollbar-thumb:hover {
-    background: var(--button-hover-bg-color, #3a5bd9);
-}
-
-/* Modern rank list */
-.rankings-list {
-    list-style: none;
-    padding: 0 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+    font-family: 'Montserrat', sans-serif;
+    padding: 2rem;
     margin: 0;
-    display: flex;
-    gap: 20px;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    min-width: fit-content;
 }
 
-/* Enhanced rank card design */
-.rank-item {
-    flex-shrink: 0;
-    width: 220px;
-    border-radius: 20px;
-    padding: 25px 20px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border: 2px solid transparent;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+.premium-rankings-container {
+    width: 100%;
+    max-width: 1200px;
     background: white;
+    border-radius: 24px;
+    box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.premium-rankings-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, 
+        var(--premium-primary) 0%, 
+        var(--premium-accent) 50%, 
+        var(--premium-secondary) 100%);
+}
+
+.premium-header {
+    padding: 2.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.premium-header h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--premium-dark);
+    margin: 0;
+    position: relative;
+    display: inline-block;
+}
+
+.premium-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--premium-accent);
+    border-radius: 2px;
+}
+
+.premium-header p {
+    color: #636E72;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.premium-ranks-wrapper {
+    padding: 1rem 2rem 3rem;
+    position: relative;
+}
+
+.premium-ranks-scroll {
+    overflow-x: auto;
+    padding-bottom: 2rem;
+    scrollbar-width: none;
+}
+
+.premium-ranks-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.premium-ranks-list {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+    min-width: max-content;
+}
+
+.premium-rank-card {
+    width: 260px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 2rem 1.5rem;
     position: relative;
     overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    flex-shrink: 0;
 }
 
-.rank-item::before {
+.premium-rank-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 6px;
-    background: linear-gradient(90deg, #4a6cf7, #f6c90e);
+    background: linear-gradient(90deg, var(--premium-primary), var(--premium-secondary));
+    opacity: 0.8;
 }
 
-.rank-item:hover:not(.current-user-rank) {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+.premium-rank-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
 }
 
-.rank-item-icon {
-    font-size: 3.5em;
-    margin-bottom: 15px;
-    line-height: 1;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #4a6cf7, #f6c90e);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+.premium-rank-card.current-rank {
+    border: 2px solid var(--premium-accent);
+    box-shadow: 0 0 0 4px rgba(253, 121, 168, 0.2);
+}
+
+.rank-badge {
     width: 80px;
     height: 80px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2.5rem;
+    color: white;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.rank-badge::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
     border-radius: 50%;
-    background-color: rgba(74, 108, 247, 0.1);
+    border: 2px solid;
+    opacity: 0.3;
 }
 
-.rank-item-title {
+.rank-badge.gold {
+    background: linear-gradient(135deg, var(--premium-gold), #FFC200);
+    border-color: var(--premium-gold);
+}
+
+.rank-badge.silver {
+    background: linear-gradient(135deg, var(--premium-silver), #D9D9D9);
+    border-color: var(--premium-silver);
+}
+
+.rank-badge.bronze {
+    background: linear-gradient(135deg, var(--premium-bronze), #B87333);
+    border-color: var(--premium-bronze);
+}
+
+.rank-badge.other {
+    background: linear-gradient(135deg, var(--premium-primary), var(--premium-secondary));
+    border-color: var(--premium-primary);
+}
+
+.rank-title {
+    font-size: 1.4rem;
     font-weight: 700;
-    font-size: 1.3em;
-    margin-bottom: 8px;
-    color: var(--text-color, #2d3748);
+    color: var(--premium-dark);
+    margin-bottom: 0.5rem;
 }
 
-.rank-item-threshold {
-    font-size: 0.9em;
-    color: var(--text-secondary, #718096);
-    margin-bottom: 15px;
+.rank-threshold {
+    color: #636E72;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Current user highlight */
-.current-user-rank {
-    border: 2px solid var(--accent-color, #f6c90e);
-    box-shadow: 0 0 0 4px rgba(246, 201, 14, 0.2);
-    transform: scale(1.02);
+.rank-benefits {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
 }
 
-.current-user-rank .rank-item-icon {
-    transform: scale(1.1);
+.rank-benefits li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+    color: #636E72;
+    font-size: 0.9rem;
 }
 
-/* Improved reward button */
-.claim-reward-btn {
-    background: linear-gradient(to right, #4a6cf7, #6a5acd);
+.rank-benefits li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--premium-primary);
+    font-weight: bold;
+}
+
+.premium-claim-btn {
+    background: linear-gradient(135deg, var(--premium-primary), var(--premium-secondary));
     color: white;
     border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    margin-top: 15px;
-    font-size: 0.95em;
+    border-radius: 50px;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(74, 108, 247, 0.3);
-    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    width: auto;
-    min-width: 150px;
+    gap: 0.5rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
-.claim-reward-btn:hover {
+.premium-claim-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(74, 108, 247, 0.4);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
 }
 
-.claim-reward-btn:active {
+.premium-claim-btn:active {
     transform: translateY(0);
 }
 
-.claim-reward-btn:disabled {
-    background: #e2e8f0;
-    color: #a0aec0;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
+.premium-claim-btn .icon {
+    font-size: 1rem;
 }
 
-.claim-reward-btn .fas {
-    font-size: 1em;
+.current-rank .premium-claim-btn {
+    background: linear-gradient(135deg, var(--premium-accent), #FF6B95);
+    box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
 }
 
-/* Progress indicator */
-.progress-indicator {
+.current-rank .premium-claim-btn:hover {
+    box-shadow: 0 8px 20px rgba(253, 121, 168, 0.4);
+}
+
+.rank-progress {
     width: 100%;
+    margin-top: 1.5rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: #636E72;
+}
+
+.progress-bar-container {
     height: 6px;
-    background: #edf2f7;
+    background: #EDF2F7;
     border-radius: 3px;
-    margin-top: 15px;
     overflow: hidden;
 }
 
 .progress-bar {
     height: 100%;
-    background: linear-gradient(to right, #4a6cf7, #f6c90e);
+    background: linear-gradient(90deg, var(--premium-primary), var(--premium-accent));
     border-radius: 3px;
     transition: width 0.5s ease;
+}
+
+/* Special styling for top ranks */
+.premium-rank-card:nth-child(1) {
+    transform: scale(1.05);
+    z-index: 2;
+}
+
+.premium-rank-card:nth-child(1):hover {
+    transform: scale(1.05) translateY(-8px);
+}
+
+.premium-rank-card:nth-child(2) {
+    transform: scale(1.03);
+    z-index: 1;
+}
+
+.premium-rank-card:nth-child(2):hover {
+    transform: scale(1.03) translateY(-8px);
 }
 
         /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
