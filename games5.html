@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías - Crucigramas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .crossword-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1200px;
+            padding: 40px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .crossword-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .crossword-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .crossword-header p {
+            color: #666;
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+        }
+
+        .category-content {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .category-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .category-content p {
+            color: #555;
+            font-size: 1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: white;
+        }
+
+        /* Estilos individuales para cada categoría */
+        .general {
+            border-color: #2196F3;
+        }
+        .general .category-icon {
+            background: linear-gradient(135deg, #2196F3, #03A9F4);
+        }
+        .general .category-btn {
+            background: #2196F3;
+        }
+        .general .category-btn:hover {
+            background: #1976D2;
+        }
+
+        .science-tech {
+            border-color: #4CAF50;
+        }
+        .science-tech .category-icon {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+        }
+        .science-tech .category-btn {
+            background: #4CAF50;
+        }
+        .science-tech .category-btn:hover {
+            background: #388E3C;
+        }
+
+        .history {
+            border-color: #FF9800;
+        }
+        .history .category-icon {
+            background: linear-gradient(135deg, #FF9800, #FFC107);
+        }
+        .history .category-btn {
+            background: #FF9800;
+        }
+        .history .category-btn:hover {
+            background: #F57C00;
+        }
+
+        .literature {
+            border-color: #9C27B0;
+        }
+        .literature .category-icon {
+            background: linear-gradient(135deg, #9C27B0, #E91E63);
+        }
+        .literature .category-btn {
+            background: #9C27B0;
+        }
+        .literature .category-btn:hover {
+            background: #7B1FA2;
+        }
+
+        .geography {
+            border-color: #F44336;
+        }
+        .geography .category-icon {
+            background: linear-gradient(135deg, #F44336, #FF5722);
+        }
+        .geography .category-btn {
+            background: #F44336;
+        }
+        .geography .category-btn:hover {
+            background: #D32F2F;
+        }
+
+        .entertainment {
+            border-color: #E91E63;
+        }
+        .entertainment .category-icon {
+            background: linear-gradient(135deg, #E91E63, #FF4081);
+        }
+        .entertainment .category-btn {
+            background: #E91E63;
+        }
+        .entertainment .category-btn:hover {
+            background: #C2185B;
+        }
+
+        .sports {
+            border-color: #3F51B5;
+        }
+        .sports .category-icon {
+            background: linear-gradient(135deg, #3F51B5, #2196F3);
+        }
+        .sports .category-btn {
+            background: #3F51B5;
+        }
+        .sports .category-btn:hover {
+            background: #303F9F;
+        }
+
+        .food {
+            border-color: #795548;
+        }
+        .food .category-icon {
+            background: linear-gradient(135deg, #795548, #A1887F);
+        }
+        .food .category-btn {
+            background: #795548;
+        }
+        .food .category-btn:hover {
+            background: #5D4037;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #607D8B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background-color: #455A64;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .crossword-container {
+                padding: 20px;
+                width: 95%;
+            }
+            .crossword-header h1 {
+                font-size: 2em;
+            }
+            .crossword-header p {
+                font-size: 1em;
+            }
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="crossword-container">
+        <button class="back-button" onclick="window.location.href='games.html'">
+            <i class="fas fa-arrow-left"></i> Volver a Juegos
+        </button>
+
+        <div class="crossword-header">
+            <h1>Crucigramas Temáticos</h1>
+            <p>Desafía tu mente con estos crucigramas organizados por categorías. ¡Elige tu tema favorito y comienza a completar!</p>
+        </div>
+
+        <div class="categories-grid">
+            <!-- General -->
+            <div class="category-card general" onclick="window.location.href='crossword-general.html'">
+                <div class="category-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <div class="category-content">
+                    <h3>General</h3>
+                    <p>Un crucigrama con variedad de temas para mentes curiosas. Perfecto para quienes saben un poco de todo.</p>
+                    <button class="category-btn">Jugar General</button>
+                </div>
+            </div>
+
+            <!-- Ciencia y Tecnología -->
+            <div class="category-card science-tech" onclick="window.location.href='crossword-science.html'">
+                <div class="category-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Ciencia y Tecnología</h3>
+                    <p>Descubre términos científicos, inventos revolucionarios y conceptos tecnológicos en este desafío intelectual.</p>
+                    <button class="category-btn">Jugar Ciencia</button>
+                </div>
+            </div>
+
+            <!-- Historia -->
+            <div class="category-card history" onclick="window.location.href='crossword-history.html'">
+                <div class="category-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Historia</h3>
+                    <p>Desde la antigüedad hasta la era moderna, demuestra tu conocimiento sobre eventos y personajes históricos.</p>
+                    <button class="category-btn">Jugar Historia</button>
+                </div>
+            </div>
+
+            <!-- Literatura -->
+            <div class="category-card literature" onclick="window.location.href='crossword-literature.html'">
+                <div class="category-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Literatura</h3>
+                    <p>Autores clásicos, obras maestras, personajes literarios y términos de análisis literario te esperan.</p>
+                    <button class="category-btn">Jugar Literatura</button>
+                </div>
+            </div>
+
+            <!-- Geografía -->
+            <div class="category-card geography" onclick="window.location.href='crossword-geography.html'">
+                <div class="category-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Geografía</h3>
+                    <p>Capitales, ríos, montañas, países y curiosidades geográficas para los amantes de nuestro planeta.</p>
+                    <button class="category-btn">Jugar Geografía</button>
+                </div>
+            </div>
+
+            <!-- Entretenimiento -->
+            <div class="category-card entertainment" onclick="window.location.href='crossword-entertainment.html'">
+                <div class="category-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Entretenimiento</h3>
+                    <p>Cine, televisión, música y celebridades. Perfecto para los fanáticos de la cultura pop.</p>
+                    <button class="category-btn">Jugar Entretenimiento</button>
+                </div>
+            </div>
+
+            <!-- Deportes -->
+            <div class="category-card sports" onclick="window.location.href='crossword-sports.html'">
+                <div class="category-icon">
+                    <i class="fas fa-running"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Deportes</h3>
+                    <p>Atletas famosos, términos deportivos, eventos históricos y disciplinas olímpicas.</p>
+                    <button class="category-btn">Jugar Deportes</button>
+                </div>
+            </div>
+
+            <!-- Gastronomía -->
+            <div class="category-card food" onclick="window.location.href='crossword-food.html'">
+                <div class="category-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="category-content">
+                    <h3>Gastronomía</h3>
+                    <p>Platos típicos, ingredientes, técnicas culinarias y todo sobre el arte de la cocina.</p>
+                    <button class="category-btn">Jugar Gastronomía</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Aquí puedes añadir funcionalidad JavaScript si es necesario
+    </script>
+</body>
+</html>
