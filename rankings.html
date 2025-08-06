@@ -253,98 +253,269 @@
             font-size: 1em;
         }
 
-        /* --- Estilos de fondo y borde para CADA TIPO de RANGO (Degradados Elegantes) --- */
+        /* --- Premium Rank Background Styles --- */
 
-        /* Bronce */
-        .rank-bronze-bg {
-            background: linear-gradient(135deg, #8B4513, #CD853F); /* SaddleBrown a Peru */
-            border-color: #5A2C0A; /* Marrón oscuro para el borde */
-        }
-        .rank-bronze-bg .rank-item-icon { color: #FFDAB9; } /* Melocotón para el icono */
-        .rank-bronze-bg:hover {
-            background: linear-gradient(135deg, #a0522d, #deb887); /* Un poco más claro al hover */
-            border-color: #6a3a1b;
-        }
+/* Bronze - Now with metallic texture effect */
+.rank-bronze-bg {
+    background: linear-gradient(135deg, 
+                #8B4513 0%, 
+                #CD853F 30%, 
+                #B87333 70%, 
+                #8B4513 100%);
+    border: 2px solid rgba(90, 44, 10, 0.7);
+    position: relative;
+    overflow: hidden;
+}
 
+.rank-bronze-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0) 55%
+    );
+    transform: rotate(30deg);
+    animation: metallicShine 6s infinite linear;
+}
 
-        /* Plata */
-        .rank-silver-bg {
-            background: linear-gradient(135deg, #A9A9A9, #C0C0C0); /* DarkGray a Silver */
-            border-color: #708090; /* SlateGray para el borde */
-        }
-        .rank-silver-bg .rank-item-icon { color: #E6E6FA; } /* Lavanda para el icono */
-        .rank-silver-bg:hover {
-            background: linear-gradient(135deg, #B0C4DE, #DCDCDC); /* LightSteelBlue a Gainsboro al hover */
-            border-color: #8395A3;
-        }
+.rank-bronze-bg .rank-item-icon { 
+    color: #FFE4C4; /* Bisque for better contrast */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
+.rank-bronze-bg:hover {
+    background: linear-gradient(135deg, 
+                #A0522D 0%, 
+                #DEB887 30%, 
+                #CD7F32 70%, 
+                #A0522D 100%);
+    border-color: rgba(106, 58, 27, 0.8);
+}
 
-        /* Oro */
-        .rank-gold-bg {
-            background: linear-gradient(135deg, #FFD700, #DAA520); /* Gold a Goldenrod */
-            border-color: #B8860B; /* DarkGoldenrod para el borde */
-        }
-        .rank-gold-bg .rank-item-icon { color: #FFFACD; } /* LemonChiffon para el icono */
-        .rank-gold-bg:hover {
-            background: linear-gradient(135deg, #FFEA00, #F0C420); /* Dorado más brillante al hover */
-            border-color: #D4AF37;
-        }
+/* Silver - Enhanced metallic effect */
+.rank-silver-bg {
+    background: linear-gradient(135deg, 
+                #C0C0C0 0%, 
+                #FFFFFF 30%, 
+                #D3D3D3 70%, 
+                #A9A9A9 100%);
+    border: 2px solid rgba(112, 128, 144, 0.7);
+    position: relative;
+}
 
+.rank-silver-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 70% 30%,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+}
 
-        /* Místico - ¡Magia Pura! */
-        .rank-mystic-bg {
-            background: linear-gradient(135deg, #8A2BE2, #C71585); /* BlueViolet a MediumVioletRed */
-            border: 3px solid #FFD700; /* Borde dorado resplandeciente */
-            box-shadow: 0 0 25px rgba(138, 43, 226, 0.7), 0 0 40px rgba(255, 215, 0, 0.5); /* Sombra con glow morado y dorado */
-        }
-        /* Icono Místico con degradado */
-        .rank-mystic-bg .rank-item-icon {
-            background: linear-gradient(45deg, #E0BBE4, #957DAD); /* Degradado más suave para el icono sobre fondo oscuro */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 4.5em; /* Icono Místico aún más grande */
-        }
-        .rank-mystic-bg .rank-item-title,
-        .rank-mystic-bg .rank-item-threshold {
-            color: #ffffff; /* Texto blanco en Místico */
-        }
-        .rank-mystic-bg:hover {
-            background: linear-gradient(135deg, #9932CC, #DA70D6); /* DarkOrchid a Orchid al hover */
-            box-shadow: 0 0 35px rgba(153, 50, 204, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
-        }
+.rank-silver-bg .rank-item-icon { 
+    color: #F8F8FF; /* GhostWhite */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
 
-        /* --- Estilo para el RANGO ACTUAL del usuario (Resaltado Potente) --- */
-        .rank-item.current-user-rank {
-            /* Degradado de fondo para el rango actual - puede ser un color neutro brillante o un degradado específico */
-            background: linear-gradient(135deg, var(--primary-color, #4a90e2), var(--button-hover-bg-color, #6a5acd)) !important;
-            color: #ffffff !important; /* Texto blanco para contraste */
-            border: 5px solid #FFD700 !important; /* ¡Borde dorado muy grueso y llamativo! */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3) !important; /* Sombra con fuerte glow dorado */
-            transform: scale(1.12) !important; /* Efecto "pop" MUCHO más pronunciado */
-            position: relative;
-            z-index: 5; /* Asegura que esté muy al frente */
-            animation: currentRankPulse 2s infinite alternate ease-in-out; /* Animación de pulsación más elegante */
-        }
+.rank-silver-bg:hover {
+    background: linear-gradient(135deg, 
+                #D3D3D3 0%, 
+                #FFFFFF 30%, 
+                #E6E6E6 70%, 
+                #B0B0B0 100%);
+    border-color: rgba(131, 149, 163, 0.8);
+}
 
-        /* Animación para el rango actual */
-        @keyframes currentRankPulse {
-            0% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
-            50% { transform: scale(1.15); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 40px #FFFA00, 0 0 80px rgba(255, 240, 0, 0.5); }
-            100% { transform: scale(1.12); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px #FFEA00, 0 0 60px rgba(255, 230, 0, 0.3); }
-        }
+/* Gold - Luxurious gold effect */
+.rank-gold-bg {
+    background: linear-gradient(135deg, 
+                #DAA520 0%, 
+                #FFD700 30%, 
+                #F0E68C 70%, 
+                #DAA520 100%);
+    border: 2px solid rgba(184, 134, 11, 0.7);
+    position: relative;
+}
 
-        /* Asegurar colores de texto e icono para el rango actual */
-        .rank-item.current-user-rank .rank-item-title,
-        .rank-item.current-user-rank .rank-item-threshold {
-            color: #ffffff !important; /* Texto blanco en el rango resaltado */
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* Sombra de texto para mejorar legibilidad */
-        }
-        .rank-item.current-user-rank .rank-item-icon {
-            color: #ffffff !important; /* Icono blanco en el rango resaltado */
-            background: none !important; /* Elimina el degradado del ícono místico para que sea blanco */
-            -webkit-text-fill-color: #ffffff !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para el icono */
-        }
+.rank-gold-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.1) 2px,
+        rgba(255, 215, 0, 0.05) 2px,
+        rgba(255, 215, 0, 0.05) 4px
+    );
+}
+
+.rank-gold-bg .rank-item-icon { 
+    color: #FFF8DC; /* Cornsilk */
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.rank-gold-bg:hover {
+    background: linear-gradient(135deg, 
+                #FFD700 0%, 
+                #FFEA00 30%, 
+                #FFFACD 70%, 
+                #FFD700 100%);
+    border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* Mystic - Ethereal magical effect */
+.rank-mystic-bg {
+    background: linear-gradient(135deg, 
+                #4B0082 0%, 
+                #8A2BE2 40%, 
+                #DA70D6 70%, 
+                #FF69B4 100%);
+    border: 2px solid #FFD700;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.7), 
+                0 0 60px rgba(255, 105, 180, 0.5);
+}
+
+.rank-mystic-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    animation: mysticGlow 8s infinite linear;
+}
+
+.rank-mystic-bg .rank-item-icon {
+    background: linear-gradient(45deg, 
+                #E0BBE4 0%, 
+                #957DAD 50%, 
+                #FF69B4 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(224, 187, 228, 0.7);
+    font-size: 4.5em;
+    animation: iconPulse 3s infinite ease-in-out;
+}
+
+.rank-mystic-bg:hover {
+    background: linear-gradient(135deg, 
+                #9932CC 0%, 
+                #BA55D3 40%, 
+                #EE82EE 70%, 
+                #FFB6C1 100%);
+    box-shadow: 0 0 40px rgba(153, 50, 204, 0.8), 
+                0 0 80px rgba(255, 182, 193, 0.6);
+}
+
+/* Current User Rank - Ultra Premium Highlight */
+.rank-item.current-user-rank {
+    background: linear-gradient(135deg, 
+                #4A6CF7 0%, 
+                #6A5ACD 30%, 
+                #9370DB 70%, 
+                #4A6CF7 100%) !important;
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                0 0 60px rgba(255, 215, 0, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    position: relative;
+    z-index: 10;
+    animation: currentRankPulse 3s infinite ease-in-out;
+}
+
+.rank-item.current-user-rank::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: inherit;
+    animation: borderPulse 4s infinite linear;
+}
+
+/* Animations */
+@keyframes metallicShine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
+}
+
+@keyframes mysticGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes currentRankPulse {
+    0% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                    0 0 60px rgba(255, 215, 0, 0.5);
+    }
+    50% { 
+        transform: scale(1.12);
+        box-shadow: 0 0 40px rgba(74, 108, 247, 0.9),
+                    0 0 80px rgba(255, 215, 0, 0.7);
+    }
+    100% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                    0 0 60px rgba(255, 215, 0, 0.5);
+    }
+}
+
+@keyframes borderPulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.5; transform: scale(1); }
+}
+
+/* Text and icon adjustments for all ranks */
+.rank-item .rank-item-title,
+.rank-item .rank-item-threshold {
+    position: relative;
+    z-index: 2;
+}
+
+.rank-item .rank-item-icon {
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.rank-item:hover .rank-item-icon {
+    transform: rotate(5deg) scale(1.1);
+}
 
 
         /* Loader para esta página (sin cambios significativos) */
