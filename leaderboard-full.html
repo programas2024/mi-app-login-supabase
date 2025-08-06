@@ -103,7 +103,7 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Tabla */
+        /* Tabla - Estilos corregidos para alineación perfecta */
         .leaderboard-table {
             width: 100%;
             border-collapse: separate;
@@ -127,6 +127,7 @@
             text-align: center;
             font-weight: 600;
             position: relative;
+            vertical-align: middle; /* Asegura alineación vertical */
         }
 
         .leaderboard-table th:not(:last-child)::after {
@@ -145,6 +146,18 @@
             border-bottom: 1px solid var(--border-color);
             font-size: 0.95rem;
             transition: all 0.3s ease;
+            vertical-align: middle; /* Asegura alineación vertical */
+            height: 60px; /* Altura fija para todas las celdas */
+        }
+
+        /* Ajuste específico para la columna de jugador */
+        .leaderboard-table td:nth-child(2) {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            text-align: left;
+            height: 60px; /* Misma altura que las demás */
         }
 
         .leaderboard-table tbody tr {
@@ -167,24 +180,24 @@
             font-weight: 700;
             color: var(--secondary-color);
             font-size: 1.1rem;
+            width: 80px; /* Ancho fijo para columna de posición */
         }
 
         .leaderboard-table td:nth-child(2) {
             font-weight: 600;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-grow: 1;
         }
 
         .leaderboard-table td:nth-child(3) {
             color: #d4af37;
             font-weight: 600;
+            width: 120px; /* Ancho fijo para columna de oro */
         }
 
         .leaderboard-table td:nth-child(4) {
             color: #5bc0de;
             font-weight: 600;
+            width: 140px; /* Ancho fijo para columna de diamantes */
         }
 
         /* Estilos para los primeros puestos */
@@ -215,7 +228,7 @@
             font-size: 1.1rem;
         }
 
-        /* Estilo para el usuario actual */
+        /* Estilo para el usuario actual - corregido para alineación */
         .current-user-row {
             background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.2)) !important;
             border-left: 4px solid var(--accent-color);
@@ -347,6 +360,7 @@
             .leaderboard-table td {
                 padding: 12px 15px;
                 font-size: 0.9rem;
+                height: 55px; /* Ajuste de altura para móvil */
             }
             
             .btn-back-dashboard {
@@ -370,17 +384,30 @@
             .leaderboard-table td {
                 padding: 10px 12px;
                 font-size: 0.85rem;
+                height: 50px; /* Ajuste de altura para móvil pequeño */
             }
             
             .leaderboard-table td:nth-child(2) {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
+                flex-direction: row; /* Mantenemos en fila para no romper alineación */
+                align-items: center;
+                gap: 8px;
             }
             
             .btn-back-dashboard {
                 padding: 10px 20px;
                 font-size: 0.9rem;
+            }
+
+            /* Ocultar algunos elementos en móviles muy pequeños */
+            .leaderboard-table th:nth-child(3) span,
+            .leaderboard-table th:nth-child(4) span {
+                display: none;
+            }
+            
+            .leaderboard-table th:nth-child(3)::before,
+            .leaderboard-table th:nth-child(4)::before {
+                content: attr(data-short);
+                display: inline;
             }
         }
 
@@ -499,12 +526,24 @@
                     <tr>
                         <th>#</th>
                         <th>Jugador</th>
-                        <th><i class="fas fa-coins"></i> Oro</th>
-                        <th><i class="fas fa-gem"></i> Diamantes</th>
+                        <th><i class="fas fa-coins"></i> <span>Oro</span></th>
+                        <th><i class="fas fa-gem"></i> <span>Diamantes</span></th>
                     </tr>
                 </thead>
                 <tbody id="leaderboard-table-body">
-                    <!-- Los datos del ranking se cargarán aquí -->
+                    <!-- Ejemplo de fila para visualización (será reemplazado por JS) -->
+                    <tr>
+                        <td>1</td>
+                        <td><img src="https://via.placeholder.com/32" class="user-avatar" alt="Avatar"> JugadorEjemplo</td>
+                        <td>10,000</td>
+                        <td>5,000</td>
+                    </tr>
+                    <tr class="current-user-row">
+                        <td>15</td>
+                        <td><img src="https://via.placeholder.com/32" class="user-avatar" alt="Avatar"> Tú</td>
+                        <td>3,500</td>
+                        <td>1,200</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -544,7 +583,7 @@
                 });
             }
 
-              const loaderLeaderboard = document.getElementById('loader-leaderboard');
+            const loaderLeaderboard = document.getElementById('loader-leaderboard');
             // Pasamos el ID del usuario actual a loadLeaderboard
             await loadLeaderboard(supabase, loaderLeaderboard, user.id);
         });
