@@ -12,6 +12,9 @@
             --primary: #4361ee;
             --secondary: #3a0ca3;
             --accent: #f72585;
+            --gold: #FFD700;
+            --silver: #C0C0C0;
+            --bronze: #CD7F32;
             --dark: #212529;
             --light: #f8f9fa;
             --success: #4cc9f0;
@@ -29,7 +32,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: #f5f7fa;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -60,9 +63,9 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
             border-radius: 50px;
             width: 40px;
             height: 40px;
@@ -71,23 +74,25 @@
             justify-content: center;
             cursor: pointer;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
         .back-btn:hover {
-            background: var(--secondary);
+            background: var(--primary);
+            color: white;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
         }
 
         /* Encabezado */
         .leaderboard-header {
             padding: 40px 20px 30px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+            background: white;
+            color: var(--text);
             text-align: center;
             position: relative;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .leaderboard-header h2 {
@@ -101,13 +106,13 @@
         }
 
         .leaderboard-header .fas {
-            color: var(--accent);
+            color: var(--gold);
             font-size: 1.8rem;
         }
 
         .leaderboard-header p {
-            opacity: 0.9;
-            font-weight: 300;
+            color: #6c757d;
+            font-weight: 400;
         }
 
         /* Tabla */
@@ -126,14 +131,15 @@
         }
 
         .leaderboard-table th {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
+            background: white;
+            color: var(--text);
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.5px;
             padding: 16px 20px;
             text-align: left;
+            border-bottom: 2px solid var(--primary);
         }
 
         .leaderboard-table td {
@@ -146,45 +152,59 @@
             transition: all 0.3s ease;
         }
 
-        .leaderboard-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .leaderboard-table tbody tr:hover {
+            background-color: #f8f9fa !important;
         }
 
-        .leaderboard-table tbody tr:hover {
-            background-color: #f1f3ff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        /* Estilos para los primeros puestos */
+        .first-place {
+            background-color: rgba(255, 215, 0, 0.1) !important;
+        }
+
+        .first-place .rank-cell {
+            color: var(--gold) !important;
+            font-weight: 800 !important;
+        }
+
+        .second-place {
+            background-color: rgba(192, 192, 192, 0.1) !important;
+        }
+
+        .second-place .rank-cell {
+            color: var(--silver) !important;
+            font-weight: 700 !important;
+        }
+
+        .third-place {
+            background-color: rgba(205, 127, 50, 0.1) !important;
+        }
+
+        .third-place .rank-cell {
+            color: var(--bronze) !important;
+            font-weight: 700 !important;
         }
 
         /* Fila del usuario actual */
         .current-user-row {
-            background: linear-gradient(to right, rgba(248, 249, 250, 0.8), rgba(233, 236, 239, 0.8)) !important;
+            background: linear-gradient(to right, rgba(67, 97, 238, 0.05), rgba(67, 97, 238, 0.1)) !important;
             position: relative;
-        }
-
-        .current-user-row::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, var(--accent), var(--warning));
+            border-left: 4px solid var(--primary);
         }
 
         .current-user-row:hover {
-            background: linear-gradient(to right, rgba(248, 249, 250, 0.9), rgba(233, 236, 239, 0.9)) !important;
+            background: linear-gradient(to right, rgba(67, 97, 238, 0.1), rgba(67, 97, 238, 0.15)) !important;
         }
 
         /* Columnas específicas */
         .rank-cell {
-            font-weight: 700;
-            color: var(--primary);
+            font-weight: 600;
+            color: var(--text);
             width: 60px;
+            text-align: center;
         }
 
         .player-cell {
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .gold-cell, .diamond-cell {
@@ -199,12 +219,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: var(--text);
             z-index: 100;
             transition: opacity 0.3s ease;
         }
@@ -217,8 +237,8 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--accent);
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 15px;
@@ -252,32 +272,40 @@
             gap: 10px !important;
         }
 
-        .swal2-confirm, .swal2-deny, .swal2-cancel {
-            border-radius: 50px !important;
+        /* Botón de Amigo */
+        .swal2-confirm {
+            background: linear-gradient(to right, #4CAF50, #2E7D32) !important;
+            border: none !important;
+            border-radius: 8px !important;
             padding: 10px 24px !important;
             font-weight: 500 !important;
             transition: all 0.2s ease !important;
         }
 
-        .swal2-confirm {
-            background: linear-gradient(to right, var(--primary), var(--secondary)) !important;
-            border: none !important;
-        }
-
+        /* Botón de Chat */
         .swal2-deny {
-            background: linear-gradient(to right, var(--accent), #f72585) !important;
+            background: linear-gradient(to right, #2196F3, #0D47A1) !important;
             border: none !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
         }
 
+        /* Botón Cancelar */
         .swal2-cancel {
-            background: #e9ecef !important;
+            background: #f8f9fa !important;
             color: var(--text) !important;
-            border: none !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 8px !important;
+            padding: 10px 24px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
         }
 
         .swal2-confirm:hover, .swal2-deny:hover, .swal2-cancel:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
         }
 
         /* Responsive */
