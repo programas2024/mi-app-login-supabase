@@ -219,7 +219,7 @@
 
         /* Estilos para el botón de reclamar recompensa */
         .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838); /* Verde vibrante */
+            background: linear-gradient(to right, #28a745, #7bc1fa); /* Verde vibrante */
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -253,148 +253,23 @@
             font-size: 1em;
         }
 
-        /* Bronze Rank with Silver-Style Effects */
+        
+
+/* --- Premium Rank Background Styles --- */
+
+/* Bronze - Now with metallic texture effect */
 .rank-bronze-bg {
     background: linear-gradient(135deg, 
-                #8B4513 0%,  /* SaddleBrown */
-                #CD853F 30%,  /* Peru */
-                #B87333 70%,  /* Bronze */
-                #8B4513 100%); /* SaddleBrown */
-    border: 2px solid rgba(112, 128, 144, 0.7); /* SlateGray border like silver */
+                #8B4513 0%, 
+                #CD853F 30%, 
+                #B87333 70%, 
+                #8B4513 100%);
+    border: 2px solid rgba(90, 44, 10, 0.7);
     position: relative;
     overflow: hidden;
 }
 
-/* Silver-style metallic shine for bronze */
 .rank-bronze-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-        circle at 70% 30%,
-        rgba(255, 255, 255, 0.3) 0%,
-        rgba(255, 255, 255, 0) 70%
-    );
-}
-
-/* Keep original bronze icon color */
-.rank-bronze-bg .rank-item-icon { 
-    color: #FFDAB9; /* PeachPuff - original bronze icon color */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Hover state with silver-style effect */
-.rank-bronze-bg:hover {
-    background: linear-gradient(135deg, 
-                #A0522D 0%,  /* Sienna */
-                #DEB887 30%, /* BurlyWood */
-                #CD7F32 70%, /* Bronze */
-                #A0522D 100%); /* Sienna */
-    border-color: rgba(131, 149, 163, 0.8); /* SlateGray hover border like silver */
-}
-
-/* Keep all other original bronze styles */
-.rank-bronze-bg .rank-item-title,
-.rank-bronze-bg .rank-item-threshold {
-    color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Maintain original animations */
-@keyframes metallicShine {
-    0% { transform: translateX(-100%) rotate(30deg); }
-    100% { transform: translateX(100%) rotate(30deg); }
-}
-
-/* Plata I */
-.rank-silver1-bg {
-    background: linear-gradient(135deg, #E6E6E6 0%, #C0C0C0 100%);
-    border: 2px solid #A9A9A9;
-}
-.rank-silver1-bg .rank-item-icon { color: #F8F8FF; }
-
-/* Plata II */
-.rank-silver2-bg {
-    background: linear-gradient(135deg, #D3D3D3 0%, #A9A9A9 100%);
-    border: 2px solid #808080;
-}
-.rank-silver2-bg .rank-item-icon { color: #F0F8FF; }
-
-/* Plata III */
-.rank-silver3-bg {
-    background: linear-gradient(135deg, #C0C0C0 0%, #909090 100%);
-    border: 2px solid #696969;
-}
-.rank-silver3-bg .rank-item-icon { color: #E6E6FA; }
-
-/* Plata IV */
-.rank-silver4-bg {
-    background: linear-gradient(135deg, #A9A9A9 0%, #787878 100%);
-    border: 2px solid #505050;
-    position: relative;
-    overflow: hidden;
-}
-.rank-silver4-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0));
-}
-.rank-silver4-bg .rank-item-icon { color: #DCDCDC; }
-
-/* Oro I */
-.rank-gold1-bg {
-    background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
-    border: 2px solid #B8860B;
-    position: relative;
-}
-.rank-gold1-bg::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0));
-}
-.rank-gold1-bg .rank-item-icon { color: #FFFACD; }
-
-/* Oro II */
-.rank-gold2-bg {
-    background: linear-gradient(135deg, #FFEA00 0%, #FFD700 50%, #DAA520 100%);
-    border: 2px solid #FF8C00;
-    box-shadow: 0 4px 12px rgba(218, 165, 32, 0.4);
-    position: relative;
-}
-.rank-gold2-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0));
-}
-.rank-gold2-bg .rank-item-icon { 
-    color: #FFEF00;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-}
-
-/* Místico */
-.rank-mystic-bg {
-    background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
-    border: 2px solid #FFD700;
-    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
-    position: relative;
-    overflow: hidden;
-}
-.rank-mystic-bg::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -403,26 +278,198 @@
     height: 200%;
     background: linear-gradient(
         to bottom right,
-        rgba(255,255,255,0) 45%,
-        rgba(255,255,255,0.2) 50%,
-        rgba(255,255,255,0) 55%
+        rgba(255, 255, 255, 0) 45%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0) 55%
     );
     transform: rotate(30deg);
-    animation: mysticShine 6s infinite linear;
+    animation: metallicShine 6s infinite linear;
 }
+
+.rank-bronze-bg .rank-item-icon { 
+    color: #FFE4C4; /* Bisque for better contrast */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.rank-bronze-bg:hover {
+    background: linear-gradient(135deg, 
+                #A0522D 0%, 
+                #DEB887 30%, 
+                #CD7F32 70%, 
+                #A0522D 100%);
+    border-color: rgba(106, 58, 27, 0.8);
+}
+
+/* Silver - Enhanced metallic effect */
+.rank-silver-bg {
+    background: linear-gradient(135deg, 
+                #C0C0C0 0%, 
+                #FFFFFF 30%, 
+                #D3D3D3 70%, 
+                #A9A9A9 100%);
+    border: 2px solid rgba(112, 128, 144, 0.7);
+    position: relative;
+}
+
+.rank-silver-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 70% 30%,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+}
+
+.rank-silver-bg .rank-item-icon { 
+    color: #F8F8FF; /* GhostWhite */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.rank-silver-bg:hover {
+    background: linear-gradient(135deg, 
+                #D3D3D3 0%, 
+                #FFFFFF 30%, 
+                #E6E6E6 70%, 
+                #B0B0B0 100%);
+    border-color: rgba(131, 149, 163, 0.8);
+}
+
+/* Gold - Luxurious gold effect */
+.rank-gold-bg {
+    background: linear-gradient(135deg, 
+                #DAA520 0%, 
+                #FFD700 30%, 
+                #F0E68C 70%, 
+                #DAA520 100%);
+    border: 2px solid rgba(184, 134, 11, 0.7);
+    position: relative;
+}
+
+.rank-gold-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.1) 2px,
+        rgba(255, 215, 0, 0.05) 2px,
+        rgba(255, 215, 0, 0.05) 4px
+    );
+}
+
+.rank-gold-bg .rank-item-icon { 
+    color: #FFF8DC; /* Cornsilk */
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.rank-gold-bg:hover {
+    background: linear-gradient(135deg, 
+                #FFD700 0%, 
+                #FFEA00 30%, 
+                #FFFACD 70%, 
+                #FFD700 100%);
+    border-color: rgba(212, 175, 55, 0.8);
+}
+
+/* Mystic - Ethereal magical effect */
+.rank-mystic-bg {
+    background: linear-gradient(135deg, 
+                #4B0082 0%, 
+                #8A2BE2 40%, 
+                #DA70D6 70%, 
+                #FF69B4 100%);
+    border: 2px solid #FFD700;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.7), 
+                0 0 60px rgba(255, 105, 180, 0.5);
+}
+
+.rank-mystic-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    animation: mysticGlow 8s infinite linear;
+}
+
 .rank-mystic-bg .rank-item-icon {
-    background: linear-gradient(45deg, #E0BBE4, #957DAD);
+    background: linear-gradient(45deg, 
+                #E0BBE4 0%, 
+                #957DAD 50%, 
+                #FF69B4 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 4em;
+    text-shadow: 0 0 10px rgba(224, 187, 228, 0.7);
+    font-size: 4.5em;
     animation: iconPulse 3s infinite ease-in-out;
 }
 
-/* Animaciones */
-@keyframes mysticShine {
+.rank-mystic-bg:hover {
+    background: linear-gradient(135deg, 
+                #9932CC 0%, 
+                #BA55D3 40%, 
+                #EE82EE 70%, 
+                #FFB6C1 100%);
+    box-shadow: 0 0 40px rgba(153, 50, 204, 0.8), 
+                0 0 80px rgba(255, 182, 193, 0.6);
+}
+
+/* Current User Rank - Ultra Premium Highlight */
+.rank-item.current-user-rank {
+    background: linear-gradient(135deg, 
+                #4A6CF7 0%, 
+                #6A5ACD 30%, 
+                #9370DB 70%, 
+                #4A6CF7 100%) !important;
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                0 0 60px rgba(255, 215, 0, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    position: relative;
+    z-index: 10;
+    animation: currentRankPulse 3s infinite ease-in-out;
+}
+
+.rank-item.current-user-rank::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    border-radius: inherit;
+    animation: borderPulse 4s infinite linear;
+}
+
+/* Animations */
+@keyframes metallicShine {
     0% { transform: translateX(-100%) rotate(30deg); }
     100% { transform: translateX(100%) rotate(30deg); }
+}
+
+@keyframes mysticGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes iconPulse {
@@ -431,40 +478,46 @@
     100% { transform: scale(1); }
 }
 
-/* Estilos comunes para todos los rangos */
-.rank-item {
+@keyframes currentRankPulse {
+    0% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                    0 0 60px rgba(255, 215, 0, 0.5);
+    }
+    50% { 
+        transform: scale(1.12);
+        box-shadow: 0 0 40px rgba(74, 108, 247, 0.9),
+                    0 0 80px rgba(255, 215, 0, 0.7);
+    }
+    100% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(74, 108, 247, 0.8),
+                    0 0 60px rgba(255, 215, 0, 0.5);
+    }
+}
+
+@keyframes borderPulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 0.5; transform: scale(1); }
+}
+
+/* Text and icon adjustments for all ranks */
+.rank-item .rank-item-title,
+.rank-item .rank-item-threshold {
+    position: relative;
+    z-index: 2;
+}
+
+.rank-item .rank-item-icon {
+    position: relative;
+    z-index: 2;
     transition: all 0.3s ease;
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
 }
 
-.rank-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+.rank-item:hover .rank-item-icon {
+    transform: rotate(5deg) scale(1.1);
 }
-
-.rank-item-title {
-    font-weight: 700;
-    font-size: 1.4rem;
-    margin-bottom: 5px;
-}
-
-.rank-item-threshold {
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
-
-.reward-badge {
-    background: rgba(0,0,0,0.2);
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    margin-top: 10px;
-    display: inline-block;
-}
-
-
         /* Loader para esta página (sin cambios significativos) */
         #loader-rankings {
             position: absolute;
