@@ -309,6 +309,161 @@
     100% { transform: translateX(100%) rotate(30deg); }
 }
 
+/* Plata I */
+.rank-silver1-bg {
+    background: linear-gradient(135deg, #E6E6E6 0%, #C0C0C0 100%);
+    border: 2px solid #A9A9A9;
+}
+.rank-silver1-bg .rank-item-icon { color: #F8F8FF; }
+
+/* Plata II */
+.rank-silver2-bg {
+    background: linear-gradient(135deg, #D3D3D3 0%, #A9A9A9 100%);
+    border: 2px solid #808080;
+}
+.rank-silver2-bg .rank-item-icon { color: #F0F8FF; }
+
+/* Plata III */
+.rank-silver3-bg {
+    background: linear-gradient(135deg, #C0C0C0 0%, #909090 100%);
+    border: 2px solid #696969;
+}
+.rank-silver3-bg .rank-item-icon { color: #E6E6FA; }
+
+/* Plata IV */
+.rank-silver4-bg {
+    background: linear-gradient(135deg, #A9A9A9 0%, #787878 100%);
+    border: 2px solid #505050;
+    position: relative;
+    overflow: hidden;
+}
+.rank-silver4-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0));
+}
+.rank-silver4-bg .rank-item-icon { color: #DCDCDC; }
+
+/* Oro I */
+.rank-gold1-bg {
+    background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+    border: 2px solid #B8860B;
+    position: relative;
+}
+.rank-gold1-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(255,255,255,0));
+}
+.rank-gold1-bg .rank-item-icon { color: #FFFACD; }
+
+/* Oro II */
+.rank-gold2-bg {
+    background: linear-gradient(135deg, #FFEA00 0%, #FFD700 50%, #DAA520 100%);
+    border: 2px solid #FF8C00;
+    box-shadow: 0 4px 12px rgba(218, 165, 32, 0.4);
+    position: relative;
+}
+.rank-gold2-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0));
+}
+.rank-gold2-bg .rank-item-icon { 
+    color: #FFEF00;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* Místico */
+.rank-mystic-bg {
+    background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+    position: relative;
+    overflow: hidden;
+}
+.rank-mystic-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0) 45%,
+        rgba(255,255,255,0.2) 50%,
+        rgba(255,255,255,0) 55%
+    );
+    transform: rotate(30deg);
+    animation: mysticShine 6s infinite linear;
+}
+.rank-mystic-bg .rank-item-icon {
+    background: linear-gradient(45deg, #E0BBE4, #957DAD);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 4em;
+    animation: iconPulse 3s infinite ease-in-out;
+}
+
+/* Animaciones */
+@keyframes mysticShine {
+    0% { transform: translateX(-100%) rotate(30deg); }
+    100% { transform: translateX(100%) rotate(30deg); }
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Estilos comunes para todos los rangos */
+.rank-item {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.rank-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.rank-item-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.rank-item-threshold {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.reward-badge {
+    background: rgba(0,0,0,0.2);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    display: inline-block;
+}
+
 
         /* Loader para esta página (sin cambios significativos) */
         #loader-rankings {
