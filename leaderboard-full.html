@@ -9,57 +9,53 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos básicos para la nueva página de clasificación */
-
-        /* Estilos para resaltar la fila del usuario actual */
-        .current-user-row {
-            /* Degradado dorado para el fondo */
-            background: linear-gradient(to right, #ffd700, #ffae00) !important; /* Dorado claro a dorado oscuro */
-            color: #000000 !important; /* Texto negro para asegurar legibilidad sobre el dorado */
-            font-weight: bold !important;
-            border: 2px solid #a37b00 !important; /* Borde marrón oscuro o dorado más oscuro para definir */
-            border-radius: 8px; /* Bordes redondeados */
-            transform: scale(1.02); /* Un ligero "pop" */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra pronunciada */
-            z-index: 1; /* Asegura que esté por encima */
-            position: relative; /* Necesario para z-index */
+        /* Estilos generales */
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #6a5acd;
+            --accent-color: #ffd700;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --light-text: #777;
+            --border-color: #e1e5eb;
+            --card-bg: #ffffff;
+            --button-bg-color: #4a90e2;
+            --button-hover-bg-color: #3a7bc8;
+            --button-text-color: #ffffff;
         }
 
-        /* Ajustar el hover para que la fila resaltada siga viéndose bien */
-        .leaderboard-table tbody tr.current-user-row:hover {
-            background: linear-gradient(to right, #ffe54c, #ffbf00) !important; /* Dorado un poco más claro al pasar el ratón */
-            transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); /* Sombra más fuerte al pasar el ratón */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
-        .leaderboard-table tbody tr.current-user-row td {
-            color: #000000 !important; /* Asegura que el texto en la fila dorada sea negro */
-        }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: var(--background-color); /* Mantener el fondo general del tema */
+            background-color: var(--background-color);
             color: var(--text-color);
             font-family: 'Poppins', sans-serif;
             padding: 20px;
-            box-sizing: border-box;
-            overflow-x: hidden; /* Evita barras de desplazamiento horizontales innecesarias */
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(234, 249, 249, 0.67) 0%, rgba(239, 249, 251, 0.63) 90%);
         }
 
+        /* Contenedor principal */
         .leaderboard-full-container {
-            background-color: #ffffff; /* Contenedor principal blanco */
-            border-radius: 16px; /* Bordes más suaves */
-            padding: 40px; /* Mayor padding para más espacio */
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave para el blanco */
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px; /* Un poco más ancha para tablas grandes */
+            max-width: 1000px;
             text-align: center;
             position: relative;
-            overflow: hidden; /* Para contener el loader dentro del contenedor */
-            animation: fadeIn 0.8s ease-out; /* Animación de entrada suave */
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid var(--border-color);
         }
 
         @keyframes fadeIn {
@@ -67,196 +63,342 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Título */
         .leaderboard-full-container h2 {
-            font-size: 2.5em; /* Título más grande */
-            color: var(--primary-color); /* Mantener el color primario para el título */
-            margin-bottom: 30px; /* Más espacio debajo del título */
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px; /* Mayor espacio entre icono y texto */
-            font-weight: 700; /* Más audaz */
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra de texto sutil */
+            gap: 15px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .leaderboard-full-container h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+            border-radius: 3px;
         }
 
         .leaderboard-full-container h2 .fas {
-            font-size: 1.5em; /* Icono un poco más grande */
-            color: var(--accent-color, #ffd700); /* Color acento, ej. un dorado para el trofeo */
+            font-size: 1.8rem;
+            color: var(--accent-color);
         }
 
+        /* Contenedor de la tabla */
         .leaderboard-full-table-container {
             overflow-x: auto;
-            margin-bottom: 25px; /* Espacio antes del botón de volver */
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border: 1px solid var(--border-color);
         }
 
+        /* Tabla */
         .leaderboard-table {
             width: 100%;
-            border-collapse: collapse; /* Volvemos a collapse para los bordes negros */
-            margin-top: 20px;
-            background-color: #ffffff; /* Fondo de la tabla blanco */
-            border: 1px solid #000000; /* Borde negro para la tabla */
-            border-radius: 10px; /* Bordes redondeados para la tabla */
-            overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 0;
+            background-color: transparent;
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        .leaderboard-table th, .leaderboard-table td {
-            padding: 15px 20px; /* Más padding en celdas */
-            text-align: left;
-            border: 1px solid #000000; /* Bordes negros para todas las celdas */
+        .leaderboard-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .leaderboard-table th {
-            /* Degradado azul para los encabezados */
-            background: linear-gradient(to right, #4a90e2, #6a5acd); /* Azul claro a un morado azulado */
-            color: #ffffff; /* Texto blanco para contrastar */
-            font-weight: 700; /* Más audaz */
-            text-transform: uppercase;
-            font-size: 0.95em;
-            letter-spacing: 0.5px;
-            padding: 18px 20px; /* Más padding para los encabezados */
+            padding: 18px 20px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .leaderboard-table th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 15%;
+            height: 70%;
+            width: 1px;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .leaderboard-table td {
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         .leaderboard-table tbody tr {
-            background-color: #ffffff; /* Fondo de fila blanco */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            /* Eliminamos la sombra de las filas para un look más limpio con bordes */
+            background-color: var(--card-bg);
+            transition: all 0.3s ease;
         }
 
         .leaderboard-table tbody tr:nth-child(even) {
-            background-color: #f0f0f0; /* Un tono gris muy claro para filas pares */
+            background-color: rgba(245, 247, 250, 0.7);
         }
 
         .leaderboard-table tbody tr:hover {
-            transform: translateY(-3px); /* Efecto flotante al pasar el ratón */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil al pasar el ratón */
-            background-color: #e0e0e0; /* Un gris claro al pasar el ratón */
+            background-color: rgba(74, 144, 226, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Estilos para las celdas de la tabla (opcional, para diferenciar) */
-        .leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--primary-color); } /* Ranking number bold */
-        .leaderboard-table td:nth-child(2) { font-weight: 600; } /* Username slightly bolder */
-        /* Las columnas de Oro y Diamantes no necesitan estilos específicos aquí si ya están en el JS */
+        /* Estilos para las celdas específicas */
+        .leaderboard-table td:nth-child(1) {
+            font-weight: 700;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
 
+        .leaderboard-table td:nth-child(2) {
+            font-weight: 600;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leaderboard-table td:nth-child(3) {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .leaderboard-table td:nth-child(4) {
+            color: #5bc0de;
+            font-weight: 600;
+        }
+
+        /* Estilos para los primeros puestos */
+        .leaderboard-table tbody tr:nth-child(1) {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+        }
+
+        .leaderboard-table tbody tr:nth-child(1) td:first-child {
+            color: #ffd700;
+            font-size: 1.3rem;
+        }
+
+        .leaderboard-table tbody tr:nth-child(2) {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.05));
+        }
+
+        .leaderboard-table tbody tr:nth-child(2) td:first-child {
+            color: #c0c0c0;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard-table tbody tr:nth-child(3) {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.1), rgba(205, 127, 50, 0.05));
+        }
+
+        .leaderboard-table tbody tr:nth-child(3) td:first-child {
+            color: #cd7f32;
+            font-size: 1.1rem;
+        }
+
+        /* Estilo para el usuario actual */
+        .current-user-row {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.2)) !important;
+            border-left: 4px solid var(--accent-color);
+            font-weight: 700;
+            position: relative;
+        }
+
+        .current-user-row::after {
+            content: 'Tú';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--accent-color);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .current-user-row td {
+            color: #000 !important;
+        }
 
         /* Botón de Volver */
         .btn-back-dashboard {
-            background-color: var(--button-bg-color); /* Usa el color de botón de tu tema */
-            color: var(--button-text-color); /* Color de texto de botón de tu tema */
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
             border: none;
-            border-radius: 10px; /* Bordes más redondeados */
-            padding: 12px 25px; /* Más padding */
-            margin-top: 30px; /* Más espacio */
+            border-radius: 12px;
+            padding: 14px 30px;
+            margin-top: 30px;
             cursor: pointer;
-            font-size: 1.1em; /* Texto un poco más grande */
+            font-size: 1.1rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 10px; /* Más espacio entre icono y texto */
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-back-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s ease;
         }
 
         .btn-back-dashboard:hover {
-            background-color: var(--button-hover-bg-color); /* Color de hover de tu tema */
-            transform: translateY(-4px); /* Efecto de "levantar" más pronunciado */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-back-dashboard:hover::before {
+            left: 100%;
         }
 
         .btn-back-dashboard .fas {
-            font-size: 1.1em; /* Icono del botón un poco más grande */
+            font-size: 1.1rem;
         }
 
-        /* Loader para esta página */
+        /* Loader */
         #loader-leaderboard {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Fondo más oscuro para el loader */
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #f0f0f0; /* Color de texto del loader */
-            font-size: 1.3em; /* Tamaño de fuente del loader */
+            color: #f0f0f0;
+            font-size: 1.3rem;
             z-index: 1000;
-            border-radius: 16px; /* Coincide con el contenedor padre */
-            transition: opacity 0.3s ease; /* Transición para ocultar/mostrar */
+            border-radius: 20px;
+            transition: opacity 0.3s ease;
         }
+
         #loader-leaderboard.loader-hidden {
             opacity: 0;
-            pointer-events: none; /* Permite interacciones cuando está oculto */
-            display: flex; /* Mantenemos flex para que la transición de opacidad funcione */
+            pointer-events: none;
         }
+
         #loader-leaderboard .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.2); /* Borde más suave */
-            border-top: 5px solid #4a90e2; /* Color del spinner de tu tema (un azul del degradado) */
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--accent-color);
             border-radius: 50%;
-            width: 50px; /* Spinner un poco más grande */
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px; /* Más espacio */
+            margin-bottom: 20px;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* Media Queries para responsividad */
+        /* Avatar de usuario */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .leaderboard-full-container {
                 padding: 25px;
-                border-radius: 12px;
             }
+            
             .leaderboard-full-container h2 {
-                font-size: 1.8em;
-                margin-bottom: 20px;
+                font-size: 1.8rem;
             }
-            .leaderboard-table th, .leaderboard-table td {
-                padding: 10px 15px;
-                font-size: 0.9em;
+            
+            .leaderboard-table th, 
+            .leaderboard-table td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
             }
+            
+            .btn-back-dashboard {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .leaderboard-full-container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            
+            .leaderboard-full-container h2 {
+                font-size: 1.5rem;
+                gap: 10px;
+            }
+            
+            .leaderboard-table th, 
+            .leaderboard-table td {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .leaderboard-table td:nth-child(2) {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
             .btn-back-dashboard {
                 padding: 10px 20px;
-                font-size: 1em;
-                margin-top: 20px;
+                font-size: 0.9rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .leaderboard-full-container {
-                padding: 15px;
-            }
-            .leaderboard-full-container h2 {
-                font-size: 1.5em;
-                gap: 8px;
-            }
-            .leaderboard-table th, .leaderboard-table td {
-                padding: 8px 10px;
-                font-size: 0.8em;
-            }
-            .btn-back-dashboard {
-                font-size: 0.9em;
-                padding: 8px 15px;
-            }
-        }
-
-        /* Estilos personalizados para SweetAlert2 */
+        /* Estilos para SweetAlert2 (mantenidos como estaban) */
         .swal2-profile-popup {
-            background-color: var(--card-bg-color, #ffffff) !important; /* Fondo de la tarjeta */
+            background-color: var(--card-bg-color, #ffffff) !important;
             border-radius: 15px !important;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
-            border: 2px solid var(--primary-color) !important; /* Borde con color primario */
+            border: 2px solid var(--primary-color) !important;
             color: var(--text-color) !important;
         }
 
         .swal2-profile-title {
-            color: var(--primary-color) !important; /* Título con color primario */
+            color: var(--primary-color) !important;
             font-size: 1.8em !important;
             font-weight: 700 !important;
             margin-bottom: 15px !important;
-            padding-top: 10px; /* Un poco de espacio arriba */
+            padding-top: 10px;
         }
 
         .swal2-profile-html {
@@ -282,63 +424,65 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
         }
 
-        /* Estilos para los iconos dentro del modal */
         .swal2-profile-html .fas {
             margin-right: 8px;
         }
 
-        /* Estilos para los botones dentro del modal de SweetAlert2 */
-.swal2-profile-button {
-    background-color: #6a5acd; /* Un color que combine con tu tema */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 0.95em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.swal2-profile-button:hover {
-    background-color: #4a90e2; /* Un color de hover */
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-.swal2-profile-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-/* Estilo para el input de texto en el chat modal */
-.swal2-profile-input {
-    border: 1px solid #ddd !important;
-    border-radius: 8px !important;
-    padding: 10px !important;
-    font-size: 1em !important;
-    width: calc(100% - 20px) !important; /* Ajuste para el padding */
-    margin-top: 10px !important;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05) !important;
-}
-.swal2-profile-cancel-button {
-    background-color: #e74c3c !important; /* Rojo para cancelar */
-    color: white !important;
-    border-radius: 8px !important;
-    padding: 10px 20px !important;
-    font-size: 1em !important;
-    font-weight: 600 !important;
-    transition: background-color 0.2s ease, transform 0.2s ease !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-}
-.swal2-profile-cancel-button:hover {
-    background-color: #c0392b !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
-}
+        .swal2-profile-button {
+            background-color: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .swal2-profile-button:hover {
+            background-color: #4a90e2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .swal2-profile-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .swal2-profile-input {
+            border: 1px solid #ddd !important;
+            border-radius: 8px !important;
+            padding: 10px !important;
+            font-size: 1em !important;
+            width: calc(100% - 20px) !important;
+            margin-top: 10px !important;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        
+        .swal2-profile-cancel-button {
+            background-color: #e74c3c !important;
+            color: white !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
+            font-size: 1em !important;
+            font-weight: 600 !important;
+            transition: background-color 0.2s ease, transform 0.2s ease !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .swal2-profile-cancel-button:hover {
+            background-color: #c0392b !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+        }
     </style>
 </head>
 <body>
@@ -349,14 +493,14 @@
         </div>
 
         <h2><i class="fas fa-trophy"></i> Clasificación Global</h2>
-        <div class="leaderboard-table-container">
+        <div class="leaderboard-full-table-container">
             <table class="leaderboard-table">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Jugador</th>
-                        <th>Oro</th>
-                        <th>Diamantes</th>
+                        <th><i class="fas fa-coins"></i> Oro</th>
+                        <th><i class="fas fa-gem"></i> Diamantes</th>
                     </tr>
                 </thead>
                 <tbody id="leaderboard-table-body">
@@ -406,4 +550,4 @@
         });
     </script>
 </body>
-</html> 
+</html>
