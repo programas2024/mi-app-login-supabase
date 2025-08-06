@@ -314,7 +314,7 @@
     100% { transform: translateX(100%) rotate(30deg); }
 }
 
-/* Silver - Enhanced metallic effect */
+/* Silver - Enhanced metallic effect with better text contrast */
 .rank-silver-bg {
     background: linear-gradient(135deg, 
                 #C0C0C0 0%, 
@@ -323,6 +323,7 @@
                 #A9A9A9 100%);
     border: 2px solid rgba(112, 128, 144, 0.7);
     position: relative;
+    color: #2D3436; /* Texto oscuro para mejor contraste */
 }
 
 .rank-silver-bg::before {
@@ -340,8 +341,19 @@
 }
 
 .rank-silver-bg .rank-item-icon { 
-    color: #F8F8FF; /* GhostWhite */
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    color: #2D3436; /* Icono oscuro para mejor contraste */
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5); /* Sombra clara para destacar */
+}
+
+.rank-silver-bg .rank-item-title {
+    color: #2D3436; /* Título oscuro */
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* Sombra clara para legibilidad */
+}
+
+.rank-silver-bg .rank-item-threshold {
+    color: #636E72; /* Gris un poco más claro para el subtítulo */
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .rank-silver-bg:hover {
