@@ -5,52 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificación Global</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css"> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
-            --gold: #FFD700;
-            --silver: #C0C0C0;
-            --bronze: #CD7F32;
-            --dark: #212529;
-            --light: #f8f9fa;
-            --success: #4cc9f0;
-            --warning: #f8961e;
-            --danger: #ef233c;
-            --text: #2b2d42;
-            --text-light: #edf2f4;
+        /* Estilos básicos para la nueva página de clasificación */
+
+        /* Estilos para resaltar la fila del usuario actual */
+        .current-user-row {
+            /* Degradado dorado para el fondo */
+            background: linear-gradient(to right, #ffd700, #ffae00) !important; /* Dorado claro a dorado oscuro */
+            color: #000000 !important; /* Texto negro para asegurar legibilidad sobre el dorado */
+            font-weight: bold !important;
+            border: 2px solid #a37b00 !important; /* Borde marrón oscuro o dorado más oscuro para definir */
+            border-radius: 8px; /* Bordes redondeados */
+            transform: scale(1.02); /* Un ligero "pop" */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra pronunciada */
+            z-index: 1; /* Asegura que esté por encima */
+            position: relative; /* Necesario para z-index */
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Ajustar el hover para que la fila resaltada siga viéndose bien */
+        .leaderboard-table tbody tr.current-user-row:hover {
+            background: linear-gradient(to right, #ffe54c, #ffbf00) !important; /* Dorado un poco más claro al pasar el ratón */
+            transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); /* Sombra más fuerte al pasar el ratón */
         }
 
+        /* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
+        .leaderboard-table tbody tr.current-user-row td {
+            color: #000000 !important; /* Asegura que el texto en la fila dorada sea negro */
+        }
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color); /* Mantener el fondo general del tema */
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
             padding: 20px;
-            color: var(--text);
+            box-sizing: border-box;
+            overflow-x: hidden; /* Evita barras de desplazamiento horizontales innecesarias */
         }
 
-        /* Contenedor principal */
-        .leaderboard-container {
+        .leaderboard-full-container {
+            background-color: #ffffff; /* Contenedor principal blanco */
+            border-radius: 16px; /* Bordes más suaves */
+            padding: 40px; /* Mayor padding para más espacio */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave para el blanco */
             width: 100%;
-            max-width: 1000px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            max-width: 900px; /* Un poco más ancha para tablas grandes */
+            text-align: center;
             position: relative;
-            animation: fadeIn 0.6s ease-out;
+            overflow: hidden; /* Para contener el loader dentro del contenedor */
+            animation: fadeIn 0.8s ease-out; /* Animación de entrada suave */
         }
 
         @keyframes fadeIn {
@@ -58,365 +67,289 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Botón de regreso */
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            border-radius: 50px;
-            width: 40px;
-            height: 40px;
+        .leaderboard-full-container h2 {
+            font-size: 2.5em; /* Título más grande */
+            color: var(--primary-color); /* Mantener el color primario para el título */
+            margin-bottom: 30px; /* Más espacio debajo del título */
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            gap: 12px; /* Mayor espacio entre icono y texto */
+            font-weight: 700; /* Más audaz */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra de texto sutil */
         }
 
-        .back-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        .leaderboard-full-container h2 .fas {
+            font-size: 1.5em; /* Icono un poco más grande */
+            color: var(--accent-color, #ffd700); /* Color acento, ej. un dorado para el trofeo */
         }
 
-        /* Encabezado */
-        .leaderboard-header {
-            padding: 40px 20px 30px;
-            background: white;
-            color: var(--text);
-            text-align: center;
-            position: relative;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .leaderboard-header h2 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .leaderboard-header .fas {
-            color: var(--gold);
-            font-size: 1.8rem;
-        }
-
-        .leaderboard-header p {
-            color: #6c757d;
-            font-weight: 400;
-        }
-
-        /* Tabla */
-        .table-container {
-            padding: 20px;
+        .leaderboard-full-table-container {
             overflow-x: auto;
+            margin-bottom: 25px; /* Espacio antes del botón de volver */
         }
 
         .leaderboard-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
+            border-collapse: collapse; /* Volvemos a collapse para los bordes negros */
+            margin-top: 20px;
+            background-color: #ffffff; /* Fondo de la tabla blanco */
+            border: 1px solid #000000; /* Borde negro para la tabla */
+            border-radius: 10px; /* Bordes redondeados para la tabla */
+            overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 15px 20px; /* Más padding en celdas */
+            text-align: left;
+            border: 1px solid #000000; /* Bordes negros para todas las celdas */
         }
 
         .leaderboard-table th {
-            background: white;
-            color: var(--text);
-            font-weight: 600;
+            /* Degradado azul para los encabezados */
+            background: linear-gradient(to right, #4a90e2, #6a5acd); /* Azul claro a un morado azulado */
+            color: #ffffff; /* Texto blanco para contrastar */
+            font-weight: 700; /* Más audaz */
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.95em;
             letter-spacing: 0.5px;
-            padding: 16px 20px;
-            text-align: left;
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .leaderboard-table td {
-            padding: 14px 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            padding: 18px 20px; /* Más padding para los encabezados */
         }
 
         .leaderboard-table tbody tr {
-            transition: all 0.3s ease;
+            background-color: #ffffff; /* Fondo de fila blanco */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            /* Eliminamos la sombra de las filas para un look más limpio con bordes */
+        }
+
+        .leaderboard-table tbody tr:nth-child(even) {
+            background-color: #f0f0f0; /* Un tono gris muy claro para filas pares */
         }
 
         .leaderboard-table tbody tr:hover {
-            background-color: #f8f9fa !important;
+            transform: translateY(-3px); /* Efecto flotante al pasar el ratón */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil al pasar el ratón */
+            background-color: #e0e0e0; /* Un gris claro al pasar el ratón */
         }
 
-        /* Estilos para los primeros puestos */
-        .first-place {
-            background-color: rgba(255, 215, 0, 0.1) !important;
-        }
+        /* Estilos para las celdas de la tabla (opcional, para diferenciar) */
+        .leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--primary-color); } /* Ranking number bold */
+        .leaderboard-table td:nth-child(2) { font-weight: 600; } /* Username slightly bolder */
+        /* Las columnas de Oro y Diamantes no necesitan estilos específicos aquí si ya están en el JS */
 
-        .first-place .rank-cell {
-            color: var(--gold) !important;
-            font-weight: 800 !important;
-        }
 
-        .second-place {
-            background-color: rgba(192, 192, 192, 0.1) !important;
-        }
-
-        .second-place .rank-cell {
-            color: var(--silver) !important;
-            font-weight: 700 !important;
-        }
-
-        .third-place {
-            background-color: rgba(205, 127, 50, 0.1) !important;
-        }
-
-        .third-place .rank-cell {
-            color: var(--bronze) !important;
-            font-weight: 700 !important;
-        }
-
-        /* Fila del usuario actual */
-        .current-user-row {
-            background: linear-gradient(to right, rgba(67, 97, 238, 0.05), rgba(67, 97, 238, 0.1)) !important;
-            position: relative;
-            border-left: 4px solid var(--primary);
-        }
-
-        .current-user-row:hover {
-            background: linear-gradient(to right, rgba(67, 97, 238, 0.1), rgba(67, 97, 238, 0.15)) !important;
-        }
-
-        /* Columnas específicas */
-        .rank-cell {
+        /* Botón de Volver */
+        .btn-back-dashboard {
+            background-color: var(--button-bg-color); /* Usa el color de botón de tu tema */
+            color: var(--button-text-color); /* Color de texto de botón de tu tema */
+            border: none;
+            border-radius: 10px; /* Bordes más redondeados */
+            padding: 12px 25px; /* Más padding */
+            margin-top: 30px; /* Más espacio */
+            cursor: pointer;
+            font-size: 1.1em; /* Texto un poco más grande */
             font-weight: 600;
-            color: var(--text);
-            width: 60px;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px; /* Más espacio entre icono y texto */
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .player-cell {
-            font-weight: 500;
+        .btn-back-dashboard:hover {
+            background-color: var(--button-hover-bg-color); /* Color de hover de tu tema */
+            transform: translateY(-4px); /* Efecto de "levantar" más pronunciado */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
 
-        .gold-cell, .diamond-cell {
-            font-weight: 500;
-            color: var(--text);
+        .btn-back-dashboard .fas {
+            font-size: 1.1em; /* Icono del botón un poco más grande */
         }
 
-        /* Loader */
+        /* Loader para esta página */
         #loader-leaderboard {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.85); /* Fondo más oscuro para el loader */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: var(--text);
-            z-index: 100;
-            transition: opacity 0.3s ease;
+            color: #f0f0f0; /* Color de texto del loader */
+            font-size: 1.3em; /* Tamaño de fuente del loader */
+            z-index: 1000;
+            border-radius: 16px; /* Coincide con el contenedor padre */
+            transition: opacity 0.3s ease; /* Transición para ocultar/mostrar */
         }
-
         #loader-leaderboard.loader-hidden {
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none; /* Permite interacciones cuando está oculto */
+            display: flex; /* Mantenemos flex para que la transición de opacidad funcione */
         }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(67, 97, 238, 0.1);
-            border-top: 4px solid var(--primary);
+        #loader-leaderboard .spinner {
+            border: 5px solid rgba(255, 255, 255, 0.2); /* Borde más suave */
+            border-top: 5px solid #4a90e2; /* Color del spinner de tu tema (un azul del degradado) */
             border-radius: 50%;
+            width: 50px; /* Spinner un poco más grande */
+            height: 50px;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* Más espacio */
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* SweetAlert2 personalizado - Botones estilo "botonitos" */
-        .swal2-popup {
-            border-radius: 12px !important;
-            font-family: 'Poppins', sans-serif !important;
-            border: 1px solid rgba(0, 0, 0, 0.1) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
-            padding: 25px !important;
-        }
-
-        .swal2-title {
-            color: var(--dark) !important;
-            font-size: 1.5rem !important;
-            font-weight: 600 !important;
-            margin-bottom: 15px !important;
-        }
-
-        .swal2-html-container {
-            font-size: 1rem !important;
-            color: var(--text) !important;
-            margin-bottom: 20px !important;
-        }
-
-        .swal2-actions {
-            gap: 12px !important;
-            margin-top: 0 !important;
-        }
-
-        /* Botón de Amigo - Estilo "botonito" */
-        .swal2-confirm {
-            background: #4CAF50 !important;
-            border: none !important;
-            border-radius: 50px !important;
-            padding: 8px 20px !important;
-            font-weight: 500 !important;
-            font-size: 0.9rem !important;
-            transition: all 0.2s ease !important;
-            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 8px !important;
-        }
-
-        /* Botón de Chat - Estilo "botonito" */
-        .swal2-deny {
-            background: #2196F3 !important;
-            border: none !important;
-            border-radius: 50px !important;
-            padding: 8px 20px !important;
-            font-weight: 500 !important;
-            font-size: 0.9rem !important;
-            transition: all 0.2s ease !important;
-            box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 8px !important;
-        }
-
-        /* Botón Cancelar - Estilo "botonito" */
-        .swal2-cancel {
-            background: #f8f9fa !important;
-            color: var(--text) !important;
-            border: 1px solid #dee2e6 !important;
-            border-radius: 50px !important;
-            padding: 8px 20px !important;
-            font-weight: 500 !important;
-            font-size: 0.9rem !important;
-            transition: all 0.2s ease !important;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 8px !important;
-        }
-
-        .swal2-confirm:hover, .swal2-deny:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-            filter: brightness(1.1) !important;
-        }
-
-        .swal2-cancel:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-            background: #e9ecef !important;
-        }
-
-        /* Íconos en los botones */
-        .swal2-confirm i, .swal2-deny i, .swal2-cancel i {
-            font-size: 0.9rem !important;
-        }
-
-        /* Responsive */
+        /* Media Queries para responsividad */
         @media (max-width: 768px) {
-            .leaderboard-header {
-                padding: 30px 20px 25px;
+            .leaderboard-full-container {
+                padding: 25px;
+                border-radius: 12px;
             }
-            
-            .leaderboard-header h2 {
-                font-size: 1.8rem;
+            .leaderboard-full-container h2 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
             }
-            
-            .leaderboard-table th, 
-            .leaderboard-table td {
-                padding: 12px 15px;
+            .leaderboard-table th, .leaderboard-table td {
+                padding: 10px 15px;
+                font-size: 0.9em;
             }
-
-            .swal2-popup {
-                width: 90% !important;
-                padding: 20px !important;
+            .btn-back-dashboard {
+                padding: 10px 20px;
+                font-size: 1em;
+                margin-top: 20px;
             }
         }
 
         @media (max-width: 480px) {
-            .leaderboard-header {
-                padding: 40px 15px 20px;
-            }
-            
-            .leaderboard-header h2 {
-                font-size: 1.5rem;
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .back-btn {
-                top: 15px;
-                left: 15px;
-            }
-            
-            .table-container {
+            .leaderboard-full-container {
                 padding: 15px;
             }
-            
-            .leaderboard-table th, 
-            .leaderboard-table td {
-                padding: 10px 12px;
-                font-size: 0.85rem;
+            .leaderboard-full-container h2 {
+                font-size: 1.5em;
+                gap: 8px;
             }
-
-            .swal2-actions {
-                flex-direction: column !important;
-                gap: 8px !important;
+            .leaderboard-table th, .leaderboard-table td {
+                padding: 8px 10px;
+                font-size: 0.8em;
             }
-
-            .swal2-confirm, .swal2-deny, .swal2-cancel {
-                width: 100% !important;
+            .btn-back-dashboard {
+                font-size: 0.9em;
+                padding: 8px 15px;
             }
         }
+
+        /* Estilos personalizados para SweetAlert2 */
+        .swal2-profile-popup {
+            background-color: var(--card-bg-color, #ffffff) !important; /* Fondo de la tarjeta */
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+            border: 2px solid var(--primary-color) !important; /* Borde con color primario */
+            color: var(--text-color) !important;
+        }
+
+        .swal2-profile-title {
+            color: var(--primary-color) !important; /* Título con color primario */
+            font-size: 1.8em !important;
+            font-weight: 700 !important;
+            margin-bottom: 15px !important;
+            padding-top: 10px; /* Un poco de espacio arriba */
+        }
+
+        .swal2-profile-html {
+            font-size: 1.1em !important;
+            line-height: 1.6 !important;
+            color: var(--text-color) !important;
+        }
+
+        .swal2-profile-confirm-button {
+            background-color: var(--button-bg-color) !important;
+            color: var(--button-text-color) !important;
+            border-radius: 8px !important;
+            padding: 10px 25px !important;
+            font-size: 1em !important;
+            font-weight: 600 !important;
+            transition: background-color 0.2s ease, transform 0.2s ease !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .swal2-profile-confirm-button:hover {
+            background-color: var(--button-hover-bg-color) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Estilos para los iconos dentro del modal */
+        .swal2-profile-html .fas {
+            margin-right: 8px;
+        }
+
+        /* Estilos para los botones dentro del modal de SweetAlert2 */
+.swal2-profile-button {
+    background-color: #6a5acd; /* Un color que combine con tu tema */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.swal2-profile-button:hover {
+    background-color: #4a90e2; /* Un color de hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.swal2-profile-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+/* Estilo para el input de texto en el chat modal */
+.swal2-profile-input {
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    font-size: 1em !important;
+    width: calc(100% - 20px) !important; /* Ajuste para el padding */
+    margin-top: 10px !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+.swal2-profile-cancel-button {
+    background-color: #e74c3c !important; /* Rojo para cancelar */
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: 1em !important;
+    font-weight: 600 !important;
+    transition: background-color 0.2s ease, transform 0.2s ease !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+.swal2-profile-cancel-button:hover {
+    background-color: #c0392b !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
     </style>
 </head>
 <body>
-    <div class="leaderboard-container">
-        <button id="back-to-dashboard-from-leaderboard" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-
+    <div class="leaderboard-full-container">
         <div id="loader-leaderboard" class="loader-hidden">
             <div class="spinner"></div>
             <p>Cargando clasificación...</p>
         </div>
 
-        <div class="leaderboard-header">
-            <h2><i class="fas fa-trophy"></i> Clasificación Global</h2>
-            <p>Los mejores jugadores de la comunidad</p>
-        </div>
-
-        <div class="table-container">
+        <h2><i class="fas fa-trophy"></i> Clasificación Global</h2>
+        <div class="leaderboard-table-container">
             <table class="leaderboard-table">
                 <thead>
                     <tr>
@@ -431,21 +364,31 @@
                 </tbody>
             </table>
         </div>
+        <button id="back-to-dashboard-from-leaderboard" class="btn btn-back-dashboard">
+            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+        </button>
     </div>
-
     <script type="module">
-        // Tu script original aquí (sin cambios)
-        import { loadLeaderboard } from './leaderboard.js';
+        // Importa la función loadLeaderboard desde tu archivo leaderboard.js
+        import { loadLeaderboard } from './leaderboard.js'; // Asegúrate que la ruta sea correcta
+
+        // Importa createClient directamente de la URL del CDN de Supabase
         import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
+        // --- Configuración de Supabase para esta página ---
+        // Estas claves DEBEN COINCIDIR con las de tu script.js y tu proyecto Supabase.
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        // ¡CLAVE CORREGIDA! Asegúrate de que esta sea exactamente la misma que en script.js
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // Opcional: Verificar si el usuario está autenticado antes de cargar la clasificación
+            // Esto es buena práctica, pero si siempre se accede desde el dashboard (autenticado), podría simplificarse.
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
+                console.log('No hay usuario autenticado. Redirigiendo a index.html.');
                 window.location.href = 'index.html';
                 return;
             }
@@ -457,9 +400,10 @@
                 });
             }
 
-            const loaderLeaderboard = document.getElementById('loader-leaderboard');
+              const loaderLeaderboard = document.getElementById('loader-leaderboard');
+            // Pasamos el ID del usuario actual a loadLeaderboard
             await loadLeaderboard(supabase, loaderLeaderboard, user.id);
         });
     </script>
 </body>
-</html>
+</html> mejora la tabla y lso swee el script sino lo cambies solo cmabia el estilo de la pagian nomas que sea mas genial
