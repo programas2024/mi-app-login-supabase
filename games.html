@@ -10,7 +10,7 @@
     <style>
         /* Estilos específicos para la página de juegos */
         body {
-            background-color: #f0f2f5; /* Fondo claro para la página de juegos */
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,14 +20,14 @@
         }
 
         .games-container {
-            background-color: #ffffff; /* Contenedor principal blanco */
+            background-color: #ffffff;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             padding: 40px;
             width: 90%;
-            max-width: 1000px;
+            max-width: 1200px;
             text-align: center;
-            position: relative; /* Para posicionar el botón de regreso */
+            position: relative;
         }
 
         .games-container h1 {
@@ -42,16 +42,16 @@
         .game-card-wrapper {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap; /* Permite que las tarjetas se envuelvan en pantallas pequeñas */
-            gap: 30px; /* Espacio entre las tarjetas de juego */
+            flex-wrap: wrap;
+            gap: 30px;
         }
 
         .game-card {
-            background: linear-gradient(145deg, #e0f2f7, #c1e4ed); /* Degradado azul claro sutil */
+            background: linear-gradient(145deg, #e0f2f7, #c1e4ed);
             border-radius: 15px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             padding: 25px;
-            width: 300px; /* Ancho fijo para la tarjeta */
+            width: 280px;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -61,18 +61,18 @@
         .game-card:hover {
             transform: translateY(-8px) scale(1.03);
             box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(145deg, #c1e4ed, #9ddaf3); /* Degradado más pronunciado en hover */
+            background: linear-gradient(145deg, #c1e4ed, #9ddaf3);
         }
 
         .game-card-icon {
             font-size: 4em;
-            color: #2c3e50; /* Azul oscuro para el icono */
+            color: #2c3e50;
             margin-bottom: 15px;
             transition: color 0.3s ease;
         }
 
         .game-card:hover .game-card-icon {
-            color: #3498db; /* Azul vibrante en hover */
+            color: #3498db;
         }
 
         .game-card h3 {
@@ -91,7 +91,7 @@
         }
 
         .game-card button {
-            background-color: #3498db; /* Botón azul vibrante */
+            background-color: #3498db;
             color: white;
             border: none;
             padding: 12px 25px;
@@ -111,29 +111,80 @@
 
         /* Estilos para la tarjeta de Sopa de Letras */
         .game-card.word-search {
-            background: linear-gradient(145deg, #FFD1DC, #FFABAB); /* Rosa pastel a rojo suave */
-            border: 2px solid #FF69B4; /* Borde rosa vibrante */
+            background: linear-gradient(145deg, #FFD1DC, #FFABAB);
+            border: 2px solid #FF69B4;
         }
 
         .game-card.word-search:hover {
-            background: linear-gradient(145deg, #FFABAB, #FF69B4); /* Degradado más intenso en hover */
+            background: linear-gradient(145deg, #FFABAB, #FF69B4);
         }
 
         .game-card.word-search .game-card-icon {
-            color: #E91E63; /* Rosa oscuro para el icono */
+            color: #E91E63;
         }
 
         .game-card.word-search:hover .game-card-icon {
-            color: #C2185B; /* Rosa más oscuro en hover */
+            color: #C2185B;
         }
 
+        /* Estilos para la tarjeta de Preguntados */
+        .game-card.quiz {
+            background: linear-gradient(145deg, #FFF9C4, #FFEE58);
+            border: 2px solid #FFD600;
+        }
+
+        .game-card.quiz:hover {
+            background: linear-gradient(145deg, #FFEE58, #FFD600);
+        }
+
+        .game-card.quiz .game-card-icon {
+            color: #F57F17;
+        }
+
+        .game-card.quiz:hover .game-card-icon {
+            color: #FF6F00;
+        }
+
+        .game-card.quiz button {
+            background-color: #FFA000;
+        }
+
+        .game-card.quiz button:hover {
+            background-color: #FF8F00;
+        }
+
+        /* Estilos para la tarjeta de Crucigrama */
+        .game-card.crossword {
+            background: linear-gradient(145deg, #C8E6C9, #81C784);
+            border: 2px solid #4CAF50;
+        }
+
+        .game-card.crossword:hover {
+            background: linear-gradient(145deg, #81C784, #66BB6A);
+        }
+
+        .game-card.crossword .game-card-icon {
+            color: #2E7D32;
+        }
+
+        .game-card.crossword:hover .game-card-icon {
+            color: #1B5E20;
+        }
+
+        .game-card.crossword button {
+            background-color: #43A047;
+        }
+
+        .game-card.crossword button:hover {
+            background-color: #388E3C;
+        }
 
         /* Botón de regreso */
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            background-color: #f39c12; /* Naranja brillante */
+            background-color: #f39c12;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -185,17 +236,36 @@
         <h1>Nuestros Juegos</h1>
 
         <div class="game-card-wrapper">
+            <!-- Juego 1: Orcado -->
             <div class="game-card" id="spelling-game-card">
-                <i class="fas fa-gavel game-card-icon"></i> <h3>Orcado</h3>
+                <i class="fas fa-gavel game-card-icon"></i>
+                <h3>Orcado</h3>
                 <p>¡Demuestra tu dominio del lenguaje! Encuentra la palabra correcta y gana.</p>
                 <button onclick="window.location.href='games2.html'">Jugar Ahora</button>
             </div>
 
-            <!-- NUEVA TARJETA: Sopa de Letras -->
+            <!-- Juego 2: Sopa de Letras -->
             <div class="game-card word-search" id="word-search-game-card">
-                <i class="fas fa-search game-card-icon"></i> <h3>Sopa de Letras</h3>
+                <i class="fas fa-search game-card-icon"></i>
+                <h3>Sopa de Letras</h3>
                 <p>¡Encuentra todas las palabras ocultas en la cuadrícula antes de que se agote el tiempo!</p>
                 <button onclick="window.location.href='games3.html'">Jugar Ahora</button>
+            </div>
+
+            <!-- Juego 3: Preguntados -->
+            <div class="game-card quiz" id="quiz-game-card">
+                <i class="fas fa-question-circle game-card-icon"></i>
+                <h3>Preguntados</h3>
+                <p>Demuestra cuánto sabes respondiendo preguntas de diferentes categorías. ¡El conocimiento es poder!</p>
+                <button onclick="window.location.href='games4.html'">Jugar Ahora</button>
+            </div>
+
+            <!-- Juego 4: Crucigrama -->
+            <div class="game-card crossword" id="crossword-game-card">
+                <i class="fas fa-th game-card-icon"></i>
+                <h3>Crucigrama</h3>
+                <p>Completa el crucigrama resolviendo las pistas horizontales y verticales. ¡Un clásico que nunca pasa de moda!</p>
+                <button onclick="window.location.href='games5.html'">Jugar Ahora</button>
             </div>
         </div>
     </div>
