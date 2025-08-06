@@ -321,17 +321,6 @@
             display: none;
         }
 
-        .result-container h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-
-        .result-container p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-        }
-
         .restart-btn {
             background-color: var(--primary-color);
             color: white;
@@ -437,8 +426,6 @@
         </div>
 
         <div class="result-container" id="result-container">
-            <h2>¡Resultados!</h2>
-            <p id="result-text"></p>
             <button class="restart-btn" id="restart-btn">
                 <i class="fas fa-redo"></i> Jugar de nuevo
             </button>
@@ -563,7 +550,6 @@
         const timerText = document.getElementById('timer-text');
         const feedbackContainer = document.getElementById('feedback-container');
         const resultContainer = document.getElementById('result-container');
-        const resultText = document.getElementById('result-text');
         const restartBtn = document.getElementById('restart-btn');
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const particlesContainer = document.getElementById('particles');
@@ -726,25 +712,82 @@
             });
         }
 
-        // Finalizar el juego
+        // Finalizar el juego con Sweetalert2 mejorado
         function endGame() {
             gameActive = false;
             clearInterval(timer);
             
-            const percentage = Math.round((correctAnswers / selectedQuestions.length) * 100);
-            let message = '';
+            const totalQuestions = selectedQuestions.length;
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            let title, icon, imageUrl, color;
             
-            if (percentage >= 80) {
-                message = `¡Excelente! Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). ¡Eres un genio de la ciencia!`;
-                createParticles();
+            // Determinar el mensaje según el rendimiento
+            if (percentage >= 90) {
+                title = "¡Excelente! 🎉";
+                icon = "success";
+                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
+                color = "#4CAF50";
+            } else if (percentage >= 70) {
+                title = "¡Buen trabajo! 👍";
+                icon = "success";
+                imageUrl = "https://cdn.pixabay.com/photo/2016/03/31/19/13/atom-1294810_640.png";
+                color = "#2196F3";
             } else if (percentage >= 50) {
-                message = `¡Buen trabajo! Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). Sigue aprendiendo.`;
+                title = "¡No está mal! 😊";
+                icon = "info";
+                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/biology-2026102_640.png";
+                color = "#FF9800";
             } else {
-                message = `Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). ¡Sigue practicando!`;
+                title = "¡Sigue practicando! 📚";
+                icon = "info";
+                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                color = "#F44336";
             }
             
-            resultText.textContent = message;
-            resultContainer.style.display = 'block';
+            // Crear HTML personalizado para el resultado
+            const resultHTML = `
+                <div style="text-align: center;">
+                    <img src="${imageUrl}" style="height: 120px; margin-bottom: 20px;">
+                    <h3 style="color: ${color}; margin-bottom: 15px;">${title}</h3>
+                    <p style="font-size: 1.1em; margin-bottom: 10px;">Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas</p>
+                    <p style="font-size: 1.1em; margin-bottom: 15px;">Porcentaje de aciertos: <strong style="color: ${color};">${percentage}%</strong></p>
+                    <div style="background: #f5f5f5; border-radius: 10px; padding: 15px; margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Correctas:</span>
+                            <span style="color: #4CAF50; font-weight: bold;">${correctAnswers}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Incorrectas:</span>
+                            <span style="color: #F44336; font-weight: bold;">${incorrectAnswers}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Mostrar el resultado con Sweetalert2
+            Swal.fire({
+                title: 'Resultados del Juego',
+                html: resultHTML,
+                icon: icon,
+                confirmButtonText: 'Jugar de nuevo',
+                confirmButtonColor: '#3f51b5',
+                background: '#ffffff',
+                allowOutsideClick: false,
+                showCloseButton: true,
+                width: '600px',
+                customClass: {
+                    popup: 'animated bounceIn'
+                },
+                willOpen: () => {
+                    if (percentage >= 90) {
+                        createParticles();
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    initGame();
+                }
+            });
         }
 
         // Potenciador 50/50
@@ -775,6 +818,16 @@
             setTimeout(() => {
                 this.style.transform = '';
             }, 300);
+            
+            // Mostrar mensaje
+            Swal.fire({
+                title: 'Potenciador 50/50 usado',
+                text: 'Se han eliminado dos respuestas incorrectas',
+                icon: 'info',
+                timer: 1500,
+                showConfirmButton: false,
+                background: '#ffffff'
+            });
         };
 
         // Crear efecto de confeti
