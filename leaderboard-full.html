@@ -9,163 +9,226 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos básicos para la nueva página de clasificación */
-
-        /* Estilos para resaltar la fila del usuario actual */
-        .current-user-row {
-            /* Degradado dorado para el fondo */
-            background: linear-gradient(to right, #ffd700, #ffae00) !important; /* Dorado claro a dorado oscuro */
-            color: #000000 !important; /* Texto negro para asegurar legibilidad sobre el dorado */
-            font-weight: bold !important;
-            border: 2px solid #a37b00 !important; /* Borde marrón oscuro o dorado más oscuro para definir */
-            border-radius: 8px; /* Bordes redondeados */
-            transform: scale(1.02); /* Un ligero "pop" */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35); /* Sombra pronunciada */
-            z-index: 1; /* Asegura que esté por encima */
-            position: relative; /* Necesario para z-index */
+         :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #6a5acd;
+            --accent-color: #ffd700;
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --border-color: #e1e5eb;
+            --card-bg: #ffffff;
         }
 
-        /* Ajustar el hover para que la fila resaltada siga viéndose bien */
-        .leaderboard-table tbody tr.current-user-row:hover {
-            background: linear-gradient(to right, #ffe54c, #ffbf00) !important; /* Dorado un poco más claro al pasar el ratón */
-            transform: scale(1.03) translateY(-2px); /* Un poco más de "pop" */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45); /* Sombra más fuerte al pasar el ratón */
-        }
-
-        /* Asegurar que las celdas dentro de la fila resaltada tengan el color de texto negro */
-        .leaderboard-table tbody tr.current-user-row td {
-            color: #000000 !important; /* Asegura que el texto en la fila dorada sea negro */
-        }
         body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: var(--background-color); /* Mantener el fondo general del tema */
-            color: var(--text-color);
-            font-family: 'Poppins', sans-serif;
             padding: 20px;
-            box-sizing: border-box;
-            overflow-x: hidden; /* Evita barras de desplazamiento horizontales innecesarias */
+            margin: 0;
         }
 
         .leaderboard-full-container {
-            background-color: #ffffff; /* Contenedor principal blanco */
-            border-radius: 16px; /* Bordes más suaves */
-            padding: 40px; /* Mayor padding para más espacio */
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Sombra más suave para el blanco */
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 900px; /* Un poco más ancha para tablas grandes */
+            max-width: 900px;
+        }
+
+        h2 {
+            color: var(--primary-color);
             text-align: center;
-            position: relative;
-            overflow: hidden; /* Para contener el loader dentro del contenedor */
-            animation: fadeIn 0.8s ease-out; /* Animación de entrada suave */
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .leaderboard-full-container h2 {
-            font-size: 2.5em; /* Título más grande */
-            color: var(--primary-color); /* Mantener el color primario para el título */
-            margin-bottom: 30px; /* Más espacio debajo del título */
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px; /* Mayor espacio entre icono y texto */
-            font-weight: 700; /* Más audaz */
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Sombra de texto sutil */
-        }
-
-        .leaderboard-full-container h2 .fas {
-            font-size: 1.5em; /* Icono un poco más grande */
-            color: var(--accent-color, #ffd700); /* Color acento, ej. un dorado para el trofeo */
+            gap: 12px;
         }
 
         .leaderboard-full-table-container {
             overflow-x: auto;
-            margin-bottom: 25px; /* Espacio antes del botón de volver */
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
+        /* TABLA PERFECTAMENTE ALINEADA */
         .leaderboard-table {
             width: 100%;
-            border-collapse: collapse; /* Volvemos a collapse para los bordes negros */
-            margin-top: 20px;
-            background-color: #ffffff; /* Fondo de la tabla blanco */
-            border: 1px solid #000000; /* Borde negro para la tabla */
-            border-radius: 10px; /* Bordes redondeados para la tabla */
-            overflow: hidden; /* Asegura que el border-radius se aplique a los hijos */
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
         }
 
-        .leaderboard-table th, .leaderboard-table td {
-            padding: 15px 20px; /* Más padding en celdas */
-            text-align: left;
-            border: 1px solid #000000; /* Bordes negros para todas las celdas */
+        .leaderboard-table thead {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
         }
 
         .leaderboard-table th {
-            /* Degradado azul para los encabezados */
-            background: linear-gradient(to right, #4a90e2, #6a5acd); /* Azul claro a un morado azulado */
-            color: #ffffff; /* Texto blanco para contrastar */
-            font-weight: 700; /* Más audaz */
-            text-transform: uppercase;
-            font-size: 0.95em;
-            letter-spacing: 0.5px;
-            padding: 18px 20px; /* Más padding para los encabezados */
+            padding: 16px 20px;
+            text-align: center;
+            font-weight: 600;
+            vertical-align: middle;
         }
 
-        .leaderboard-table tbody tr {
-            background-color: #ffffff; /* Fondo de fila blanco */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            /* Eliminamos la sombra de las filas para un look más limpio con bordes */
+        .leaderboard-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            text-align: center;
+            height: 60px;
         }
 
+        /* Alineación perfecta para la columna de jugador */
+        .player-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            height: 60px;
+            padding: 0 20px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        /* Estilos para columnas específicas */
+        .rank-cell {
+            font-weight: 700;
+            color: var(--secondary-color);
+            width: 70px;
+        }
+
+        .gold-cell {
+            color: #d4af37;
+            font-weight: 600;
+            width: 120px;
+        }
+
+        .diamonds-cell {
+            color: #5bc0de;
+            font-weight: 600;
+            width: 140px;
+        }
+
+        /* Estilos para filas */
         .leaderboard-table tbody tr:nth-child(even) {
-            background-color: #f0f0f0; /* Un tono gris muy claro para filas pares */
+            background-color: rgba(245, 247, 250, 0.7);
         }
 
         .leaderboard-table tbody tr:hover {
-            transform: translateY(-3px); /* Efecto flotante al pasar el ratón */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil al pasar el ratón */
-            background-color: #e0e0e0; /* Un gris claro al pasar el ratón */
+            background-color: rgba(74, 144, 226, 0.05);
         }
 
-        /* Estilos para las celdas de la tabla (opcional, para diferenciar) */
-        .leaderboard-table td:nth-child(1) { font-weight: 700; color: var(--primary-color); } /* Ranking number bold */
-        .leaderboard-table td:nth-child(2) { font-weight: 600; } /* Username slightly bolder */
-        /* Las columnas de Oro y Diamantes no necesitan estilos específicos aquí si ya están en el JS */
+        /* Primeros puestos */
+        .first-place td:first-child {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
 
+        .second-place td:first-child {
+            color: #c0c0c0;
+            font-size: 1.1rem;
+        }
 
-        /* Botón de Volver */
+        .third-place td:first-child {
+            color: #cd7f32;
+        }
+
+        /* Usuario actual */
+        .current-user-row {
+            background: rgba(255, 215, 0, 0.15) !important;
+            position: relative;
+        }
+
+        .current-user-row::after {
+            content: 'Tú';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--accent-color);
+            color: #000;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        /* Botón de volver */
         .btn-back-dashboard {
-            background-color: var(--button-bg-color); /* Usa el color de botón de tu tema */
-            color: var(--button-text-color); /* Color de texto de botón de tu tema */
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
             border: none;
-            border-radius: 10px; /* Bordes más redondeados */
-            padding: 12px 25px; /* Más padding */
-            margin-top: 30px; /* Más espacio */
+            border-radius: 8px;
+            padding: 12px 24px;
+            margin-top: 25px;
             cursor: pointer;
-            font-size: 1.1em; /* Texto un poco más grande */
             font-weight: 600;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 10px; /* Más espacio entre icono y texto */
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            gap: 8px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: transform 0.2s;
         }
 
         .btn-back-dashboard:hover {
-            background-color: var(--button-hover-bg-color); /* Color de hover de tu tema */
-            transform: translateY(-4px); /* Efecto de "levantar" más pronunciado */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
         }
 
-        .btn-back-dashboard .fas {
-            font-size: 1.1em; /* Icono del botón un poco más grande */
+        /* Responsive */
+        @media (max-width: 768px) {
+            .leaderboard-full-container {
+                padding: 20px;
+            }
+            
+            .leaderboard-table th, 
+            .leaderboard-table td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .player-cell {
+                gap: 8px;
+                padding: 0 15px;
+            }
+            
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+            }
         }
 
+        @media (max-width: 480px) {
+            .leaderboard-table th, 
+            .leaderboard-table td {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .rank-cell, .gold-cell, .diamonds-cell {
+                width: auto;
+            }
+            
+            .player-cell {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                height: auto;
+                padding: 10px 12px;
+            }
+        }
         /* Loader para esta página */
         #loader-leaderboard {
             position: absolute;
