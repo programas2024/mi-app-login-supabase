@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntados de Ciencia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #2196f3;
+            --correct-color: #4CAF50;
+            --incorrect-color: #F44336;
+            --timer-color: #FF9800;
+            --boost-color: #9C27B0;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --bg-light: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            padding: 40px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .quiz-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .quiz-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: rgba(63, 81, 181, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-box h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .correct .stat-value {
+            color: var(--correct-color);
+        }
+
+        .incorrect .stat-value {
+            color: var(--incorrect-color);
+        }
+
+        .timer-container {
+            width: 100%;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            height: 15px;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--timer-color), #FFC107);
+            width: 100%;
+            transition: width 1s linear;
+            border-radius: 10px;
+        }
+
+        .timer-text {
+            text-align: center;
+            font-weight: 600;
+            margin-top: 5px;
+            color: var(--timer-color);
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .question-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: 700;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            color: var(--text-dark);
+            padding: 0 10px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .option-btn::before {
+            content: attr(data-letter);
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+
+        .option-btn.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+        }
+
+        .option-btn.correct::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            color: var(--correct-color);
+        }
+
+        .option-btn.incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            border-color: var(--incorrect-color);
+            color: var(--incorrect-color);
+        }
+
+        .option-btn.incorrect::after {
+            content: '\f00d';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            color: var(--incorrect-color);
+        }
+
+        .option-btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .option-btn.hidden-option {
+            display: none;
+        }
+
+        .boosters-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .booster-btn {
+            background-color: var(--boost-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .booster-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            background-color: #7B1FA2;
+        }
+
+        .booster-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .correct-feedback {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct-color);
+            animation: pulse 0.5s ease;
+        }
+
+        .incorrect-feedback {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect-color);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            top: 0;
+            left: 50%;
+            opacity: 0;
+            z-index: 1000;
+        }
+
+        .result-container {
+            text-align: center;
+            display: none;
+        }
+
+        .result-container h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .result-container p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .restart-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            background-color: #303F9F;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            .quiz-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .question-text {
+                font-size: 1.2em;
+            }
+            
+            .option-btn {
+                padding: 12px;
+                font-size: 1em;
+            }
+            
+            .boosters-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Preguntados de Ciencia</h1>
+            <p>Descubre los misterios del universo con preguntas sobre física, química, biología y más</p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-box correct">
+                <h3>Correctas</h3>
+                <div class="stat-value" id="correct-count">0</div>
+            </div>
+            <div class="stat-box incorrect">
+                <h3>Incorrectas</h3>
+                <div class="stat-value" id="incorrect-count">0</div>
+            </div>
+        </div>
+
+        <div class="timer-container">
+            <div class="timer-bar" id="timer-bar"></div>
+            <div class="timer-text" id="timer-text">2:00</div>
+        </div>
+
+        <div class="question-container">
+            <div class="question-number" id="question-number">1</div>
+            <div class="question-text" id="question-text"></div>
+            
+            <div class="options-container" id="options-container">
+                <!-- Las opciones se insertarán aquí con JavaScript -->
+            </div>
+            
+            <div class="feedback-container" id="feedback-container"></div>
+        </div>
+
+        <div class="boosters-container">
+            <button class="booster-btn" id="fifty-fifty-booster">
+                <i class="fas fa-star-half-alt"></i> 50/50
+            </button>
+        </div>
+
+        <div class="result-container" id="result-container">
+            <h2>¡Resultados!</h2>
+            <p id="result-text"></p>
+            <button class="restart-btn" id="restart-btn">
+                <i class="fas fa-redo"></i> Jugar de nuevo
+            </button>
+        </div>
+
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Banco de preguntas de ciencia
+        const questions = [
+            {
+                question: "¿Cuál es el elemento químico más abundante en el universo?",
+                options: ["Oxígeno", "Hidrógeno", "Carbono", "Hierro"],
+                answer: 1,
+                explanation: "El hidrógeno es el elemento más abundante en el universo, constituyendo aproximadamente el 75% de la masa elemental del universo."
+            },
+            {
+                question: "¿Qué científico formuló la teoría de la relatividad?",
+                options: ["Isaac Newton", "Albert Einstein", "Stephen Hawking", "Galileo Galilei"],
+                answer: 1,
+                explanation: "Albert Einstein formuló la teoría de la relatividad, que revolucionó nuestra comprensión del espacio, tiempo y gravedad."
+            },
+            {
+                question: "¿Cuál es la unidad básica de la herencia en los organismos vivos?",
+                options: ["Célula", "Gen", "Proteína", "Cromosoma"],
+                answer: 1,
+                explanation: "El gen es la unidad básica de la herencia que se transmite de padres a hijos y contiene las instrucciones para formar proteínas."
+            },
+            {
+                question: "¿Qué planeta es conocido como el 'planeta rojo'?",
+                options: ["Venus", "Júpiter", "Marte", "Saturno"],
+                answer: 2,
+                explanation: "Marte es conocido como el planeta rojo debido al óxido de hierro (herrumbre) en su superficie."
+            },
+            {
+                question: "¿Qué partícula subatómica tiene carga positiva?",
+                options: ["Electrón", "Neutrón", "Protón", "Fotón"],
+                answer: 2,
+                explanation: "El protón es una partícula subatómica con carga positiva que se encuentra en el núcleo del átomo."
+            },
+            {
+                question: "¿Cuál es el proceso por el cual las plantas producen su alimento?",
+                options: ["Respiración", "Fotosíntesis", "Transpiración", "Germinación"],
+                answer: 1,
+                explanation: "La fotosíntesis es el proceso mediante el cual las plantas convierten la luz solar, agua y dióxido de carbono en glucosa y oxígeno."
+            },
+            {
+                question: "¿Qué científico descubrió la penicilina?",
+                options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Robert Koch"],
+                answer: 1,
+                explanation: "Alexander Fleming descubrió la penicilina en 1928, marcando el inicio de la era de los antibióticos."
+            },
+            {
+                question: "¿Cuál es la velocidad de la luz en el vacío?",
+                options: ["300,000 km/s", "150,000 km/s", "1,000,000 km/s", "30,000 km/s"],
+                answer: 0,
+                explanation: "La velocidad de la luz en el vacío es aproximadamente 300,000 kilómetros por segundo (299,792 km/s exactamente)."
+            },
+            {
+                question: "¿Qué órgano del cuerpo humano produce insulina?",
+                options: ["Hígado", "Páncreas", "Riñón", "Estómago"],
+                answer: 1,
+                explanation: "El páncreas produce insulina, una hormona crucial para regular los niveles de glucosa en sangre."
+            },
+            {
+                question: "¿Qué gas es el principal responsable del efecto invernadero?",
+                options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Helio"],
+                answer: 2,
+                explanation: "El dióxido de carbono (CO2) es el principal gas de efecto invernadero que contribuye al calentamiento global."
+            },
+            {
+                question: "¿Cuál es el hueso más largo del cuerpo humano?",
+                options: ["Húmero", "Tibia", "Fémur", "Peroné"],
+                answer: 2,
+                explanation: "El fémur, ubicado en el muslo, es el hueso más largo y fuerte del cuerpo humano."
+            },
+            {
+                question: "¿Qué científico propuso la teoría heliocéntrica?",
+                options: ["Ptolomeo", "Galileo Galilei", "Nicolás Copérnico", "Johannes Kepler"],
+                answer: 2,
+                explanation: "Nicolás Copérnico propuso la teoría heliocéntrica, que establece que el Sol está en el centro del sistema solar."
+            },
+            {
+                question: "¿Qué tipo de energía almacena una batería?",
+                options: ["Energía cinética", "Energía potencial", "Energía química", "Energía nuclear"],
+                answer: 2,
+                explanation: "Las baterías almacenan energía en forma de energía química, que se convierte en energía eléctrica cuando se usa."
+            },
+            {
+                question: "¿Qué planeta tiene más lunas en nuestro sistema solar?",
+                options: ["Júpiter", "Saturno", "Urano", "Neptuno"],
+                answer: 1,
+                explanation: "Saturno tiene actualmente 82 lunas confirmadas, más que cualquier otro planeta en nuestro sistema solar."
+            },
+            {
+                question: "¿Qué elemento químico tiene el símbolo 'Au'?",
+                options: ["Plata", "Oro", "Aluminio", "Argón"],
+                answer: 1,
+                explanation: "El símbolo químico 'Au' proviene del latín 'aurum' y representa al elemento oro."
+            }
+        ];
+
+        // Variables del juego
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let timer;
+        let timeLeft = 120; // 2 minutos en segundos
+        let gameActive = true;
+        let fiftyFiftyUsed = false;
+        let selectedQuestions = [];
+
+        // Elementos del DOM
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionNumber = document.getElementById('question-number');
+        const correctCount = document.getElementById('correct-count');
+        const incorrectCount = document.getElementById('incorrect-count');
+        const timerBar = document.getElementById('timer-bar');
+        const timerText = document.getElementById('timer-text');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+        const restartBtn = document.getElementById('restart-btn');
+        const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
+        const particlesContainer = document.getElementById('particles');
+
+        // Inicializar el juego
+        function initGame() {
+            // Seleccionar 8 preguntas aleatorias del banco
+            selectedQuestions = [...questions]
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 8);
+            
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            timeLeft = 120;
+            gameActive = true;
+            fiftyFiftyUsed = false;
+            
+            updateStats();
+            startTimer();
+            showQuestion();
+            
+            resultContainer.style.display = 'none';
+            feedbackContainer.style.display = 'none';
+            fiftyFiftyBooster.disabled = false;
+        }
+
+        // Mostrar la pregunta actual
+        function showQuestion() {
+            if (currentQuestionIndex >= selectedQuestions.length) {
+                endGame();
+                return;
+            }
+            
+            const question = selectedQuestions[currentQuestionIndex];
+            questionNumber.textContent = currentQuestionIndex + 1;
+            questionText.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.className = 'option-btn';
+                optionBtn.dataset.letter = String.fromCharCode(65 + index); // A, B, C, D
+                optionBtn.textContent = option;
+                optionBtn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionBtn);
+            });
+            
+            feedbackContainer.style.display = 'none';
+            fiftyFiftyUsed = false;
+        }
+
+        // Seleccionar una opción
+        function selectOption(selectedIndex) {
+            if (!gameActive) return;
+            
+            const question = selectedQuestions[currentQuestionIndex];
+            const optionButtons = document.querySelectorAll('.option-btn');
+            
+            // Deshabilitar todos los botones
+            optionButtons.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.onclick = null;
+            });
+            
+            // Marcar la respuesta correcta
+            optionButtons[question.answer].classList.add('correct');
+            
+            // Verificar si la respuesta es correcta
+            if (selectedIndex === question.answer) {
+                optionButtons[selectedIndex].classList.add('correct');
+                correctAnswers++;
+                showFeedback('¡Correcto!', true);
+                createConfetti();
+            } else {
+                optionButtons[selectedIndex].classList.add('incorrect');
+                incorrectAnswers++;
+                showFeedback(`Incorrecto. ${question.explanation}`, false);
+            }
+            
+            updateStats();
+            
+            // Pasar a la siguiente pregunta después de un breve retraso
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < selectedQuestions.length) {
+                    showQuestion();
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+
+        // Mostrar retroalimentación
+        function showFeedback(message, isCorrect) {
+            feedbackContainer.textContent = message;
+            feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
+            feedbackContainer.style.display = 'block';
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            correctCount.textContent = correctAnswers;
+            incorrectCount.textContent = incorrectAnswers;
+        }
+
+        // Temporizador
+        function startTimer() {
+            clearInterval(timer);
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            const percentage = (timeLeft / 120) * 100;
+            timerBar.style.width = `${percentage}%`;
+            
+            // Cambiar color cuando el tiempo se acaba
+            if (timeLeft <= 30) {
+                timerBar.style.background = 'linear-gradient(90deg, #FF5722, #F44336)';
+                timerText.style.color = '#F44336';
+            } else if (timeLeft <= 60) {
+                timerBar.style.background = 'linear-gradient(90deg, #FFC107, #FF9800)';
+                timerText.style.color = '#FF9800';
+            }
+        }
+
+        // Tiempo agotado
+        function timeUp() {
+            gameActive = false;
+            Swal.fire({
+                title: '¡Tiempo agotado!',
+                text: 'Se acabó el tiempo para responder esta pregunta.',
+                icon: 'info',
+                confirmButtonText: 'Continuar',
+                background: '#ffffff',
+                confirmButtonColor: '#3f51b5'
+            }).then(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < selectedQuestions.length) {
+                    timeLeft = 120;
+                    startTimer();
+                    showQuestion();
+                } else {
+                    endGame();
+                }
+            });
+        }
+
+        // Finalizar el juego
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            const percentage = Math.round((correctAnswers / selectedQuestions.length) * 100);
+            let message = '';
+            
+            if (percentage >= 80) {
+                message = `¡Excelente! Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). ¡Eres un genio de la ciencia!`;
+                createParticles();
+            } else if (percentage >= 50) {
+                message = `¡Buen trabajo! Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). Sigue aprendiendo.`;
+            } else {
+                message = `Obtuviste ${correctAnswers} de ${selectedQuestions.length} respuestas correctas (${percentage}%). ¡Sigue practicando!`;
+            }
+            
+            resultText.textContent = message;
+            resultContainer.style.display = 'block';
+        }
+
+        // Potenciador 50/50
+        fiftyFiftyBooster.onclick = function() {
+            if (fiftyFiftyUsed || !gameActive) return;
+            
+            const question = selectedQuestions[currentQuestionIndex];
+            const optionButtons = document.querySelectorAll('.option-btn');
+            let optionsToHide = [];
+            
+            // Encontrar dos opciones incorrectas para ocultar
+            for (let i = 0; i < question.options.length; i++) {
+                if (i !== question.answer && optionsToHide.length < 2) {
+                    optionsToHide.push(i);
+                }
+            }
+            
+            // Ocultar las opciones seleccionadas
+            optionsToHide.forEach(index => {
+                optionButtons[index].classList.add('hidden-option');
+            });
+            
+            fiftyFiftyUsed = true;
+            this.disabled = true;
+            
+            // Efecto visual
+            this.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 300);
+        };
+
+        // Crear efecto de confeti
+        function createConfetti() {
+            const colors = ['#3f51b5', '#2196f3', '#4CAF50', '#FFC107', '#FF9800', '#F44336'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = '100%';
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = confetti.style.width;
+                confetti.style.opacity = '1';
+                
+                document.body.appendChild(confetti);
+                
+                const animationDuration = Math.random() * 3 + 2;
+                confetti.style.animation = `confetti ${animationDuration}s linear forwards`;
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, animationDuration * 1000);
+            }
+        }
+
+        // Crear efecto de partículas para el final
+        function createParticles() {
+            particlesContainer.innerHTML = '';
+            const colors = ['#3f51b5', '#2196f3', '#4CAF50', '#FFC107', '#FF9800', '#F44336'];
+            
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.width = `${Math.random() * 10 + 5}px`;
+                particle.style.height = particle.style.width;
+                particle.style.opacity = '0';
+                
+                particlesContainer.appendChild(particle);
+                
+                // Animación de aparición
+                setTimeout(() => {
+                    particle.style.transition = 'opacity 0.5s ease';
+                    particle.style.opacity = '0.8';
+                    
+                    // Animación de movimiento
+                    setTimeout(() => {
+                        particle.style.transition = 'all 1s ease';
+                        particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px)`;
+                        particle.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 1000);
+                    }, 500);
+                }, i * 50);
+            }
+        }
+
+        // Reiniciar el juego
+        restartBtn.onclick = initGame;
+
+        // Iniciar el juego al cargar la página
+        window.onload = initGame;
+    </script>
+</body>
+</html>
