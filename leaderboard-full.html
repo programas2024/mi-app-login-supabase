@@ -38,6 +38,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 900px;
+            position: relative; /* Para posicionar el botón de info */
         }
 
         h2 {
@@ -179,13 +180,38 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-left: auto;
-            margin-right: auto;
+            margin-right: auto; /* Cambiado a margin-right para alinear a la izquierda */
             transition: transform 0.2s;
         }
 
         .btn-back-dashboard:hover {
             transform: translateY(-2px);
+        }
+
+        /* Botón de información */
+        .btn-info-leaderboard {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-info-leaderboard:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Responsive */
@@ -209,6 +235,14 @@
                 width: 32px;
                 height: 32px;
             }
+
+            .btn-info-leaderboard {
+                top: 20px;
+                right: 20px;
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -228,6 +262,14 @@
                 gap: 4px;
                 height: auto;
                 padding: 10px 12px;
+            }
+
+            .btn-info-leaderboard {
+                top: 15px;
+                right: 15px;
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
             }
         }
         /* Loader para esta página */
@@ -411,9 +453,16 @@
             <div class="spinner"></div>
             <p>Cargando clasificación...</p>
         </div>
-<button id="back-to-dashboard-from-leaderboard" class="btn btn-back-dashboard">
+        
+        <!-- Botón de información en la esquina superior derecha -->
+        <button id="btn-info-leaderboard" class="btn-info-leaderboard">
+            <i class="fas fa-info"></i>
+        </button>
+        
+        <button id="back-to-dashboard-from-leaderboard" class="btn btn-back-dashboard">
             <i class="fas fa-arrow-left"></i> Volver al Dashboard
         </button>
+        
         <h2><i class="fas fa-trophy"></i> Clasificación Global</h2>
         <div class="leaderboard-table-container">
             <table class="leaderboard-table">
@@ -430,7 +479,6 @@
                 </tbody>
             </table>
         </div>
-        
     </div>
     <script type="module">
         // Importa la función loadLeaderboard desde tu archivo leaderboard.js
@@ -464,10 +512,45 @@
                 });
             }
 
-              const loaderLeaderboard = document.getElementById('loader-leaderboard');
+            // Botón de información
+            const infoBtn = document.getElementById('btn-info-leaderboard');
+            if (infoBtn) {
+                infoBtn.addEventListener('click', () => {
+                    Swal.fire({
+                        title: 'Bienvenido a la Clasificación Global',
+                        html: `
+                            <p style="text-align: center; font-size: 1.1em;">
+                                <i class="fas fa-trophy" style="color: var(--accent-color);"></i><br>
+                                Aquí verás a los más disciplinados en este juego.<br><br>
+                                <strong>Sé parte de los mejores</strong> y supera tus habilidades.<br><br>
+                                ¡Demuestra de qué estás hecho!
+                            </p>
+                        `,
+                        icon: 'info',
+                        confirmButtonText: '¡Entendido!',
+                        customClass: {
+                            popup: 'swal2-profile-popup',
+                            title: 'swal2-profile-title',
+                            htmlContainer: 'swal2-profile-html',
+                            confirmButton: 'swal2-profile-confirm-button'
+                        },
+                        background: 'var(--card-bg)',
+                        color: 'var(--text-color)',
+                        confirmButtonColor: 'var(--primary-color)',
+                        backdrop: `
+                            rgba(0,0,0,0.5)
+                            url("https://i.gifer.com/origin/b4/b4d657e7ef262b88eb5f7ac021edda87.gif")
+                            center top
+                            no-repeat
+                        `
+                    });
+                });
+            }
+
+            const loaderLeaderboard = document.getElementById('loader-leaderboard');
             // Pasamos el ID del usuario actual a loadLeaderboard
             await loadLeaderboard(supabase, loaderLeaderboard, user.id);
         });
     </script>
 </body>
-</html> 
+</html>
