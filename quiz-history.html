@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Cine Extremo! 🎬</title>
+    <title>¡Historia Extrema! 🏺</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #E50914; /* Rojo Netflix */
-            --secondary-color: #B81D24; /* Rojo más oscuro */
-            --correct-color: #2ECC71; /* Verde */
-            --incorrect-color: #E74C3C; /* Rojo error */
-            --timer-color: #F39C12; /* Naranja */
-            --boost-color: #9B59B6; /* Morado */
+            --primary-color: #8B4513; /* Marrón histórico */
+            --secondary-color: #A0522D; /* Marrón oscuro */
+            --correct-color: #4CAF50; /* Verde */
+            --incorrect-color: #F44336; /* Rojo */
+            --timer-color: #FF9800; /* Naranja */
+            --boost-color: #673AB7; /* Morado */
             --text-light: #ffffff;
-            --text-dark: #221F1F; /* Gris oscuro */
-            --bg-light: linear-gradient(135deg, #000000 0%, #221F1F 100%); /* Degradado oscuro */
-            --card-bg: #221F1F; /* Fondo de tarjetas */
-            --neon-shadow: 0 0 10px #E50914, 0 0 20px #E50914;
-            --popcorn-color: #F39C12;
-            --film-color: #8E44AD;
+            --text-dark: #3E2723; /* Marrón oscuro */
+            --bg-light: linear-gradient(135deg, #3E2723 0%, #5D4037 100%); /* Degradado histórico */
+            --card-bg: #5D4037; /* Fondo de tarjetas */
+            --neon-shadow: 0 0 10px #8B4513, 0 0 20px #A0522D;
         }
 
         * {
@@ -38,31 +36,6 @@
             min-height: 100vh;
             color: white;
             overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Efecto de luces de cine */
-        .cinema-lights {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            background: linear-gradient(180deg, rgba(229,9,20,0.3) 0%, rgba(0,0,0,0) 100%);
-            z-index: 999;
-            animation: lightFlicker 3s infinite alternate;
-        }
-
-        .cinema-lights.bottom {
-            top: auto;
-            bottom: 0;
-            background: linear-gradient(0deg, rgba(229,9,20,0.3) 0%, rgba(0,0,0,0) 100%);
-        }
-
-        @keyframes lightFlicker {
-            0%, 100% { opacity: 0.3; }
-            25%, 75% { opacity: 0.5; }
-            50% { opacity: 0.8; }
         }
 
         .quiz-container {
@@ -77,15 +50,14 @@
             overflow: hidden;
             border: 2px solid var(--primary-color);
             animation: glow 2s infinite alternate;
-            z-index: 10;
         }
 
         @keyframes glow {
             from {
-                box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+                box-shadow: 0 0 15px rgba(139, 69, 19, 0.5);
             }
             to {
-                box-shadow: 0 0 25px rgba(184, 29, 36, 0.8), 0 0 35px rgba(184, 29, 36, 0.4);
+                box-shadow: 0 0 25px rgba(160, 82, 45, 0.8);
             }
         }
 
@@ -108,33 +80,13 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .back-dashboard::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
         }
 
         .back-dashboard:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
-        }
-
-        .back-dashboard:hover::before {
-            opacity: 1;
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
         }
 
         .quiz-header {
@@ -149,7 +101,7 @@
             font-size: 2.8em;
             margin-bottom: 15px;
             font-weight: 800;
-            text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);
+            text-shadow: 0 0 10px rgba(139, 69, 19, 0.5);
             position: relative;
             display: inline-block;
         }
@@ -177,13 +129,13 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 25px;
-            background: rgba(229, 9, 20, 0.1);
+            background: rgba(139, 69, 19, 0.1);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(229, 9, 20, 0.3);
+            border: 1px solid rgba(139, 69, 19, 0.3);
         }
 
         .stats-container::before {
@@ -222,7 +174,6 @@
             margin: 0 auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             border: 2px solid var(--primary-color);
-            transition: all 0.3s ease;
         }
 
         .correct .stat-value {
@@ -255,7 +206,7 @@
 
         .timer-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--timer-color), #F1C40F);
+            background: linear-gradient(90deg, var(--timer-color), #FFC107);
             width: 100%;
             transition: width 1s linear;
             border-radius: 15px;
@@ -288,7 +239,7 @@
             margin-top: 10px;
             color: var(--timer-color);
             font-size: 1.2em;
-            text-shadow: 0 0 5px rgba(243, 156, 18, 0.3);
+            text-shadow: 0 0 5px rgba(255, 152, 0, 0.3);
         }
 
         .question-container {
@@ -309,7 +260,7 @@
             margin: 0 auto 20px;
             font-weight: 700;
             font-size: 1.4em;
-            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.4);
             border: 2px solid white;
             animation: bounce 2s infinite;
         }
@@ -330,27 +281,6 @@
             background: rgba(0, 0, 0, 0.3);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border-left: 5px solid var(--primary-color);
-            position: relative;
-        }
-
-        .question-text::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                            rgba(229,9,20,0) 0%, 
-                            rgba(229,9,20,0.1) 50%, 
-                            rgba(229,9,20,0) 100%);
-            animation: questionShine 8s infinite;
-            z-index: -1;
-        }
-
-        @keyframes questionShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
         }
 
         .options-container {
@@ -397,11 +327,11 @@
             flex-shrink: 0;
             font-weight: 700;
             font-size: 1.1em;
-            box-shadow: 0 3px 10px rgba(229, 9, 20, 0.3);
+            box-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
         }
 
         .option-btn.correct {
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(76, 175, 80, 0.2);
             border-color: var(--correct-color);
             color: var(--correct-color);
             animation: correctPulse 0.5s;
@@ -424,7 +354,7 @@
         }
 
         .option-btn.incorrect {
-            background: rgba(231, 76, 60, 0.2);
+            background: rgba(244, 67, 54, 0.2);
             border-color: var(--incorrect-color);
             color: var(--incorrect-color);
             animation: shake 0.5s;
@@ -465,7 +395,7 @@
         }
 
         .booster-btn {
-            background: linear-gradient(135deg, var(--boost-color), #8E44AD);
+            background: linear-gradient(135deg, var(--boost-color), #5E35B1);
             color: white;
             border: none;
             border-radius: 50px;
@@ -476,7 +406,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+            box-shadow: 0 5px 15px rgba(103, 58, 183, 0.4);
             position: relative;
             overflow: hidden;
             z-index: 1;
@@ -489,7 +419,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #8E44AD, var(--boost-color));
+            background: linear-gradient(135deg, #5E35B1, var(--boost-color));
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: -1;
@@ -497,7 +427,7 @@
 
         .booster-btn:hover {
             transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.6);
+            box-shadow: 0 8px 20px rgba(103, 58, 183, 0.6);
         }
 
         .booster-btn:hover::before {
@@ -526,8 +456,6 @@
             display: none;
             animation: fadeIn 0.5s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
         }
 
         @keyframes fadeIn {
@@ -536,13 +464,13 @@
         }
 
         .correct-feedback {
-            background: rgba(46, 204, 113, 0.2);
+            background: rgba(76, 175, 80, 0.2);
             color: var(--correct-color);
             border-left: 3px solid var(--correct-color);
         }
 
         .incorrect-feedback {
-            background: rgba(231, 76, 60, 0.2);
+            background: rgba(244, 67, 54, 0.2);
             color: var(--incorrect-color);
             border-left: 3px solid var(--incorrect-color);
         }
@@ -562,7 +490,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 20px;
-            box-shadow: 0 8px 20px rgba(229, 9, 20, 0.4);
+            box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
             position: relative;
             overflow: hidden;
             z-index: 1;
@@ -584,7 +512,7 @@
 
         .restart-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(229, 9, 20, 0.6);
+            box-shadow: 0 12px 25px rgba(139, 69, 19, 0.6);
         }
 
         .restart-btn:hover::before {
@@ -596,20 +524,20 @@
         }
 
         /* Efectos especiales */
-        .popcorn {
+        .scroll {
             position: fixed;
-            width: 20px;
-            height: 20px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23F39C12"><path d="M12,23C5.9,23,1,18.1,1,12S5.9,1,12,1s11,4.9,11,11S18.1,23,12,23z M12,3c-5,0-9,4-9,9s4,9,9,9s9-4,9-9S17,3,12,3z M15.5,12c0.3,0,0.5,0.2,0.5,0.5S15.8,13,15.5,13S15,12.8,15,12.5S15.2,12,15.5,12z M12.5,8c0.3,0,0.5,0.2,0.5,0.5S12.8,9,12.5,9S12,8.8,12,8.5S12.2,8,12.5,8z M8.5,12c0.3,0,0.5,0.2,0.5,0.5S8.8,13,8.5,13S8,12.8,8,12.5S8.2,12,8.5,12z"/></svg>');
+            width: 40px;
+            height: 60px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23A0522D"><path d="M18,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V4C20,2.9,19.1,2,18,2z M18,20H6V4h12V20z M12,7.5 c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S13.1,7.5,12,7.5z M12,15c-1.1,0-2,0.9-2,2s0.9,2,2,2s2-0.9,2-2S13.1,15,12,15z"/></svg>');
             background-size: contain;
-            top: -20px;
+            top: -60px;
             opacity: 0;
             z-index: 9999;
-            animation: popcornFall 4s linear forwards;
+            animation: scrollFall 4s linear forwards;
             pointer-events: none;
         }
 
-        @keyframes popcornFall {
+        @keyframes scrollFall {
             0% { 
                 transform: translateY(0) rotate(0deg) translateX(0);
                 opacity: 1;
@@ -620,111 +548,12 @@
             }
         }
 
-        .film-strip {
-            position: fixed;
-            width: 100px;
-            height: 20px;
-            background: repeating-linear-gradient(
-                to right,
-                #000,
-                #000 10px,
-                var(--film-color) 10px,
-                var(--film-color) 20px
-            );
-            z-index: 9999;
-            animation: filmFloat 8s linear forwards;
-            pointer-events: none;
-            opacity: 0.7;
-        }
-
-        @keyframes filmFloat {
-            0% { 
-                transform: translateX(-100px) rotate(0deg);
-                opacity: 0.7;
-            }
-            100% { 
-                transform: translateX(calc(100vw + 100px)) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .movie-icon {
+        .history-icon {
             position: absolute;
             font-size: 1.5em;
             opacity: 0.1;
             z-index: 0;
             color: var(--primary-color);
-        }
-
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            top: -10px;
-            z-index: 9999;
-            pointer-events: none;
-            animation: confettiFall 5s linear forwards;
-        }
-
-        @keyframes confettiFall {
-            0% { 
-                transform: translateY(0) rotate(0deg) translateX(0);
-                opacity: 1;
-            }
-            100% { 
-                transform: translateY(100vh) rotate(720deg) translateX(100px);
-                opacity: 0;
-            }
-        }
-
-        .emoji-float {
-            position: fixed;
-            font-size: 1.5em;
-            z-index: 9998;
-            animation: floatUp 4s linear forwards;
-            pointer-events: none;
-        }
-
-        @keyframes floatUp {
-            0% { 
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% { 
-                transform: translateY(-100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Efecto de cortinilla de cine */
-        .curtain {
-            position: fixed;
-            top: 0;
-            width: 50%;
-            height: 100vh;
-            background: linear-gradient(90deg, #8B0000, #B22222);
-            z-index: 10000;
-            transition: all 1.5s ease;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-
-        .curtain.left {
-            left: 0;
-            transform-origin: left;
-        }
-
-        .curtain.right {
-            right: 0;
-            transform-origin: right;
-        }
-
-        .curtain.open.left {
-            transform: perspective(1000px) rotateY(-100deg);
-        }
-
-        .curtain.open.right {
-            transform: perspective(1000px) rotateY(100deg);
         }
 
         /* Responsive */
@@ -767,34 +596,26 @@
     </style>
 </head>
 <body>
-    <!-- Cortinilla de cine -->
-    <div class="curtain left"></div>
-    <div class="curtain right"></div>
-    
-    <!-- Luces de cine -->
-    <div class="cinema-lights"></div>
-    <div class="cinema-lights bottom"></div>
-    
     <div class="quiz-container">
-        <!-- Iconos de películas flotantes -->
-        <i class="movie-icon fas fa-film" style="top: 10%; left: 5%;"></i>
-        <i class="movie-icon fas fa-ticket-alt" style="top: 20%; right: 8%;"></i>
-        <i class="movie-icon fas fa-video" style="bottom: 15%; left: 7%;"></i>
-        <i class="movie-icon fas fa-star" style="bottom: 25%; right: 5%;"></i>
+        <!-- Iconos históricos flotantes -->
+        <i class="history-icon fas fa-landmark" style="top: 10%; left: 5%;"></i>
+        <i class="history-icon fas fa-scroll" style="top: 20%; right: 8%;"></i>
+        <i class="history-icon fas fa-crown" style="bottom: 15%; left: 7%;"></i>
+        <i class="history-icon fas fa-monument" style="bottom: 25%; right: 5%;"></i>
         
         <div class="header-nav">
-            <a href="games4.html" class="back-dashboard">
+            <a href="games.html" class="back-dashboard">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
-            <h1 style="margin: 0; font-size: 1.8em; color: var(--primary-color); text-shadow: 0 0 10px rgba(229, 9, 20, 0.5);">
-                CINE EXTREMO
+            <h1 style="margin: 0; font-size: 1.8em; color: var(--primary-color); text-shadow: 0 0 10px rgba(139, 69, 19, 0.5);">
+                HISTORIA EXTREMA
             </h1>
             <div style="width: 100px;"></div> <!-- Espaciador -->
         </div>
 
         <div class="quiz-header">
-            <h1>¡Preguntados de Películas! 🎬</h1>
-            <p>Demuestra que eres un verdadero cinéfilo con estas preguntas de cine</p>
+            <h1>¡Preguntados de Historia! 🏛️</h1>
+            <p>Demuestra tu conocimiento sobre los eventos más importantes de la historia</p>
         </div>
 
         <div class="stats-container">
@@ -842,131 +663,71 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Banco de preguntas de películas
-        const allMovieQuestions = [
+        // Banco de preguntas de historia
+        const allHistoryQuestions = [
             {
-                question: "¿Qué película de 1997 ganó 11 Oscars incluyendo Mejor Película y protagonizó a Leonardo DiCaprio y Kate Winslet?",
-                options: ["El Padrino", "Titanic", "Forrest Gump", "Gladiador"],
-                answer: 1,
-                explanation: "¡Correcto! Titanic (1997) es una de las películas más premiadas de la historia. 'Yo soy el rey del mundo!' 🚢"
-            },
-            {
-                question: "¿Qué actor interpretó a Jack Sparrow en la saga 'Piratas del Caribe'?",
-                options: ["Brad Pitt", "Johnny Depp", "Orlando Bloom", "Robert Downey Jr."],
-                answer: 1,
-                explanation: "¡Johnny Depp dio vida al excéntrico capitán Jack Sparrow! 🏴‍☠️"
-            },
-            {
-                question: "¿Qué película de superhéroes tiene la escena post-créditos donde Nick Fury le dice a Tony Stark 'Quiero hablar contigo sobre la iniciativa Vengadores'?",
-                options: ["Iron Man", "Iron Man 2", "The Avengers", "Capitán América: El Primer Vengador"],
+                question: "¿En qué año comenzó la Primera Guerra Mundial?",
+                options: ["1914", "1918", "1939", "1945"],
                 answer: 0,
-                explanation: "¡Fue en Iron Man (2008) donde comenzó todo el Universo Cinematográfico de Marvel! 🦾"
+                explanation: "¡Correcto! La Primera Guerra Mundial comenzó en 1914 tras el asesinato del archiduque Francisco Fernando de Austria."
             },
             {
-                question: "¿Qué película animada de Disney tiene la canción 'Let It Go'?",
-                options: ["Moana", "Frozen", "Encanto", "Raya y el último dragón"],
-                answer: 1,
-                explanation: "¡Frozen (2013) convirtió 'Let It Go' en un himno mundial! ❄️"
-            },
-            {
-                question: "¿Qué director es conocido como 'El Rey Midas de Hollywood' por éxitos como E.T., Jurassic Park y Indiana Jones?",
-                options: ["James Cameron", "Steven Spielberg", "Christopher Nolan", "Quentin Tarantino"],
-                answer: 1,
-                explanation: "¡Steven Spielberg es uno de los directores más exitosos de la historia del cine! 🎥"
-            },
-            {
-                question: "¿Qué película tiene la icónica frase 'May the Force be with you'?",
-                options: ["Star Trek", "Star Wars", "Guardianes de la Galaxia", "Dune"],
-                answer: 1,
-                explanation: "¡Star Wars popularizó esta frase que los fans repiten hasta hoy! ⚔️"
-            },
-            {
-                question: "¿Qué película ganó el primer Oscar a Mejor Película Animada en 2002?",
-                options: ["Shrek", "Monsters Inc.", "Spirited Away", "Toy Story"],
-                answer: 0,
-                explanation: "¡Shrek hizo historia al ganar el primer Oscar en esta categoría! 🧅"
-            },
-            {
-                question: "¿Qué actor interpretó a Neo en la trilogía de Matrix?",
-                options: ["Keanu Reeves", "Brad Pitt", "Tom Cruise", "Will Smith"],
-                answer: 0,
-                explanation: "¡Keanu Reeves como Neo nos mostró que la pastilla roja era la correcta! 💊"
-            },
-            {
-                question: "¿Qué película tiene como protagonista a un joven mago llamado Harry Potter?",
-                options: ["El Señor de los Anillos", "Las Crónicas de Narnia", "Harry Potter", "Percy Jackson"],
+                question: "¿Quién fue el primer presidente de los Estados Unidos?",
+                options: ["Thomas Jefferson", "Abraham Lincoln", "George Washington", "John Adams"],
                 answer: 2,
-                explanation: "¡La saga de Harry Potter consta de 8 películas basadas en los libros de J.K. Rowling! ⚡"
+                explanation: "¡George Washington fue el primer presidente de EE.UU. y gobernó desde 1789 hasta 1797!"
             },
             {
-                question: "¿Qué película de 2019 se convirtió en la más taquillera de la historia hasta ese momento?",
-                options: ["Avengers: Endgame", "Avatar", "Titanic", "Star Wars: El despertar de la Fuerza"],
-                answer: 0,
-                explanation: "¡Avengers: Endgame recaudó más de $2.798 billones! Concluyendo 22 películas del UCM. 💥"
+                question: "¿Qué civilización construyó las pirámides de Giza?",
+                options: ["Romanos", "Griegos", "Egipcios", "Mayas"],
+                answer: 2,
+                explanation: "¡Los egipcios construyeron las pirámides como tumbas para los faraones hace más de 4,500 años!"
             },
             {
-                question: "¿Qué película tiene la escena donde Jack Nicholson dice 'Here's Johnny!'?",
-                options: ["El Resplandor", "Atrapado en el Tiempo", "Alguien Voló sobre el Nido del Cuco", "Batman"],
-                answer: 0,
-                explanation: "¡El Resplandor (1980) de Stanley Kubrick es un clásico del terror! 🔪"
-            },
-            {
-                question: "¿Qué actriz interpretó a Katniss Everdeen en 'Los Juegos del Hambre'?",
-                options: ["Emma Watson", "Jennifer Lawrence", "Kristen Stewart", "Scarlett Johansson"],
+                question: "¿En qué año cayó el Muro de Berlín?",
+                options: ["1985", "1989", "1991", "1975"],
                 answer: 1,
-                explanation: "¡Jennifer Lawrence saltó a la fama mundial con este papel! 🏹"
+                explanation: "¡El Muro de Berlín cayó el 9 de noviembre de 1989, marcando el inicio de la reunificación alemana!"
             },
             {
-                question: "¿Qué película tiene como protagonista a un tiburón asesino?",
-                options: ["Tiburón", "Deep Blue Sea", "The Meg", "Aguas Profundas"],
-                answer: 0,
-                explanation: "¡Tiburón (1975) de Spielberg creó el concepto de 'blockbuster de verano'! 🦈"
+                question: "¿Quién escribió 'El Capital'?",
+                options: ["Friedrich Engels", "Vladimir Lenin", "Karl Marx", "Adam Smith"],
+                answer: 2,
+                explanation: "¡Karl Marx escribió 'El Capital', una obra fundamental del pensamiento socialista!"
             },
             {
-                question: "¿Qué película de 1994 protagonizada por Tom Hanks ganó 6 Oscars incluyendo Mejor Película?",
-                options: ["Forrest Gump", "Philadelphia", "Náufrago", "Salvar al Soldado Ryan"],
-                answer: 0,
-                explanation: "¡Forrest Gump es considerada una de las mejores películas de la historia! 🏃‍♂️"
-            },
-            {
-                question: "¿Qué película tiene la canción 'My Heart Will Go On' como tema principal?",
-                options: ["Ghost", "Titanic", "El Guardaespaldas", "Dirty Dancing"],
+                question: "¿Qué imperio fue gobernado por Julio César?",
+                options: ["Bizantino", "Romano", "Otomano", "Persa"],
                 answer: 1,
-                explanation: "¡Celine Dion hizo llorar al mundo con esta balada de Titanic! ♫"
+                explanation: "¡Julio César fue un líder militar y político clave en la República Romana antes de su transformación en imperio!"
             },
             {
-                question: "¿Qué actor interpretó a Tony Stark/Iron Man en el Universo Cinematográfico de Marvel?",
-                options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
-                answer: 1,
-                explanation: "¡Robert Downey Jr. dio vida al genio, millonario, playboy y filántropo! 🦾"
-            },
-            {
-                question: "¿Qué película de 1985 tiene como protagonista a Marty McFly y el Doc Brown?",
-                options: ["Regreso al Futuro", "Cortocircuito", "Exploradores", "D.A.R.Y.L."],
+                question: "¿En qué año Cristóbal Colón llegó a América?",
+                options: ["1492", "1502", "1521", "1485"],
                 answer: 0,
-                explanation: "¡Regreso al Futuro es una trilogía clásica de los 80s! ⏱️"
+                explanation: "¡Colón llegó a América el 12 de octubre de 1492, creyendo que había llegado a las Indias!"
             },
             {
-                question: "¿Qué película animada de Pixar fue la primera en ganar el Oscar a Mejor Película Animada?",
-                options: ["Toy Story", "Monsters Inc.", "Buscando a Nemo", "Los Increíbles"],
-                answer: 3,
-                explanation: "¡Los Increíbles (2004) fue la primera película animada de Pixar en ganar este premio! 💪"
-            },
-            {
-                question: "¿Qué película tiene la icónica escena de la ducha con la música 'Psycho' de Bernard Herrmann?",
-                options: ["El Exorcista", "Psicosis", "Halloween", "El Silencio de los Inocentes"],
+                question: "¿Qué evento histórico ocurrió el 14 de julio de 1789?",
+                options: ["Independencia de EE.UU.", "Toma de la Bastilla", "Revolución Rusa", "Caída de Napoleón"],
                 answer: 1,
-                explanation: "¡Psicosis (1960) de Alfred Hitchcock revolucionó el cine de terror! 🚿"
+                explanation: "¡La Toma de la Bastilla marcó el inicio de la Revolución Francesa!"
             },
             {
-                question: "¿Qué película tiene la frase 'Elemental, querido Watson'?",
-                options: ["Sherlock Holmes", "El Perro de Baskerville", "El Sabueso de los Baskerville", "Ninguna de las anteriores"],
-                answer: 3,
-                explanation: "¡Curiosamente, esta frase nunca aparece en las novelas originales de Sherlock Holmes! 🕵️‍♂️"
+                question: "¿Quién fue el líder de la Revolución Cubana?",
+                options: ["Che Guevara", "Fidel Castro", "Hugo Chávez", "Simón Bolívar"],
+                answer: 1,
+                explanation: "¡Fidel Castro lideró la Revolución Cubana que derrocó a Batista en 1959!"
+            },
+            {
+                question: "¿Qué país fue el primero en enviar un humano al espacio?",
+                options: ["EE.UU.", "China", "URSS", "Francia"],
+                answer: 2,
+                explanation: "¡La URSS envió a Yuri Gagarin al espacio en 1961, convirtiéndolo en el primer humano en el espacio!"
             }
         ];
 
-        // Variables del juego MEJORADAS
+        // Variables del juego
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let incorrectAnswers = 0;
@@ -991,20 +752,14 @@
         const restartBtn = document.getElementById('restart-btn');
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
-        const leftCurtain = document.querySelector('.curtain.left');
-        const rightCurtain = document.querySelector('.curtain.right');
 
-        // Inicializar el juego CON ESTILO
+        // Inicializar el juego
         function initGame() {
-            // Abrir cortinillas
-            leftCurtain.classList.add('open');
-            rightCurtain.classList.add('open');
-            
             // Seleccionar preguntas que no se hayan usado recientemente
-            const availableQuestions = allMovieQuestions.filter(q => !usedQuestions.includes(q.question));
+            const availableQuestions = allHistoryQuestions.filter(q => !usedQuestions.includes(q.question));
             
             // Si ya usamos muchas preguntas, reiniciamos el contador
-            if (availableQuestions.length < 8) {
+            if (availableQuestions.length < 5) {
                 usedQuestions = [];
             }
             
@@ -1045,13 +800,11 @@
             timeBooster.disabled = false;
             
             // Efecto especial de inicio
-            createFilmStrips(5);
-            createPopcorn(10);
-            createEmoji('🎬', 5);
-            createEmoji('🍿', 5);
+            createScrolls(5);
+            createEmoji('🏛️', 3);
         }
 
-        // Mostrar pregunta con ANIMACIÓN
+        // Mostrar pregunta
         function showQuestion() {
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
@@ -1085,14 +838,9 @@
             feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
             timeBoostUsed = false;
-            
-            // Efecto especial
-            if (Math.random() > 0.7) {
-                createEmoji('🤔', 1);
-            }
         }
 
-        // Seleccionar opción CON EFECTOS
+        // Seleccionar opción
         function selectOption(selectedIndex) {
             if (!gameActive) return;
             
@@ -1114,13 +862,11 @@
                 correctAnswers++;
                 
                 // Efectos especiales
-                createConfetti(20);
-                createFilmStrips(5);
-                createEmoji('🎬', 3);
-                createEmoji('🏆', 3);
+                createScrolls(5);
+                createEmoji('🎉', 3);
                 playSound('correct');
                 
-                showFeedback('¡BIEN HECHO! 🎯', true);
+                showFeedback('¡CORRECTO! 🎯', true);
             } else {
                 optionButtons[selectedIndex].classList.add('incorrect');
                 incorrectAnswers++;
@@ -1129,7 +875,7 @@
                 createEmoji('💥', 2);
                 playSound('wrong');
                 
-                showFeedback(`¡Ups! ${question.explanation}`, false);
+                showFeedback(`¡Incorrecto! ${question.explanation}`, false);
             }
             
             updateStats();
@@ -1145,7 +891,7 @@
             }, 2000);
         }
 
-        // Mostrar feedback DIVERTIDO
+        // Mostrar feedback
         function showFeedback(message, isCorrect) {
             feedbackContainer.textContent = message;
             feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
@@ -1157,7 +903,7 @@
             }
         }
 
-        // Actualizar estadísticas CON ESTILO
+        // Actualizar estadísticas
         function updateStats() {
             correctCount.textContent = correctAnswers;
             incorrectCount.textContent = incorrectAnswers;
@@ -1172,7 +918,7 @@
             correctCount.dataset.prev = correctAnswers;
         }
 
-        // Temporizador MEJORADO
+        // Temporizador
         function startTimer() {
             clearInterval(timer);
             updateTimerDisplay();
@@ -1221,7 +967,7 @@
             }
         }
 
-        // Tiempo agotado CON RESULTADOS
+        // Tiempo agotado
         function timeUp() {
             gameActive = false;
             
@@ -1233,7 +979,7 @@
             endGame();
         }
 
-        // Final del juego CON SWEETALERT2 ESPECTACULAR
+        // Final del juego
         function endGame() {
             gameActive = false;
             clearInterval(timer);
@@ -1244,29 +990,29 @@
             
             // Determinar resultado
             if (percentage >= 90) {
-                title = "¡ERES UN EXPERTO EN CINE! 🏆";
+                title = "¡ERES UN HISTORIADOR! 📜";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/11/15/07/09/oscar-1825540_640.jpg";
-                color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento cinematográfico es digno de un Oscar!`;
+                imageUrl = "https://cdn.pixabay.com/photo/2016/11/29/08/41/ancient-1868819_640.jpg";
+                color = "#4CAF50";
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento histórico es digno de un museo!`;
             } else if (percentage >= 70) {
                 title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2015/09/02/12/45/movie-918655_640.jpg";
-                color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Casi llegas a la alfombra roja del conocimiento cinematográfico!`;
+                imageUrl = "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_640.jpg";
+                color = "#2196F3";
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Casi alcanzas la perfección histórica!`;
             } else if (percentage >= 50) {
                 title = "¡BUEN INTENTO! 😊";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/11/24/10/43/ticket-2974645_640.jpg";
-                color = "#ff8a00";
-                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue viendo películas y mejorarás!`;
+                imageUrl = "https://cdn.pixabay.com/photo/2016/11/29/08/41/ancient-1868819_640.jpg";
+                color = "#FF9800";
+                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
             } else {
-                title = "¡SIGUE PRACTICANDO! 📽️";
+                title = "¡SIGUE PRACTICANDO! 📚";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2019/12/26/10/44/hollywood-4719375_640.jpg";
-                color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡El cine es diversión! Sigue intentándolo.`;
+                imageUrl = "https://cdn.pixabay.com/photo/2016/11/29/08/41/ancient-1868819_640.jpg";
+                color = "#F44336";
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La historia es fascinante! Sigue intentándolo.`;
             }
             
             // Mostrar resultado con Sweetalert2
@@ -1281,11 +1027,11 @@
                         <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                                 <span style="font-weight: bold;">✅ Correctas:</span>
-                                <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
+                                <span style="color: #4CAF50; font-weight: bold;">${correctAnswers}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
                                 <span style="font-weight: bold;">❌ Incorrectas:</span>
-                                <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
+                                <span style="color: #F44336; font-weight: bold;">${incorrectAnswers}</span>
                             </div>
                             <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
                                 <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
@@ -1296,7 +1042,7 @@
                 `,
                 icon: icon,
                 confirmButtonText: '¡Jugar de nuevo!',
-                confirmButtonColor: '#6a11cb',
+                confirmButtonColor: '#8B4513',
                 background: '#ffffff',
                 width: '650px',
                 customClass: {
@@ -1305,10 +1051,8 @@
                 },
                 willOpen: () => {
                     if (percentage >= 80) {
-                        createConfetti(50);
-                        createFilmStrips(10);
-                        createEmoji('🎬', 10);
-                        createEmoji('🏆', 10);
+                        createScrolls(10);
+                        createEmoji('🏆', 5);
                         playSound('win');
                     }
                 }
@@ -1319,7 +1063,7 @@
             });
         }
 
-        // Potenciador 50/50 CON ESTILO
+        // Potenciador 50/50
         fiftyFiftyBooster.onclick = function() {
             if (fiftyFiftyUsed || !gameActive) return;
             
@@ -1367,7 +1111,7 @@
                 showConfirmButton: false,
                 background: '#ffffff',
                 willOpen: () => {
-                    createConfetti(10);
+                    createScrolls(5);
                 }
             });
         };
@@ -1406,58 +1150,21 @@
             });
         };
 
-        // EFECTOS ESPECIALES CINEMATOGRÁFICOS
+        // EFECTOS ESPECIALES
 
-        // Crear confeti
-        function createConfetti(count = 20) {
-            const colors = ['#E50914', '#B81D24', '#F39C12', '#2ECC71', '#9B59B6', '#3498DB'];
-            
+        // Crear pergaminos
+        function createScrolls(count = 5) {
             for (let i = 0; i < count; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.width = `${Math.random() * 10 + 5}px`;
-                confetti.style.height = confetti.style.width;
-                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+                const scroll = document.createElement('div');
+                scroll.className = 'scroll';
+                scroll.style.left = `${Math.random() * 100}%`;
+                scroll.style.animationDuration = `${Math.random() * 3 + 2}s`;
                 
-                document.body.appendChild(confetti);
+                document.body.appendChild(scroll);
                 
                 setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-
-        // Crear palomitas de maíz
-        function createPopcorn(count = 5) {
-            for (let i = 0; i < count; i++) {
-                const popcorn = document.createElement('div');
-                popcorn.className = 'popcorn';
-                popcorn.style.left = `${Math.random() * 100}%`;
-                popcorn.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                
-                document.body.appendChild(popcorn);
-                
-                setTimeout(() => {
-                    popcorn.remove();
+                    scroll.remove();
                 }, 4000);
-            }
-        }
-
-        // Crear tiras de película
-        function createFilmStrips(count = 3) {
-            for (let i = 0; i < count; i++) {
-                const film = document.createElement('div');
-                film.className = 'film-strip';
-                film.style.top = `${Math.random() * 80 + 10}%`;
-                film.style.animationDuration = `${Math.random() * 5 + 3}s`;
-                
-                document.body.appendChild(film);
-                
-                setTimeout(() => {
-                    film.remove();
-                }, 8000);
             }
         }
 
@@ -1556,39 +1263,31 @@
 
         // Iniciar juego al cargar
         window.onload = function() {
-            // Efecto de cortinillas
+            // Efecto de bienvenida
             setTimeout(() => {
-                leftCurtain.classList.add('open');
-                rightCurtain.classList.add('open');
-                
-                // Efecto de bienvenida
-                setTimeout(() => {
-                    Swal.fire({
-                        title: '¡BIENVENIDO A CINE EXTREMO!',
-                        html: `
-                            <div style="font-size: 1.1em;">
-                                <p>Demuestra tu conocimiento cinematográfico respondiendo preguntas antes de que se acabe el tiempo.</p>
-                                <p>¡Usa los potenciadores para ayudarte!</p>
-                            </div>
-                            <img src="https://cdn.pixabay.com/photo/2015/09/02/12/45/movie-918655_640.jpg" style="height: 120px; margin: 15px 0; border-radius: 10px;">
-                        `,
-                        confirmButtonText: '¡Comenzar!',
-                        confirmButtonColor: '#6a11cb',
-                        background: '#ffffff',
-                        showCancelButton: false,
-                        customClass: {
-                            popup: 'animated bounceIn'
-                        },
-                        willOpen: () => {
-                            createConfetti(20);
-                            createFilmStrips(5);
-                            createPopcorn(5);
-                        }
-                    }).then(() => {
-                        initGame();
-                    });
-                }, 500);
-            }, 100);
+                Swal.fire({
+                    title: '¡BIENVENIDO A HISTORIA EXTREMA!',
+                    html: `
+                        <div style="font-size: 1.1em;">
+                            <p>Demuestra tu conocimiento sobre los eventos más importantes de la historia.</p>
+                            <p>¡Usa los potenciadores para ayudarte!</p>
+                        </div>
+                        <img src="https://cdn.pixabay.com/photo/2016/11/29/08/41/ancient-1868819_640.jpg" style="height: 120px; margin: 15px 0; border-radius: 10px;">
+                    `,
+                    confirmButtonText: '¡Comenzar!',
+                    confirmButtonColor: '#8B4513',
+                    background: '#ffffff',
+                    showCancelButton: false,
+                    customClass: {
+                        popup: 'animated bounceIn'
+                    },
+                    willOpen: () => {
+                        createScrolls(5);
+                    }
+                }).then(() => {
+                    initGame();
+                });
+            }, 500);
         };
     </script>
 </body>
