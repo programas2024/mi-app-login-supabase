@@ -412,7 +412,8 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
     try {
         const { data: friendProfile, error } = await supabase
             .from('profiles')
-            .select('username, gold, diamonds, country')
+            // AQUI: Seleccionamos 'perla' en lugar de 'country'
+            .select('username, gold, diamonds, perla')
             .eq('id', friendId)
             .single();
 
@@ -423,7 +424,9 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
                 <h3>${friendProfile.username || 'Desconocido'}</h3>
                 <p><strong>Oro:</strong> ${friendProfile.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></p>
                 <p><strong>Diamantes:</strong> ${friendProfile.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></p>
-                <p><strong>País:</strong> ${getCountryFlagEmoji(friendProfile.country)} ${friendProfile.country || 'N/A'}</p>
+                
+                <p><strong>Perlas:</strong> ${friendProfile.perla || 0} <div class="pearl-icon" style="display:inline-block; vertical-align:middle;"></div></p>
+                
                 <button id="message-friend-btn" class="swal-custom-btn swal-btn-message"><i class="fas fa-comment-dots"></i> Enviar Mensaje</button>
             </div>
         `;
@@ -456,7 +459,6 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
         showCustomSwal('error', 'Error', `No se pudo cargar el perfil del amigo: ${error.message}`);
     }
 }
-
 // ====================================================================================
 // LÓGICA DE MENSAJES (Exportadas)
 // ====================================================================================
