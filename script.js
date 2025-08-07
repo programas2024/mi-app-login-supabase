@@ -37,7 +37,7 @@ let profileBtnDashboard, logoutBtnDashboard;
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
-let goldDisplayProfile, diamondsDisplayProfile;
+let goldDisplayProfile, diamondsDisplayProfile,pearlsDisplayProfile;;
 
 let loaderDiv, loaderText;
 
@@ -226,6 +226,7 @@ async function loadUserProfile(userId) {
             if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
             if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
             if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
+            if (pearlsDisplayDashboard) pearlsDisplayDashboard.textContent = data.perla; // Actualización clave aquí
 
             // Actualizar datos en la página de perfil (si es la página actual)
             if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
@@ -233,6 +234,7 @@ async function loadUserProfile(userId) {
             if (countryInputProfile) countryInputProfile.value = data.country || '';
             if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
+            if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = data.perla; // Actualización clave aquí
         }
     } catch (e) {
         console.error("Error inesperado en loadUserProfile:", e);
@@ -453,6 +455,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userEmailDashboardSpan = document.getElementById('user-email');
         goldDisplayDashboard = document.getElementById('gold-display');
         diamondsDisplayDashboard = document.getElementById('diamonds-display');
+        pearlsDisplayDashboard = document.getElementById('pearls-display'); // Asignación clave aquí
         profileBtnDashboard = document.getElementById('profile-btn');
         logoutBtnDashboard = document.getElementById('logout-btn');
 
@@ -465,6 +468,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         configureBtn = document.getElementById('configure-btn');
         goldDisplayProfile = document.getElementById('gold-display-profile');
         diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+         pearlsDisplayProfile = document.getElementById('pearls-display-profile'); // Asignación clave aquí
 
 
         // Siempre verifica la sesión al cargar estas páginas
