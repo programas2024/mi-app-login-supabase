@@ -8,60 +8,306 @@
      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Agrega aquí tus estilos CSS. */
-        /* Por ejemplo: */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .option-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: #e0e0e0;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .option-btn:hover {
-            background-color: #d0d0d0;
-        }
-        .option-btn.correct {
-            background-color: #4caf50;
-            color: white;
-        }
-        .option-btn.incorrect {
-            background-color: #f44336;
-            color: white;
-        }
-        .feedback-container {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .correct-feedback {
-            background-color: #e8f5e9;
-            color: #4caf50;
-        }
-        .incorrect-feedback {
-            background-color: #ffebee;
-            color: #f44336;
-        }
+       <style>
+    /* Estilos globales y de fondo */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: #333;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/cubes.png');
+        opacity: 0.1;
+        z-index: -1;
+    }
+
+    /* Animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    @keyframes confettiFall {
+        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+    }
+
+    /* Contenedor principal */
+    .container {
+        width: 90%;
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        animation: fadeIn 0.8s ease-out;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    h1 {
+        font-family: 'Montserrat', sans-serif;
+        color: #4a00e0;
+        font-size: 3em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        letter-spacing: 2px;
+        animation: pulse 2s infinite;
+    }
+
+    /* Estilos del quiz */
+    #quiz-container {
+        padding: 20px;
+    }
+
+    #question-text {
+        font-size: 1.8em;
+        color: #1a1a1a;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        background: #f7f7f7;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    #question-text::before {
+        content: "💡";
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 1.5em;
+        opacity: 0.5;
+        animation: pulse 3s infinite;
+    }
+
+    #options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .option-btn {
+        display: block;
+        width: 100%;
+        padding: 18px 25px;
+        background: #e9eef6;
+        border: 2px solid #dcdfe6;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 500;
+        cursor: pointer;
+        color: #555;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .option-btn:hover {
+        background: #d4dbe9;
+        border-color: #aeb5c2;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .option-btn.correct {
+        background: linear-gradient(45deg, #4caf50, #8bc34a);
+        color: white;
+        border-color: #4caf50;
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        animation: pulse 0.5s;
+    }
+    
+    .option-btn.incorrect {
+        background: linear-gradient(45deg, #f44336, #e57373);
+        color: white;
+        border-color: #f44336;
+        animation: shake 0.5s;
+    }
+
+    .option-btn.hidden-option {
+        pointer-events: none;
+        opacity: 0.3;
+        filter: grayscale(100%);
+    }
+
+    /* Estadísticas y temporizador */
+    p {
+        font-size: 1.1em;
+        font-weight: 500;
+        color: #666;
+        margin-top: 20px;
+    }
+    
+    #correct-count, #incorrect-count {
+        font-weight: 700;
+        color: #4a00e0;
+        transition: transform 0.2s ease;
+    }
+    
+    #correct-count { color: #4caf50; }
+    #incorrect-count { color: #f44336; }
+
+    #timer-bar-container {
+        width: 100%;
+        background: #eee;
+        border-radius: 50px;
+        margin: 20px 0 10px;
+        height: 15px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #timer-bar {
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, #ff8a00, #e52e71);
+        transition: width 1s linear, background-color 0.5s;
+        border-radius: 50px;
+    }
+
+    #timer-text {
+        font-weight: bold;
+        font-size: 1.5em;
+        color: #4a00e0;
+        animation: none;
+        transition: color 0.5s;
+    }
+
+    /* Feedback */
+    .feedback-container {
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 1.2em;
+        animation: fadeIn 0.5s;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .correct-feedback {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border: 2px solid #4caf50;
+    }
+    
+    .incorrect-feedback {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 2px solid #f44336;
+    }
+
+    /* Potenciadores */
+    #fifty-fifty-booster, #time-booster {
+        background: #4a00e0;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        margin: 15px 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(74, 0, 224, 0.3);
+    }
+    
+    #fifty-fifty-booster:hover, #time-booster:hover {
+        background: #6c00ff;
+        transform: translateY(-2px) scale(1.05);
+    }
+    
+    #fifty-fifty-booster:disabled, #time-booster:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+    /* Botón de reiniciar */
+    #restart-btn {
+        background: #ff416c;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+    }
+    
+    #restart-btn:hover {
+        background: #ff527c;
+        transform: translateY(-2px) scale(1.05);
+    }
+
+    /* Animaciones extra y efectos visuales */
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        animation: confettiFall 5s linear forwards;
+        z-index: 9999;
+    }
+
+    .emoji-float {
+        position: fixed;
+        opacity: 0;
+        font-size: 2em;
+        animation: floatUp 4s ease-out forwards;
+        z-index: 9999;
+    }
+
+    @keyframes floatUp {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(-500px); opacity: 0; }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.8); }
+    }
+</style>
     </style>
 </head>
 <body>
