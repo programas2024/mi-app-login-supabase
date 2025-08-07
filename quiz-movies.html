@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Ciencia Extrema! 🔬</title>
+    <title>¡Cine Extremo! 🎬</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-   <style>
+    <style>
         :root {
             --primary-color: #E50914; /* Rojo Netflix */
             --secondary-color: #B81D24; /* Rojo más oscuro */
@@ -19,6 +19,8 @@
             --bg-light: linear-gradient(135deg, #000000 0%, #221F1F 100%); /* Degradado oscuro */
             --card-bg: #221F1F; /* Fondo de tarjetas */
             --neon-shadow: 0 0 10px #E50914, 0 0 20px #E50914;
+            --popcorn-color: #F39C12;
+            --film-color: #8E44AD;
         }
 
         * {
@@ -36,6 +38,31 @@
             min-height: 100vh;
             color: white;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Efecto de luces de cine */
+        .cinema-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(180deg, rgba(229,9,20,0.3) 0%, rgba(0,0,0,0) 100%);
+            z-index: 999;
+            animation: lightFlicker 3s infinite alternate;
+        }
+
+        .cinema-lights.bottom {
+            top: auto;
+            bottom: 0;
+            background: linear-gradient(0deg, rgba(229,9,20,0.3) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        @keyframes lightFlicker {
+            0%, 100% { opacity: 0.3; }
+            25%, 75% { opacity: 0.5; }
+            50% { opacity: 0.8; }
         }
 
         .quiz-container {
@@ -50,6 +77,7 @@
             overflow: hidden;
             border: 2px solid var(--primary-color);
             animation: glow 2s infinite alternate;
+            z-index: 10;
         }
 
         @keyframes glow {
@@ -57,7 +85,7 @@
                 box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
             }
             to {
-                box-shadow: 0 0 25px rgba(184, 29, 36, 0.8);
+                box-shadow: 0 0 25px rgba(184, 29, 36, 0.8), 0 0 35px rgba(184, 29, 36, 0.4);
             }
         }
 
@@ -82,11 +110,31 @@
             gap: 8px;
             box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .back-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .back-dashboard:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+        }
+
+        .back-dashboard:hover::before {
+            opacity: 1;
         }
 
         .quiz-header {
@@ -174,6 +222,7 @@
             margin: 0 auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
         }
 
         .correct .stat-value {
@@ -281,6 +330,27 @@
             background: rgba(0, 0, 0, 0.3);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border-left: 5px solid var(--primary-color);
+            position: relative;
+        }
+
+        .question-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                            rgba(229,9,20,0) 0%, 
+                            rgba(229,9,20,0.1) 50%, 
+                            rgba(229,9,20,0) 100%);
+            animation: questionShine 8s infinite;
+            z-index: -1;
+        }
+
+        @keyframes questionShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .options-container {
@@ -456,6 +526,8 @@
             display: none;
             animation: fadeIn 0.5s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes fadeIn {
@@ -548,9 +620,67 @@
             }
         }
 
-        .film-float {
+        .film-strip {
             position: fixed;
-            font-size: 2em;
+            width: 100px;
+            height: 20px;
+            background: repeating-linear-gradient(
+                to right,
+                #000,
+                #000 10px,
+                var(--film-color) 10px,
+                var(--film-color) 20px
+            );
+            z-index: 9999;
+            animation: filmFloat 8s linear forwards;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        @keyframes filmFloat {
+            0% { 
+                transform: translateX(-100px) rotate(0deg);
+                opacity: 0.7;
+            }
+            100% { 
+                transform: translateX(calc(100vw + 100px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .movie-icon {
+            position: absolute;
+            font-size: 1.5em;
+            opacity: 0.1;
+            z-index: 0;
+            color: var(--primary-color);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            top: -10px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 5s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { 
+                transform: translateY(0) rotate(0deg) translateX(0);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .emoji-float {
+            position: fixed;
+            font-size: 1.5em;
             z-index: 9998;
             animation: floatUp 4s linear forwards;
             pointer-events: none;
@@ -567,12 +697,34 @@
             }
         }
 
-        .movie-icon {
-            position: absolute;
-            font-size: 1.5em;
-            opacity: 0.1;
-            z-index: 0;
-            color: var(--primary-color);
+        /* Efecto de cortinilla de cine */
+        .curtain {
+            position: fixed;
+            top: 0;
+            width: 50%;
+            height: 100vh;
+            background: linear-gradient(90deg, #8B0000, #B22222);
+            z-index: 10000;
+            transition: all 1.5s ease;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .curtain.left {
+            left: 0;
+            transform-origin: left;
+        }
+
+        .curtain.right {
+            right: 0;
+            transform-origin: right;
+        }
+
+        .curtain.open.left {
+            transform: perspective(1000px) rotateY(-100deg);
+        }
+
+        .curtain.open.right {
+            transform: perspective(1000px) rotateY(100deg);
         }
 
         /* Responsive */
@@ -615,6 +767,14 @@
     </style>
 </head>
 <body>
+    <!-- Cortinilla de cine -->
+    <div class="curtain left"></div>
+    <div class="curtain right"></div>
+    
+    <!-- Luces de cine -->
+    <div class="cinema-lights"></div>
+    <div class="cinema-lights bottom"></div>
+    
     <div class="quiz-container">
         <!-- Iconos de películas flotantes -->
         <i class="movie-icon fas fa-film" style="top: 10%; left: 5%;"></i>
@@ -805,6 +965,7 @@
                 explanation: "¡Curiosamente, esta frase nunca aparece en las novelas originales de Sherlock Holmes! 🕵️‍♂️"
             }
         ];
+
         // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
@@ -830,9 +991,15 @@
         const restartBtn = document.getElementById('restart-btn');
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
+        const leftCurtain = document.querySelector('.curtain.left');
+        const rightCurtain = document.querySelector('.curtain.right');
 
         // Inicializar el juego CON ESTILO
         function initGame() {
+            // Abrir cortinillas
+            leftCurtain.classList.add('open');
+            rightCurtain.classList.add('open');
+            
             // Seleccionar preguntas que no se hayan usado recientemente
             const availableQuestions = allMovieQuestions.filter(q => !usedQuestions.includes(q.question));
             
@@ -878,8 +1045,10 @@
             timeBooster.disabled = false;
             
             // Efecto especial de inicio
-            createEmoji('🚀', 5);
-            createEmoji('🔬', 5);
+            createFilmStrips(5);
+            createPopcorn(10);
+            createEmoji('🎬', 5);
+            createEmoji('🍿', 5);
         }
 
         // Mostrar pregunta con ANIMACIÓN
@@ -946,8 +1115,9 @@
                 
                 // Efectos especiales
                 createConfetti(20);
-                createEmoji('🎉', 3);
-                createEmoji('👏', 3);
+                createFilmStrips(5);
+                createEmoji('🎬', 3);
+                createEmoji('🏆', 3);
                 playSound('correct');
                 
                 showFeedback('¡BIEN HECHO! 🎯', true);
@@ -1074,29 +1244,29 @@
             
             // Determinar resultado
             if (percentage >= 90) {
-                title = "¡ERES UN GENIO! 🌟";
+                title = "¡ERES UN EXPERTO EN CINE! 🏆";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://cdn.pixabay.com/photo/2016/11/15/07/09/oscar-1825540_640.jpg";
                 color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento cinematográfico es digno de un Oscar!`;
             } else if (percentage >= 70) {
                 title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
+                imageUrl = "https://cdn.pixabay.com/photo/2015/09/02/12/45/movie-918655_640.jpg";
                 color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Casi llegas a la alfombra roja del conocimiento cinematográfico!`;
             } else if (percentage >= 50) {
                 title = "¡BUEN INTENTO! 😊";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/biology-2026102_640.png";
+                imageUrl = "https://cdn.pixabay.com/photo/2017/11/24/10/43/ticket-2974645_640.jpg";
                 color = "#ff8a00";
-                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
+                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue viendo películas y mejorarás!`;
             } else {
-                title = "¡SIGUE PRACTICANDO! 📚";
+                title = "¡SIGUE PRACTICANDO! 📽️";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://cdn.pixabay.com/photo/2019/12/26/10/44/hollywood-4719375_640.jpg";
                 color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡El cine es diversión! Sigue intentándolo.`;
             }
             
             // Mostrar resultado con Sweetalert2
@@ -1136,7 +1306,8 @@
                 willOpen: () => {
                     if (percentage >= 80) {
                         createConfetti(50);
-                        createEmoji('🎉', 10);
+                        createFilmStrips(10);
+                        createEmoji('🎬', 10);
                         createEmoji('🏆', 10);
                         playSound('win');
                     }
@@ -1235,11 +1406,11 @@
             });
         };
 
-        // EFECTOS ESPECIALES DIVERTIDOS
+        // EFECTOS ESPECIALES CINEMATOGRÁFICOS
 
         // Crear confeti
-        function createConfetti(count = 20, isTimeUp = false) {
-            const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
+        function createConfetti(count = 20) {
+            const colors = ['#E50914', '#B81D24', '#F39C12', '#2ECC71', '#9B59B6', '#3498DB'];
             
             for (let i = 0; i < count; i++) {
                 const confetti = document.createElement('div');
@@ -1248,18 +1419,45 @@
                 confetti.style.left = `${Math.random() * 100}%`;
                 confetti.style.width = `${Math.random() * 10 + 5}px`;
                 confetti.style.height = confetti.style.width;
-                
-                if (isTimeUp) {
-                    confetti.style.animation = `confettiFall 3s linear ${i * 0.1}s forwards`;
-                } else {
-                    confetti.style.animation = `confettiFall 5s linear ${i * 0.1}s forwards`;
-                }
+                confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
                 
                 document.body.appendChild(confetti);
                 
                 setTimeout(() => {
                     confetti.remove();
                 }, 5000);
+            }
+        }
+
+        // Crear palomitas de maíz
+        function createPopcorn(count = 5) {
+            for (let i = 0; i < count; i++) {
+                const popcorn = document.createElement('div');
+                popcorn.className = 'popcorn';
+                popcorn.style.left = `${Math.random() * 100}%`;
+                popcorn.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                document.body.appendChild(popcorn);
+                
+                setTimeout(() => {
+                    popcorn.remove();
+                }, 4000);
+            }
+        }
+
+        // Crear tiras de película
+        function createFilmStrips(count = 3) {
+            for (let i = 0; i < count; i++) {
+                const film = document.createElement('div');
+                film.className = 'film-strip';
+                film.style.top = `${Math.random() * 80 + 10}%`;
+                film.style.animationDuration = `${Math.random() * 5 + 3}s`;
+                
+                document.body.appendChild(film);
+                
+                setTimeout(() => {
+                    film.remove();
+                }, 8000);
             }
         }
 
@@ -1358,31 +1556,39 @@
 
         // Iniciar juego al cargar
         window.onload = function() {
-            // Efecto de bienvenida
+            // Efecto de cortinillas
             setTimeout(() => {
-                Swal.fire({
-                    title: '¡BIENVENIDO A CIENCIA EXTREMA!',
-                    html: `
-                        <div style="font-size: 1.1em;">
-                            <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
-                            <p>¡Usa los potenciadores para ayudarte!</p>
-                        </div>
-                        <img src="https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png" style="height: 120px; margin: 15px 0;">
-                    `,
-                    confirmButtonText: '¡Comenzar!',
-                    confirmButtonColor: '#6a11cb',
-                    background: '#ffffff',
-                    showCancelButton: false,
-                    customClass: {
-                        popup: 'animated bounceIn'
-                    },
-                    willOpen: () => {
-                        createConfetti(20);
-                    }
-                }).then(() => {
-                    initGame();
-                });
-            }, 500);
+                leftCurtain.classList.add('open');
+                rightCurtain.classList.add('open');
+                
+                // Efecto de bienvenida
+                setTimeout(() => {
+                    Swal.fire({
+                        title: '¡BIENVENIDO A CINE EXTREMO!',
+                        html: `
+                            <div style="font-size: 1.1em;">
+                                <p>Demuestra tu conocimiento cinematográfico respondiendo preguntas antes de que se acabe el tiempo.</p>
+                                <p>¡Usa los potenciadores para ayudarte!</p>
+                            </div>
+                            <img src="https://cdn.pixabay.com/photo/2015/09/02/12/45/movie-918655_640.jpg" style="height: 120px; margin: 15px 0; border-radius: 10px;">
+                        `,
+                        confirmButtonText: '¡Comenzar!',
+                        confirmButtonColor: '#6a11cb',
+                        background: '#ffffff',
+                        showCancelButton: false,
+                        customClass: {
+                            popup: 'animated bounceIn'
+                        },
+                        willOpen: () => {
+                            createConfetti(20);
+                            createFilmStrips(5);
+                            createPopcorn(5);
+                        }
+                    }).then(() => {
+                        initGame();
+                    });
+                }, 500);
+            }, 100);
         };
     </script>
 </body>
