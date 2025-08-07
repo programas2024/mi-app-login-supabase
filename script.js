@@ -462,10 +462,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         userEmailDashboardSpan = document.getElementById('user-email');
         goldDisplayDashboard = document.getElementById('gold-display');
         diamondsDisplayDashboard = document.getElementById('diamonds-display');
-        pearlsDisplayDashboard = document.getElementById('pearl-display'); // Asignación clave aquí
+        pearlsDisplayDashboard = document.getElementById('pearl-display');
         profileBtnDashboard = document.getElementById('profile-btn');
         logoutBtnDashboard = document.getElementById('logout-btn');
-         shopBtn = document.getElementById('shop-btn'); // Asignación de la nueva variable
+        shopBtn = document.getElementById('shop-btn'); // Asignación de la nueva variable
 
         profileCard = document.getElementById('profile-card');
         userEmailProfileSpan = document.getElementById('user-email-profile');
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         configureBtn = document.getElementById('configure-btn');
         goldDisplayProfile = document.getElementById('gold-display-profile');
         diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
-         pearlsDisplayProfile = document.getElementById('pearl-display-profile'); // Asignación clave aquí
+        pearlsDisplayProfile = document.getElementById('pearl-display-profile');
 
 
         // Siempre verifica la sesión al cargar estas páginas
@@ -503,6 +503,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
                 if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
+
+                // AQUI: Listener para el botón de la tienda
+                if (shopBtn) {
+                    shopBtn.addEventListener('click', () => {
+                        // Este código se ejecuta solo si el botón no está deshabilitado
+                        window.location.href = 'tienda.html';
+                    });
+                }
             } else if (currentPage === 'profile.html') {
                 if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
                 if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
@@ -526,10 +534,4 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.href = 'index.html';
         }
     }
-    // --- Lógica para páginas de juego (si este script se carga allí) ---
-    // NOTA: Idealmente, las páginas de juego solo cargarían sus propios scripts específicos (ej. orcado_vs_algo_game.js).
-    // Si este script se carga en una página de juego, la lógica de juego que estaba aquí
-    // causaría conflictos. La he ELIMINADO de este script.
-    // Asegúrate de que tus páginas de juego NO carguen este 'script.js'.
-    // Solo deberían cargar sus respectivos 'orcado_THEME_specific_game.js'
 });
