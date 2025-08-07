@@ -1,16 +1,4 @@
-El error `Uncaught ReferenceError: createClient is not defined` es frustrante, lo entiendo. Es un problema muy común cuando se trabaja con bibliotecas externas. La razón por la que te sigue apareciendo es un problema de **sincronización**.
 
-El navegador está intentando usar la función `createClient` antes de que el script de Supabase (el que tiene la URL `cdn.jsdelivr.net`) termine de cargarse. Es como intentar abrir una puerta antes de que el constructor haya terminado de instalarla.
-
-La solución definitiva es envolver toda la lógica del juego en un evento que se ejecute solo cuando toda la página y sus scripts estén listos. He actualizado y corregido el código completo para que puedas copiarlo y pegarlo de una vez. Con este cambio, el error no debería volver a aparecer.
-
------
-
-### Código Completo y Corregido (quiz-science.html)
-
-Copia y pega este código completo, reemplazando el contenido actual de tu archivo `quiz-science.html`.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
