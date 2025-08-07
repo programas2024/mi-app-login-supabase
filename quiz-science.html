@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preguntados de Ciencia</title>
+    <title>¡Preguntados de Ciencia EXTREMO! 🔬</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3f51b5;
-            --secondary-color: #2196f3;
-            --correct-color: #4CAF50;
-            --incorrect-color: #F44336;
-            --timer-color: #FF9800;
-            --boost-color: #9C27B0;
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --correct-color: #00b09b;
+            --incorrect-color: #ff416c;
+            --timer-color: #ff8a00;
+            --boost-color: #8e2de2;
             --text-light: #ffffff;
             --text-dark: #333333;
-            --bg-light: #f5f7fa;
+            --bg-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --card-bg: #ffffff;
+            --neon-shadow: 0 0 10px #2575fc, 0 0 20px #2575fc, 0 0 30px #2575fc;
         }
 
         * {
@@ -27,25 +28,37 @@
         }
 
         body {
-            background-color: var(--bg-light);
+            background: var(--bg-light);
             font-family: 'Poppins', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             color: var(--text-dark);
+            overflow-x: hidden;
         }
 
         .quiz-container {
             background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            width: 90%;
+            border-radius: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            width: 95%;
             max-width: 800px;
             padding: 40px;
             margin: 20px auto;
             position: relative;
             overflow: hidden;
+            border: 3px solid rgba(106, 17, 203, 0.2);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px rgba(106, 17, 203, 0.3);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(37, 117, 252, 0.5);
+            }
         }
 
         .quiz-header {
@@ -57,74 +70,148 @@
         .quiz-header h1 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-color);
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2.8em;
+            margin-bottom: 15px;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: inline-block;
+        }
+
+        .quiz-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
 
         .quiz-header p {
             color: #666;
-            font-size: 1.1em;
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .stats-container {
             display: flex;
             justify-content: space-between;
             margin-bottom: 25px;
-            background: rgba(63, 81, 181, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+            background: rgba(106, 17, 203, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
         }
 
         .stat-box {
             text-align: center;
             flex: 1;
+            padding: 10px;
+            position: relative;
         }
 
         .stat-box h3 {
             font-size: 1.2em;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             color: var(--primary-color);
         }
 
         .stat-value {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: 700;
+            background: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .correct .stat-value {
             color: var(--correct-color);
+            border: 3px solid var(--correct-color);
+            animation: pulseCorrect 2s infinite;
         }
 
         .incorrect .stat-value {
             color: var(--incorrect-color);
+            border: 3px solid var(--incorrect-color);
+        }
+
+        @keyframes pulseCorrect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .timer-container {
             width: 100%;
             background-color: #f5f5f5;
-            border-radius: 10px;
+            border-radius: 15px;
             margin-bottom: 25px;
             overflow: hidden;
-            height: 15px;
+            height: 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .timer-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--timer-color), #FFC107);
+            background: linear-gradient(90deg, var(--timer-color), #ff8a00);
             width: 100%;
             transition: width 1s linear;
-            border-radius: 10px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                            rgba(255,255,255,0.1) 0%, 
+                            rgba(255,255,255,0.3) 50%, 
+                            rgba(255,255,255,0.1) 100%);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .timer-text {
             text-align: center;
-            font-weight: 600;
-            margin-top: 5px;
+            font-weight: 700;
+            margin-top: 10px;
             color: var(--timer-color);
+            font-size: 1.2em;
+            text-shadow: 0 0 5px rgba(255, 138, 0, 0.3);
         }
 
         .question-container {
@@ -134,7 +221,74 @@
         }
 
         .question-number {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: 700;
+            font-size: 1.4em;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+            border: 3px solid white;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            color: var(--text-dark);
+            padding: 0 10px;
+            position: relative;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .option-btn {
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .option-btn::before {
+            content: attr(data-letter);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             width: 40px;
             height: 40px;
@@ -142,66 +296,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
-            font-weight: 700;
-        }
-
-        .question-text {
-            font-size: 1.4em;
-            font-weight: 600;
-            margin-bottom: 25px;
-            line-height: 1.4;
-            color: var(--text-dark);
-            padding: 0 10px;
-        }
-
-        .options-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .option-btn {
-            background-color: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .option-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary-color);
-        }
-
-        .option-btn::before {
-            content: attr(data-letter);
-            background-color: var(--primary-color);
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             margin-right: 15px;
             flex-shrink: 0;
             font-weight: 700;
+            font-size: 1.2em;
+            box-shadow: 0 3px 10px rgba(106, 17, 203, 0.3);
         }
 
         .option-btn.correct {
-            background-color: rgba(76, 175, 80, 0.2);
+            background-color: rgba(0, 176, 155, 0.1);
             border-color: var(--correct-color);
             color: var(--correct-color);
+            animation: correctPulse 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .option-btn.correct::after {
@@ -209,14 +321,22 @@
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
-            right: 15px;
+            right: 20px;
             color: var(--correct-color);
+            font-size: 1.5em;
         }
 
         .option-btn.incorrect {
-            background-color: rgba(244, 67, 54, 0.2);
+            background-color: rgba(255, 65, 108, 0.1);
             border-color: var(--incorrect-color);
             color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
         }
 
         .option-btn.incorrect::after {
@@ -224,15 +344,16 @@
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
-            right: 15px;
+            right: 20px;
             color: var(--incorrect-color);
+            font-size: 1.5em;
         }
 
         .option-btn.disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            transform: none !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .option-btn.hidden-option {
@@ -242,78 +363,87 @@
         .boosters-container {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
             margin-top: 30px;
         }
 
         .booster-btn {
-            background-color: var(--boost-color);
+            background: linear-gradient(135deg, var(--boost-color), #4a00e0);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 0.9em;
+            padding: 15px 25px;
+            font-size: 1em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(142, 45, 226, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .booster-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4a00e0, var(--boost-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .booster-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-            background-color: #7B1FA2;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(142, 45, 226, 0.6);
+        }
+
+        .booster-btn:hover::before {
+            opacity: 1;
         }
 
         .booster-btn:disabled {
-            background-color: #cccccc;
+            background: #cccccc;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            transform: none !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .booster-btn i {
+            font-size: 1.2em;
         }
 
         .feedback-container {
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
             font-weight: 600;
             display: none;
+            animation: fadeIn 0.5s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .correct-feedback {
-            background-color: rgba(76, 175, 80, 0.2);
+            background-color: rgba(0, 176, 155, 0.2);
             color: var(--correct-color);
-            animation: pulse 0.5s ease;
+            border-left: 5px solid var(--correct-color);
         }
 
         .incorrect-feedback {
-            background-color: rgba(244, 67, 54, 0.2);
+            background-color: rgba(255, 65, 108, 0.2);
             color: var(--incorrect-color);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            top: 0;
-            left: 50%;
-            opacity: 0;
-            z-index: 1000;
+            border-left: 5px solid var(--incorrect-color);
         }
 
         .result-container {
@@ -322,59 +452,115 @@
         }
 
         .restart-btn {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 18px 35px;
+            font-size: 1.2em;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 20px;
+            margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(106, 17, 203, 0.4);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-weight: 700;
         }
 
-        .restart-btn:hover {
-            background-color: #303F9F;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .particles {
+        .restart-btn::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
             opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(106, 17, 203, 0.6);
+        }
+
+        .restart-btn:hover::before {
+            opacity: 1;
+        }
+
+        .restart-btn i {
+            margin-right: 10px;
+        }
+
+        /* Efectos especiales */
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f00;
+            top: -10px;
+            opacity: 0;
+            z-index: 9999;
+            animation: confettiFall 5s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { 
+                transform: translateY(0) rotate(0deg) translateX(0);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .emoji-float {
+            position: fixed;
+            font-size: 2em;
+            z-index: 9998;
+            animation: floatUp 4s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% { 
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+        }
+        }
+
+        .science-icon {
+            position: absolute;
+            font-size: 1.5em;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .quiz-container {
-                padding: 20px;
-                width: 95%;
+                padding: 25px;
+                width: 98%;
             }
             
             .quiz-header h1 {
-                font-size: 1.8em;
+                font-size: 2em;
             }
             
             .question-text {
-                font-size: 1.2em;
+                font-size: 1.3em;
+                padding: 15px;
             }
             
             .option-btn {
-                padding: 12px;
+                padding: 15px;
                 font-size: 1em;
             }
             
@@ -382,23 +568,40 @@
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .booster-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stat-value {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="quiz-container">
+        <!-- Iconos científicos flotantes -->
+        <i class="science-icon fas fa-atom" style="top: 10%; left: 5%;"></i>
+        <i class="science-icon fas fa-flask" style="top: 20%; right: 8%;"></i>
+        <i class="science-icon fas fa-dna" style="bottom: 15%; left: 7%;"></i>
+        <i class="science-icon fas fa-microscope" style="bottom: 25%; right: 5%;"></i>
+        
         <div class="quiz-header">
-            <h1>Preguntados de Ciencia</h1>
-            <p>Descubre los misterios del universo con preguntas sobre física, química, biología y más</p>
+            <h1>¡CIENCIA EXTREMA! 🔥</h1>
+            <p>Demuestra que eres un genio con estas preguntas científicas alucinantes</p>
         </div>
 
         <div class="stats-container">
             <div class="stat-box correct">
-                <h3>Correctas</h3>
+                <h3>✅ Correctas</h3>
                 <div class="stat-value" id="correct-count">0</div>
             </div>
             <div class="stat-box incorrect">
-                <h3>Incorrectas</h3>
+                <h3>❌ Incorrectas</h3>
                 <div class="stat-value" id="incorrect-count">0</div>
             </div>
         </div>
@@ -421,123 +624,125 @@
 
         <div class="boosters-container">
             <button class="booster-btn" id="fifty-fifty-booster">
-                <i class="fas fa-star-half-alt"></i> 50/50
+                <i class="fas fa-star-half-alt"></i> 50/50 (Elimina 2 incorrectas)
+            </button>
+            <button class="booster-btn" id="time-booster">
+                <i class="fas fa-clock"></i> +30 segundos
             </button>
         </div>
 
         <div class="result-container" id="result-container">
             <button class="restart-btn" id="restart-btn">
-                <i class="fas fa-redo"></i> Jugar de nuevo
+                <i class="fas fa-redo"></i> ¡Jugar otra vez!
             </button>
         </div>
-
-        <div class="particles" id="particles"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Banco de preguntas de ciencia
+        // Banco de preguntas de ciencia MEJORADO
         const questions = [
             {
-                question: "¿Cuál es el elemento químico más abundante en el universo?",
-                options: ["Oxígeno", "Hidrógeno", "Carbono", "Hierro"],
+                question: "¿Cuál es el elemento más abundante en el universo (y no, no es el oxígeno)?",
+                options: ["Helio", "Hidrógeno", "Carbono", "Hierro"],
                 answer: 1,
-                explanation: "El hidrógeno es el elemento más abundante en el universo, constituyendo aproximadamente el 75% de la masa elemental del universo."
+                explanation: "¡El hidrógeno gana por goleada! Constituye ~75% de la masa del universo. ¡Es el elemento más simple y más común!"
             },
             {
-                question: "¿Qué científico formuló la teoría de la relatividad?",
-                options: ["Isaac Newton", "Albert Einstein", "Stephen Hawking", "Galileo Galilei"],
+                question: "¿Qué científico loco formuló la teoría de la relatividad?",
+                options: ["Isaac Newton", "Albert Einstein", "Nikola Tesla", "Marie Curie"],
                 answer: 1,
-                explanation: "Albert Einstein formuló la teoría de la relatividad, que revolucionó nuestra comprensión del espacio, tiempo y gravedad."
+                explanation: "¡Correcto! Einstein revolucionó la física con E=mc². ¡Y ese pelo despeinado es icónico!"
             },
             {
-                question: "¿Cuál es la unidad básica de la herencia en los organismos vivos?",
-                options: ["Célula", "Gen", "Proteína", "Cromosoma"],
+                question: "¿Qué partícula subatómica es conocida como el 'fantasma del átomo' porque casi no interactúa con la materia?",
+                options: ["Electrón", "Neutrino", "Protón", "Quark"],
                 answer: 1,
-                explanation: "El gen es la unidad básica de la herencia que se transmite de padres a hijos y contiene las instrucciones para formar proteínas."
+                explanation: "¡Los neutrinos son increíbles! Billones pasan por tu cuerpo cada segundo sin que lo notes. ¡Fantasmales!"
             },
             {
-                question: "¿Qué planeta es conocido como el 'planeta rojo'?",
-                options: ["Venus", "Júpiter", "Marte", "Saturno"],
+                question: "¿Qué planeta tiene vientos tan fuertes que pueden llegar a 2,000 km/h?",
+                options: ["Júpiter", "Saturno", "Neptuno", "Marte"],
                 answer: 2,
-                explanation: "Marte es conocido como el planeta rojo debido al óxido de hierro (herrumbre) en su superficie."
+                explanation: "¡Neptuno gana el premio al clima más extremo! Sus vientos supersónicos dejarían en vergüenza a cualquier huracán terrestre."
             },
             {
-                question: "¿Qué partícula subatómica tiene carga positiva?",
-                options: ["Electrón", "Neutrón", "Protón", "Fotón"],
-                answer: 2,
-                explanation: "El protón es una partícula subatómica con carga positiva que se encuentra en el núcleo del átomo."
-            },
-            {
-                question: "¿Cuál es el proceso por el cual las plantas producen su alimento?",
-                options: ["Respiración", "Fotosíntesis", "Transpiración", "Germinación"],
+                question: "¿Qué increíble proceso permite a las plantas convertir la luz solar en comida?",
+                options: ["Respiración", "Fotosíntesis", "Transpiración", "Digestión"],
                 answer: 1,
-                explanation: "La fotosíntesis es el proceso mediante el cual las plantas convierten la luz solar, agua y dióxido de carbono en glucosa y oxígeno."
+                explanation: "¡Fotosíntesis! Las plantas son como pequeñas fábricas solares. ¡Sin ellas no habría pizza (ni oxígeno)!"
             },
             {
-                question: "¿Qué científico descubrió la penicilina?",
-                options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Robert Koch"],
+                question: "¿Qué científico descubrió la penicilina por accidente en 1928?",
+                options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Gregor Mendel"],
                 answer: 1,
-                explanation: "Alexander Fleming descubrió la penicilina en 1928, marcando el inicio de la era de los antibióticos."
+                explanation: "¡Fleming y su famoso moho! Gracias a ese 'error' salvamos millones de vidas con antibióticos."
             },
             {
-                question: "¿Cuál es la velocidad de la luz en el vacío?",
-                options: ["300,000 km/s", "150,000 km/s", "1,000,000 km/s", "30,000 km/s"],
+                question: "¿Cuál es la velocidad aproximada de la luz en el vacío?",
+                options: ["300,000 km/s", "150,000 km/s", "1 millón km/h", "Depende del día"],
                 answer: 0,
-                explanation: "La velocidad de la luz en el vacío es aproximadamente 300,000 kilómetros por segundo (299,792 km/s exactamente)."
+                explanation: "¡Exacto! 299,792 km/s para ser precisos. ¡Nada puede superar esta velocidad límite del universo!"
             },
             {
-                question: "¿Qué órgano del cuerpo humano produce insulina?",
-                options: ["Hígado", "Páncreas", "Riñón", "Estómago"],
+                question: "¿Qué órgano produce insulina y se enoja cuando comes muchos dulces?",
+                options: ["Hígado", "Páncreas", "Estómago", "Corazón"],
                 answer: 1,
-                explanation: "El páncreas produce insulina, una hormona crucial para regular los niveles de glucosa en sangre."
+                explanation: "¡El páncreas! Este órgano multitarea regula el azúcar en sangre. ¡Cuídalo con una dieta balanceada!"
             },
             {
-                question: "¿Qué gas es el principal responsable del efecto invernadero?",
+                question: "¿Qué gas es el principal villano del efecto invernadero?",
                 options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Helio"],
                 answer: 2,
-                explanation: "El dióxido de carbono (CO2) es el principal gas de efecto invernadero que contribuye al calentamiento global."
+                explanation: "¡CO2! Aunque necesitamos un poco, el exceso por quema de combustibles está calentando el planeta. ¡Recicla!"
             },
             {
-                question: "¿Cuál es el hueso más largo del cuerpo humano?",
-                options: ["Húmero", "Tibia", "Fémur", "Peroné"],
-                answer: 2,
-                explanation: "El fémur, ubicado en el muslo, es el hueso más largo y fuerte del cuerpo humano."
-            },
-            {
-                question: "¿Qué científico propuso la teoría heliocéntrica?",
-                options: ["Ptolomeo", "Galileo Galilei", "Nicolás Copérnico", "Johannes Kepler"],
-                answer: 2,
-                explanation: "Nicolás Copérnico propuso la teoría heliocéntrica, que establece que el Sol está en el centro del sistema solar."
-            },
-            {
-                question: "¿Qué tipo de energía almacena una batería?",
-                options: ["Energía cinética", "Energía potencial", "Energía química", "Energía nuclear"],
-                answer: 2,
-                explanation: "Las baterías almacenan energía en forma de energía química, que se convierte en energía eléctrica cuando se usa."
-            },
-            {
-                question: "¿Qué planeta tiene más lunas en nuestro sistema solar?",
-                options: ["Júpiter", "Saturno", "Urano", "Neptuno"],
+                question: "¿Qué hueso hace que tus piernas sean más fuertes que el concreto (relativamente)?",
+                options: ["Tibia", "Fémur", "Peroné", "Rotula"],
                 answer: 1,
-                explanation: "Saturno tiene actualmente 82 lunas confirmadas, más que cualquier otro planeta en nuestro sistema solar."
+                explanation: "¡El fémur! Es el hueso más largo y fuerte del cuerpo. ¡Puede soportar 30 veces tu peso!"
             },
             {
-                question: "¿Qué elemento químico tiene el símbolo 'Au'?",
-                options: ["Plata", "Oro", "Aluminio", "Argón"],
+                question: "¿Qué teoría puso al Sol en el centro del sistema solar (y enfadó a muchos)?",
+                options: ["Geocéntrica", "Heliocéntrica", "Teoría de cuerdas", "Relatividad"],
                 answer: 1,
-                explanation: "El símbolo químico 'Au' proviene del latín 'aurum' y representa al elemento oro."
+                explanation: "¡Heliocéntrica de Copérnico! Revolucionó nuestra visión del universo... aunque le costó problemas con la Iglesia."
+            },
+            {
+                question: "¿Qué tipo de energía almacena tu celular antes de que se agote?",
+                options: ["Nuclear", "Cinética", "Química", "Solar"],
+                answer: 2,
+                explanation: "¡Energía química! Las baterías transforman energía química en eléctrica. ¡Por eso duran más en modo avión!"
+            },
+            {
+                question: "¿Qué planeta tiene anillos tan grandes que harían palidecer a Saturno?",
+                options: ["Júpiter", "Urano", "Neptuno", "En realidad es Saturno"],
+                answer: 3,
+                explanation: "¡Trampa! Saturno sigue siendo el rey de los anillos. ¡Sus anillos tienen 400,000 km de ancho pero solo 10m de grosor!"
+            },
+            {
+                question: "¿Qué elemento químico tiene el símbolo 'Au' y hace brillar los anillos?",
+                options: ["Plata", "Oro", "Aluminio", "Platino"],
+                answer: 1,
+                explanation: "¡Oro! 'Au' viene del latín 'aurum'. ¡Es tan maleable que una onza puede estirarse hasta 80km!"
+            },
+            {
+                question: "¿Qué famoso telescopio flota en el espacio tomando fotos espectaculares?",
+                options: ["Hubble", "Kepler", "Voyager", "Chandra"],
+                answer: 0,
+                explanation: "¡Hubble! Este veterano telescopio nos ha mostrado el universo como nunca antes. ¡Lanzado en 1990 y sigue funcionando!"
             }
         ];
 
-        // Variables del juego
+        // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let incorrectAnswers = 0;
         let timer;
-        let timeLeft = 120; // 2 minutos en segundos
+        let timeLeft = 120;
         let gameActive = true;
         let fiftyFiftyUsed = false;
+        let timeBoostUsed = false;
         let selectedQuestions = [];
 
         // Elementos del DOM
@@ -552,11 +757,11 @@
         const resultContainer = document.getElementById('result-container');
         const restartBtn = document.getElementById('restart-btn');
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
-        const particlesContainer = document.getElementById('particles');
+        const timeBooster = document.getElementById('time-booster');
 
-        // Inicializar el juego
+        // Inicializar el juego CON ESTILO
         function initGame() {
-            // Seleccionar 8 preguntas aleatorias del banco
+            // Seleccionar 8 preguntas aleatorias
             selectedQuestions = [...questions]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 8);
@@ -567,6 +772,7 @@
             timeLeft = 120;
             gameActive = true;
             fiftyFiftyUsed = false;
+            timeBoostUsed = false;
             
             updateStats();
             startTimer();
@@ -575,9 +781,14 @@
             resultContainer.style.display = 'none';
             feedbackContainer.style.display = 'none';
             fiftyFiftyBooster.disabled = false;
+            timeBooster.disabled = false;
+            
+            // Efecto especial de inicio
+            createEmoji('🚀', 5);
+            createEmoji('🔬', 5);
         }
 
-        // Mostrar la pregunta actual
+        // Mostrar pregunta con ANIMACIÓN
         function showQuestion() {
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
@@ -588,21 +799,36 @@
             questionNumber.textContent = currentQuestionIndex + 1;
             questionText.textContent = question.question;
             
+            // Animación de entrada
+            questionText.style.animation = 'none';
+            void questionText.offsetWidth; // Trigger reflow
+            questionText.style.animation = 'fadeIn 0.5s';
+            
             optionsContainer.innerHTML = '';
             question.options.forEach((option, index) => {
                 const optionBtn = document.createElement('button');
                 optionBtn.className = 'option-btn';
-                optionBtn.dataset.letter = String.fromCharCode(65 + index); // A, B, C, D
+                optionBtn.dataset.letter = String.fromCharCode(65 + index);
                 optionBtn.textContent = option;
                 optionBtn.onclick = () => selectOption(index);
+                
+                // Animación escalonada
+                optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
+                optionBtn.style.opacity = '0';
+                
                 optionsContainer.appendChild(optionBtn);
             });
             
             feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
+            
+            // Efecto especial
+            if (Math.random() > 0.7) {
+                createEmoji('🤔', 1);
+            }
         }
 
-        // Seleccionar una opción
+        // Seleccionar opción CON EFECTOS
         function selectOption(selectedIndex) {
             if (!gameActive) return;
             
@@ -615,24 +841,35 @@
                 btn.onclick = null;
             });
             
-            // Marcar la respuesta correcta
+            // Marcar respuesta correcta
             optionButtons[question.answer].classList.add('correct');
             
-            // Verificar si la respuesta es correcta
+            // Verificar respuesta
             if (selectedIndex === question.answer) {
                 optionButtons[selectedIndex].classList.add('correct');
                 correctAnswers++;
-                showFeedback('¡Correcto!', true);
-                createConfetti();
+                
+                // Efectos especiales
+                createConfetti(20);
+                createEmoji('🎉', 3);
+                createEmoji('👏', 3);
+                playSound('correct');
+                
+                showFeedback('¡BIEN HECHO! 🎯', true);
             } else {
                 optionButtons[selectedIndex].classList.add('incorrect');
                 incorrectAnswers++;
-                showFeedback(`Incorrecto. ${question.explanation}`, false);
+                
+                // Efecto especial
+                createEmoji('💥', 2);
+                playSound('wrong');
+                
+                showFeedback(`¡Ups! ${question.explanation}`, false);
             }
             
             updateStats();
             
-            // Pasar a la siguiente pregunta después de un breve retraso
+            // Siguiente pregunta con retraso
             setTimeout(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < selectedQuestions.length) {
@@ -643,20 +880,34 @@
             }, 2000);
         }
 
-        // Mostrar retroalimentación
+        // Mostrar feedback DIVERTIDO
         function showFeedback(message, isCorrect) {
             feedbackContainer.textContent = message;
             feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
             feedbackContainer.style.display = 'block';
+            
+            // Efecto de vibración para respuestas incorrectas
+            if (!isCorrect) {
+                feedbackContainer.style.animation = 'shake 0.5s';
+            }
         }
 
-        // Actualizar estadísticas
+        // Actualizar estadísticas CON ESTILO
         function updateStats() {
             correctCount.textContent = correctAnswers;
             incorrectCount.textContent = incorrectAnswers;
+            
+            // Efecto cuando se acierta
+            if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
+                correctCount.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    correctCount.style.transform = 'scale(1)';
+                }, 300);
+            }
+            correctCount.dataset.prev = correctAnswers;
         }
 
-        // Temporizador
+        // Temporizador MEJORADO
         function startTimer() {
             clearInterval(timer);
             updateTimerDisplay();
@@ -680,26 +931,53 @@
             const percentage = (timeLeft / 120) * 100;
             timerBar.style.width = `${percentage}%`;
             
-            // Cambiar color cuando el tiempo se acaba
-            if (timeLeft <= 30) {
-                timerBar.style.background = 'linear-gradient(90deg, #FF5722, #F44336)';
-                timerText.style.color = '#F44336';
+            // Cambiar color según el tiempo
+            if (timeLeft <= 10) {
+                timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
+                timerText.style.color = '#ff416c';
+                timerText.style.animation = 'pulse 0.5s infinite alternate';
+                
+                // Efecto de urgencia
+                if (timeLeft <= 5 && timeLeft > 0) {
+                    createEmoji('⏰', 1);
+                    timerText.style.fontWeight = 'bold';
+                }
+            } else if (timeLeft <= 30) {
+                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff416c)';
+                timerText.style.color = '#ff8a00';
+                timerText.style.animation = 'none';
             } else if (timeLeft <= 60) {
-                timerBar.style.background = 'linear-gradient(90deg, #FFC107, #FF9800)';
-                timerText.style.color = '#FF9800';
+                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #e52e71)';
+                timerText.style.color = '#ff8a00';
+            } else {
+                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff8a00)';
+                timerText.style.color = '#ff8a00';
+                timerText.style.animation = 'none';
             }
         }
 
-        // Tiempo agotado
+        // Tiempo agotado CON SWEETALERT2
         function timeUp() {
             gameActive = false;
+            
+            // Efecto especial
+            createEmoji('⌛', 3);
+            playSound('timeup');
+            
             Swal.fire({
-                title: '¡Tiempo agotado!',
-                text: 'Se acabó el tiempo para responder esta pregunta.',
+                title: '¡TIEMPO AGOTADO! ⏳',
+                html: `<div style="font-size: 1.2em;">Se acabó el tiempo para esta pregunta. <strong>¡Sigue intentándolo!</strong></div>`,
                 icon: 'info',
                 confirmButtonText: 'Continuar',
                 background: '#ffffff',
-                confirmButtonColor: '#3f51b5'
+                confirmButtonColor: '#6a11cb',
+                showCancelButton: false,
+                customClass: {
+                    popup: 'animated heartBeat'
+                },
+                willOpen: () => {
+                    createConfetti(10, true);
+                }
             }).then(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < selectedQuestions.length) {
@@ -712,75 +990,82 @@
             });
         }
 
-        // Finalizar el juego con Sweetalert2 mejorado
+        // Final del juego CON SWEETALERT2 ESPECTACULAR
         function endGame() {
             gameActive = false;
             clearInterval(timer);
             
             const totalQuestions = selectedQuestions.length;
             const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            let title, icon, imageUrl, color;
+            let title, icon, imageUrl, color, message;
             
-            // Determinar el mensaje según el rendimiento
+            // Determinar resultado
             if (percentage >= 90) {
-                title = "¡Excelente! 🎉";
+                title = "¡ERES UN GENIO! 🌟";
+                icon = "success";
+                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                color = "#00b09b";
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
+            } else if (percentage >= 70) {
+                title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
                 imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
-                color = "#4CAF50";
-            } else if (percentage >= 70) {
-                title = "¡Buen trabajo! 👍";
-                icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/03/31/19/13/atom-1294810_640.png";
-                color = "#2196F3";
+                color = "#2575fc";
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
             } else if (percentage >= 50) {
-                title = "¡No está mal! 😊";
+                title = "¡BUEN INTENTO! 😊";
                 icon = "info";
                 imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/biology-2026102_640.png";
-                color = "#FF9800";
+                color = "#ff8a00";
+                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
             } else {
-                title = "¡Sigue practicando! 📚";
+                title = "¡SIGUE PRACTICANDO! 📚";
                 icon = "info";
                 imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
-                color = "#F44336";
+                color = "#ff416c";
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
             }
             
-            // Crear HTML personalizado para el resultado
-            const resultHTML = `
-                <div style="text-align: center;">
-                    <img src="${imageUrl}" style="height: 120px; margin-bottom: 20px;">
-                    <h3 style="color: ${color}; margin-bottom: 15px;">${title}</h3>
-                    <p style="font-size: 1.1em; margin-bottom: 10px;">Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas</p>
-                    <p style="font-size: 1.1em; margin-bottom: 15px;">Porcentaje de aciertos: <strong style="color: ${color};">${percentage}%</strong></p>
-                    <div style="background: #f5f5f5; border-radius: 10px; padding: 15px; margin: 15px 0;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                            <span>Correctas:</span>
-                            <span style="color: #4CAF50; font-weight: bold;">${correctAnswers}</span>
+            // Mostrar resultado con Sweetalert2
+            Swal.fire({
+                title: title,
+                html: `
+                    <div style="text-align: center;">
+                        <img src="${imageUrl}" style="height: 150px; margin: 10px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="margin: 20px 0; font-size: 1.2em;">
+                            ${message}
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Incorrectas:</span>
-                            <span style="color: #F44336; font-weight: bold;">${incorrectAnswers}</span>
+                        <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-weight: bold;">✅ Correctas:</span>
+                                <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-weight: bold;">❌ Incorrectas:</span>
+                                <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
+                            </div>
+                            <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
+                            </div>
+                            <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            // Mostrar el resultado con Sweetalert2
-            Swal.fire({
-                title: 'Resultados del Juego',
-                html: resultHTML,
+                `,
                 icon: icon,
-                confirmButtonText: 'Jugar de nuevo',
-                confirmButtonColor: '#3f51b5',
+                confirmButtonText: '¡Jugar de nuevo!',
+                confirmButtonColor: '#6a11cb',
                 background: '#ffffff',
-                allowOutsideClick: false,
-                showCloseButton: true,
-                width: '600px',
+                width: '650px',
                 customClass: {
-                    popup: 'animated bounceIn'
+                    popup: 'animated bounceIn',
+                    title: 'swal-title-custom'
                 },
                 willOpen: () => {
-                    if (percentage >= 90) {
-                        createParticles();
+                    if (percentage >= 80) {
+                        createConfetti(50);
+                        createEmoji('🎉', 10);
+                        createEmoji('🏆', 10);
+                        playSound('win');
                     }
                 }
             }).then((result) => {
@@ -790,7 +1075,7 @@
             });
         }
 
-        // Potenciador 50/50
+        // Potenciador 50/50 CON ESTILO
         fiftyFiftyBooster.onclick = function() {
             if (fiftyFiftyUsed || !gameActive) return;
             
@@ -798,16 +1083,19 @@
             const optionButtons = document.querySelectorAll('.option-btn');
             let optionsToHide = [];
             
-            // Encontrar dos opciones incorrectas para ocultar
+            // Encontrar dos opciones incorrectas
             for (let i = 0; i < question.options.length; i++) {
                 if (i !== question.answer && optionsToHide.length < 2) {
                     optionsToHide.push(i);
                 }
             }
             
-            // Ocultar las opciones seleccionadas
+            // Ocultar opciones con efecto
             optionsToHide.forEach(index => {
-                optionButtons[index].classList.add('hidden-option');
+                optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                setTimeout(() => {
+                    optionButtons[index].classList.add('hidden-option');
+                }, 300);
             });
             
             fiftyFiftyUsed = true;
@@ -819,83 +1107,206 @@
                 this.style.transform = '';
             }, 300);
             
-            // Mostrar mensaje
+            // Sonido y emoji
+            playSound('booster');
+            createEmoji('✨', 2);
+            
+            // Mensaje con SweetAlert
             Swal.fire({
-                title: 'Potenciador 50/50 usado',
-                text: 'Se han eliminado dos respuestas incorrectas',
+                title: '¡POTENCIADOR ACTIVADO!',
+                html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
                 icon: 'info',
                 timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                background: '#ffffff',
+                willOpen: () => {
+                    createConfetti(10);
+                }
+            });
+        };
+
+        // Potenciador de tiempo
+        timeBooster.onclick = function() {
+            if (timeBoostUsed || !gameActive) return;
+            
+            timeLeft += 30;
+            updateTimerDisplay();
+            timeBoostUsed = true;
+            this.disabled = true;
+            
+            // Efecto visual
+            this.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 300);
+            
+            // Efectos especiales
+            createEmoji('⏱️', 2);
+            createEmoji('➕', 2);
+            playSound('booster');
+            
+            // Mensaje
+            Swal.fire({
+                title: '¡TIEMPO EXTRA!',
+                html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
+                icon: 'info',
+                timer: 1500,
+                timerProgressBar: true,
                 showConfirmButton: false,
                 background: '#ffffff'
             });
         };
 
-        // Crear efecto de confeti
-        function createConfetti() {
-            const colors = ['#3f51b5', '#2196f3', '#4CAF50', '#FFC107', '#FF9800', '#F44336'];
+        // EFECTOS ESPECIALES DIVERTIDOS
+
+        // Crear confeti
+        function createConfetti(count = 20, isTimeUp = false) {
+            const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
             
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < count; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.top = '100%';
                 confetti.style.width = `${Math.random() * 10 + 5}px`;
                 confetti.style.height = confetti.style.width;
-                confetti.style.opacity = '1';
+                
+                if (isTimeUp) {
+                    confetti.style.animation = `confettiFall 3s linear ${i * 0.1}s forwards`;
+                } else {
+                    confetti.style.animation = `confettiFall 5s linear ${i * 0.1}s forwards`;
+                }
                 
                 document.body.appendChild(confetti);
                 
-                const animationDuration = Math.random() * 3 + 2;
-                confetti.style.animation = `confetti ${animationDuration}s linear forwards`;
-                
                 setTimeout(() => {
                     confetti.remove();
-                }, animationDuration * 1000);
+                }, 5000);
             }
         }
 
-        // Crear efecto de partículas para el final
-        function createParticles() {
-            particlesContainer.innerHTML = '';
-            const colors = ['#3f51b5', '#2196f3', '#4CAF50', '#FFC107', '#FF9800', '#F44336'];
-            
-            for (let i = 0; i < 100; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                particle.style.width = `${Math.random() * 10 + 5}px`;
-                particle.style.height = particle.style.width;
-                particle.style.opacity = '0';
+        // Crear emojis flotantes
+        function createEmoji(emoji, count = 1) {
+            for (let i = 0; i < count; i++) {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji-float';
+                emojiElement.textContent = emoji;
+                emojiElement.style.left = `${Math.random() * 80 + 10}%`;
+                emojiElement.style.top = `${Math.random() * 50 + 50}%`;
+                emojiElement.style.fontSize = `${Math.random() * 2 + 1.5}em`;
+                emojiElement.style.animationDuration = `${Math.random() * 3 + 2}s`;
                 
-                particlesContainer.appendChild(particle);
+                document.body.appendChild(emojiElement);
                 
-                // Animación de aparición
                 setTimeout(() => {
-                    particle.style.transition = 'opacity 0.5s ease';
-                    particle.style.opacity = '0.8';
-                    
-                    // Animación de movimiento
-                    setTimeout(() => {
-                        particle.style.transition = 'all 1s ease';
-                        particle.style.transform = `translate(${(Math.random() - 0.5) * 100}px, ${(Math.random() - 0.5) * 100}px)`;
-                        particle.style.opacity = '0';
-                        
-                        setTimeout(() => {
-                            particle.remove();
-                        }, 1000);
-                    }, 500);
-                }, i * 50);
+                    emojiElement.remove();
+                }, 4000);
             }
         }
 
-        // Reiniciar el juego
-        restartBtn.onclick = initGame;
+        // Sonidos (usando AudioContext para mejor compatibilidad)
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                let frequency, duration;
+                
+                switch(type) {
+                    case 'correct':
+                        frequency = 880;
+                        duration = 0.3;
+                        break;
+                    case 'wrong':
+                        frequency = 220;
+                        duration = 0.5;
+                        break;
+                    case 'booster':
+                        frequency = 523.25;
+                        duration = 0.2;
+                        break;
+                    case 'timeup':
+                        frequency = 349.23;
+                        duration = 0.5;
+                        break;
+                    case 'win':
+                        // Pequeña melodía de victoria
+                        playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
+                        return;
+                    default:
+                        frequency = 440;
+                        duration = 0.1;
+                }
+                
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                console.log("Error de audio:", e);
+            }
+        }
 
-        // Iniciar el juego al cargar la página
-        window.onload = initGame;
+        function playNotes(notes, times) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            notes.forEach((note, i) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(note, audioContext.currentTime + times[i]);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + times[i]);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + times[i] + 0.2);
+                
+                oscillator.start(audioContext.currentTime + times[i]);
+                oscillator.stop(audioContext.currentTime + times[i] + 0.2);
+            });
+        }
+
+        // Reiniciar juego
+        restartBtn.onclick = function() {
+            createEmoji('🔄', 3);
+            initGame();
+        };
+
+        // Iniciar juego al cargar
+        window.onload = function() {
+            // Efecto de bienvenida
+            setTimeout(() => {
+                Swal.fire({
+                    title: '¡BIENVENIDO A CIENCIA EXTREMA!',
+                    html: `
+                        <div style="font-size: 1.1em;">
+                            <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
+                            <p>¡Usa los potenciadores para ayudarte!</p>
+                        </div>
+                        <img src="https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png" style="height: 120px; margin: 15px 0;">
+                    `,
+                    confirmButtonText: '¡Comenzar!',
+                    confirmButtonColor: '#6a11cb',
+                    background: '#ffffff',
+                    showCancelButton: false,
+                    customClass: {
+                        popup: 'animated bounceIn'
+                    },
+                    willOpen: () => {
+                        createConfetti(20);
+                    }
+                }).then(() => {
+                    initGame();
+                });
+            }, 500);
+        };
     </script>
 </body>
 </html>
