@@ -346,7 +346,12 @@ export async function loadFriendsList(currentUserId) {
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
-                    <td>${friend.perla || 0} <div class="pearl-icon"></div></td>
+                   <td>
+    <div class="currency-display">
+        <span>${friend.perla || 0}</span>
+        <div class="pearl-icon"></div>
+    </div>
+</td>
                 </tr>
             `;
         });
