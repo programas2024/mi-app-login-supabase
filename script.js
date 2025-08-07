@@ -37,7 +37,7 @@ let profileBtnDashboard, logoutBtnDashboard;
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
-let goldDisplayProfile, diamondsDisplayProfile,pearlsDisplayProfile;
+let goldDisplayProfile, diamondsDisplayProfile, pearlsDisplayProfile; // Referencia para las perlas en el perfil
 
 let loaderDiv, loaderText;
 
