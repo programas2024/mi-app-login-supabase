@@ -625,13 +625,13 @@
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
             <h1 style="margin: 0; font-size: 1.8em; background: linear-gradient(135deg, #6a11cb, #2575fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                CIENCIA EXTREMA
+                HISTORIA EXTREMA
             </h1>
             <div style="width: 100px;"></div> <!-- Espaciador -->
         </div>
 
         <div class="quiz-header">
-            <p>Demuestra que eres un genio con estas preguntas científicas alucinantes</p>
+            <p>Demuestra que eres un genio con estas preguntas sobre historia alucinantes</p>
         </div>
 
         <div class="stats-container">
@@ -1016,13 +1016,13 @@
                 icon = "success";
                 imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
                 color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento sobre historia es asombroso!`;
             } else if (percentage >= 70) {
                 title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
                 imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
                 color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un experto destacado!`;
             } else if (percentage >= 50) {
                 title = "¡BUEN INTENTO! 😊";
                 icon = "info";
@@ -1034,7 +1034,7 @@
                 icon = "info";
                 imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
                 color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La historia es divertida! Sigue intentándolo.`;
             }
             
             // Mostrar resultado con Sweetalert2
@@ -1299,10 +1299,10 @@
             // Efecto de bienvenida
             setTimeout(() => {
                 Swal.fire({
-                    title: '¡BIENVENIDO A CIENCIA EXTREMA!',
+                    title: '¡BIENVENIDO A HISTORIA EXTREMA!',
                     html: `
                         <div style="font-size: 1.1em;">
-                            <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
+                            <p>Responde preguntas de historia antes de que se acabe el tiempo.</p>
                             <p>¡Usa los potenciadores para ayudarte!</p>
                         </div>
                         <img src="https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png" style="height: 120px; margin: 15px 0;">
