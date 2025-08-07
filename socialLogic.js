@@ -430,6 +430,7 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
             </div>
         `;
 
+        
         Swal.fire({
             icon: 'info',
             title: 'Perfil de Amigo',
