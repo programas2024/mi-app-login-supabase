@@ -834,7 +834,7 @@
         // Inicializar el juego CON ESTILO
         function initGame() {
             // Seleccionar preguntas que no se hayan usado recientemente
-            const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
+            const availableQuestions = allMovieQuestions.filter(q => !usedQuestions.includes(q.question));
             
             // Si ya usamos muchas preguntas, reiniciamos el contador
             if (availableQuestions.length < 8) {
