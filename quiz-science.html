@@ -826,76 +826,70 @@
     const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
     const timeBooster = document.getElementById('time-booster');
 
-    // Mueve la configuración de Supabase y las funciones relacionadas dentro del evento DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Configuración de Supabase (ahora segura de ser llamada después de la carga)
-        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-        
-        // Aquí es donde se resuelve el error: createClient está disponible
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // **IMPORTANTE: Aquí se carga la biblioteca de preguntas.
+    // Asegúrate de que `allScienceQuestions` esté definido en tu HTML o en otro script.**
+    // Por ejemplo:
+    // const allScienceQuestions = [ { question: '...', options: ['...'], answer: 0 }, ... ];
 
-        // Función para actualizar perlas en Supabase (versión actualizada)
-        async function updatePearls(pearlsToAdd) {
-            if (!supabase) {
-                console.log('Supabase no está disponible');
-                return null;
-            }
-
-            try {
-                // Obtener la sesión actual
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-                if (authError || !user) {
-                    console.log('Usuario no autenticado');
-                    return null;
-                }
-
-                // Obtener el perfil actual
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('perla')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error) throw error;
-
-                // Calcular nuevo total
-                const currentPearls = profile.perla || 0;
-                const newTotal = currentPearls + pearlsToAdd;
-
-                // Actualizar en la base de datos
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ perla: newTotal })
-                    .eq('id', user.id);
-
-                if (updateError) throw updateError;
-
-                return newTotal;
-            } catch (error) {
-                console.error('Error actualizando perlas:', error);
-                return null;
-            }
+    // Configuración de Supabase (CORREGIDO)
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    // Esta línea ahora está en el lugar correcto.
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Función para actualizar perlas en Supabase (versión actualizada)
+    async function updatePearls(pearlsToAdd) {
+        if (!supabase) {
+            console.log('Supabase no está disponible');
+            return null;
         }
-    });
-        
+
+        try {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            
+            if (authError || !user) {
+                console.log('Usuario no autenticado');
+                return null;
+            }
+            
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('perla')
+                .eq('id', user.id)
+                .single();
+            
+            if (error) throw error;
+            
+            const currentPearls = profile.perla || 0;
+            const newTotal = currentPearls + pearlsToAdd;
+            
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ perla: newTotal })
+                .eq('id', user.id);
+            
+            if (updateError) throw updateError;
+            
+            return newTotal;
+        } catch (error) {
+            console.error('Error actualizando perlas:', error);
+            return null;
+        }
+    }
+
     // Inicializar el juego CON ESTILO
     function initGame() {
-        // Seleccionar preguntas que no se hayan usado recientemente
         const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
         
-        // Si ya usamos muchas preguntas, reiniciamos el contador
         if (availableQuestions.length < 8) {
             usedQuestions = [];
         }
         
-        // Seleccionar 8 preguntas aleatorias
         selectedQuestions = [...availableQuestions]
             .sort(() => 0.5 - Math.random())
             .slice(0, 8);
         
-        // Registrar las preguntas usadas
         selectedQuestions.forEach(q => usedQuestions.push(q.question));
         
         currentQuestionIndex = 0;
@@ -913,7 +907,6 @@
         resultContainer.style.display = 'none';
         feedbackContainer.style.display = 'none';
         
-        // Resetear potenciadores
         fiftyFiftyBooster.style.opacity = '1';
         fiftyFiftyBooster.style.height = 'auto';
         fiftyFiftyBooster.style.padding = '15px 25px';
@@ -926,7 +919,6 @@
         timeBooster.style.margin = '0';
         timeBooster.disabled = false;
         
-        // Efecto especial de inicio
         createEmoji('🚀', 5);
         createEmoji('🔬', 5);
     }
@@ -942,7 +934,6 @@
         questionNumber.textContent = currentQuestionIndex + 1;
         questionText.textContent = question.question;
         
-        // Animación de entrada
         questionText.style.animation = 'none';
         void questionText.offsetWidth; // Trigger reflow
         questionText.style.animation = 'fadeIn 0.5s';
@@ -955,7 +946,6 @@
             optionBtn.textContent = option;
             optionBtn.onclick = () => selectOption(index);
             
-            // Animación escalonada
             optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
             optionBtn.style.opacity = '0';
             
@@ -966,7 +956,6 @@
         fiftyFiftyUsed = false;
         timeBoostUsed = false;
         
-        // Efecto especial
         if (Math.random() > 0.7) {
             createEmoji('🤔', 1);
         }
@@ -979,21 +968,17 @@
         const question = selectedQuestions[currentQuestionIndex];
         const optionButtons = document.querySelectorAll('.option-btn');
         
-        // Deshabilitar todos los botones
         optionButtons.forEach(btn => {
             btn.classList.add('disabled');
             btn.onclick = null;
         });
         
-        // Marcar respuesta correcta
         optionButtons[question.answer].classList.add('correct');
         
-        // Verificar respuesta
         if (selectedIndex === question.answer) {
             optionButtons[selectedIndex].classList.add('correct');
             correctAnswers++;
             
-            // Efectos especiales
             createConfetti(20);
             createEmoji('🎉', 3);
             createEmoji('👏', 3);
@@ -1004,7 +989,6 @@
             optionButtons[selectedIndex].classList.add('incorrect');
             incorrectAnswers++;
             
-            // Efecto especial
             createEmoji('💥', 2);
             playSound('wrong');
             
@@ -1013,7 +997,6 @@
         
         updateStats();
         
-        // Siguiente pregunta con retraso
         setTimeout(() => {
             currentQuestionIndex++;
             if (currentQuestionIndex < selectedQuestions.length) {
@@ -1030,7 +1013,6 @@
         feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
         feedbackContainer.style.display = 'block';
         
-        // Efecto de vibración para respuestas incorrectas
         if (!isCorrect) {
             feedbackContainer.style.animation = 'shake 0.5s';
         }
@@ -1041,7 +1023,6 @@
         correctCount.textContent = correctAnswers;
         incorrectCount.textContent = incorrectAnswers;
         
-        // Efecto cuando se acierta
         if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
             correctCount.style.transform = 'scale(1.2)';
             setTimeout(() => {
@@ -1075,13 +1056,11 @@
         const percentage = (timeLeft / 120) * 100;
         timerBar.style.width = `${percentage}%`;
         
-        // Cambiar color según el tiempo
         if (timeLeft <= 10) {
             timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
             timerText.style.color = '#ff416c';
             timerText.style.animation = 'pulse 0.5s infinite alternate';
             
-            // Efecto de urgencia
             if (timeLeft <= 5 && timeLeft > 0) {
                 createEmoji('⏰', 1);
                 timerText.style.fontWeight = 'bold';
@@ -1104,11 +1083,9 @@
     function timeUp() {
         gameActive = false;
         
-        // Efecto especial
         createEmoji('⌛', 3);
         playSound('timeup');
         
-        // Mostrar resultados directamente
         endGame();
     }
 
@@ -1121,7 +1098,6 @@
         const percentage = Math.round((correctAnswers / totalQuestions) * 100);
         let title, icon, imageUrl, color, message, pearlsToAdd = 0;
         
-        // Determinar resultado y recompensas
         if (percentage >= 90) {
             title = "¡ERES UN GENIO! 🌟";
             icon = "success";
@@ -1152,7 +1128,6 @@
             pearlsToAdd = 1;
         }
         
-        // Mostrar SweetAlert2 con los resultados (versión inicial sin perlas)
         const swalOptions = {
             title: title,
             html: `
@@ -1197,11 +1172,9 @@
         };
         
         try {
-            // Actualizar perlas solo si el usuario está autenticado
             const newPearlCount = await updatePearls(pearlsToAdd);
             
             if (newPearlCount !== null) {
-                // Agregar sección de perlas si se actualizó correctamente
                 swalOptions.html += `
                     <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -1228,7 +1201,6 @@
             console.error('Error al procesar recompensas:', error);
         }
         
-        // Mostrar el diálogo
         Swal.fire(swalOptions).then((result) => {
             if (result.isConfirmed) {
                 initGame();
@@ -1244,14 +1216,12 @@
         const optionButtons = document.querySelectorAll('.option-btn');
         let optionsToHide = [];
         
-        // Encontrar dos opciones incorrectas
         for (let i = 0; i < question.options.length; i++) {
             if (i !== question.answer && optionsToHide.length < 2) {
                 optionsToHide.push(i);
             }
         }
         
-        // Ocultar opciones con efecto
         optionsToHide.forEach(index => {
             optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
             setTimeout(() => {
@@ -1261,7 +1231,6 @@
         
         fiftyFiftyUsed = true;
         
-        // Ocultar el botón del potenciador
         this.style.opacity = '0';
         this.style.height = '0';
         this.style.padding = '0';
@@ -1270,11 +1239,9 @@
             this.disabled = true;
         }, 300);
         
-        // Sonido y emoji
         playSound('booster');
         createEmoji('✨', 2);
         
-        // Mensaje con SweetAlert
         Swal.fire({
             title: '¡POTENCIADOR ACTIVADO!',
             html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
@@ -1297,7 +1264,6 @@
         updateTimerDisplay();
         timeBoostUsed = true;
         
-        // Ocultar el botón del potenciador
         this.style.opacity = '0';
         this.style.height = '0';
         this.style.padding = '0';
@@ -1306,12 +1272,10 @@
             this.disabled = true;
         }, 300);
         
-        // Efectos especiales
         createEmoji('⏱️', 2);
         createEmoji('➕', 2);
         playSound('booster');
         
-        // Mensaje
         Swal.fire({
             title: '¡TIEMPO EXTRA!',
             html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
@@ -1400,7 +1364,6 @@
                     duration = 0.5;
                     break;
                 case 'win':
-                    // Pequeña melodía de victoria
                     playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
                     return;
                 case 'coin':
@@ -1449,7 +1412,6 @@
 
     // Iniciar juego al cargar
     window.onload = function() {
-        // Efecto de bienvenida
         setTimeout(() => {
             Swal.fire({
                 title: '¡BIENVENIDO A CIENCIA EXTREMA!',
