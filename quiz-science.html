@@ -168,12 +168,12 @@
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
 
-        // Configuración de Supabase (ahora segura de ser llamada después de la carga)
+         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
         async function updatePearls(pearlsToAdd) {
             if (!supabase) {
                 console.log('Supabase no está disponible');
