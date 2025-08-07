@@ -682,785 +682,794 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js';
-        // Banco de preguntas de ciencia MEJORADO
-        const allScienceQuestions = [
-            {
-                question: "¿Cuál es el elemento más abundante en el universo (y no, no es el oxígeno)?",
-                options: ["Helio", "Hidrógeno", "Carbono", "Hierro"],
-                answer: 1,
-                explanation: "¡El hidrógeno gana por goleada! Constituye ~75% de la masa del universo. ¡Es el elemento más simple y más común!"
-            },
-            {
-                question: "¿Qué científico loco formuló la teoría de la relatividad?",
-                options: ["Isaac Newton", "Albert Einstein", "Nikola Tesla", "Marie Curie"],
-                answer: 1,
-                explanation: "¡Correcto! Einstein revolucionó la física con E=mc². ¡Y ese pelo despeinado es icónico!"
-            },
-            {
-                question: "¿Qué partícula subatómica es conocida como el 'fantasma del átomo' porque casi no interactúa con la materia?",
-                options: ["Electrón", "Neutrino", "Protón", "Quark"],
-                answer: 1,
-                explanation: "¡Los neutrinos son increíbles! Billones pasan por tu cuerpo cada segundo sin que lo notes. ¡Fantasmales!"
-            },
-            {
-                question: "¿Qué planeta tiene vientos tan fuertes que pueden llegar a 2,000 km/h?",
-                options: ["Júpiter", "Saturno", "Neptuno", "Marte"],
-                answer: 2,
-                explanation: "¡Neptuno gana el premio al clima más extremo! Sus vientos supersónicos dejarían en vergüenza a cualquier huracán terrestre."
-            },
-            {
-                question: "¿Qué increíble proceso permite a las plantas convertir la luz solar en comida?",
-                options: ["Respiración", "Fotosíntesis", "Transpiración", "Digestión"],
-                answer: 1,
-                explanation: "¡Fotosíntesis! Las plantas son como pequeñas fábricas solares. ¡Sin ellas no habría pizza (ni oxígeno)!"
-            },
-            {
-                question: "¿Qué científico descubrió la penicilina por accidente en 1928?",
-                options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Gregor Mendel"],
-                answer: 1,
-                explanation: "¡Fleming y su famoso moho! Gracias a ese 'error' salvamos millones de vidas con antibióticos."
-            },
-            {
-                question: "¿Cuál es la velocidad aproximada de la luz en el vacío?",
-                options: ["300,000 km/s", "150,000 km/s", "1 millón km/h", "Depende del día"],
-                answer: 0,
-                explanation: "¡Exacto! 299,792 km/s para ser precisos. ¡Nada puede superar esta velocidad límite del universo!"
-            },
-            {
-                question: "¿Qué órgano produce insulina y se enoja cuando comes muchos dulces?",
-                options: ["Hígado", "Páncreas", "Estómago", "Corazón"],
-                answer: 1,
-                explanation: "¡El páncreas! Este órgano multitarea regula el azúcar en sangre. ¡Cuídalo con una dieta balanceada!"
-            },
-            {
-                question: "¿Qué gas es el principal villano del efecto invernadero?",
-                options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Helio"],
-                answer: 2,
-                explanation: "¡CO2! Aunque necesitamos un poco, el exceso por quema de combustibles está calentando el planeta. ¡Recicla!"
-            },
-            {
-                question: "¿Qué hueso hace que tus piernas sean más fuertes que el concreto (relativamente)?",
-                options: ["Tibia", "Fémur", "Peroné", "Rotula"],
-                answer: 1,
-                explanation: "¡El fémur! Es el hueso más largo y fuerte del cuerpo. ¡Puede soportar 30 veces tu peso!"
-            },
-            {
-                question: "¿Qué teoría puso al Sol en el centro del sistema solar (y enfadó a muchos)?",
-                options: ["Geocéntrica", "Heliocéntrica", "Teoría de cuerdas", "Relatividad"],
-                answer: 1,
-                explanation: "¡Heliocéntrica de Copérnico! Revolucionó nuestra visión del universo... aunque le costó problemas con la Iglesia."
-            },
-            {
-                question: "¿Qué tipo de energía almacena tu celular antes de que se agote?",
-                options: ["Nuclear", "Cinética", "Química", "Solar"],
-                answer: 2,
-                explanation: "¡Energía química! Las baterías transforman energía química en eléctrica. ¡Por eso duran más en modo avión!"
-            },
-            {
-                question: "¿Qué planeta tiene anillos tan grandes que harían palidecer a Saturno?",
-                options: ["Júpiter", "Urano", "Neptuno", "En realidad es Saturno"],
-                answer: 3,
-                explanation: "¡Trampa! Saturno sigue siendo el rey de los anillos. ¡Sus anillos tienen 400,000 km de ancho pero solo 10m de grosor!"
-            },
-            {
-                question: "¿Qué elemento químico tiene el símbolo 'Au' y hace brillar los anillos?",
-                options: ["Plata", "Oro", "Aluminio", "Platino"],
-                answer: 1,
-                explanation: "¡Oro! 'Au' viene del latín 'aurum'. ¡Es tan maleable que una onza puede estirarse hasta 80km!"
-            },
-            {
-                question: "¿Qué famoso telescopio flota en el espacio tomando fotos espectaculares?",
-                options: ["Hubble", "Kepler", "Voyager", "Chandra"],
-                answer: 0,
-                explanation: "¡Hubble! Este veterano telescopio nos ha mostrado el universo como nunca antes. ¡Lanzado en 1990 y sigue funcionando!"
-            },
-            {
-                question: "¿Qué porcentaje del cerebro humano es agua?",
-                options: ["20%", "45%", "73%", "90%"],
-                answer: 2,
-                explanation: "¡73%! Nuestro cerebro es como una esponja húmeda. ¡Hidrátate para pensar mejor!"
-            },
-            {
-                question: "¿Qué planeta tiene el día más corto del sistema solar?",
-                options: ["Mercurio", "Júpiter", "Venus", "Marte"],
-                answer: 1,
-                explanation: "¡Júpiter! Un día allí dura solo 9 horas y 55 minutos. ¡Su rápida rotación causa sus famosas bandas de nubes!"
-            },
-            {
-                question: "¿Qué famoso científico descubrió la gravedad (según la leyenda) al ver caer una manzana?",
-                options: ["Galileo Galilei", "Isaac Newton", "Albert Einstein", "Stephen Hawking"],
-                answer: 1,
-                explanation: "¡Newton! Aunque probablemente la historia de la manzana sea exagerada, su trabajo revolucionó la física."
-            },
-            {
-                question: "¿Qué gas hace que tu voz suene como de pato cuando lo inhalas?",
-                options: ["Oxígeno", "Helio", "Hidrógeno", "Dióxido de carbono"],
-                answer: 1,
-                explanation: "¡Helio! Es más ligero que el aire, por eso cambia el sonido de tu voz. ¡Pero no lo hagas demasiado, es peligroso!"
-            }
-        ];
-
-        // Variables del juego MEJORADAS
-        let currentQuestionIndex = 0;
-        let correctAnswers = 0;
-        let incorrectAnswers = 0;
-        let timer;
-        let timeLeft = 120;
-        let gameActive = true;
-        let fiftyFiftyUsed = false;
-        let timeBoostUsed = false;
-        let usedQuestions = [];
-        let selectedQuestions = [];
-
-        // Elementos del DOM
-        const questionText = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const questionNumber = document.getElementById('question-number');
-        const correctCount = document.getElementById('correct-count');
-        const incorrectCount = document.getElementById('incorrect-count');
-        const timerBar = document.getElementById('timer-bar');
-        const timerText = document.getElementById('timer-text');
-        const feedbackContainer = document.getElementById('feedback-container');
-        const resultContainer = document.getElementById('result-container');
-        const restartBtn = document.getElementById('restart-btn');
-        const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
-        const timeBooster = document.getElementById('time-booster');
-
-        // Inicializar el juego CON ESTILO
-        function initGame() {
-            // Seleccionar preguntas que no se hayan usado recientemente
-            const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
-            
-            // Si ya usamos muchas preguntas, reiniciamos el contador
-            if (availableQuestions.length < 8) {
-                usedQuestions = [];
-            }
-            
-            // Seleccionar 8 preguntas aleatorias
-            selectedQuestions = [...availableQuestions]
-                .sort(() => 0.5 - Math.random())
-                .slice(0, 8);
-            
-            // Registrar las preguntas usadas
-            selectedQuestions.forEach(q => usedQuestions.push(q.question));
-            
-            currentQuestionIndex = 0;
-            correctAnswers = 0;
-            incorrectAnswers = 0;
-            timeLeft = 120;
-            gameActive = true;
-            fiftyFiftyUsed = false;
-            timeBoostUsed = false;
-            
-            updateStats();
-            startTimer();
-            showQuestion();
-            
-            resultContainer.style.display = 'none';
-            feedbackContainer.style.display = 'none';
-            
-            // Resetear potenciadores
-            fiftyFiftyBooster.style.opacity = '1';
-            fiftyFiftyBooster.style.height = 'auto';
-            fiftyFiftyBooster.style.padding = '15px 25px';
-            fiftyFiftyBooster.style.margin = '0';
-            fiftyFiftyBooster.disabled = false;
-            
-            timeBooster.style.opacity = '1';
-            timeBooster.style.height = 'auto';
-            timeBooster.style.padding = '15px 25px';
-            timeBooster.style.margin = '0';
-            timeBooster.disabled = false;
-            
-            // Efecto especial de inicio
-            createEmoji('🚀', 5);
-            createEmoji('🔬', 5);
-        }
-
-        // Mostrar pregunta con ANIMACIÓN
-        function showQuestion() {
-            if (currentQuestionIndex >= selectedQuestions.length) {
-                endGame();
-                return;
-            }
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            questionNumber.textContent = currentQuestionIndex + 1;
-            questionText.textContent = question.question;
-            
-            // Animación de entrada
-            questionText.style.animation = 'none';
-            void questionText.offsetWidth; // Trigger reflow
-            questionText.style.animation = 'fadeIn 0.5s';
-            
-            optionsContainer.innerHTML = '';
-            question.options.forEach((option, index) => {
-                const optionBtn = document.createElement('button');
-                optionBtn.className = 'option-btn';
-                optionBtn.dataset.letter = String.fromCharCode(65 + index);
-                optionBtn.textContent = option;
-                optionBtn.onclick = () => selectOption(index);
-                
-                // Animación escalonada
-                optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
-                optionBtn.style.opacity = '0';
-                
-                optionsContainer.appendChild(optionBtn);
-            });
-            
-            feedbackContainer.style.display = 'none';
-            fiftyFiftyUsed = false;
-            timeBoostUsed = false;
-            
-            // Efecto especial
-            if (Math.random() > 0.7) {
-                createEmoji('🤔', 1);
-            }
-        }
-
-        // Seleccionar opción CON EFECTOS
-        function selectOption(selectedIndex) {
-            if (!gameActive) return;
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            const optionButtons = document.querySelectorAll('.option-btn');
-            
-            // Deshabilitar todos los botones
-            optionButtons.forEach(btn => {
-                btn.classList.add('disabled');
-                btn.onclick = null;
-            });
-            
-            // Marcar respuesta correcta
-            optionButtons[question.answer].classList.add('correct');
-            
-            // Verificar respuesta
-            if (selectedIndex === question.answer) {
-                optionButtons[selectedIndex].classList.add('correct');
-                correctAnswers++;
-                
-                // Efectos especiales
-                createConfetti(20);
-                createEmoji('🎉', 3);
-                createEmoji('👏', 3);
-                playSound('correct');
-                
-                showFeedback('¡BIEN HECHO! 🎯', true);
-            } else {
-                optionButtons[selectedIndex].classList.add('incorrect');
-                incorrectAnswers++;
-                
-                // Efecto especial
-                createEmoji('💥', 2);
-                playSound('wrong');
-                
-                showFeedback(`¡Ups! ${question.explanation}`, false);
-            }
-            
-            updateStats();
-            
-            // Siguiente pregunta con retraso
-            setTimeout(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < selectedQuestions.length) {
-                    showQuestion();
-                } else {
-                    endGame();
-                }
-            }, 2000);
-        }
-
-        // Mostrar feedback DIVERTIDO
-        function showFeedback(message, isCorrect) {
-            feedbackContainer.textContent = message;
-            feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
-            feedbackContainer.style.display = 'block';
-            
-            // Efecto de vibración para respuestas incorrectas
-            if (!isCorrect) {
-                feedbackContainer.style.animation = 'shake 0.5s';
-            }
-        }
-
-        // Actualizar estadísticas CON ESTILO
-        function updateStats() {
-            correctCount.textContent = correctAnswers;
-            incorrectCount.textContent = incorrectAnswers;
-            
-            // Efecto cuando se acierta
-            if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
-                correctCount.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    correctCount.style.transform = 'scale(1)';
-                }, 300);
-            }
-            correctCount.dataset.prev = correctAnswers;
-        }
-
-        // Temporizador MEJORADO
-        function startTimer() {
-            clearInterval(timer);
-            updateTimerDisplay();
-            
-            timer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    timeUp();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            
-            const percentage = (timeLeft / 120) * 100;
-            timerBar.style.width = `${percentage}%`;
-            
-            // Cambiar color según el tiempo
-            if (timeLeft <= 10) {
-                timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
-                timerText.style.color = '#ff416c';
-                timerText.style.animation = 'pulse 0.5s infinite alternate';
-                
-                // Efecto de urgencia
-                if (timeLeft <= 5 && timeLeft > 0) {
-                    createEmoji('⏰', 1);
-                    timerText.style.fontWeight = 'bold';
-                }
-            } else if (timeLeft <= 30) {
-                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff416c)';
-                timerText.style.color = '#ff8a00';
-                timerText.style.animation = 'none';
-            } else if (timeLeft <= 60) {
-                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #e52e71)';
-                timerText.style.color = '#ff8a00';
-            } else {
-                timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff8a00)';
-                timerText.style.color = '#ff8a00';
-                timerText.style.animation = 'none';
-            }
-        }
-
-        // Tiempo agotado CON RESULTADOS
-        function timeUp() {
-            gameActive = false;
-            
-            // Efecto especial
-            createEmoji('⌛', 3);
-            playSound('timeup');
-            
-            // Mostrar resultados directamente
-            endGame();
-        }
-
-        // Configuración de Supabase (asegúrate de cargar primero la biblioteca v2)
-const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Función para actualizar perlas en Supabase (versión actualizada)
-async function updatePearls(pearlsToAdd) {
-    try {
-        // Obtener la sesión actual
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
-        if (authError || !user) {
-            throw new Error('Usuario no autenticado');
-        }
-        
-        // Obtener el perfil actual
-        const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('perla')
-            .eq('id', user.id)
-            .single();
-        
-        if (error) throw error;
-        
-        // Calcular nuevo total
-        const currentPearls = profile.perla || 0;
-        const newTotal = currentPearls + pearlsToAdd;
-        
-        // Actualizar en la base de datos
-        const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ perla: newTotal })
-            .eq('id', user.id);
-        
-        if (updateError) throw updateError;
-        
-        return newTotal;
-    } catch (error) {
-        console.error('Error actualizando perlas:', error);
-        return null;
-    }
-}
-
-// Función final del juego mejorada (con manejo de errores)
-async function endGame() {
-    gameActive = false;
-    clearInterval(timer);
-    
-    const totalQuestions = selectedQuestions.length;
-    const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-    let title, icon, imageUrl, color, message, pearlsToAdd = 0;
-    
-    // Determinar resultado y recompensas
-    if (percentage >= 90) {
-        title = "¡ERES UN GENIO! 🌟";
-        icon = "success";
-        imageUrl = "https://cdn-icons-png.flaticon.com/128/7339/7339724.png";
-        color = "#00b09b";
-        message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
-        pearlsToAdd = 5;
-    } else if (percentage >= 70) {
-        title = "¡EXCELENTE TRABAJO! 👍";
-        icon = "success";
-        imageUrl = "https://cdn-icons-png.flaticon.com/128/10646/10646252.png";
-        color = "#2575fc";
-        message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
-        pearlsToAdd = 4;
-    } else if (percentage >= 50) {
-        title = "¡BUEN INTENTO! 😊";
-        icon = "info";
-        imageUrl = "https://cdn-icons-png.flaticon.com/128/3032/3032495.png";
-        color = "#ff8a00";
-        message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
-        pearlsToAdd = 3;
-    } else {
-        title = "¡SIGUE PRACTICANDO! 📚";
-        icon = "info";
-        imageUrl = "https://cdn-icons-png.flaticon.com/128/8461/8461625.png";
-        color = "#ff416c";
-        message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
-        pearlsToAdd = 1;
-    }
-    
-    // Mostrar SweetAlert2 con los resultados (versión inicial sin perlas)
-    const swalOptions = {
-        title: title,
-        html: `
-            <div style="text-align: center;">
-                <img src="${imageUrl}" style="height: 150px; margin: 10px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                <div style="margin: 20px 0; font-size: 1.2em;">
-                    ${message}
-                </div>
-                <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                        <span style="font-weight: bold;">✅ Correctas:</span>
-                        <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="font-weight: bold;">❌ Incorrectas:</span>
-                        <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
-                    </div>
-                    <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
-                        <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
-                    </div>
-                    <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
-                </div>
-            </div>
-        `,
-        icon: icon,
-        confirmButtonText: '¡Jugar de nuevo!',
-        confirmButtonColor: '#6a11cb',
-        background: '#ffffff',
-        width: '650px',
-        customClass: {
-            popup: 'animated bounceIn',
-            title: 'swal-title-custom'
+    // Banco de preguntas de ciencia MEJORADO
+    const allScienceQuestions = [
+        {
+            question: "¿Cuál es el elemento más abundante en el universo (y no, no es el oxígeno)?",
+            options: ["Helio", "Hidrógeno", "Carbono", "Hierro"],
+            answer: 1,
+            explanation: "¡El hidrógeno gana por goleada! Constituye ~75% de la masa del universo. ¡Es el elemento más simple y más común!"
         },
-        willOpen: () => {
-            if (percentage >= 80) {
-                createConfetti(50);
-                createEmoji('🎉', 10);
-                createEmoji('🏆', 10);
-                playSound('win');
-            }
+        {
+            question: "¿Qué científico loco formuló la teoría de la relatividad?",
+            options: ["Isaac Newton", "Albert Einstein", "Nikola Tesla", "Marie Curie"],
+            answer: 1,
+            explanation: "¡Correcto! Einstein revolucionó la física con E=mc². ¡Y ese pelo despeinado es icónico!"
+        },
+        {
+            question: "¿Qué partícula subatómica es conocida como el 'fantasma del átomo' porque casi no interactúa con la materia?",
+            options: ["Electrón", "Neutrino", "Protón", "Quark"],
+            answer: 1,
+            explanation: "¡Los neutrinos son increíbles! Billones pasan por tu cuerpo cada segundo sin que lo notes. ¡Fantasmales!"
+        },
+        {
+            question: "¿Qué planeta tiene vientos tan fuertes que pueden llegar a 2,000 km/h?",
+            options: ["Júpiter", "Saturno", "Neptuno", "Marte"],
+            answer: 2,
+            explanation: "¡Neptuno gana el premio al clima más extremo! Sus vientos supersónicos dejarían en vergüenza a cualquier huracán terrestre."
+        },
+        {
+            question: "¿Qué increíble proceso permite a las plantas convertir la luz solar en comida?",
+            options: ["Respiración", "Fotosíntesis", "Transpiración", "Digestión"],
+            answer: 1,
+            explanation: "¡Fotosíntesis! Las plantas son como pequeñas fábricas solares. ¡Sin ellas no habría pizza (ni oxígeno)!"
+        },
+        {
+            question: "¿Qué científico descubrió la penicilina por accidente en 1928?",
+            options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Gregor Mendel"],
+            answer: 1,
+            explanation: "¡Fleming y su famoso moho! Gracias a ese 'error' salvamos millones de vidas con antibióticos."
+        },
+        {
+            question: "¿Cuál es la velocidad aproximada de la luz en el vacío?",
+            options: ["300,000 km/s", "150,000 km/s", "1 millón km/h", "Depende del día"],
+            answer: 0,
+            explanation: "¡Exacto! 299,792 km/s para ser precisos. ¡Nada puede superar esta velocidad límite del universo!"
+        },
+        {
+            question: "¿Qué órgano produce insulina y se enoja cuando comes muchos dulces?",
+            options: ["Hígado", "Páncreas", "Estómago", "Corazón"],
+            answer: 1,
+            explanation: "¡El páncreas! Este órgano multitarea regula el azúcar en sangre. ¡Cuídalo con una dieta balanceada!"
+        },
+        {
+            question: "¿Qué gas es el principal villano del efecto invernadero?",
+            options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Helio"],
+            answer: 2,
+            explanation: "¡CO2! Aunque necesitamos un poco, el exceso por quema de combustibles está calentando el planeta. ¡Recicla!"
+        },
+        {
+            question: "¿Qué hueso hace que tus piernas sean más fuertes que el concreto (relativamente)?",
+            options: ["Tibia", "Fémur", "Peroné", "Rotula"],
+            answer: 1,
+            explanation: "¡El fémur! Es el hueso más largo y fuerte del cuerpo. ¡Puede soportar 30 veces tu peso!"
+        },
+        {
+            question: "¿Qué teoría puso al Sol en el centro del sistema solar (y enfadó a muchos)?",
+            options: ["Geocéntrica", "Heliocéntrica", "Teoría de cuerdas", "Relatividad"],
+            answer: 1,
+            explanation: "¡Heliocéntrica de Copérnico! Revolucionó nuestra visión del universo... aunque le costó problemas con la Iglesia."
+        },
+        {
+            question: "¿Qué tipo de energía almacena tu celular antes de que se agote?",
+            options: ["Nuclear", "Cinética", "Química", "Solar"],
+            answer: 2,
+            explanation: "¡Energía química! Las baterías transforman energía química en eléctrica. ¡Por eso duran más en modo avión!"
+        },
+        {
+            question: "¿Qué planeta tiene anillos tan grandes que harían palidecer a Saturno?",
+            options: ["Júpiter", "Urano", "Neptuno", "En realidad es Saturno"],
+            answer: 3,
+            explanation: "¡Trampa! Saturno sigue siendo el rey de los anillos. ¡Sus anillos tienen 400,000 km de ancho pero solo 10m de grosor!"
+        },
+        {
+            question: "¿Qué elemento químico tiene el símbolo 'Au' y hace brillar los anillos?",
+            options: ["Plata", "Oro", "Aluminio", "Platino"],
+            answer: 1,
+            explanation: "¡Oro! 'Au' viene del latín 'aurum'. ¡Es tan maleable que una onza puede estirarse hasta 80km!"
+        },
+        {
+            question: "¿Qué famoso telescopio flota en el espacio tomando fotos espectaculares?",
+            options: ["Hubble", "Kepler", "Voyager", "Chandra"],
+            answer: 0,
+            explanation: "¡Hubble! Este veterano telescopio nos ha mostrado el universo como nunca antes. ¡Lanzado en 1990 y sigue funcionando!"
+        },
+        {
+            question: "¿Qué porcentaje del cerebro humano es agua?",
+            options: ["20%", "45%", "73%", "90%"],
+            answer: 2,
+            explanation: "¡73%! Nuestro cerebro es como una esponja húmeda. ¡Hidrátate para pensar mejor!"
+        },
+        {
+            question: "¿Qué planeta tiene el día más corto del sistema solar?",
+            options: ["Mercurio", "Júpiter", "Venus", "Marte"],
+            answer: 1,
+            explanation: "¡Júpiter! Un día allí dura solo 9 horas y 55 minutos. ¡Su rápida rotación causa sus famosas bandas de nubes!"
+        },
+        {
+            question: "¿Qué famoso científico descubrió la gravedad (según la leyenda) al ver caer una manzana?",
+            options: ["Galileo Galilei", "Isaac Newton", "Albert Einstein", "Stephen Hawking"],
+            answer: 1,
+            explanation: "¡Newton! Aunque probablemente la historia de la manzana sea exagerada, su trabajo revolucionó la física."
+        },
+        {
+            question: "¿Qué gas hace que tu voz suene como de pato cuando lo inhalas?",
+            options: ["Oxígeno", "Helio", "Hidrógeno", "Dióxido de carbono"],
+            answer: 1,
+            explanation: "¡Helio! Es más ligero que el aire, por eso cambia el sonido de tu voz. ¡Pero no lo hagas demasiado, es peligroso!"
         }
-    };
-    
-    try {
-        // Actualizar perlas solo si el usuario está autenticado
-        const newPearlCount = await updatePearls(pearlsToAdd);
-        
-        if (newPearlCount !== null) {
-            // Agregar sección de perlas si se actualizó correctamente
-            swalOptions.html += `
-                <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <span style="font-weight: bold;">¡Has ganado:</span>
-                        <div style="display: flex; align-items: center;">
-                            <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
-                            <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
-                                <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
-                                <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
-                        Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
-                    </div>
-                </div>
-            `;
-            
-            if (pearlsToAdd > 0) {
-                playSound('coin');
-            }
-        }
-    } catch (error) {
-        console.error('Error al procesar recompensas:', error);
-    }
-    
-    // Mostrar el diálogo
-    Swal.fire(swalOptions).then((result) => {
-        if (result.isConfirmed) {
-            initGame();
-        }
-    });
-}
-        // Potenciador 50/50 CON ESTILO
-        fiftyFiftyBooster.onclick = function() {
-            if (fiftyFiftyUsed || !gameActive) return;
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            const optionButtons = document.querySelectorAll('.option-btn');
-            let optionsToHide = [];
-            
-            // Encontrar dos opciones incorrectas
-            for (let i = 0; i < question.options.length; i++) {
-                if (i !== question.answer && optionsToHide.length < 2) {
-                    optionsToHide.push(i);
-                }
-            }
-            
-            // Ocultar opciones con efecto
-            optionsToHide.forEach(index => {
-                optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
-                setTimeout(() => {
-                    optionButtons[index].classList.add('hidden-option');
-                }, 300);
-            });
-            
-            fiftyFiftyUsed = true;
-            
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            // Sonido y emoji
-            playSound('booster');
-            createEmoji('✨', 2);
-            
-            // Mensaje con SweetAlert
-            Swal.fire({
-                title: '¡POTENCIADOR ACTIVADO!',
-                html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff',
-                willOpen: () => {
-                    createConfetti(10);
-                }
-            });
-        };
+    ];
 
-        // Potenciador de tiempo
-        timeBooster.onclick = function() {
-            if (timeBoostUsed || !gameActive) return;
+    // Variables del juego MEJORADAS
+    let currentQuestionIndex = 0;
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+    let timer;
+    let timeLeft = 120;
+    let gameActive = true;
+    let fiftyFiftyUsed = false;
+    let timeBoostUsed = false;
+    let usedQuestions = [];
+    let selectedQuestions = [];
+
+    // Elementos del DOM
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const questionNumber = document.getElementById('question-number');
+    const correctCount = document.getElementById('correct-count');
+    const incorrectCount = document.getElementById('incorrect-count');
+    const timerBar = document.getElementById('timer-bar');
+    const timerText = document.getElementById('timer-text');
+    const feedbackContainer = document.getElementById('feedback-container');
+    const resultContainer = document.getElementById('result-container');
+    const restartBtn = document.getElementById('restart-btn');
+    const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
+    const timeBooster = document.getElementById('time-booster');
+
+    // Configuración de Supabase (asegúrate de cargar primero la biblioteca v2)
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    const supabase = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    // Función para actualizar perlas en Supabase (versión actualizada)
+    async function updatePearls(pearlsToAdd) {
+        if (!supabase) {
+            console.log('Supabase no está disponible');
+            return null;
+        }
+
+        try {
+            // Obtener la sesión actual
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
             
-            timeLeft += 30;
-            updateTimerDisplay();
-            timeBoostUsed = true;
+            if (authError || !user) {
+                console.log('Usuario no autenticado');
+                return null;
+            }
             
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
+            // Obtener el perfil actual
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('perla')
+                .eq('id', user.id)
+                .single();
+            
+            if (error) throw error;
+            
+            // Calcular nuevo total
+            const currentPearls = profile.perla || 0;
+            const newTotal = currentPearls + pearlsToAdd;
+            
+            // Actualizar en la base de datos
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ perla: newTotal })
+                .eq('id', user.id);
+            
+            if (updateError) throw updateError;
+            
+            return newTotal;
+        } catch (error) {
+            console.error('Error actualizando perlas:', error);
+            return null;
+        }
+    }
+
+    // Inicializar el juego CON ESTILO
+    function initGame() {
+        // Seleccionar preguntas que no se hayan usado recientemente
+        const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
+        
+        // Si ya usamos muchas preguntas, reiniciamos el contador
+        if (availableQuestions.length < 8) {
+            usedQuestions = [];
+        }
+        
+        // Seleccionar 8 preguntas aleatorias
+        selectedQuestions = [...availableQuestions]
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 8);
+        
+        // Registrar las preguntas usadas
+        selectedQuestions.forEach(q => usedQuestions.push(q.question));
+        
+        currentQuestionIndex = 0;
+        correctAnswers = 0;
+        incorrectAnswers = 0;
+        timeLeft = 120;
+        gameActive = true;
+        fiftyFiftyUsed = false;
+        timeBoostUsed = false;
+        
+        updateStats();
+        startTimer();
+        showQuestion();
+        
+        resultContainer.style.display = 'none';
+        feedbackContainer.style.display = 'none';
+        
+        // Resetear potenciadores
+        fiftyFiftyBooster.style.opacity = '1';
+        fiftyFiftyBooster.style.height = 'auto';
+        fiftyFiftyBooster.style.padding = '15px 25px';
+        fiftyFiftyBooster.style.margin = '0';
+        fiftyFiftyBooster.disabled = false;
+        
+        timeBooster.style.opacity = '1';
+        timeBooster.style.height = 'auto';
+        timeBooster.style.padding = '15px 25px';
+        timeBooster.style.margin = '0';
+        timeBooster.disabled = false;
+        
+        // Efecto especial de inicio
+        createEmoji('🚀', 5);
+        createEmoji('🔬', 5);
+    }
+
+    // Mostrar pregunta con ANIMACIÓN
+    function showQuestion() {
+        if (currentQuestionIndex >= selectedQuestions.length) {
+            endGame();
+            return;
+        }
+        
+        const question = selectedQuestions[currentQuestionIndex];
+        questionNumber.textContent = currentQuestionIndex + 1;
+        questionText.textContent = question.question;
+        
+        // Animación de entrada
+        questionText.style.animation = 'none';
+        void questionText.offsetWidth; // Trigger reflow
+        questionText.style.animation = 'fadeIn 0.5s';
+        
+        optionsContainer.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const optionBtn = document.createElement('button');
+            optionBtn.className = 'option-btn';
+            optionBtn.dataset.letter = String.fromCharCode(65 + index);
+            optionBtn.textContent = option;
+            optionBtn.onclick = () => selectOption(index);
+            
+            // Animación escalonada
+            optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
+            optionBtn.style.opacity = '0';
+            
+            optionsContainer.appendChild(optionBtn);
+        });
+        
+        feedbackContainer.style.display = 'none';
+        fiftyFiftyUsed = false;
+        timeBoostUsed = false;
+        
+        // Efecto especial
+        if (Math.random() > 0.7) {
+            createEmoji('🤔', 1);
+        }
+    }
+
+    // Seleccionar opción CON EFECTOS
+    function selectOption(selectedIndex) {
+        if (!gameActive) return;
+        
+        const question = selectedQuestions[currentQuestionIndex];
+        const optionButtons = document.querySelectorAll('.option-btn');
+        
+        // Deshabilitar todos los botones
+        optionButtons.forEach(btn => {
+            btn.classList.add('disabled');
+            btn.onclick = null;
+        });
+        
+        // Marcar respuesta correcta
+        optionButtons[question.answer].classList.add('correct');
+        
+        // Verificar respuesta
+        if (selectedIndex === question.answer) {
+            optionButtons[selectedIndex].classList.add('correct');
+            correctAnswers++;
             
             // Efectos especiales
-            createEmoji('⏱️', 2);
-            createEmoji('➕', 2);
-            playSound('booster');
+            createConfetti(20);
+            createEmoji('🎉', 3);
+            createEmoji('👏', 3);
+            playSound('correct');
             
-            // Mensaje
-            Swal.fire({
-                title: '¡TIEMPO EXTRA!',
-                html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff'
-            });
-        };
-
-        // EFECTOS ESPECIALES DIVERTIDOS
-
-        // Crear confeti
-        function createConfetti(count = 20, isTimeUp = false) {
-            const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
+            showFeedback('¡BIEN HECHO! 🎯', true);
+        } else {
+            optionButtons[selectedIndex].classList.add('incorrect');
+            incorrectAnswers++;
             
-            for (let i = 0; i < count; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.left = `${Math.random() * 100}%`;
-                confetti.style.width = `${Math.random() * 10 + 5}px`;
-                confetti.style.height = confetti.style.width;
-                
-                if (isTimeUp) {
-                    confetti.style.animation = `confettiFall 3s linear ${i * 0.1}s forwards`;
-                } else {
-                    confetti.style.animation = `confettiFall 5s linear ${i * 0.1}s forwards`;
-                }
-                
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
-            }
-        }
-
-        // Crear emojis flotantes
-        function createEmoji(emoji, count = 1) {
-            for (let i = 0; i < count; i++) {
-                const emojiElement = document.createElement('div');
-                emojiElement.className = 'emoji-float';
-                emojiElement.textContent = emoji;
-                emojiElement.style.left = `${Math.random() * 80 + 10}%`;
-                emojiElement.style.top = `${Math.random() * 50 + 50}%`;
-                emojiElement.style.fontSize = `${Math.random() * 2 + 1.5}em`;
-                emojiElement.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                
-                document.body.appendChild(emojiElement);
-                
-                setTimeout(() => {
-                    emojiElement.remove();
-                }, 4000);
-            }
-        }
-
-        // Sonidos (usando AudioContext para mejor compatibilidad)
-        function playSound(type) {
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                let frequency, duration;
-                
-                switch(type) {
-                    case 'correct':
-                        frequency = 880;
-                        duration = 0.3;
-                        break;
-                    case 'wrong':
-                        frequency = 220;
-                        duration = 0.5;
-                        break;
-                    case 'booster':
-                        frequency = 523.25;
-                        duration = 0.2;
-                        break;
-                    case 'timeup':
-                        frequency = 349.23;
-                        duration = 0.5;
-                        break;
-                    case 'win':
-                        // Pequeña melodía de victoria
-                        playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
-                        return;
-                    default:
-                        frequency = 440;
-                        duration = 0.1;
-                }
-                
-                oscillator.type = 'triangle';
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.log("Error de audio:", e);
-            }
-        }
-
-        function playNotes(notes, times) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            // Efecto especial
+            createEmoji('💥', 2);
+            playSound('wrong');
             
-            notes.forEach((note, i) => {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(note, audioContext.currentTime + times[i]);
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + times[i]);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + times[i] + 0.2);
-                
-                oscillator.start(audioContext.currentTime + times[i]);
-                oscillator.stop(audioContext.currentTime + times[i] + 0.2);
-            });
+            showFeedback(`¡Ups! ${question.explanation}`, false);
         }
+        
+        updateStats();
+        
+        // Siguiente pregunta con retraso
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < selectedQuestions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }, 2000);
+    }
 
-        // Reiniciar juego
-        restartBtn.onclick = function() {
-            createEmoji('🔄', 3);
-            initGame();
-        };
+    // Mostrar feedback DIVERTIDO
+    function showFeedback(message, isCorrect) {
+        feedbackContainer.textContent = message;
+        feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
+        feedbackContainer.style.display = 'block';
+        
+        // Efecto de vibración para respuestas incorrectas
+        if (!isCorrect) {
+            feedbackContainer.style.animation = 'shake 0.5s';
+        }
+    }
 
-        // Iniciar juego al cargar
-        window.onload = function() {
-            // Efecto de bienvenida
+    // Actualizar estadísticas CON ESTILO
+    function updateStats() {
+        correctCount.textContent = correctAnswers;
+        incorrectCount.textContent = incorrectAnswers;
+        
+        // Efecto cuando se acierta
+        if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
+            correctCount.style.transform = 'scale(1.2)';
             setTimeout(() => {
-                Swal.fire({
-                    title: '¡BIENVENIDO A CIENCIA EXTREMA!',
-                    html: `
-                        <div style="font-size: 1.1em;">
-                            <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
-                            <p>¡Usa los potenciadores para ayudarte!</p>
+                correctCount.style.transform = 'scale(1)';
+            }, 300);
+        }
+        correctCount.dataset.prev = correctAnswers;
+    }
+
+    // Temporizador MEJORADO
+    function startTimer() {
+        clearInterval(timer);
+        updateTimerDisplay();
+        
+        timer = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timeUp();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        
+        const percentage = (timeLeft / 120) * 100;
+        timerBar.style.width = `${percentage}%`;
+        
+        // Cambiar color según el tiempo
+        if (timeLeft <= 10) {
+            timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
+            timerText.style.color = '#ff416c';
+            timerText.style.animation = 'pulse 0.5s infinite alternate';
+            
+            // Efecto de urgencia
+            if (timeLeft <= 5 && timeLeft > 0) {
+                createEmoji('⏰', 1);
+                timerText.style.fontWeight = 'bold';
+            }
+        } else if (timeLeft <= 30) {
+            timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff416c)';
+            timerText.style.color = '#ff8a00';
+            timerText.style.animation = 'none';
+        } else if (timeLeft <= 60) {
+            timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #e52e71)';
+            timerText.style.color = '#ff8a00';
+        } else {
+            timerBar.style.background = 'linear-gradient(90deg, #ff8a00, #ff8a00)';
+            timerText.style.color = '#ff8a00';
+            timerText.style.animation = 'none';
+        }
+    }
+
+    // Tiempo agotado CON RESULTADOS
+    function timeUp() {
+        gameActive = false;
+        
+        // Efecto especial
+        createEmoji('⌛', 3);
+        playSound('timeup');
+        
+        // Mostrar resultados directamente
+        endGame();
+    }
+
+    // Función final del juego mejorada (con manejo de errores)
+    async function endGame() {
+        gameActive = false;
+        clearInterval(timer);
+        
+        const totalQuestions = selectedQuestions.length;
+        const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+        let title, icon, imageUrl, color, message, pearlsToAdd = 0;
+        
+        // Determinar resultado y recompensas
+        if (percentage >= 90) {
+            title = "¡ERES UN GENIO! 🌟";
+            icon = "success";
+            imageUrl = "https://cdn-icons-png.flaticon.com/128/7339/7339724.png";
+            color = "#00b09b";
+            message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
+            pearlsToAdd = 5;
+        } else if (percentage >= 70) {
+            title = "¡EXCELENTE TRABAJO! 👍";
+            icon = "success";
+            imageUrl = "https://cdn-icons-png.flaticon.com/128/10646/10646252.png";
+            color = "#2575fc";
+            message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
+            pearlsToAdd = 4;
+        } else if (percentage >= 50) {
+            title = "¡BUEN INTENTO! 😊";
+            icon = "info";
+            imageUrl = "https://cdn-icons-png.flaticon.com/128/3032/3032495.png";
+            color = "#ff8a00";
+            message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
+            pearlsToAdd = 3;
+        } else {
+            title = "¡SIGUE PRACTICANDO! 📚";
+            icon = "info";
+            imageUrl = "https://cdn-icons-png.flaticon.com/128/8461/8461625.png";
+            color = "#ff416c";
+            message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
+            pearlsToAdd = 1;
+        }
+        
+        // Mostrar SweetAlert2 con los resultados (versión inicial sin perlas)
+        const swalOptions = {
+            title: title,
+            html: `
+                <div style="text-align: center;">
+                    <img src="${imageUrl}" style="height: 150px; margin: 10px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <div style="margin: 20px 0; font-size: 1.2em;">
+                        ${message}
+                    </div>
+                    <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="font-weight: bold;">✅ Correctas:</span>
+                            <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
                         </div>
-                        <img src="https://cdn-icons-png.flaticon.com/128/6747/6747064.png" style="height: 120px; margin: 15px 0;">
-                    `,
-                    confirmButtonText: '¡Comenzar!',
-                    confirmButtonColor: '#6a11cb',
-                    background: '#ffffff',
-                    showCancelButton: false,
-                    customClass: {
-                        popup: 'animated bounceIn'
-                    },
-                    willOpen: () => {
-                        createConfetti(20);
-                    }
-                }).then(() => {
-                    initGame();
-                });
-            }, 500);
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-weight: bold;">❌ Incorrectas:</span>
+                            <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
+                        </div>
+                        <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
+                        </div>
+                        <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
+                    </div>
+                </div>
+            `,
+            icon: icon,
+            confirmButtonText: '¡Jugar de nuevo!',
+            confirmButtonColor: '#6a11cb',
+            background: '#ffffff',
+            width: '650px',
+            customClass: {
+                popup: 'animated bounceIn',
+                title: 'swal-title-custom'
+            },
+            willOpen: () => {
+                if (percentage >= 80) {
+                    createConfetti(50);
+                    createEmoji('🎉', 10);
+                    createEmoji('🏆', 10);
+                    playSound('win');
+                }
+            }
         };
-    </script>
+        
+        try {
+            // Actualizar perlas solo si el usuario está autenticado
+            const newPearlCount = await updatePearls(pearlsToAdd);
+            
+            if (newPearlCount !== null) {
+                // Agregar sección de perlas si se actualizó correctamente
+                swalOptions.html += `
+                    <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <span style="font-weight: bold;">¡Has ganado:</span>
+                            <div style="display: flex; align-items: center;">
+                                <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
+                                    <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
+                                    <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                            Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
+                        </div>
+                    </div>
+                `;
+                
+                if (pearlsToAdd > 0) {
+                    playSound('coin');
+                }
+            }
+        } catch (error) {
+            console.error('Error al procesar recompensas:', error);
+        }
+        
+        // Mostrar el diálogo
+        Swal.fire(swalOptions).then((result) => {
+            if (result.isConfirmed) {
+                initGame();
+            }
+        });
+    }
+
+    // Potenciador 50/50 CON ESTILO
+    fiftyFiftyBooster.onclick = function() {
+        if (fiftyFiftyUsed || !gameActive) return;
+        
+        const question = selectedQuestions[currentQuestionIndex];
+        const optionButtons = document.querySelectorAll('.option-btn');
+        let optionsToHide = [];
+        
+        // Encontrar dos opciones incorrectas
+        for (let i = 0; i < question.options.length; i++) {
+            if (i !== question.answer && optionsToHide.length < 2) {
+                optionsToHide.push(i);
+            }
+        }
+        
+        // Ocultar opciones con efecto
+        optionsToHide.forEach(index => {
+            optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+            setTimeout(() => {
+                optionButtons[index].classList.add('hidden-option');
+            }, 300);
+        });
+        
+        fiftyFiftyUsed = true;
+        
+        // Ocultar el botón del potenciador
+        this.style.opacity = '0';
+        this.style.height = '0';
+        this.style.padding = '0';
+        this.style.margin = '0';
+        setTimeout(() => {
+            this.disabled = true;
+        }, 300);
+        
+        // Sonido y emoji
+        playSound('booster');
+        createEmoji('✨', 2);
+        
+        // Mensaje con SweetAlert
+        Swal.fire({
+            title: '¡POTENCIADOR ACTIVADO!',
+            html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
+            icon: 'info',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            background: '#ffffff',
+            willOpen: () => {
+                createConfetti(10);
+            }
+        });
+    };
+
+    // Potenciador de tiempo
+    timeBooster.onclick = function() {
+        if (timeBoostUsed || !gameActive) return;
+        
+        timeLeft += 30;
+        updateTimerDisplay();
+        timeBoostUsed = true;
+        
+        // Ocultar el botón del potenciador
+        this.style.opacity = '0';
+        this.style.height = '0';
+        this.style.padding = '0';
+        this.style.margin = '0';
+        setTimeout(() => {
+            this.disabled = true;
+        }, 300);
+        
+        // Efectos especiales
+        createEmoji('⏱️', 2);
+        createEmoji('➕', 2);
+        playSound('booster');
+        
+        // Mensaje
+        Swal.fire({
+            title: '¡TIEMPO EXTRA!',
+            html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
+            icon: 'info',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            background: '#ffffff'
+        });
+    };
+
+    // EFECTOS ESPECIALES DIVERTIDOS
+
+    // Crear confeti
+    function createConfetti(count = 20, isTimeUp = false) {
+        const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
+        
+        for (let i = 0; i < count; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.width = `${Math.random() * 10 + 5}px`;
+            confetti.style.height = confetti.style.width;
+            
+            if (isTimeUp) {
+                confetti.style.animation = `confettiFall 3s linear ${i * 0.1}s forwards`;
+            } else {
+                confetti.style.animation = `confettiFall 5s linear ${i * 0.1}s forwards`;
+            }
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+    }
+
+    // Crear emojis flotantes
+    function createEmoji(emoji, count = 1) {
+        for (let i = 0; i < count; i++) {
+            const emojiElement = document.createElement('div');
+            emojiElement.className = 'emoji-float';
+            emojiElement.textContent = emoji;
+            emojiElement.style.left = `${Math.random() * 80 + 10}%`;
+            emojiElement.style.top = `${Math.random() * 50 + 50}%`;
+            emojiElement.style.fontSize = `${Math.random() * 2 + 1.5}em`;
+            emojiElement.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            
+            document.body.appendChild(emojiElement);
+            
+            setTimeout(() => {
+                emojiElement.remove();
+            }, 4000);
+        }
+    }
+
+    // Sonidos (usando AudioContext para mejor compatibilidad)
+    function playSound(type) {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            let frequency, duration;
+            
+            switch(type) {
+                case 'correct':
+                    frequency = 880;
+                    duration = 0.3;
+                    break;
+                case 'wrong':
+                    frequency = 220;
+                    duration = 0.5;
+                    break;
+                case 'booster':
+                    frequency = 523.25;
+                    duration = 0.2;
+                    break;
+                case 'timeup':
+                    frequency = 349.23;
+                    duration = 0.5;
+                    break;
+                case 'win':
+                    // Pequeña melodía de victoria
+                    playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
+                    return;
+                case 'coin':
+                    playNotes([659, 784, 880], [0, 0.1, 0.2]);
+                    return;
+                default:
+                    frequency = 440;
+                    duration = 0.1;
+            }
+            
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        } catch (e) {
+            console.log("Error de audio:", e);
+        }
+    }
+
+    function playNotes(notes, times) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        notes.forEach((note, i) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(note, audioContext.currentTime + times[i]);
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + times[i]);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + times[i] + 0.2);
+            
+            oscillator.start(audioContext.currentTime + times[i]);
+            oscillator.stop(audioContext.currentTime + times[i] + 0.2);
+        });
+    }
+
+    // Reiniciar juego
+    restartBtn.onclick = function() {
+        createEmoji('🔄', 3);
+        initGame();
+    };
+
+    // Iniciar juego al cargar
+    window.onload = function() {
+        // Efecto de bienvenida
+        setTimeout(() => {
+            Swal.fire({
+                title: '¡BIENVENIDO A CIENCIA EXTREMA!',
+                html: `
+                    <div style="font-size: 1.1em;">
+                        <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
+                        <p>¡Usa los potenciadores para ayudarte!</p>
+                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/128/6747/6747064.png" style="height: 120px; margin: 15px 0;">
+                `,
+                confirmButtonText: '¡Comenzar!',
+                confirmButtonColor: '#6a11cb',
+                background: '#ffffff',
+                showCancelButton: false,
+                customClass: {
+                    popup: 'animated bounceIn'
+                },
+                willOpen: () => {
+                    createConfetti(20);
+                }
+            }).then(() => {
+                initGame();
+            });
+        }, 500);
+    };
+</script>
 </body>
 </html>
