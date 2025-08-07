@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userEmailDashboardSpan = document.getElementById('user-email');
         goldDisplayDashboard = document.getElementById('gold-display');
         diamondsDisplayDashboard = document.getElementById('diamonds-display');
-        pearlsDisplayDashboard = document.getElementById('pearls-display'); // Asignación clave aquí
+        pearlsDisplayDashboard = document.getElementById('pearl-display'); // Asignación clave aquí
         profileBtnDashboard = document.getElementById('profile-btn');
         logoutBtnDashboard = document.getElementById('logout-btn');
 
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         configureBtn = document.getElementById('configure-btn');
         goldDisplayProfile = document.getElementById('gold-display-profile');
         diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
-         pearlsDisplayProfile = document.getElementById('pearls-display-profile'); // Asignación clave aquí
+         pearlsDisplayProfile = document.getElementById('pearl-display-profile'); // Asignación clave aquí
 
 
         // Siempre verifica la sesión al cargar estas páginas
