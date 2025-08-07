@@ -1055,91 +1055,156 @@
             endGame();
         }
 
-        // Final del juego CON SWEETALERT2 ESPECTACULAR
-        function endGame() {
-            gameActive = false;
-            clearInterval(timer);
-            
-            const totalQuestions = selectedQuestions.length;
-            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            let title, icon, imageUrl, color, message;
-            
-            // Determinar resultado
-            if (percentage >= 90) {
-                title = "¡ERES UN GENIO! 🌟";
-                icon = "success";
-                imageUrl = "https://cdn-icons-png.flaticon.com/128/7339/7339724.png";
-                color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
-            } else if (percentage >= 70) {
-                title = "¡EXCELENTE TRABAJO! 👍";
-                icon = "success";
-                imageUrl = "https://cdn-icons-png.flaticon.com/128/10646/10646252.png";
-                color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
-            } else if (percentage >= 50) {
-                title = "¡BUEN INTENTO! 😊";
-                icon = "info";
-                imageUrl = "https://cdn-icons-png.flaticon.com/128/3032/3032495.png";
-                color = "#ff8a00";
-                message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
-            } else {
-                title = "¡SIGUE PRACTICANDO! 📚";
-                icon = "info";
-                imageUrl = "https://cdn-icons-png.flaticon.com/128/8461/8461625.png";
-                color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
-            }
-            
-            // Mostrar resultado con Sweetalert2
-            Swal.fire({
-                title: title,
-                html: `
-                    <div style="text-align: center;">
-                        <img src="${imageUrl}" style="height: 150px; margin: 10px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                        <div style="margin: 20px 0; font-size: 1.2em;">
-                            ${message}
-                        </div>
-                        <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <span style="font-weight: bold;">✅ Correctas:</span>
-                                <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span style="font-weight: bold;">❌ Incorrectas:</span>
-                                <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
-                            </div>
-                            <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
-                                <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
-                            </div>
-                            <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
-                        </div>
-                    </div>
-                `,
-                icon: icon,
-                confirmButtonText: '¡Jugar de nuevo!',
-                confirmButtonColor: '#6a11cb',
-                background: '#ffffff',
-                width: '650px',
-                customClass: {
-                    popup: 'animated bounceIn',
-                    title: 'swal-title-custom'
-                },
-                willOpen: () => {
-                    if (percentage >= 80) {
-                        createConfetti(50);
-                        createEmoji('🎉', 10);
-                        createEmoji('🏆', 10);
-                        playSound('win');
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    initGame();
-                }
-            });
-        }
+        // Configuración de Supabase
+const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Función para actualizar perlas en Supabase
+async function updatePearls(pearlsToAdd) {
+    try {
+        const user = supabase.auth.user();
+        if (!user) throw new Error('Usuario no autenticado');
+        
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('perla')
+            .eq('id', user.id)
+            .single();
+        
+        if (error) throw error;
+        
+        const currentPearls = profile.perla || 0;
+        const newTotal = currentPearls + pearlsToAdd;
+        
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ perla: newTotal })
+            .eq('id', user.id);
+        
+        if (updateError) throw updateError;
+        
+        return newTotal;
+    } catch (error) {
+        console.error('Error actualizando perlas:', error);
+        return null;
+    }
+}
+
+// Función final del juego mejorada
+async function endGame() {
+    gameActive = false;
+    clearInterval(timer);
+    
+    const totalQuestions = selectedQuestions.length;
+    const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+    let title, icon, imageUrl, color, message, pearlsToAdd = 0;
+    
+    // Determinar resultado y recompensas
+    if (percentage >= 90) {
+        title = "¡ERES UN GENIO! 🌟";
+        icon = "success";
+        imageUrl = "https://cdn-icons-png.flaticon.com/128/7339/7339724.png";
+        color = "#00b09b";
+        message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento científico es asombroso!`;
+        pearlsToAdd = 5;
+    } else if (percentage >= 70) {
+        title = "¡EXCELENTE TRABAJO! 👍";
+        icon = "success";
+        imageUrl = "https://cdn-icons-png.flaticon.com/128/10646/10646252.png";
+        color = "#2575fc";
+        message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un científico destacado!`;
+        pearlsToAdd = 4;
+    } else if (percentage >= 50) {
+        title = "¡BUEN INTENTO! 😊";
+        icon = "info";
+        imageUrl = "https://cdn-icons-png.flaticon.com/128/3032/3032495.png";
+        color = "#ff8a00";
+        message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
+        pearlsToAdd = 3;
+    } else {
+        title = "¡SIGUE PRACTICANDO! 📚";
+        icon = "info";
+        imageUrl = "https://cdn-icons-png.flaticon.com/128/8461/8461625.png";
+        color = "#ff416c";
+        message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La ciencia es divertida! Sigue intentándolo.`;
+        pearlsToAdd = 1;
+    }
+    
+    // Actualizar perlas en la base de datos
+    const newPearlCount = await updatePearls(pearlsToAdd);
+    
+    // Mostrar SweetAlert2 con los resultados
+    Swal.fire({
+        title: title,
+        html: `
+            <div style="text-align: center;">
+                <img src="${imageUrl}" style="height: 150px; margin: 10px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <div style="margin: 20px 0; font-size: 1.2em;">
+                    ${message}
+                </div>
+                <div style="background: rgba(0,0,0,0.05); border-radius: 10px; padding: 15px; margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span style="font-weight: bold;">✅ Correctas:</span>
+                        <span style="color: #00b09b; font-weight: bold;">${correctAnswers}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-weight: bold;">❌ Incorrectas:</span>
+                        <span style="color: #ff416c; font-weight: bold;">${incorrectAnswers}</span>
+                    </div>
+                    <div style="margin-top: 15px; height: 10px; background: #f5f5f5; border-radius: 5px; overflow: hidden;">
+                        <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
+                    </div>
+                    <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
+                    
+                    ${pearlsToAdd > 0 ? `
+                    <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <span style="font-weight: bold;">¡Has ganado:</span>
+                            <div style="display: flex; align-items: center;">
+                                <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
+                                    <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
+                                    <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        ${newPearlCount !== null ? `
+                        <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                            Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        `,
+        icon: icon,
+        confirmButtonText: '¡Jugar de nuevo!',
+        confirmButtonColor: '#6a11cb',
+        background: '#ffffff',
+        width: '650px',
+        customClass: {
+            popup: 'animated bounceIn',
+            title: 'swal-title-custom'
+        },
+        willOpen: () => {
+            if (percentage >= 80) {
+                createConfetti(50);
+                createEmoji('🎉', 10);
+                createEmoji('🏆', 10);
+                playSound('win');
+            }
+            if (pearlsToAdd > 0) {
+                playSound('coin');
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            initGame();
+        }
+    });
+}
         // Potenciador 50/50 CON ESTILO
         fiftyFiftyBooster.onclick = function() {
             if (fiftyFiftyUsed || !gameActive) return;
