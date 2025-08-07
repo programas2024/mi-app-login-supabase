@@ -1760,6 +1760,7 @@
     --leaderboard-end: #fdbb2d;     /* Amarillo dorado */
     --trophy-color: #FFD700;       /* Oro puro */
 }
+/* Contenedor principal */
 .currency-display-wrapper {
     display: flex;
     gap: 15px;
@@ -1767,6 +1768,7 @@
     flex-wrap: wrap;
 }
 
+/* Estilo base para todas las tarjetas */
 .currency-card {
     padding: 12px 18px;
     border-radius: 12px;
@@ -1785,16 +1787,23 @@
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
+/* Estilo ESPECÍFICO para la tarjeta de perla */
+.pearl-card {
+    background: linear-gradient(135deg, #d7ccc8 0%, #bcaaa4 100%);
+    color: #5d4037; /* Color de texto café oscuro */
+    border: 1px solid #8d6e63;
+}
+
+/* Icono de perla mejorado */
 .pearl-icon {
     width: 22px;
     height: 22px;
     border-radius: 50%;
     background: radial-gradient(circle at 30% 30%, 
-        #FFF 0%, 
-        #F5F5F5 20%, 
-        #E0E0E0 40%, 
-        #BCAAA4 70%, 
-        #8D6E63 100%);
+        #f5f5f5 0%, 
+        #e0e0e0 30%, 
+        #bcaaa4 70%, 
+        #8d6e63 100%);
     box-shadow: 
         0 0 5px rgba(255,255,255,0.8) inset,
         0 1px 3px rgba(0,0,0,0.2);
@@ -1802,6 +1811,7 @@
     margin-right: 8px;
 }
 
+/* Brillo de la perla */
 .pearl-luster {
     position: absolute;
     width: 30%;
@@ -1818,14 +1828,6 @@
 @keyframes pearl-shimmer {
     0% { opacity: 0.7; transform: rotate(45deg) scale(0.9); }
     100% { opacity: 1; transform: rotate(45deg) scale(1.1); }
-}
-.pearl-spin {
-    animation: pearl-rotate 8s infinite linear;
-}
-
-@keyframes pearl-rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
 </style>
 </head>
@@ -1869,19 +1871,11 @@
                         <span class="currency-name"></span>
                     </div>
                  <div class="currency-row">
+    <!-- Perla (versión mejorada) -->
     <div class="currency-card pearl-card" title="Tu cantidad de Perlas.">
-        <svg class="pearl-icon" viewBox="0 0 24 24" width="22" height="22">
-            <defs>
-                <radialGradient id="pearlShine" cx="30%" cy="30%" r="70%">
-                    <stop offset="0%" stop-color="#FFF" stop-opacity="0.8"/>
-                    <stop offset="100%" stop-color="#BCAAA4" stop-opacity="0.2"/>
-                </radialGradient>
-            </defs>
-            <circle cx="12" cy="12" r="10" fill="#F5F5F5" stroke="#8D6E63" stroke-width="0.5"/>
-            <circle cx="9" cy="9" r="3" fill="url(#pearlShine)" stroke="none"/>
-            <path d="M12 3a9 9 0 0 1 0 18" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/>
-            <path d="M6 12a6 6 0 0 1 12 0" stroke="rgba(255,255,255,0.5)" stroke-width="0.8" stroke-linecap="round"/>
-        </svg>
+        <div class="pearl-icon">
+            <div class="pearl-luster"></div>
+        </div>
         <span id="pearl-display" class="currency-value">0</span>
     </div>
 </div>
