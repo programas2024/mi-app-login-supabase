@@ -82,10 +82,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        // Tus preguntas de ciencia deben ir aquí
+<script>
+    // Todo tu código va dentro de este evento.
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tu array de preguntas
         const allScienceQuestions = [
             {
                 question: "¿Cuál es el planeta más grande del sistema solar?",
@@ -163,14 +165,13 @@
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
 
-        // Configuración de Supabase (CORREGIDO)
+        // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-        
-        // El navegador ahora encontrará la función 'createClient' aquí
+
+        // Ahora, 'createClient' estará disponible.
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Función para actualizar perlas en Supabase (versión actualizada)
         async function updatePearls(pearlsToAdd) {
             if (!supabase) {
                 console.log('Supabase no está disponible');
@@ -210,8 +211,9 @@
             }
         }
 
-        // Inicializar el juego CON ESTILO
+        // Resto de tus funciones del juego
         function initGame() {
+            // ... (resto de la función initGame) ...
             const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
             
             if (availableQuestions.length < 8) {
@@ -236,27 +238,31 @@
             startTimer();
             showQuestion();
             
-            resultContainer.style.display = 'none';
-            feedbackContainer.style.display = 'none';
+            if (resultContainer) resultContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             
-            fiftyFiftyBooster.style.opacity = '1';
-            fiftyFiftyBooster.style.height = 'auto';
-            fiftyFiftyBooster.style.padding = '15px 25px';
-            fiftyFiftyBooster.style.margin = '0';
-            fiftyFiftyBooster.disabled = false;
+            if (fiftyFiftyBooster) {
+                fiftyFiftyBooster.style.opacity = '1';
+                fiftyFiftyBooster.style.height = 'auto';
+                fiftyFiftyBooster.style.padding = '15px 25px';
+                fiftyFiftyBooster.style.margin = '0';
+                fiftyFiftyBooster.disabled = false;
+            }
             
-            timeBooster.style.opacity = '1';
-            timeBooster.style.height = 'auto';
-            timeBooster.style.padding = '15px 25px';
-            timeBooster.style.margin = '0';
-            timeBooster.disabled = false;
+            if (timeBooster) {
+                timeBooster.style.opacity = '1';
+                timeBooster.style.height = 'auto';
+                timeBooster.style.padding = '15px 25px';
+                timeBooster.style.margin = '0';
+                timeBooster.disabled = false;
+            }
             
             createEmoji('🚀', 5);
             createEmoji('🔬', 5);
         }
 
-        // Mostrar pregunta con ANIMACIÓN
         function showQuestion() {
+            // ... (resto de la función showQuestion) ...
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
                 return;
@@ -284,7 +290,7 @@
                 optionsContainer.appendChild(optionBtn);
             });
             
-            feedbackContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
             timeBoostUsed = false;
             
@@ -292,9 +298,9 @@
                 createEmoji('🤔', 1);
             }
         }
-
-        // Seleccionar opción CON EFECTOS
+        
         function selectOption(selectedIndex) {
+            // ... (resto de la función selectOption) ...
             if (!gameActive) return;
             
             const question = selectedQuestions[currentQuestionIndex];
@@ -339,8 +345,9 @@
             }, 2000);
         }
 
-        // Mostrar feedback DIVERTIDO
+        // ... (resto de tus funciones, como showFeedback, updateStats, startTimer, etc.) ...
         function showFeedback(message, isCorrect) {
+            if (!feedbackContainer) return;
             feedbackContainer.textContent = message;
             feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
             feedbackContainer.style.display = 'block';
@@ -350,21 +357,19 @@
             }
         }
 
-        // Actualizar estadísticas CON ESTILO
         function updateStats() {
-            correctCount.textContent = correctAnswers;
-            incorrectCount.textContent = incorrectAnswers;
+            if (correctCount) correctCount.textContent = correctAnswers;
+            if (incorrectCount) incorrectCount.textContent = incorrectAnswers;
             
-            if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
+            if (correctCount && correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
                 correctCount.style.transform = 'scale(1.2)';
                 setTimeout(() => {
                     correctCount.style.transform = 'scale(1)';
                 }, 300);
             }
-            correctCount.dataset.prev = correctAnswers;
+            if (correctCount) correctCount.dataset.prev = correctAnswers;
         }
 
-        // Temporizador MEJORADO
         function startTimer() {
             clearInterval(timer);
             updateTimerDisplay();
@@ -381,6 +386,7 @@
         }
 
         function updateTimerDisplay() {
+            if (!timerText || !timerBar) return;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -410,18 +416,14 @@
                 timerText.style.animation = 'none';
             }
         }
-
-        // Tiempo agotado CON RESULTADOS
+        
         function timeUp() {
             gameActive = false;
-            
             createEmoji('⌛', 3);
             playSound('timeup');
-            
             endGame();
         }
 
-        // Función final del juego mejorada (con manejo de errores)
         async function endGame() {
             gameActive = false;
             clearInterval(timer);
@@ -539,89 +541,89 @@
                 }
             });
         }
-
-        // Potenciador 50/50 CON ESTILO
-        fiftyFiftyBooster.onclick = function() {
-            if (fiftyFiftyUsed || !gameActive) return;
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            const optionButtons = document.querySelectorAll('.option-btn');
-            let optionsToHide = [];
-            
-            for (let i = 0; i < question.options.length; i++) {
-                if (i !== question.answer && optionsToHide.length < 2) {
-                    optionsToHide.push(i);
+        
+        // ... (resto de tus funciones de potenciadores y efectos especiales) ...
+        if (fiftyFiftyBooster) {
+            fiftyFiftyBooster.onclick = function() {
+                if (fiftyFiftyUsed || !gameActive) return;
+                
+                const question = selectedQuestions[currentQuestionIndex];
+                const optionButtons = document.querySelectorAll('.option-btn');
+                let optionsToHide = [];
+                
+                for (let i = 0; i < question.options.length; i++) {
+                    if (i !== question.answer && optionsToHide.length < 2) {
+                        optionsToHide.push(i);
+                    }
                 }
-            }
-            
-            optionsToHide.forEach(index => {
-                optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                
+                optionsToHide.forEach(index => {
+                    optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                    setTimeout(() => {
+                        optionButtons[index].classList.add('hidden-option');
+                    }, 300);
+                });
+                
+                fiftyFiftyUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
                 setTimeout(() => {
-                    optionButtons[index].classList.add('hidden-option');
+                    this.disabled = true;
                 }, 300);
-            });
-            
-            fiftyFiftyUsed = true;
-            
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            playSound('booster');
-            createEmoji('✨', 2);
-            
-            Swal.fire({
-                title: '¡POTENCIADOR ACTIVADO!',
-                html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff',
-                willOpen: () => {
-                    createConfetti(10);
-                }
-            });
-        };
+                
+                playSound('booster');
+                createEmoji('✨', 2);
+                
+                Swal.fire({
+                    title: '¡POTENCIADOR ACTIVADO!',
+                    html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    willOpen: () => {
+                        createConfetti(10);
+                    }
+                });
+            };
+        }
 
-        // Potenciador de tiempo
-        timeBooster.onclick = function() {
-            if (timeBoostUsed || !gameActive) return;
-            
-            timeLeft += 30;
-            updateTimerDisplay();
-            timeBoostUsed = true;
-            
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            createEmoji('⏱️', 2);
-            createEmoji('➕', 2);
-            playSound('booster');
-            
-            Swal.fire({
-                title: '¡TIEMPO EXTRA!',
-                html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff'
-            });
-        };
+        if (timeBooster) {
+            timeBooster.onclick = function() {
+                if (timeBoostUsed || !gameActive) return;
+                
+                timeLeft += 30;
+                updateTimerDisplay();
+                timeBoostUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
+                setTimeout(() => {
+                    this.disabled = true;
+                }, 300);
+                
+                createEmoji('⏱️', 2);
+                createEmoji('➕', 2);
+                playSound('booster');
+                
+                Swal.fire({
+                    title: '¡TIEMPO EXTRA!',
+                    html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff'
+                });
+            };
+        }
 
-        // EFECTOS ESPECIALES DIVERTIDOS
-
-        // Crear confeti
         function createConfetti(count = 20, isTimeUp = false) {
             const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
             
@@ -647,7 +649,6 @@
             }
         }
 
-        // Crear emojis flotantes
         function createEmoji(emoji, count = 1) {
             for (let i = 0; i < count; i++) {
                 const emojiElement = document.createElement('div');
@@ -666,7 +667,6 @@
             }
         }
 
-        // Sonidos (usando AudioContext para mejor compatibilidad)
         function playSound(type) {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -736,39 +736,40 @@
             });
         }
 
-        // Reiniciar juego
-        restartBtn.onclick = function() {
-            createEmoji('🔄', 3);
-            initGame();
-        };
+        if (restartBtn) {
+            restartBtn.onclick = function() {
+                createEmoji('🔄', 3);
+                initGame();
+            };
+        }
 
-        // Iniciar juego al cargar
-        window.onload = function() {
-            setTimeout(() => {
-                Swal.fire({
-                    title: '¡BIENVENIDO A CIENCIA EXTREMA!',
-                    html: `
-                        <div style="font-size: 1.1em;">
-                            <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
-                            <p>¡Usa los potenciadores para ayudarte!</p>
-                        </div>
-                        <img src="https://cdn-icons-png.flaticon.com/128/6747/6747064.png" style="height: 120px; margin: 15px 0;">
-                    `,
-                    confirmButtonText: '¡Comenzar!',
-                    confirmButtonColor: '#6a11cb',
-                    background: '#ffffff',
-                    showCancelButton: false,
-                    customClass: {
-                        popup: 'animated bounceIn'
-                    },
-                    willOpen: () => {
-                        createConfetti(20);
-                    }
-                }).then(() => {
-                    initGame();
-                });
-            }, 500);
-        };
-    </script>
+        // Iniciar juego con SweetAlert2 al cargar la página
+        setTimeout(() => {
+            Swal.fire({
+                title: '¡BIENVENIDO A CIENCIA EXTREMA!',
+                html: `
+                    <div style="font-size: 1.1em;">
+                        <p>Responde preguntas científicas antes de que se acabe el tiempo.</p>
+                        <p>¡Usa los potenciadores para ayudarte!</p>
+                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/128/6747/6747064.png" style="height: 120px; margin: 15px 0;">
+                `,
+                confirmButtonText: '¡Comenzar!',
+                confirmButtonColor: '#6a11cb',
+                background: '#ffffff',
+                showCancelButton: false,
+                customClass: {
+                    popup: 'animated bounceIn'
+                },
+                willOpen: () => {
+                    createConfetti(20);
+                }
+            }).then(() => {
+                initGame();
+            });
+        }, 500);
+
+    }); // Fin de document.addEventListener('DOMContentLoaded')
+</script>
 </body>
 </html>
