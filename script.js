@@ -31,13 +31,13 @@ let backToOptionsFromSignup, backToOptionsFromLogin;
 let forgotPasswordLink;
 
 let dashboardDiv;
-let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard;
+let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard, pearlsDisplayDashboard; // Referencia para las perlas en el dashboard
 let profileBtnDashboard, logoutBtnDashboard;
 
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
-let goldDisplayProfile, diamondsDisplayProfile,pearlsDisplayProfile;;
+let goldDisplayProfile, diamondsDisplayProfile,pearlsDisplayProfile;
 
 let loaderDiv, loaderText;
 
