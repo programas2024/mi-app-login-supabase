@@ -800,7 +800,7 @@
         }
     ];
 
-    // Variables del juego MEJORADAS
+     // Variables del juego MEJORADAS
     let currentQuestionIndex = 0;
     let correctAnswers = 0;
     let incorrectAnswers = 0;
@@ -826,54 +826,59 @@
     const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
     const timeBooster = document.getElementById('time-booster');
 
-    // Configuración de Supabase (asegúrate de cargar primero la biblioteca v2)
-    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // Función para actualizar perlas en Supabase (versión actualizada)
-    async function updatePearls(pearlsToAdd) {
-        if (!supabase) {
-            console.log('Supabase no está disponible');
-            return null;
-        }
+    // Mueve la configuración de Supabase y las funciones relacionadas dentro del evento DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Configuración de Supabase (ahora segura de ser llamada después de la carga)
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        // Aquí es donde se resuelve el error: createClient está disponible
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        try {
-            // Obtener la sesión actual
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-            
-            if (authError || !user) {
-                console.log('Usuario no autenticado');
+        // Función para actualizar perlas en Supabase (versión actualizada)
+        async function updatePearls(pearlsToAdd) {
+            if (!supabase) {
+                console.log('Supabase no está disponible');
                 return null;
             }
-            
-            // Obtener el perfil actual
-            const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('perla')
-                .eq('id', user.id)
-                .single();
-            
-            if (error) throw error;
-            
-            // Calcular nuevo total
-            const currentPearls = profile.perla || 0;
-            const newTotal = currentPearls + pearlsToAdd;
-            
-            // Actualizar en la base de datos
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ perla: newTotal })
-                .eq('id', user.id);
-            
-            if (updateError) throw updateError;
-            
-            return newTotal;
-        } catch (error) {
-            console.error('Error actualizando perlas:', error);
-            return null;
-        }
-    }
 
+            try {
+                // Obtener la sesión actual
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+                if (authError || !user) {
+                    console.log('Usuario no autenticado');
+                    return null;
+                }
+
+                // Obtener el perfil actual
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) throw error;
+
+                // Calcular nuevo total
+                const currentPearls = profile.perla || 0;
+                const newTotal = currentPearls + pearlsToAdd;
+
+                // Actualizar en la base de datos
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ perla: newTotal })
+                    .eq('id', user.id);
+
+                if (updateError) throw updateError;
+
+                return newTotal;
+            } catch (error) {
+                console.error('Error actualizando perlas:', error);
+                return null;
+            }
+        }
+        
     // Inicializar el juego CON ESTILO
     function initGame() {
         // Seleccionar preguntas que no se hayan usado recientemente
