@@ -384,7 +384,22 @@ body {
     background-image: linear-gradient(135deg, var(--vip-gradient-start) 0%, var(--vip-gradient-end) 100%);
 }
 
+/* Estilo para el botón deshabilitado */
+.btn-shop-custom[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none; /* Deshabilita los eventos de ratón */
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    transform: none;
+    transition: opacity 0.3s ease;
+}
 
+/* Efectos al pasar el ratón para el estado deshabilitado (no deberían ocurrir) */
+.btn-shop-custom[disabled]:hover {
+    transform: none;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    animation: none;
+}
 /* --- Contenido Central (Monedas y Botón Jugar) --- */
 .main-content-area {
     grid-area: main-content-area; /* Asigna al área del grid */

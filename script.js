@@ -236,14 +236,21 @@ async function loadUserProfile(userId) {
 
             // AQUI: Lógica para habilitar/deshabilitar el botón de la tienda
             // Se asume que la variable 'shopBtn' ya fue declarada y asignada.
+           // Lógica para habilitar/deshabilitar el botón de la tienda
             if (shopBtn) {
-                if (data.perla > 20) {
-                    shopBtn.disabled = false; // Habilita el botón si las perlas son > 20
+                const perlas = parseInt(data.perla, 10);
+                if (perlas > 20) {
+                    // Habilita el botón si las perlas son > 20
+                    shopBtn.disabled = false;
+                    // Opcional: podrías mostrar una notificación
+                    // showSwal('success', '¡Tienda Desbloqueada!', 'Ahora tienes más de 20 perlas. ¡Visítala!');
                 } else {
-                    shopBtn.disabled = true; // Lo deshabilita en caso contrario
+                    // Deshabilita el botón en caso contrario
+                    shopBtn.disabled = true;
                 }
             }
         }
+    
     } catch (e) {
         console.error("Error inesperado en loadUserProfile:", e);
         showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
