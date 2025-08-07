@@ -181,7 +181,7 @@ async function loadUserProfile(userId) {
     try {
         const { data, error } = await supabase
             .from('profiles')
-            .select('username, country, gold, diamonds')
+            .select('username, country, gold, diamonds,perla')
             .eq('id', userId)
             .single();
 
