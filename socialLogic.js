@@ -298,8 +298,8 @@ export async function loadFriendsList(currentUserId) {
             .select(`
                 user1_id,
                 user2_id,
-                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, country),
-                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, country)
+                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, perla),
+                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, perla)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -335,7 +335,7 @@ export async function loadFriendsList(currentUserId) {
                         <th>Amigo</th>
                         <th>Oro</th>
                         <th>Diamantes</th>
-                        <th>País</th>
+                        <th>Perlas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -346,7 +346,7 @@ export async function loadFriendsList(currentUserId) {
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
-                    <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
+                    <td>${friend.perla || 0} <div class="pearl-icon"></div></td>
                 </tr>
             `;
         });
