@@ -33,6 +33,8 @@ let forgotPasswordLink;
 let dashboardDiv;
 let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard, pearlsDisplayDashboard; // Referencia para las perlas en el dashboard
 let profileBtnDashboard, logoutBtnDashboard;
+let shopBtn; // Nueva referencia para el botón de la tienda
+
 
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
@@ -181,7 +183,7 @@ async function loadUserProfile(userId) {
     try {
         const { data, error } = await supabase
             .from('profiles')
-            .select('username, country, gold, diamonds,perla')
+            .select('username, country, gold, diamonds, perla') // Asegúrate de que la columna 'perla' esté en la tabla
             .eq('id', userId)
             .single();
 
@@ -189,63 +191,68 @@ async function loadUserProfile(userId) {
             console.error('Error al cargar perfil:', error);
             
             // Si el perfil no se encuentra (PGRST116), intenta crearlo
-            if (error.code === 'PGRST116') { // Código para "no rows found" (perfil no existe)
+            if (error.code === 'PGRST116') {
                 console.log('Perfil no encontrado, intentando crear uno básico.');
                 const { error: insertError } = await supabase
                     .from('profiles')
-                    .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0 }]);
+                    // AQUI: Se agrega 'perla: 0' para que los nuevos usuarios tengan 0 perlas por defecto
+                    .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0, perla: 0 }]);
                 
                 if (insertError) {
                     console.error('Error al crear perfil básico:', insertError);
-                    // Si el error es un conflicto (409), significa que el perfil ya existe (ej. creado por otra sesión)
-                    // En este caso, intenta cargar de nuevo el perfil en lugar de mostrar un error crítico.
-                    if (insertError.code === '23505') { // PostgreSQL unique_violation (código para 409 Conflict)
+                    if (insertError.code === '23505') {
                         console.warn('Conflicto al crear perfil (ya existe). Intentando cargar de nuevo.');
-                        await loadUserProfile(userId); // Recargar el perfil
-                        return; // Salir para evitar la ejecución del resto del bloque
+                        await loadUserProfile(userId);
+                        return;
                     } else {
                         showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta: ' + insertError.message);
                     }
                 } else {
                     showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
-                    // No es necesario recargar, los datos ya se establecieron en la inserción
-                    // y los campos se actualizarán en el 'finally' o con la siguiente carga.
+                    await loadUserProfile(userId); // Se recarga para mostrar el perfil recién creado
+                    return;
                 }
-            } else { // Si es otro tipo de error al cargar el perfil
+            } else {
                 showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
             }
         } 
         
-        // Si no hubo error en la carga inicial (data existe) O si se creó el perfil exitosamente
-        // (en cuyo caso 'data' podría ser null si no se hizo un select después del insert,
-        // pero se asume que si no hubo insertError, el perfil está listo para ser cargado en la siguiente iteración
-        // o ya se cargó si el 409 lo disparó).
-        // Para simplificar, si 'data' existe, actualizamos los displays.
         if (data) {
-            // Actualizar datos en el dashboard (si es la página actual)
-            if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            const user = (await supabase.auth.getUser()).data.user;
+
+            // Actualizar datos en el dashboard
+            if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = user.email;
             if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
             if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
-            if (pearlsDisplayDashboard) pearlsDisplayDashboard.textContent = data.perla; // Actualización clave aquí
+            if (pearlsDisplayDashboard) pearlsDisplayDashboard.textContent = data.perla;
 
             // Actualizar datos en la página de perfil (si es la página actual)
-            if (userEmailProfileSpan) userEmailProfileSpan.textContent = (await supabase.auth.getUser()).data.user.email;
+            if (userEmailProfileSpan) userEmailProfileSpan.textContent = user.email;
             if (usernameInputProfile) usernameInputProfile.value = data.username || '';
             if (countryInputProfile) countryInputProfile.value = data.country || '';
             if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
-            if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = data.perla; // Actualización clave aquí
+            if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = data.perla;
+
+            // AQUI: Lógica para habilitar/deshabilitar el botón de la tienda
+            // Se asume que la variable 'shopBtn' ya fue declarada y asignada.
+            if (shopBtn) {
+                if (data.perla > 20) {
+                    shopBtn.disabled = false; // Habilita el botón si las perlas son > 20
+                } else {
+                    shopBtn.disabled = true; // Lo deshabilita en caso contrario
+                }
+            }
         }
     } catch (e) {
         console.error("Error inesperado en loadUserProfile:", e);
         showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
     } finally {
-        hideLoader(); // Esto se ejecutará SIEMPRE.
-        // Aseguramos que la tarjeta de perfil/dashboard sea visible DESPUÉS de ocultar el loader
+        hideLoader();
         if (profileCard) {
             profileCard.classList.remove('dashboard-hidden');
         }
-        if (dashboardDiv) { // También para el dashboard
+        if (dashboardDiv) {
             dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
@@ -458,6 +465,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         pearlsDisplayDashboard = document.getElementById('pearl-display'); // Asignación clave aquí
         profileBtnDashboard = document.getElementById('profile-btn');
         logoutBtnDashboard = document.getElementById('logout-btn');
+         shopBtn = document.getElementById('shop-btn'); // Asignación de la nueva variable
 
         profileCard = document.getElementById('profile-card');
         userEmailProfileSpan = document.getElementById('user-email-profile');
