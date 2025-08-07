@@ -1760,6 +1760,24 @@
     --leaderboard-end: #fdbb2d;     /* Amarillo dorado */
     --trophy-color: #FFD700;       /* Oro puro */
 }
+
+/* Estilos para la tarjeta de perlas */
+.pearl-card {
+    background-color: #a3d2e2; /* Color azul claro perlado */
+    border: 1px solid #7eb9cc;
+    color: #2d5f73;
+}
+
+.pearl-icon {
+    color: #e6f7ff; /* Color del icono */
+}
+
+/* Si necesitas animación hover como las otras */
+.pearl-card:hover {
+    background-color: #8fc4d6;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
 </style>
 </head>
 <body>
@@ -1789,19 +1807,23 @@
                 </div>
             </aside>
 
-            <main class="main-content-area">
-                <div class="currency-display-wrapper">
-                    <div class="currency-card gold-card" title="Tu cantidad de Oro.">
-                        <i class="fas fa-coins currency-icon gold-icon"></i>
-                        <span id="gold-display" class="currency-value">0</span>
-                        <span class="currency-name"></span>
-                    </div>
-                    <div class="currency-card diamond-card" title="Tu cantidad de Diamantes.">
-                        <i class="fas fa-gem currency-icon diamond-icon"></i>
-                        <span id="diamonds-display" class="currency-value">0</span>
-                        <span class="currency-name"></span>
-                    </div>
-                </div>
+          <div class="currency-display-wrapper">
+    <div class="currency-card gold-card" title="Tu cantidad de Oro.">
+        <i class="fas fa-coins currency-icon gold-icon"></i>
+        <span id="gold-display" class="currency-value">0</span>
+        <span class="currency-name"></span>
+    </div>
+    <div class="currency-card diamond-card" title="Tu cantidad de Diamantes.">
+        <i class="fas fa-gem currency-icon diamond-icon"></i>
+        <span id="diamonds-display" class="currency-value">0</span>
+        <span class="currency-name"></span>
+    </div>
+    <div class="currency-card pearl-card" title="Tu cantidad de Perlas.">
+        <i class="fas fa-pearl currency-icon pearl-icon"></i>
+        <span id="pearl-display" class="currency-value">0</span>
+        <span class="currency-name"></span>
+    </div>
+</div>
 
                 <a href="games.html" id="play-btn" class="btn-play" title="Comienza una nueva partida.">
                     <i class="fas fa-play-circle"></i> Jugar
