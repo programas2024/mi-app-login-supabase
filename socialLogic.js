@@ -274,7 +274,8 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
 
 /**
  * Carga y muestra la lista de amigos del usuario actual en una tabla.
- */export async function loadFriendsList(currentUserId) {
+ */
+export async function loadFriendsList(currentUserId) {
     friendsListContainer = document.getElementById('friends-list-container');
     if (!friendsListContainer) {
         console.warn('Elemento #friends-list-container no encontrado. No se puede cargar la lista de amigos.');
@@ -297,9 +298,8 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
             .select(`
                 user1_id,
                 user2_id,
-                // Eliminado: el campo 'country' de la consulta
-                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, perla),
-                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, perla)
+                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, country),
+                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, country)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -335,7 +335,7 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
                         <th>Amigo</th>
                         <th>Oro</th>
                         <th>Diamantes</th>
-                        <th>Perlas</th>
+                        <th>País</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -346,8 +346,7 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
-                    <td>${friend.perla || 0} <div class="pearl-icon"></div></td>
-                    
+                    <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
                 </tr>
             `;
         });
@@ -357,9 +356,22 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
         `;
         friendsListContainer.innerHTML = tableHtml;
 
+        document.querySelectorAll('.friends-table tbody .friend-row').forEach(row => {
+            row.addEventListener('click', async (event) => {
+                const friendId = event.currentTarget.dataset.friendId;
+                const friendUsername = event.currentTarget.dataset.friendUsername;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    showFriendProfileModal(user.id, friendId, friendUsername);
+                } else {
+                    showCustomSwal('error', 'Error', 'No hay sesión activa para ver el perfil del amigo.');
+                }
+            });
+        });
+
     } catch (error) {
-        console.error('Error al cargar la lista de amigos:', error);
-        friendsListContainer.innerHTML = '<p class="error-message">Error al cargar amigos. Inténtalo de nuevo más tarde.</p>';
+        console.error('Error al cargar la lista de amigos:', error.message);
+        friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
     }
 }
 
