@@ -275,7 +275,6 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
 /**
  * Carga y muestra la lista de amigos del usuario actual en una tabla.
  */export async function loadFriendsList(currentUserId) {
-    // La llave de la función
     friendsListContainer = document.getElementById('friends-list-container');
     if (!friendsListContainer) {
         console.warn('Elemento #friends-list-container no encontrado. No se puede cargar la lista de amigos.');
@@ -293,14 +292,14 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
     `;
 
     try {
-        // La llave del bloque try
         const { data: friendsData, error: friendsError } = await supabase
             .from('friends')
             .select(`
                 user1_id,
                 user2_id,
-                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, perla, country),
-                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, perla, country)
+                // Eliminado: el campo 'country' de la consulta
+                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, perla),
+                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, perla)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -308,7 +307,6 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
 
         const uniqueFriends = new Map();
         friendsData.forEach(friendship => {
-            // La llave del primer forEach
             let friendProfile = null;
             let friendId = null;
             if (friendship.user1_id === currentUserId) {
@@ -322,7 +320,7 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
             if (friendProfile?.username) {
                 uniqueFriends.set(friendId, { id: friendId, ...friendProfile });
             }
-        }); // La llave que cierra el primer forEach
+        });
 
         const friends = Array.from(uniqueFriends.values());
         if (friends.length === 0) {
@@ -338,23 +336,21 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
                         <th>Oro</th>
                         <th>Diamantes</th>
                         <th>Perlas</th>
-                        <th>País</th>
                     </tr>
                 </thead>
                 <tbody>
         `;
         friends.forEach(friend => {
-            // La llave del segundo forEach
             tableHtml += `
                 <tr class="friend-row" data-friend-id="${friend.id}" data-friend-username="${friend.username}">
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
                     <td>${friend.perla || 0} <div class="pearl-icon"></div></td>
-                    <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
+                    
                 </tr>
             `;
-        }); // La llave que cierra el segundo forEach
+        });
         tableHtml += `
                 </tbody>
             </table>
@@ -362,11 +358,10 @@ export async function handleRejectFriendRequest(requestId, senderUsername, recei
         friendsListContainer.innerHTML = tableHtml;
 
     } catch (error) {
-        // La llave del bloque catch
         console.error('Error al cargar la lista de amigos:', error);
         friendsListContainer.innerHTML = '<p class="error-message">Error al cargar amigos. Inténtalo de nuevo más tarde.</p>';
-    } // La llave que cierra el bloque catch
-} // La llave que cierra la función
+    }
+}
 
 /**
  * Configura la suscripción a Supabase Realtime para la tabla 'friends'.
