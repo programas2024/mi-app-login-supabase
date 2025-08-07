@@ -298,9 +298,8 @@ export async function loadFriendsList(currentUserId) {
             .select(`
                 user1_id,
                 user2_id,
-                // AQUI: Se añade 'perla' a la consulta de los perfiles
-                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, perla, country),
-                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, perla, country)
+                user1_profile:profiles!friends_user1_id_fkey(id, username, gold, diamonds, country),
+                user2_profile:profiles!friends_user2_id_fkey(id, username, gold, diamonds, country)
             `)
             .or(`user1_id.eq.${currentUserId},user2_id.eq.${currentUserId}`);
 
@@ -336,7 +335,6 @@ export async function loadFriendsList(currentUserId) {
                         <th>Amigo</th>
                         <th>Oro</th>
                         <th>Diamantes</th>
-                        <th>Perlas</th>
                         <th>País</th>
                     </tr>
                 </thead>
@@ -348,7 +346,6 @@ export async function loadFriendsList(currentUserId) {
                     <td>${friend.username || 'Desconocido'}</td>
                     <td>${friend.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></td>
                     <td>${friend.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></td>
-                    <td>${friend.perla || 0} <div class="pearl-icon"></div></td>
                     <td>${getCountryFlagEmoji(friend.country)} ${friend.country || 'N/A'}</td>
                 </tr>
             `;
@@ -359,11 +356,25 @@ export async function loadFriendsList(currentUserId) {
         `;
         friendsListContainer.innerHTML = tableHtml;
 
+        document.querySelectorAll('.friends-table tbody .friend-row').forEach(row => {
+            row.addEventListener('click', async (event) => {
+                const friendId = event.currentTarget.dataset.friendId;
+                const friendUsername = event.currentTarget.dataset.friendUsername;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    showFriendProfileModal(user.id, friendId, friendUsername);
+                } else {
+                    showCustomSwal('error', 'Error', 'No hay sesión activa para ver el perfil del amigo.');
+                }
+            });
+        });
+
     } catch (error) {
-        console.error('Error al cargar la lista de amigos:', error);
-        friendsListContainer.innerHTML = '<p class="error-message">Error al cargar amigos. Inténtalo de nuevo más tarde.</p>';
+        console.error('Error al cargar la lista de amigos:', error.message);
+        friendsListContainer.innerHTML = `<p>Error al cargar la lista de amigos: ${error.message}</p>`;
     }
 }
+
 /**
  * Configura la suscripción a Supabase Realtime para la tabla 'friends'.
  */
