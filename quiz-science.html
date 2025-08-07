@@ -561,7 +561,7 @@
                 </div>
             </div>
         </div>
-        
+
 
         <div class="quiz-header">
             <h1>Ciencia Extrema</h1>
@@ -599,58 +599,117 @@
     // Esto asegura que los scripts de Supabase y SweetAlert2 ya estén cargados.
     document.addEventListener('DOMContentLoaded', function() {
         
-        // Tus preguntas de ciencia deben ir aquí
-        const allScienceQuestions = [
-            {
-                question: "¿Cuál es el planeta más grande del sistema solar?",
-                options: ["Tierra", "Júpiter", "Marte", "Saturno"],
-                answer: 1,
-                explanation: "Júpiter es el planeta más grande del sistema solar."
-            },
-            {
-                question: "¿Qué gas es el más abundante en la atmósfera de la Tierra?",
-                options: ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Argón"],
-                answer: 2,
-                explanation: "El nitrógeno constituye aproximadamente el 78% de la atmósfera terrestre."
-            },
-            {
-                question: "¿Cuál es el elemento químico con el símbolo 'Fe'?",
-                options: ["Oro", "Plata", "Hierro", "Cobre"],
-                answer: 2,
-                explanation: "El símbolo químico 'Fe' corresponde al Hierro."
-            },
-            {
-                question: "¿A qué grupo de animales pertenece la ballena?",
-                options: ["Pez", "Reptil", "Mamífero", "Anfibio"],
-                answer: 2,
-                explanation: "Aunque vive en el agua, la ballena es un mamífero marino."
-            },
-            {
-                question: "¿Qué científico formuló la teoría de la relatividad?",
-                options: ["Isaac Newton", "Galileo Galilei", "Albert Einstein", "Stephen Hawking"],
-                answer: 2,
-                explanation: "Albert Einstein fue quien formuló la famosa teoría de la relatividad."
-            },
-            {
-                question: "¿Cuál es el hueso más largo del cuerpo humano?",
-                options: ["Fémur", "Húmero", "Tibia", "Peroné"],
-                answer: 0,
-                explanation: "El fémur, ubicado en el muslo, es el hueso más largo."
-            },
-            {
-                question: "¿Cuál es la velocidad de la luz en el vacío?",
-                options: ["300.000 km/s", "150.000 km/s", "400.000 km/s", "250.000 km/s"],
-                answer: 0,
-                explanation: "La velocidad de la luz es aproximadamente 300.000 kilómetros por segundo."
-            },
-            {
-                question: "¿Qué parte de la célula produce energía?",
-                options: ["Núcleo", "Mitocondria", "Ribosoma", "Vacuola"],
-                answer: 1,
-                explanation: "Las mitocondrias son conocidas como las 'centrales energéticas' de la célula."
-            }
-        ];
-
+      // Tus preguntas de ciencia deben ir aquí
+const allScienceQuestions = [
+    {
+        question: "¿Cuál es el planeta más grande del sistema solar?",
+        options: ["Tierra", "Júpiter", "Marte", "Saturno"],
+        answer: 1,
+        explanation: "Júpiter es el planeta más grande del sistema solar."
+    },
+    {
+        question: "¿Qué gas es el más abundante en la atmósfera de la Tierra?",
+        options: ["Oxígeno", "Dióxido de carbono", "Nitrógeno", "Argón"],
+        answer: 2,
+        explanation: "El nitrógeno constituye aproximadamente el 78% de la atmósfera terrestre."
+    },
+    {
+        question: "¿Cuál es el elemento químico con el símbolo 'Fe'?",
+        options: ["Oro", "Plata", "Hierro", "Cobre"],
+        answer: 2,
+        explanation: "El símbolo químico 'Fe' corresponde al Hierro."
+    },
+    {
+        question: "¿A qué grupo de animales pertenece la ballena?",
+        options: ["Pez", "Reptil", "Mamífero", "Anfibio"],
+        answer: 2,
+        explanation: "Aunque vive en el agua, la ballena es un mamífero marino."
+    },
+    {
+        question: "¿Qué científico formuló la teoría de la relatividad?",
+        options: ["Isaac Newton", "Galileo Galilei", "Albert Einstein", "Stephen Hawking"],
+        answer: 2,
+        explanation: "Albert Einstein fue quien formuló la famosa teoría de la relatividad."
+    },
+    {
+        question: "¿Cuál es el hueso más largo del cuerpo humano?",
+        options: ["Fémur", "Húmero", "Tibia", "Peroné"],
+        answer: 0,
+        explanation: "El fémur, ubicado en el muslo, es el hueso más largo."
+    },
+    {
+        question: "¿Cuál es la velocidad de la luz en el vacío?",
+        options: ["300.000 km/s", "150.000 km/s", "400.000 km/s", "250.000 km/s"],
+        answer: 0,
+        explanation: "La velocidad de la luz es aproximadamente 300.000 kilómetros por segundo."
+    },
+    {
+        question: "¿Qué parte de la célula produce energía?",
+        options: ["Núcleo", "Mitocondria", "Ribosoma", "Vacuola"],
+        answer: 1,
+        explanation: "Las mitocondrias son conocidas como las 'centrales energéticas' de la célula."
+    },
+    {
+        question: "En biología, ¿qué proceso realizan las plantas para convertir la luz solar en energía?",
+        options: ["Respiración celular", "Fotosíntesis", "Transpiración", "Glucólisis"],
+        answer: 1,
+        explanation: "La fotosíntesis es el proceso vital en el que las plantas, algas y algunas bacterias utilizan la energía de la luz para sintetizar compuestos orgánicos."
+    },
+    {
+        question: "¿Cuál es la fórmula química del agua?",
+        options: ["$H_2O_2$", "$CO_2$", "$NaCl$", "$H_2O$"],
+        answer: 3,
+        explanation: "La molécula de agua está compuesta por dos átomos de hidrógeno y un átomo de oxígeno, representado por la fórmula $H_2O$."
+    },
+    {
+        question: "¿Qué rama de la física estudia la materia, la energía y las interacciones entre ellas a nivel subatómico?",
+        options: ["Mecánica cuántica", "Termodinámica", "Relatividad general", "Óptica"],
+        answer: 0,
+        explanation: "La mecánica cuántica se centra en las leyes que rigen las partículas más pequeñas, como los electrones y los fotones."
+    },
+    {
+        question: "¿Cómo se llama la capa de gas que rodea la Tierra y la protege de la radiación solar dañina?",
+        options: ["Litosfera", "Capa de ozono", "Hidrosfera", "Termosfera"],
+        answer: 1,
+        explanation: "La capa de ozono es una región de la estratosfera terrestre que contiene una concentración relativamente alta de ozono, un gas que absorbe la mayor parte de la radiación ultravioleta del Sol."
+    },
+    {
+        question: "¿Qué tipo de célula no tiene un núcleo definido?",
+        options: ["Célula eucariota", "Célula vegetal", "Célula animal", "Célula procariota"],
+        answer: 3,
+        explanation: "Las células procariotas, como las bacterias, no tienen un núcleo ni otros orgánulos rodeados por una membrana."
+    },
+    {
+        question: "En la tabla periódica, ¿qué elemento tiene el número atómico 79?",
+        options: ["Plata (Ag)", "Oro (Au)", "Mercurio (Hg)", "Plomo (Pb)"],
+        answer: 1,
+        explanation: "El oro (Au) es el elemento químico con el número atómico 79."
+    },
+    {
+        question: "Según la ley de Ohm, ¿cómo se relaciona la tensión (V), la corriente (I) y la resistencia (R)?",
+        options: ["$V = I \\cdot R$", "$V = I / R$", "$R = V \\cdot I$", "$I = V / R$"],
+        answer: 0,
+        explanation: "La ley de Ohm establece que la tensión entre dos puntos de un conductor es directamente proporcional a la intensidad de corriente que circula por él, y la constante de proporcionalidad es la resistencia."
+    },
+    {
+        question: "¿Qué tipo de onda de sonido es inaudible para el oído humano debido a su alta frecuencia?",
+        options: ["Infrasonido", "Supersónico", "Hiposonido", "Ultrasonido"],
+        answer: 3,
+        explanation: "El ultrasonido son ondas sonoras cuya frecuencia de vibración está por encima del umbral de audición del oído humano (aproximadamente 20,000 Hz)."
+    },
+    {
+        question: "¿Cuál es la principal función de los glóbulos rojos en el cuerpo humano?",
+        options: ["Combatir infecciones", "Coagular la sangre", "Transportar oxígeno", "Producir hormonas"],
+        answer: 2,
+        explanation: "Los glóbulos rojos contienen una proteína llamada hemoglobina, que se une al oxígeno en los pulmones para transportarlo a los tejidos del cuerpo."
+    },
+    {
+        question: "¿Cuál es la unidad básica de la herencia genética?",
+        options: ["Cromosoma", "Gen", "ADN", "Proteína"],
+        answer: 1,
+        explanation: "Un gen es la unidad de almacenamiento de información genética y la unidad de herencia."
+    }
+];
         // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
@@ -727,7 +786,7 @@
         function initGame() {
             const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
             
-            if (availableQuestions.length < 8) {
+            if (availableQuestions.length < 11) {
                 usedQuestions = [];
             }
             
