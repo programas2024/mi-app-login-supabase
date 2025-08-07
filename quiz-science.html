@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Preguntados de Ciencia EXTREMO! 🔬</title>
+    <title>¡Ciencia Extrema! 🔬</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -59,6 +59,34 @@
             to {
                 box-shadow: 0 0 30px rgba(37, 117, 252, 0.5);
             }
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-dashboard {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+            text-decoration: none;
+        }
+
+        .back-dashboard:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
         }
 
         .quiz-header {
@@ -408,10 +436,12 @@
         }
 
         .booster-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
 
         .booster-btn i {
@@ -533,7 +563,7 @@
             100% { 
                 transform: translateY(-100vh) rotate(360deg);
                 opacity: 0;
-        }
+            }
         }
 
         .science-icon {
@@ -590,8 +620,17 @@
         <i class="science-icon fas fa-dna" style="bottom: 15%; left: 7%;"></i>
         <i class="science-icon fas fa-microscope" style="bottom: 25%; right: 5%;"></i>
         
+        <div class="header-nav">
+            <a href="games.html" class="back-dashboard">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+            <h1 style="margin: 0; font-size: 1.8em; background: linear-gradient(135deg, #6a11cb, #2575fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                CIENCIA EXTREMA
+            </h1>
+            <div style="width: 100px;"></div> <!-- Espaciador -->
+        </div>
+
         <div class="quiz-header">
-            <h1>¡CIENCIA EXTREMA! 🔥</h1>
             <p>Demuestra que eres un genio con estas preguntas científicas alucinantes</p>
         </div>
 
@@ -624,10 +663,10 @@
 
         <div class="boosters-container">
             <button class="booster-btn" id="fifty-fifty-booster">
-                <i class="fas fa-star-half-alt"></i> 50/50 (Elimina 2 incorrectas)
+                <i class="fas fa-star-half-alt"></i> 50/50
             </button>
             <button class="booster-btn" id="time-booster">
-                <i class="fas fa-clock"></i> +30 segundos
+                <i class="fas fa-clock"></i> +30s
             </button>
         </div>
 
@@ -641,7 +680,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Banco de preguntas de ciencia MEJORADO
-        const questions = [
+        const allScienceQuestions = [
             {
                 question: "¿Cuál es el elemento más abundante en el universo (y no, no es el oxígeno)?",
                 options: ["Helio", "Hidrógeno", "Carbono", "Hierro"],
@@ -731,6 +770,30 @@
                 options: ["Hubble", "Kepler", "Voyager", "Chandra"],
                 answer: 0,
                 explanation: "¡Hubble! Este veterano telescopio nos ha mostrado el universo como nunca antes. ¡Lanzado en 1990 y sigue funcionando!"
+            },
+            {
+                question: "¿Qué porcentaje del cerebro humano es agua?",
+                options: ["20%", "45%", "73%", "90%"],
+                answer: 2,
+                explanation: "¡73%! Nuestro cerebro es como una esponja húmeda. ¡Hidrátate para pensar mejor!"
+            },
+            {
+                question: "¿Qué planeta tiene el día más corto del sistema solar?",
+                options: ["Mercurio", "Júpiter", "Venus", "Marte"],
+                answer: 1,
+                explanation: "¡Júpiter! Un día allí dura solo 9 horas y 55 minutos. ¡Su rápida rotación causa sus famosas bandas de nubes!"
+            },
+            {
+                question: "¿Qué famoso científico descubrió la gravedad (según la leyenda) al ver caer una manzana?",
+                options: ["Galileo Galilei", "Isaac Newton", "Albert Einstein", "Stephen Hawking"],
+                answer: 1,
+                explanation: "¡Newton! Aunque probablemente la historia de la manzana sea exagerada, su trabajo revolucionó la física."
+            },
+            {
+                question: "¿Qué gas hace que tu voz suene como de pato cuando lo inhalas?",
+                options: ["Oxígeno", "Helio", "Hidrógeno", "Dióxido de carbono"],
+                answer: 1,
+                explanation: "¡Helio! Es más ligero que el aire, por eso cambia el sonido de tu voz. ¡Pero no lo hagas demasiado, es peligroso!"
             }
         ];
 
@@ -743,6 +806,7 @@
         let gameActive = true;
         let fiftyFiftyUsed = false;
         let timeBoostUsed = false;
+        let usedQuestions = [];
         let selectedQuestions = [];
 
         // Elementos del DOM
@@ -761,10 +825,21 @@
 
         // Inicializar el juego CON ESTILO
         function initGame() {
+            // Seleccionar preguntas que no se hayan usado recientemente
+            const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
+            
+            // Si ya usamos muchas preguntas, reiniciamos el contador
+            if (availableQuestions.length < 8) {
+                usedQuestions = [];
+            }
+            
             // Seleccionar 8 preguntas aleatorias
-            selectedQuestions = [...questions]
+            selectedQuestions = [...availableQuestions]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 8);
+            
+            // Registrar las preguntas usadas
+            selectedQuestions.forEach(q => usedQuestions.push(q.question));
             
             currentQuestionIndex = 0;
             correctAnswers = 0;
@@ -780,7 +855,18 @@
             
             resultContainer.style.display = 'none';
             feedbackContainer.style.display = 'none';
+            
+            // Resetear potenciadores
+            fiftyFiftyBooster.style.opacity = '1';
+            fiftyFiftyBooster.style.height = 'auto';
+            fiftyFiftyBooster.style.padding = '15px 25px';
+            fiftyFiftyBooster.style.margin = '0';
             fiftyFiftyBooster.disabled = false;
+            
+            timeBooster.style.opacity = '1';
+            timeBooster.style.height = 'auto';
+            timeBooster.style.padding = '15px 25px';
+            timeBooster.style.margin = '0';
             timeBooster.disabled = false;
             
             // Efecto especial de inicio
@@ -821,6 +907,7 @@
             
             feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
+            timeBoostUsed = false;
             
             // Efecto especial
             if (Math.random() > 0.7) {
@@ -956,7 +1043,7 @@
             }
         }
 
-        // Tiempo agotado CON SWEETALERT2
+        // Tiempo agotado CON RESULTADOS
         function timeUp() {
             gameActive = false;
             
@@ -964,30 +1051,8 @@
             createEmoji('⌛', 3);
             playSound('timeup');
             
-            Swal.fire({
-                title: '¡TIEMPO AGOTADO! ⏳',
-                html: `<div style="font-size: 1.2em;">Se acabó el tiempo para esta pregunta. <strong>¡Sigue intentándolo!</strong></div>`,
-                icon: 'info',
-                confirmButtonText: 'Continuar',
-                background: '#ffffff',
-                confirmButtonColor: '#6a11cb',
-                showCancelButton: false,
-                customClass: {
-                    popup: 'animated heartBeat'
-                },
-                willOpen: () => {
-                    createConfetti(10, true);
-                }
-            }).then(() => {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < selectedQuestions.length) {
-                    timeLeft = 120;
-                    startTimer();
-                    showQuestion();
-                } else {
-                    endGame();
-                }
-            });
+            // Mostrar resultados directamente
+            endGame();
         }
 
         // Final del juego CON SWEETALERT2 ESPECTACULAR
@@ -1099,12 +1164,14 @@
             });
             
             fiftyFiftyUsed = true;
-            this.disabled = true;
             
-            // Efecto visual
-            this.style.transform = 'scale(1.1)';
+            // Ocultar el botón del potenciador
+            this.style.opacity = '0';
+            this.style.height = '0';
+            this.style.padding = '0';
+            this.style.margin = '0';
             setTimeout(() => {
-                this.style.transform = '';
+                this.disabled = true;
             }, 300);
             
             // Sonido y emoji
@@ -1133,12 +1200,14 @@
             timeLeft += 30;
             updateTimerDisplay();
             timeBoostUsed = true;
-            this.disabled = true;
             
-            // Efecto visual
-            this.style.transform = 'scale(1.1)';
+            // Ocultar el botón del potenciador
+            this.style.opacity = '0';
+            this.style.height = '0';
+            this.style.padding = '0';
+            this.style.margin = '0';
             setTimeout(() => {
-                this.style.transform = '';
+                this.disabled = true;
             }, 300);
             
             // Efectos especiales
