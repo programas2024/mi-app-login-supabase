@@ -1056,17 +1056,22 @@
             endGame();
         }
 
-        // Configuración de Supabase
+        // Configuración de Supabase (asegúrate de cargar primero la biblioteca v2)
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Función para actualizar perlas en Supabase
+// Función para actualizar perlas en Supabase (versión actualizada)
 async function updatePearls(pearlsToAdd) {
     try {
-        const user = supabase.auth.user();
-        if (!user) throw new Error('Usuario no autenticado');
+        // Obtener la sesión actual
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
         
+        if (authError || !user) {
+            throw new Error('Usuario no autenticado');
+        }
+        
+        // Obtener el perfil actual
         const { data: profile, error } = await supabase
             .from('profiles')
             .select('perla')
@@ -1075,9 +1080,11 @@ async function updatePearls(pearlsToAdd) {
         
         if (error) throw error;
         
+        // Calcular nuevo total
         const currentPearls = profile.perla || 0;
         const newTotal = currentPearls + pearlsToAdd;
         
+        // Actualizar en la base de datos
         const { error: updateError } = await supabase
             .from('profiles')
             .update({ perla: newTotal })
@@ -1092,7 +1099,7 @@ async function updatePearls(pearlsToAdd) {
     }
 }
 
-// Función final del juego mejorada
+// Función final del juego mejorada (con manejo de errores)
 async function endGame() {
     gameActive = false;
     clearInterval(timer);
@@ -1132,11 +1139,8 @@ async function endGame() {
         pearlsToAdd = 1;
     }
     
-    // Actualizar perlas en la base de datos
-    const newPearlCount = await updatePearls(pearlsToAdd);
-    
-    // Mostrar SweetAlert2 con los resultados
-    Swal.fire({
+    // Mostrar SweetAlert2 con los resultados (versión inicial sin perlas)
+    const swalOptions = {
         title: title,
         html: `
             <div style="text-align: center;">
@@ -1157,26 +1161,6 @@ async function endGame() {
                         <div style="height: 100%; width: ${percentage}%; background: linear-gradient(90deg, ${color}, ${color}); border-radius: 5px;"></div>
                     </div>
                     <div style="margin-top: 5px; font-weight: bold; color: ${color};">${percentage}% de aciertos</div>
-                    
-                    ${pearlsToAdd > 0 ? `
-                    <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                            <span style="font-weight: bold;">¡Has ganado:</span>
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
-                                    <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
-                                    <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
-                                </svg>
-                            </div>
-                        </div>
-                        ${newPearlCount !== null ? `
-                        <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
-                            Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
-                        </div>
-                        ` : ''}
-                    </div>
-                    ` : ''}
                 </div>
             </div>
         `,
@@ -1196,11 +1180,43 @@ async function endGame() {
                 createEmoji('🏆', 10);
                 playSound('win');
             }
+        }
+    };
+    
+    try {
+        // Actualizar perlas solo si el usuario está autenticado
+        const newPearlCount = await updatePearls(pearlsToAdd);
+        
+        if (newPearlCount !== null) {
+            // Agregar sección de perlas si se actualizó correctamente
+            swalOptions.html += `
+                <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <span style="font-weight: bold;">¡Has ganado:</span>
+                        <div style="display: flex; align-items: center;">
+                            <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
+                                <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
+                                <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                        Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
+                    </div>
+                </div>
+            `;
+            
             if (pearlsToAdd > 0) {
                 playSound('coin');
             }
         }
-    }).then((result) => {
+    } catch (error) {
+        console.error('Error al procesar recompensas:', error);
+    }
+    
+    // Mostrar el diálogo
+    Swal.fire(swalOptions).then((result) => {
         if (result.isConfirmed) {
             initGame();
         }
