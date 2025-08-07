@@ -85,9 +85,11 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // Todo tu código va dentro de este evento.
+    // Todo tu código se ejecuta dentro de este evento.
+    // Esto asegura que los scripts de Supabase y SweetAlert2 ya estén cargados.
     document.addEventListener('DOMContentLoaded', function() {
-        // Tu array de preguntas
+        
+        // Tus preguntas de ciencia deben ir aquí
         const allScienceQuestions = [
             {
                 question: "¿Cuál es el planeta más grande del sistema solar?",
@@ -165,11 +167,10 @@
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
 
-        // Configuración de Supabase
+        // Configuración de Supabase (ahora segura de ser llamada después de la carga)
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-
-        // Ahora, 'createClient' estará disponible.
+        
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         async function updatePearls(pearlsToAdd) {
@@ -177,7 +178,7 @@
                 console.log('Supabase no está disponible');
                 return null;
             }
-
+            // ... (el resto de la función updatePearls es el mismo) ...
             try {
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
                 
@@ -211,9 +212,9 @@
             }
         }
 
-        // Resto de tus funciones del juego
+        // ... (El resto de tus funciones de juego, como initGame, showQuestion, etc., va aquí) ...
+
         function initGame() {
-            // ... (resto de la función initGame) ...
             const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
             
             if (availableQuestions.length < 8) {
@@ -262,7 +263,6 @@
         }
 
         function showQuestion() {
-            // ... (resto de la función showQuestion) ...
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
                 return;
@@ -273,7 +273,7 @@
             questionText.textContent = question.question;
             
             questionText.style.animation = 'none';
-            void questionText.offsetWidth; // Trigger reflow
+            void questionText.offsetWidth; 
             questionText.style.animation = 'fadeIn 0.5s';
             
             optionsContainer.innerHTML = '';
@@ -300,7 +300,6 @@
         }
         
         function selectOption(selectedIndex) {
-            // ... (resto de la función selectOption) ...
             if (!gameActive) return;
             
             const question = selectedQuestions[currentQuestionIndex];
@@ -345,7 +344,6 @@
             }, 2000);
         }
 
-        // ... (resto de tus funciones, como showFeedback, updateStats, startTimer, etc.) ...
         function showFeedback(message, isCorrect) {
             if (!feedbackContainer) return;
             feedbackContainer.textContent = message;
@@ -542,7 +540,6 @@
             });
         }
         
-        // ... (resto de tus funciones de potenciadores y efectos especiales) ...
         if (fiftyFiftyBooster) {
             fiftyFiftyBooster.onclick = function() {
                 if (fiftyFiftyUsed || !gameActive) return;
