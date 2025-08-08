@@ -1167,84 +1167,88 @@
 
 
 
-/* Estilos para SweetAlert2 personalizados - Diseño Mejorado */
+/* Estilos para SweetAlert2 - Diseño "Elegante Oscuro" */
 .swal2-profile-popup {
-    background-color: #0d1a26 !important; /* Fondo azul oscuro casi negro */
-    color: #e0f2f1 !important; /* Texto blanco-verdoso muy claro */
-    border-radius: 18px !important; /* Bordes más redondeados */
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6) !important; /* Sombra más pronunciada */
-    border: 2px solid #2c3e50; /* Borde sutil */
+    background: linear-gradient(145deg, #1f2733, #151a22); /* Fondo con gradiente sutil */
+    color: #f0f4f8 !important; /* Texto blanco-gris para un toque de suavidad */
+    border-radius: 20px !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 255, 255, 0.05) inset; /* Sombra profunda con brillo interno */
+    border: 1px solid #2d3c4d; /* Borde fino y discreto */
 }
 
 .swal2-profile-title {
-    color: #00d68f !important; /* Título en verde esmeralda brillante */
-    font-family: 'Poppins', sans-serif; /* Fuente más moderna (asegúrate de importarla) */
-    font-size: 2em !important;
-    font-weight: 700 !important;
-    margin-bottom: 20px !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    color: #ffd700 !important; /* Dorado clásico y elegante */
+    font-family: 'Montserrat', sans-serif; /* Fuente con estilo (asegúrate de importarla) */
+    font-size: 2.2em !important;
+    font-weight: 600 !important;
+    margin-bottom: 25px !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Sombra suave para un efecto 3D */
 }
 
 .swal2-profile-html {
-    color: #b2d8d8 !important; /* Texto principal en tono celestín claro */
-    font-size: 1.1em !important;
-    line-height: 1.8 !important;
-    padding: 0 25px !important;
+    color: #e2e8f0 !important; /* Texto principal en un tono más claro */
+    font-size: 1.15em !important;
+    line-height: 1.7 !important;
+    padding: 0 30px !important;
 }
 
 .swal2-profile-confirm-button,
 .swal2-profile-cancel-button {
-    background-color: #00796b !important; /* Botón de acción en verde-azulado */
-    color: #e0f2f1 !important;
+    background-color: #4a5568 !important; /* Gris oscuro elegante */
+    color: #f0f4f8 !important;
     border: none !important;
-    border-radius: 10px !important;
-    padding: 12px 30px !important;
-    font-size: 1.1em !important;
+    border-radius: 12px !important;
+    padding: 14px 35px !important;
+    font-size: 1.2em !important;
+    font-weight: 500;
     cursor: pointer !important;
-    transition: background-color 0.3s ease, transform 0.2s ease !important;
-    margin: 0 10px !important;
-    font-weight: bold;
+    transition: all 0.3s ease !important;
+    margin: 0 12px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .swal2-profile-confirm-button:hover,
 .swal2-profile-cancel-button:hover {
-    background-color: #004d40 !important;
-    transform: translateY(-2px); /* Pequeño efecto de levantamiento */
+    background-color: #6a778e !important;
+    transform: translateY(-3px); /* Efecto de elevación sutil */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
-/* Estilos específicos del botón de mensaje */
+/* Botón de Enviar Mensaje - Estilo Lujoso */
 .swal-custom-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
-    margin: 15px auto; /* Aumento el margen para más espacio */
-    border-radius: 10px;
-    font-size: 1.1em;
-    font-weight: bold;
+    padding: 15px 25px;
+    margin: 20px auto;
+    border-radius: 15px;
+    font-size: 1.2em;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     border: none;
-    color: #e0f2f1;
+    color: #fff;
     width: 80%;
-    max-width: 300px;
+    max-width: 350px;
+    letter-spacing: 0.5px; /* Espaciado entre letras para un toque extra */
 }
 
 .swal-btn-message {
-    background-color: #00d68f; /* Verde esmeralda para el botón de mensaje */
-    border: 2px solid #00c47e; /* Borde sutil del mismo color */
+    background: linear-gradient(45deg, #1e90ff, #00bfff); /* Gradiente de azules */
+    border: 2px solid #00c4ff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .swal-btn-message:hover {
-    background-color: #00b377;
-    transform: scale(1.05) translateY(-2px); /* Efecto de crecimiento y levantamiento */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(45deg, #00bfff, #1e90ff);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
 }
 
 .swal-btn-message .fas {
-    margin-right: 10px;
-    color: #e0f2f1; /* Icono en color claro */
+    margin-right: 12px;
+    color: #fff;
 }
 
 /* ===== TABLA DE AMIGOS - DISEÑO ELEGANTE CAFÉ ===== */
