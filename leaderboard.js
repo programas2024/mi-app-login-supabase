@@ -175,7 +175,7 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
  * @param {string} targetUserId - El ID del usuario cuyo perfil se va a mostrar.
  * @param {string} currentUserId - El ID del usuario actualmente logueado.
  */
-async function showPlayerDetails(supabase, targetUserId, currentUserId) {
+async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRank) {
     Swal.fire({
         title: 'Cargando detalles...',
         allowOutsideClick: false,
