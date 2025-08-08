@@ -94,10 +94,11 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
         // Consultar la tabla 'profiles'
         const { data: profiles, error } = await supabase
             .from('profiles')
-            .select('id, username, gold, diamonds') // Seleccionar id, username, gold, diamonds directamente de profiles
+            .select('id, username, gold, diamonds,perla') // Seleccionar id, username, gold, diamonds directamente de profiles
             // Ordenar por 'gold' (descendente) y luego por 'diamonds' (descendente) para el ranking global
             .order('gold', { ascending: false })
             .order('diamonds', { ascending: false })
+            .order('perla', { ascending: false })
             .limit(100); // Puedes ajustar el límite si quieres mostrar más o menos jugadores
 
         if (error) {
@@ -120,7 +121,8 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
                     <td class="player-name-cell" data-user-id="${profile.id}">${profile.username || 'Desconocido'}</td>
                     <td>${profile.gold || 0} <i class="fas fa-coins"></i></td>
                     <td>${profile.diamonds || 0} <i class="fas fa-gem"></i></td>
-                `;
+                    <td>${profile.perla || 0} <i class="fas fa-certificate pearl-icon"></i></td> `;
+                
             });
 
             // Añadir evento click a cada nombre de jugador
@@ -184,7 +186,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold') // Estas columnas están en 'profiles'
+            .select('username, country, diamonds, gold,perla') // Estas columnas están en 'profiles'
             .eq('id', targetUserId)
             .single();
 
@@ -254,6 +256,8 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
+                    <p style="margin-bottom: 20px;"><i class="fas fa-certificate" style="color: #ffffff;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #ffffff;">${userProfile.perla || 0}</span></p> <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
                         <button id="chat-btn" class="swal2-profile-button swal2-profile-confirm-button" ${!currentUserId || friendshipStatus === 'self' ? 'disabled' : ''}>
