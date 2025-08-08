@@ -201,13 +201,13 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 }
 
 /**
- * Función para mostrar los detalles de un jugador en un SweetAlert2 modal,
- * incluyendo opciones para agregar amigo y chatear.
+ * Función para mostrar los detalles de un jugador en un SweetAlert2 modal.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {string} targetUserId - El ID del usuario cuyo perfil se va a mostrar.
  * @param {string} currentUserId - El ID del usuario actualmente logueado.
+ * @param {string} playerRank - La posición del jugador en el ranking.
  */
-async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRank) {
+async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRank) {
     Swal.fire({
         title: 'Cargando detalles...',
         allowOutsideClick: false,
@@ -219,7 +219,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRan
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold,perla') // Estas columnas están en 'profiles'
+            .select('username, country, diamonds, gold, perla')
             .eq('id', targetUserId)
             .single();
 
@@ -235,10 +235,10 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRan
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
         // Determinar el estado de amistad
-        let friendshipStatus = 'unknown'; // 'unknown', 'self', 'friends', 'pending_sent', 'pending_received', 'not_friends'
+        let friendshipStatus = 'unknown';
         if (currentUserId === targetUserId) {
             friendshipStatus = 'self';
-        } else if (currentUserId) { // Solo si hay un usuario logueado para verificar amistad
+        } else if (currentUserId) {
             const { data: friendsData, error: friendsError } = await supabase
                 .from('friend_requests')
                 .select('status, sender_id, receiver_id')
@@ -246,16 +246,15 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRan
 
             if (friendsError) {
                 console.error('Error al verificar amistad:', friendsError);
-                // Continuar sin estado de amistad específico si hay error
             } else if (friendsData && friendsData.length > 0) {
                 const request = friendsData[0];
                 if (request.status === 'accepted') {
                     friendshipStatus = 'friends';
                 } else if (request.status === 'pending') {
                     if (request.sender_id === currentUserId) {
-                        friendshipStatus = 'pending_sent'; // Solicitud enviada por el usuario actual
+                        friendshipStatus = 'pending_sent';
                     } else {
-                        friendshipStatus = 'pending_received'; // Solicitud recibida por el usuario actual
+                        friendshipStatus = 'pending_received';
                     }
                 }
             } else {
@@ -263,38 +262,49 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRan
             }
         }
 
-
         let friendButtonHtml = '';
         if (friendshipStatus === 'self') {
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-check"></i> Es tu perfil</button>';
         } else if (friendshipStatus === 'friends') {
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-friends"></i> Amigos</button>';
-            // Podrías añadir un botón para "Eliminar Amigo" aquí
         } else if (friendshipStatus === 'pending_sent') {
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-hourglass-half"></i> Solicitud Pendiente</button>';
         } else if (friendshipStatus === 'pending_received') {
             friendButtonHtml = '<button id="accept-friend-btn" class="swal2-profile-button swal2-profile-confirm-button"><i class="fas fa-user-plus"></i> Aceptar Solicitud</button>';
-            // Podrías añadir un botón para "Rechazar Solicitud" aquí
-        } else if (friendshipStatus === 'not_friends' && currentUserId) { // Solo si hay un usuario logueado para enviar solicitud
+        } else if (friendshipStatus === 'not_friends' && currentUserId) {
             friendButtonHtml = '<button id="add-friend-btn" class="swal2-profile-button swal2-profile-confirm-button"><i class="fas fa-user-plus"></i> Añadir Amigo</button>';
-        } else if (!currentUserId) { // No logueado
+        } else if (!currentUserId) {
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-plus"></i> Inicia sesión para añadir</button>';
         }
 
+        // Lógica para determinar el color del ícono según el ranking
+        let medalColor = '#6c757d'; // Color por defecto (gris)
+        const rank = parseInt(playerRank);
+
+        if (!isNaN(rank)) {
+            if (rank === 1) {
+                medalColor = '#FFD700'; // Oro bonito
+            } else if (rank >= 2 && rank <= 15) {
+                medalColor = '#ffc107'; // Amarillo anaranjado
+            } else if (rank >= 16 && rank <= 50) {
+                medalColor = '#B0C4DE'; // Plata brillante
+            } else if (rank >= 51 && rank <= 100) {
+                medalColor = '#A52A2A'; // Café/marrón
+            }
+        }
 
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}</strong>`,
             html: `
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
-                <p style="margin-bottom: 8px;"><i class="fas fa-medal" style="color: #ffd700;"></i> <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-medal" style="color: ${medalColor};"></i> <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
-                    <p style="margin-bottom: 20px;"><i class="fas fa-gem" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p
+                    <p style="margin-bottom: 20px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
 
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
-                       <!-- Agrega otros botones según sea necesario -->
                     </div>
                 </div>
             `,
@@ -310,36 +320,24 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId,playerRan
             },
             buttonsStyling: false,
         }).then((result) => {
-            // Manejar la acción de aceptar solicitud si el botón existe y fue clicado
             if (result.isConfirmed && friendshipStatus === 'pending_received' && result.value === 'accept_friend') {
-                 handleAcceptFriendRequest(currentUserId, targetUserId);
+                handleAcceptFriendRequest(currentUserId, targetUserId);
             }
         });
 
-        // Event listener para el botón "Añadir Amigo"
         const addFriendBtn = document.getElementById('add-friend-btn');
         if (addFriendBtn) {
             addFriendBtn.addEventListener('click', () => {
                 handleAddFriend(currentUserId, targetUserId, userProfile.username);
-                Swal.close(); // Cierra el modal de detalles después de enviar la solicitud
+                Swal.close();
             });
         }
 
-        // Event listener para el botón "Aceptar Solicitud"
         const acceptFriendBtn = document.getElementById('accept-friend-btn');
         if (acceptFriendBtn) {
             acceptFriendBtn.addEventListener('click', () => {
                 handleAcceptFriendRequest(currentUserId, targetUserId, userProfile.username);
-                Swal.close(); // Cierra el modal de detalles
-            });
-        }
-
-        // Event listener para el botón "Chatear"
-        const chatBtn = document.getElementById('chat-btn');
-        if (chatBtn) {
-            chatBtn.addEventListener('click', () => {
-                handleChat(currentUserId, targetUserId, userProfile.username);
-                Swal.close(); // Cierra el modal de detalles
+                Swal.close();
             });
         }
 
