@@ -427,7 +427,9 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
                 <p><strong>Perlas:</strong> ${friendProfile.perla || 0} ⚪</p>
 
                 
-                <button id="message-friend-btn" class="swal-custom-btn swal-btn-message"><i class="fas fa-comment-dots"></i> Enviar Mensaje</button>
+              <button id="message-friend-btn" class="swal-custom-btn swal-btn-message" title="Enviar un mensaje a este amigo">
+    <i class="fas fa-comment-dots"></i> Enviar Mensaje
+</button>
             </div>
         `;
 
