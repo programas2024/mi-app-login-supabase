@@ -298,10 +298,10 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear
         }
 
-        // --- Lógica para añadir la poción junto al nombre ---
+        // --- Lógica para añadir la poción junto al nombre (tamaño ajustado) ---
         let specialTitleIconHtml = '';
         if (targetUserId === 'd7ec375b-94b2-40fe-a1bb-af92bcc167b5') {
-            specialTitleIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 24px; vertical-align: middle; margin-left: 5px;">';
+            specialTitleIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 32px; vertical-align: middle; margin-left: 5px;">';
         }
         // ---------------------------------------------------
 
