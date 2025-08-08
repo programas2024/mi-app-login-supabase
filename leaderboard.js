@@ -220,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla') // Estas columnas están en 'profiles'
+            .select('username, country, diamonds, gold, perla')
             .eq('id', targetUserId)
             .single();
 
@@ -298,6 +298,13 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear el ranking
         }
         // -----------------------------------------------------------------
+        
+        // --- Lógica para añadir campo especial para el ID específico ---
+        let specialFieldHtml = '';
+        if (targetUserId === 'd7ec375b-94b2-40fe-a1bb-af92bcc167b5') {
+            specialFieldHtml = '<p style="margin-top: 20px; text-align: center;"><img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 48px;"></p>';
+        }
+        // ---------------------------------------------------------------
 
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}</strong>`,
@@ -308,10 +315,12 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
+                    
+                    ${specialFieldHtml}
 
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
-                        </div>
+                    </div>
                 </div>
             `,
             icon: 'info',
@@ -326,7 +335,6 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             },
             buttonsStyling: false,
         }).then((result) => {
-            // Manejar la acción de aceptar solicitud si el botón existe y fue clicado
             if (result.isConfirmed && friendshipStatus === 'pending_received' && result.value === 'accept_friend') {
                 handleAcceptFriendRequest(currentUserId, targetUserId);
             }
@@ -337,7 +345,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         if (addFriendBtn) {
             addFriendBtn.addEventListener('click', () => {
                 handleAddFriend(currentUserId, targetUserId, userProfile.username);
-                Swal.close(); // Cierra el modal de detalles después de enviar la solicitud
+                Swal.close();
             });
         }
 
@@ -346,7 +354,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         if (acceptFriendBtn) {
             acceptFriendBtn.addEventListener('click', () => {
                 handleAcceptFriendRequest(currentUserId, targetUserId, userProfile.username);
-                Swal.close(); // Cierra el modal de detalles
+                Swal.close();
             });
         }
 
@@ -355,7 +363,6 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         console.error('Error al cargar detalles del jugador:', error.message);
     }
 }
-
 /**
  * Envía una solicitud de amistad.
  * @param {string} senderId - ID del usuario que envía la solicitud.
