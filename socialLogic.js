@@ -424,7 +424,7 @@ export async function showFriendProfileModal(currentUserId, friendId, friendUser
                 <p><strong>Oro:</strong> ${friendProfile.gold || 0} <i class="fas fa-coins currency-icon gold-icon"></i></p>
                 <p><strong>Diamantes:</strong> ${friendProfile.diamonds || 0} <i class="fas fa-gem currency-icon diamond-icon"></i></p>
                 
-                <p><strong>Perlas:</strong> ${friendProfile.perla || 0} <i class="pearl-icon"></div></span></p>
+                <p><strong>Perlas:</strong> ${friendProfile.perla || 0} <i class="pearl-icon"></i></p>
                 
                 <button id="message-friend-btn" class="swal-custom-btn swal-btn-message"><i class="fas fa-comment-dots"></i> Enviar Mensaje</button>
             </div>
