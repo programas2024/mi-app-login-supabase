@@ -201,7 +201,8 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 }
 
 /**
- * Función para mostrar los detalles de un jugador en un SweetAlert2 modal.
+ * Función para mostrar los detalles de un jugador en un SweetAlert2 modal,
+ * incluyendo opciones para agregar amigo y chatear.
  * @param {object} supabase - La instancia de cliente Supabase inicializada.
  * @param {string} targetUserId - El ID del usuario cuyo perfil se va a mostrar.
  * @param {string} currentUserId - El ID del usuario actualmente logueado.
@@ -219,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla')
+            .select('username, country, diamonds, gold, perla') // Estas columnas están en 'profiles'
             .eq('id', targetUserId)
             .single();
 
@@ -234,7 +235,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
 
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
-        // Determinar el estado de amistad
+        // Determinar el estado de amistad (código sin cambios)
         let friendshipStatus = 'unknown';
         if (currentUserId === targetUserId) {
             friendshipStatus = 'self';
@@ -277,27 +278,32 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-plus"></i> Inicia sesión para añadir</button>';
         }
 
-        // Lógica para determinar el color del ícono según el ranking
-        let medalColor = '#6c757d'; // Color por defecto (gris)
+        // --- Lógica para determinar el ícono de ranking según la posición ---
+        let rankIconHtml;
         const rank = parseInt(playerRank);
 
         if (!isNaN(rank)) {
             if (rank === 1) {
-                medalColor = '#FFD700'; // Oro bonito
+                rankIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3784/3784941.png" alt="Top 1" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 2 && rank <= 15) {
-                medalColor = '#ffc107'; // Amarillo anaranjado
+                rankIconHtml = '<img src="https://www.flaticon.es/icono-gratis/copa-trofeo_16853102" alt="Top 2-15" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 16 && rank <= 50) {
-                medalColor = '#B0C4DE'; // Plata brillante
+                rankIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/17267/17267195.png" alt="Top 16-50" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 51 && rank <= 100) {
-                medalColor = '#A52A2A'; // Café/marrón
+                rankIconHtml = '<img src="https://cdn-user-icons.flaticon.com/171937/171937425/1754692625511.svg?token=exp=1754693553~hmac=a269f0fbd8f53f61c5e3ab903d21cb4f" alt="Top 51-100" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
+            } else {
+                rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Medalla por defecto para fuera del top 100
             }
+        } else {
+            rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear el ranking
         }
+        // -----------------------------------------------------------------
 
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}</strong>`,
             html: `
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
-                    <p style="margin-bottom: 8px;"><i class="fas fa-medal" style="color: ${medalColor};"></i> <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
+                    <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
@@ -305,7 +311,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
 
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
-                    </div>
+                        </div>
                 </div>
             `,
             icon: 'info',
@@ -320,24 +326,27 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             },
             buttonsStyling: false,
         }).then((result) => {
+            // Manejar la acción de aceptar solicitud si el botón existe y fue clicado
             if (result.isConfirmed && friendshipStatus === 'pending_received' && result.value === 'accept_friend') {
                 handleAcceptFriendRequest(currentUserId, targetUserId);
             }
         });
 
+        // Event listener para el botón "Añadir Amigo"
         const addFriendBtn = document.getElementById('add-friend-btn');
         if (addFriendBtn) {
             addFriendBtn.addEventListener('click', () => {
                 handleAddFriend(currentUserId, targetUserId, userProfile.username);
-                Swal.close();
+                Swal.close(); // Cierra el modal de detalles después de enviar la solicitud
             });
         }
 
+        // Event listener para el botón "Aceptar Solicitud"
         const acceptFriendBtn = document.getElementById('accept-friend-btn');
         if (acceptFriendBtn) {
             acceptFriendBtn.addEventListener('click', () => {
                 handleAcceptFriendRequest(currentUserId, targetUserId, userProfile.username);
-                Swal.close();
+                Swal.close(); // Cierra el modal de detalles
             });
         }
 
