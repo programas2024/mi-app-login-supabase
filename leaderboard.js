@@ -83,84 +83,116 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
         return;
     }
 
-    // Muestra el loader si se proporcionó uno
     if (loaderElement) {
         loaderElement.classList.remove('loader-hidden');
         const loaderText = loaderElement.querySelector('p');
-        if (loaderText) loaderText.textContent = 'Cargando clasificación global...'; // Mensaje específico
+        if (loaderText) loaderText.textContent = 'Cargando clasificación global...';
     }
 
     try {
-        // Consultar la tabla 'profiles'
-        const { data: profiles, error } = await supabase
+        // --- 1. Consulta los 100 mejores ---
+        const { data: topProfiles, error: topError } = await supabase
             .from('profiles')
-            .select('id, username, gold, diamonds,perla') // Seleccionar id, username, gold, diamonds directamente de profiles
-            // Ordenar por 'gold' (descendente) y luego por 'diamonds' (descendente) para el ranking global
+            .select('id, username, gold, diamonds, perla')
             .order('gold', { ascending: false })
             .order('diamonds', { ascending: false })
             .order('perla', { ascending: false })
-            .limit(100); // Puedes ajustar el límite si quieres mostrar más o menos jugadores
+            .limit(100);
 
-        if (error) {
-            throw error;
-        }
+        if (topError) throw topError;
 
-        leaderboardTableBody.innerHTML = ''; // Limpia cualquier fila existente
+        leaderboardTableBody.innerHTML = ''; // Limpia la tabla
 
-        if (profiles && profiles.length > 0) {
-            profiles.forEach((profile, index) => { // Cambiado 'entry' a 'profile' para mayor claridad
+        const userIsInTop100 = topProfiles.some(profile => profile.id === currentUserId);
+        
+        // --- 2. Renderiza los 100 mejores ---
+        if (topProfiles && topProfiles.length > 0) {
+            topProfiles.forEach((profile, index) => {
                 const row = leaderboardTableBody.insertRow();
-                // Determina si esta fila es la del usuario actual
-                const isCurrentUser = currentUserId && profile.id === currentUserId; // Usar profile.id
+                const isCurrentUser = currentUserId && profile.id === currentUserId;
                 if (isCurrentUser) {
-                    row.classList.add('current-user-row'); // Añade la clase de resaltado
+                    row.classList.add('current-user-row');
                 }
 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                   <td class="player-name-cell" data-user-id="${profile.id}" data-rank="${index + 1}">${profile.username || 'Desconocido'}</td>
+                    <td class="player-name-cell" data-user-id="${profile.id}" data-rank="${index + 1}">${profile.username || 'Desconocido'}</td>
                     <td>${profile.gold || 0} <i class="fas fa-coins"></i></td>
                     <td>${profile.diamonds || 0} <i class="fas fa-gem"></i></td>
-                    <td>${profile.perla || 0} <i class="fas fa-certificate pearl-icon"></i></td> `;
-                
+                    <td>${profile.perla || 0} <i class="fas fa-certificate pearl-icon"></i></td>
+                `;
             });
-
-            // Añadir evento click a cada nombre de jugador
-            document.querySelectorAll('.player-name-cell').forEach(cell => {
-                cell.style.cursor = 'pointer';
-                cell.style.fontWeight = 'bold';
-                // Solo aplicar primary-color si no es la fila del usuario actual,
-                // ya que el current-user-row ya define su propio color de texto
-                if (!cell.parentElement.classList.contains('current-user-row')) {
-                    cell.style.color = 'var(--primary-color)';
-                } else {
-                    cell.style.color = 'inherit'; // Deja que el color de la fila prevalezca
-                }
-
-                cell.addEventListener('click', async (event) => {
-                    const targetUserId = event.target.dataset.userId;
-                    // Obtener el ID del usuario logueado en el momento del click
-                    const playerRank = event.target.dataset.rank; 
-                    const { data: { user } } = await supabase.auth.getUser();
-                    const loggedInUserId = user ? user.id : null;
-
-                    if (targetUserId) {
-                        await showPlayerDetails(supabase, targetUserId, loggedInUserId, playerRank);
-                    }
-                });
-            });
-
-        } else {
-            const row = leaderboardTableBody.insertRow();
-            // Colspan ajustado a 4 columnas
-            row.innerHTML = `<td colspan="4">No hay datos en la clasificación. ¡Sé el primero en jugar!</td>`;
         }
+
+        // --- 3. Si el usuario no está en el Top 100, añade su fila al final ---
+        if (currentUserId && !userIsInTop100) {
+            // Consulta la posición exacta y los datos del usuario actual
+            const { data: userProfile, error: userError } = await supabase
+                .from('profiles')
+                .select('id, username, gold, diamonds, perla')
+                .eq('id', currentUserId)
+                .single();
+            
+            if (userError) {
+                console.error('Error al obtener perfil del usuario actual:', userError.message);
+            } else if (userProfile) {
+                // Consulta el ranking exacto del usuario
+                const { count: userRank, error: rankError } = await supabase
+                    .from('profiles')
+                    .select('id', { count: 'exact', head: true })
+                    .or(`gold.gt.${userProfile.gold}, and(gold.eq.${userProfile.gold},diamonds.gt.${userProfile.diamonds}), and(gold.eq.${userProfile.gold},diamonds.eq.${userProfile.diamonds},perla.gt.${userProfile.perla})`);
+
+                if (rankError) {
+                    console.error('Error al obtener ranking exacto:', rankError.message);
+                    // Si hay un error, mostraremos un ranking aproximado
+                    userProfile.rank = 'N/A';
+                } else {
+                    userProfile.rank = userRank + 1; // El conteo es 0-indexado, así que sumamos 1
+                }
+                
+                const rankText = userProfile.rank === 'N/A' ? 'N/A' : `#${userProfile.rank}`;
+
+                // Agrega una fila separadora
+                const separatorRow = leaderboardTableBody.insertRow();
+                separatorRow.innerHTML = `<td colspan="5" class="separator-row">...</td>`;
+                
+                // Agrega la fila del usuario actual con su ranking exacto
+                const userRow = leaderboardTableBody.insertRow();
+                userRow.classList.add('current-user-row', 'out-of-top-100');
+                userRow.innerHTML = `
+                    <td>${rankText}</td>
+                    <td class="player-name-cell" data-user-id="${userProfile.id}" data-rank="${userProfile.rank}">${userProfile.username || 'Desconocido'}</td>
+                    <td>${userProfile.gold || 0} <i class="fas fa-coins"></i></td>
+                    <td>${userProfile.diamonds || 0} <i class="fas fa-gem"></i></td>
+                    <td>${userProfile.perla || 0} <i class="fas fa-certificate pearl-icon"></i></td>
+                `;
+            }
+        }
+        
+        // --- 4. Añadir evento click (sin cambios) ---
+        document.querySelectorAll('.player-name-cell').forEach(cell => {
+            cell.style.cursor = 'pointer';
+            cell.style.fontWeight = 'bold';
+            if (!cell.parentElement.classList.contains('current-user-row')) {
+                cell.style.color = 'var(--primary-color)';
+            } else {
+                cell.style.color = 'inherit';
+            }
+            cell.addEventListener('click', async (event) => {
+                const targetUserId = event.target.dataset.userId;
+                const playerRank = event.target.dataset.rank;
+                const { data: { user } } = await supabase.auth.getUser();
+                const loggedInUserId = user ? user.id : null;
+                if (targetUserId) {
+                    await showPlayerDetails(supabase, targetUserId, loggedInUserId, playerRank);
+                }
+            });
+        });
 
     } catch (error) {
         console.error('Error al cargar la tabla de clasificación global:', error.message);
         const row = leaderboardTableBody.insertRow();
-        // Colspan ajustado a 4 columnas
-        row.innerHTML = `<td colspan="4">Error al cargar la clasificación: ${error.message}</td>`;
+        row.innerHTML = `<td colspan="5">Error al cargar la clasificación: ${error.message}</td>`;
     } finally {
         if (loaderElement) {
             loaderElement.classList.add('loader-hidden');
