@@ -256,7 +256,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
-                    <p style="margin-bottom: 20px;"><i class="fas fa-certificate" style="color: #ffffff;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #ffffff;">${userProfile.perla || 0}</span></p> <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <p style="margin-bottom: 20px;"><i class="fas fa-gem" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p
 
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
