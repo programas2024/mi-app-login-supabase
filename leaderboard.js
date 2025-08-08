@@ -292,22 +292,21 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             } else if (rank >= 51 && rank <= 100) {
                 rankIconHtml = '<img src="https://cdn-user-icons.flaticon.com/171937/171937425/1754692625511.svg?token=exp=1754693908~hmac=a27f3e96393d6429c07e97b5ea02850e" alt="Top 51-100" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else {
-                rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Medalla por defecto para fuera del top 100
+                rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Medalla por defecto
             }
         } else {
-            rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear el ranking
+            rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear
         }
-        // -----------------------------------------------------------------
-        
-        // --- Lógica para añadir campo especial para el ID específico ---
-        let specialFieldHtml = '';
+
+        // --- Lógica para añadir la poción junto al nombre ---
+        let specialTitleIconHtml = '';
         if (targetUserId === 'd7ec375b-94b2-40fe-a1bb-af92bcc167b5') {
-            specialFieldHtml = '<p style="margin-top: 20px; text-align: center;"><img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 48px;"></p>';
+            specialTitleIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 24px; vertical-align: middle; margin-left: 5px;">';
         }
-        // ---------------------------------------------------------------
+        // ---------------------------------------------------
 
         Swal.fire({
-            title: `<strong>${userProfile.username || 'Jugador Desconocido'}</strong>`,
+            title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
             html: `
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
                     <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
@@ -316,8 +315,6 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
                     
-                    ${specialFieldHtml}
-
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
                     </div>
@@ -340,7 +337,6 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             }
         });
 
-        // Event listener para el botón "Añadir Amigo"
         const addFriendBtn = document.getElementById('add-friend-btn');
         if (addFriendBtn) {
             addFriendBtn.addEventListener('click', () => {
@@ -349,7 +345,6 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             });
         }
 
-        // Event listener para el botón "Aceptar Solicitud"
         const acceptFriendBtn = document.getElementById('accept-friend-btn');
         if (acceptFriendBtn) {
             acceptFriendBtn.addEventListener('click', () => {
