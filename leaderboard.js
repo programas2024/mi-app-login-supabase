@@ -286,11 +286,11 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             if (rank === 1) {
                 rankIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3784/3784941.png" alt="Top 1" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 2 && rank <= 15) {
-                rankIconHtml = '<img src="https://www.flaticon.es/icono-gratis/copa-trofeo_16853102" alt="Top 2-15" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
+                rankIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/15544/15544779.png" alt="Top 2-15" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 16 && rank <= 50) {
                 rankIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/17267/17267195.png" alt="Top 16-50" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else if (rank >= 51 && rank <= 100) {
-                rankIconHtml = '<img src="https://cdn-user-icons.flaticon.com/171937/171937425/1754692625511.svg?token=exp=1754693553~hmac=a269f0fbd8f53f61c5e3ab903d21cb4f" alt="Top 51-100" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
+                rankIconHtml = '<img src="https://cdn-user-icons.flaticon.com/171937/171937425/1754692625511.svg?token=exp=1754693908~hmac=a27f3e96393d6429c07e97b5ea02850e" alt="Top 51-100" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else {
                 rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Medalla por defecto para fuera del top 100
             }
