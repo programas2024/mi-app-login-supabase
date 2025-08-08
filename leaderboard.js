@@ -118,7 +118,7 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
 
                 row.innerHTML = `
                     <td>${index + 1}</td>
-                    <td class="player-name-cell" data-user-id="${profile.id}">${profile.username || 'Desconocido'}</td>
+                   <td class="player-name-cell" data-user-id="${profile.id}" data-rank="${index + 1}">${profile.username || 'Desconocido'}</td>
                     <td>${profile.gold || 0} <i class="fas fa-coins"></i></td>
                     <td>${profile.diamonds || 0} <i class="fas fa-gem"></i></td>
                     <td>${profile.perla || 0} <i class="fas fa-certificate pearl-icon"></i></td> `;
@@ -140,11 +140,12 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
                 cell.addEventListener('click', async (event) => {
                     const targetUserId = event.target.dataset.userId;
                     // Obtener el ID del usuario logueado en el momento del click
+                    const playerRank = event.target.dataset.rank; 
                     const { data: { user } } = await supabase.auth.getUser();
                     const loggedInUserId = user ? user.id : null;
 
                     if (targetUserId) {
-                        await showPlayerDetails(supabase, targetUserId, loggedInUserId);
+                        await showPlayerDetails(supabase, targetUserId, loggedInUserId, playerRank);
                     }
                 });
             });
@@ -253,6 +254,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}</strong>`,
             html: `
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
+                <p style="margin-bottom: 8px;"><i class="fas fa-medal" style="color: #ffd700;"></i> <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
