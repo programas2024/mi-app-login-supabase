@@ -260,9 +260,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId) {
 
                     <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
-                        <button id="chat-btn" class="swal2-profile-button swal2-profile-confirm-button" ${!currentUserId || friendshipStatus === 'self' ? 'disabled' : ''}>
-                            <i class="fas fa-comment-dots"></i> Chatear
-                        </button>
+                       <!-- Agrega otros botones según sea necesario -->
                     </div>
                 </div>
             `,
