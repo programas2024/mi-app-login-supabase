@@ -78,13 +78,13 @@ header p {
     display: flex;
     max-width: 1400px;
     margin: 40px auto;
-    gap: 30px; /* Separación entre sidebar y main-content */
+    gap: 30px;
 }
 
 /* Barra lateral izquierda (Sidebar) */
 .sidebar {
     width: 280px;
-    flex-shrink: 0; /* Evita que la barra lateral se encoja */
+    flex-shrink: 0;
     background-color: var(--color-fondo-claro);
     padding: 30px;
     border-radius: 16px;
@@ -285,7 +285,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
+    border-radius: 50%; /* Por defecto es circular */
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
@@ -359,10 +359,10 @@ footer {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px; /* Espacio entre los items del menú */
+        gap: 10px;
     }
     .sidebar-item {
-        flex-grow: 1; /* Los items se adaptan al ancho disponible */
+        flex-grow: 1;
         text-align: center;
         margin: 0;
         padding: 15px;
@@ -390,10 +390,10 @@ footer {
 
 @media (max-width: 768px) {
     .grid-container {
-        grid-template-columns: 1fr; /* Una sola columna para las tarjetas */
+        grid-template-columns: 1fr;
     }
     .sidebar-nav {
-        flex-direction: column; /* Volvemos a columna para mejor legibilidad */
+        flex-direction: column;
         gap: 0;
     }
     .sidebar-item {
@@ -413,14 +413,18 @@ footer {
         gap: 10px;
         top: 20px;
     }
-    .regresar-dashboard,
-    .info-button {
+    .regresar-dashboard {
         width: 100%;
         text-align: center;
-        box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+        box-sizing: border-box;
     }
     .info-button {
+        width: 100%;
         height: auto;
+        border-radius: 12px; /* Cambia a cuadrado con esquinas redondeadas */
+        font-size: 1.2em;
+        padding: 10px 0;
+        box-sizing: border-box;
     }
     header h1 {
         font-size: 1.8em;
