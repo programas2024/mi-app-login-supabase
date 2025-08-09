@@ -21,20 +21,19 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Encabezado */
+/* Encabezado Sutil */
 header {
-    /* El fondo ya no es un degradado estático, sino un contenedor para las animaciones */
     position: relative;
-    overflow: hidden; /* Esto es crucial para que las burbujas no se salgan del contenedor */
+    overflow: hidden;
     background: linear-gradient(135deg, var(--color-principal) 0%, #6a5acd 100%);
     color: var(--color-fondo-claro);
     text-align: center;
-    padding: 5em 0; /* Aumentamos el padding para más espacio visual */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-    z-index: 1; /* Aseguramos que el contenido esté por encima del fondo */
+    padding: 3em 0; /* Volvemos a un padding más moderado */
+    box-shadow: var(--sombra-suave);
+    z-index: 1;
 }
 
-/* Efecto de burbujas en el fondo */
+/* Efecto de partículas o destellos en el fondo */
 header::before {
     content: '';
     position: absolute;
@@ -42,39 +41,39 @@ header::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                      radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    background-size: 200% 200%;
-    animation: moveBubbles 25s linear infinite;
+    background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                      radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    background-size: 300% 300%;
+    animation: moveSubtle 30s linear infinite;
     z-index: 0;
+    opacity: 0.8;
 }
 
-/* Animación de las burbujas */
-@keyframes moveBubbles {
+/* Animación de los destellos, más lenta y discreta */
+@keyframes moveSubtle {
     0% { background-position: 0% 0%; }
-    50% { background-position: 100% 100%; }
-    100% { background-position: 0% 0%; }
+    100% { background-position: 300% 300%; }
 }
 
 /* Título y texto dentro del header */
 header h1, header p {
     position: relative;
-    z-index: 2; /* Nos aseguramos de que el texto quede encima de las burbujas */
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.4); /* Sombra de texto más intensa para que destaque */
+    z-index: 2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
 }
 
 header h1 {
-    font-size: 4.5em; /* Título mucho más grande */
-    font-weight: 900; /* Más peso para que se vea más impactante */
-    letter-spacing: 2px;
+    font-size: 2.8em; /* Tamaño más equilibrado */
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
 header p {
-    font-size: 1.8em; /* Subtítulo más grande */
+    font-size: 1.2em; /* Subtítulo más moderado */
     font-style: italic;
-    opacity: 0.95;
-    margin-top: 15px;
+    opacity: 0.9;
+    margin-top: 5px;
 }
 /* Estructura principal con Flexbox */
 .main-layout {
