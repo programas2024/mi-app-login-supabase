@@ -1,12 +1,12 @@
 /* Variables de color para una personalización más fácil */
 :root {
-    --color-principal: #6c5ce7; /* Morado más suave, menos saturado */
+    --color-principal: #6c5ce7;
     --color-secundario: #a29bfe;
-    --color-acento: #ff7675; /* Rojo anaranjado, más cálido */
+    --color-acento: #ff7675;
     --color-texto: #333;
     --color-fondo: #f8f9fa;
     --color-fondo-claro: #ffffff;
-    --sombra-suave: 0 8px 24px rgba(0, 0, 0, 0.08); /* Sombra más ligera */
+    --sombra-suave: 0 8px 24px rgba(0, 0, 0, 0.08);
     --transicion-lenta: 0.5s ease;
 }
 
@@ -25,7 +25,7 @@ body {
 header {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #745ae7 0%, #a29bfe 100%); /* Degradado más suave */
+    background: linear-gradient(135deg, #745ae7 0%, #a29bfe 100%);
     color: var(--color-fondo-claro);
     text-align: center;
     padding: 3em 0;
@@ -57,17 +57,17 @@ header::before {
 header h1, header p {
     position: relative;
     z-index: 2;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Sombra de texto más fina */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 header h1 {
-    font-size: 2.5em; /* Tamaño ideal */
+    font-size: 2.5em;
     font-weight: 700;
     letter-spacing: 1px;
 }
 
 header p {
-    font-size: 1.1em; /* Subtítulo sutil */
+    font-size: 1.1em;
     font-style: italic;
     opacity: 0.9;
     margin-top: 5px;
@@ -78,16 +78,17 @@ header p {
     display: flex;
     max-width: 1400px;
     margin: 40px auto;
+    gap: 30px; /* Separación entre sidebar y main-content */
 }
 
 /* Barra lateral izquierda (Sidebar) */
 .sidebar {
     width: 280px;
+    flex-shrink: 0; /* Evita que la barra lateral se encoja */
     background-color: var(--color-fondo-claro);
     padding: 30px;
-    border-radius: 16px; /* Bordes más suaves */
+    border-radius: 16px;
     box-shadow: var(--sombra-suave);
-    margin-right: 30px;
 }
 
 .sidebar-nav {
@@ -96,10 +97,10 @@ header p {
 }
 
 .sidebar-item {
-    padding: 18px; /* Padding más equilibrado */
+    padding: 18px;
     margin-bottom: 12px;
     background-color: var(--color-fondo);
-    border-radius: 10px; /* Bordes más redondeados */
+    border-radius: 10px;
     text-decoration: none;
     color: var(--color-texto);
     font-weight: 600;
@@ -123,8 +124,8 @@ header p {
 .sidebar-item:hover {
     background-color: var(--color-principal);
     color: var(--color-fondo-claro);
-    transform: translateX(5px); /* Movimiento más sutil */
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3); /* Sombra del color principal */
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
 .sidebar-item:hover::before {
@@ -135,44 +136,44 @@ header p {
 .main-content {
     flex-grow: 1;
     background-color: var(--color-fondo-claro);
-    padding: 35px; /* Padding más ajustado */
+    padding: 35px;
     border-radius: 16px;
     box-shadow: var(--sombra-suave);
 }
 
 .main-content h2 {
-    font-size: 2em; /* Título de sección más legible */
+    font-size: 2em;
     color: var(--color-principal);
     border-bottom: 3px solid var(--color-acento);
     padding-bottom: 15px;
     margin-bottom: 30px;
 }
 
-/* Estilos de las tarjetas (juegos, cofres, etc.) */
+/* Estilos de las tarjetas */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px; /* Espacio entre tarjetas más equilibrado */
+    gap: 25px;
 }
 
 .juego-card, .cofre-card, .fragmento-card {
     background-color: var(--color-fondo);
-    border-radius: 12px; /* Bordes más suaves */
-    padding: 20px; /* Padding más ajustado */
+    border-radius: 12px;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Sombra más ligera */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     transition: var(--transicion-lenta);
     border: 1px solid #e0e0e0;
 }
 
 .juego-card:hover, .cofre-card:hover, .fragmento-card:hover {
-    transform: translateY(-8px); /* Elevación más suave */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Sombra de hover más sutil */
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 h3 {
     margin: 0;
-    font-size: 1.4em; /* Título de tarjeta más legible */
+    font-size: 1.4em;
     color: var(--color-principal);
 }
 
@@ -187,7 +188,7 @@ p {
     background-color: var(--color-acento);
     color: var(--color-fondo-claro);
     border: none;
-    padding: 12px 25px; /* Botón más compacto */
+    padding: 12px 25px;
     border-radius: 50px;
     font-size: 1em;
     font-weight: bold;
@@ -196,25 +197,13 @@ p {
 }
 
 .juego-card button:hover, .cofre-card button:hover {
-    background-color: #ff9191; /* Sombra de color más agradable */
-    transform: scale(1.03); /* Efecto de crecimiento más sutil */
+    background-color: #ff9191;
+    transform: scale(1.03);
 }
 
 /* ESTILOS ESPECÍFICOS POR SECCIÓN */
-
-/* Estilos de Destacados */
-.card-destacados {
-    background: linear-gradient(135deg, #e6f7ff, #d2f0ff);
-    border: 1px solid #b3e0ff;
-}
-
-/* Estilos de Cofres */
-.cofre-icono {
-    font-size: 3.5em; /* Icono más sutil */
-    margin: 10px 0;
-    animation: bounce 2s infinite;
-}
-
+.card-destacados { background: linear-gradient(135deg, #e6f7ff, #d2f0ff); border: 1px solid #b3e0ff; }
+.cofre-icono { font-size: 3.5em; margin: 10px 0; animation: bounce 2s infinite; }
 .cofre-comun { background-color: #f7f7f7; border: 2px solid #ddd; }
 .cofre-plata { background-color: #e9ecef; border: 2px solid #ced4da; }
 .cofre-leyenda {
@@ -224,21 +213,13 @@ p {
     animation: pulse 1.5s infinite;
 }
 .cofre-leyenda .cofre-icono { animation: none; }
-
-/* Estilos de Fragmentos */
-.fragmento-card .icono {
-    font-size: 3em;
-    margin-bottom: 10px;
-}
-
-/* Estilos de Más Productos (Bloqueados) */
+.fragmento-card .icono { font-size: 3em; margin-bottom: 10px; }
 .card-proximamente {
     background-color: #eaeaea;
     border: 1px dashed #999;
     position: relative;
     overflow: hidden;
 }
-
 .estado-juego {
     position: absolute;
     top: 15px;
@@ -253,17 +234,8 @@ p {
 }
 
 /* Animaciones */
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.03); } /* Pulso más suave */
-    100% { transform: scale(1); }
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); } /* Rebote más corto */
-    60% { transform: translateY(-5px); }
-}
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 
 /* Pie de página */
 footer {
@@ -275,22 +247,7 @@ footer {
     box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
 }
 
-/* Media Queries para dispositivos móviles */
-@media (max-width: 768px) {
-    .main-layout { flex-direction: column; }
-    .sidebar { width: 100%; margin-right: 0; margin-bottom: 20px; }
-    .sidebar-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-    .sidebar-item { flex-basis: 45%; text-align: center; margin: 5px; }
-    .main-content { padding: 20px; }
-    header h1 { font-size: 2em; }
-    header p { font-size: 1em; }
-}
-
-/* Archivo: estilos.css */
-
-/* Variables de color y demás estilos... (mantener todo lo anterior) */
-
-/* NUEVOS ESTILOS PARA LOS BOTONES DEL ENCABEZADO */
+/* --- ESTILOS PARA LOS BOTONES DEL ENCABEZADO --- */
 .header-buttons {
     position: absolute;
     top: 25px;
@@ -302,14 +259,12 @@ footer {
     z-index: 3;
 }
 
-/* Estilo para el botón de regresar */
 .regresar-dashboard {
     text-decoration: none;
-    color: white; /* Letra blanca */
+    color: white;
     font-weight: 600;
     padding: 10px 20px;
     border-radius: 50px;
-    /* Degradado azul claro */
     background: linear-gradient(135deg, #74b9ff, #53a6ff);
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -321,17 +276,16 @@ footer {
     transform: scale(1.05);
 }
 
-/* Estilo para el botón de información */
 .info-button {
-    background-color: #6c5ce7; /* Morado, tu color principal */
+    background-color: #6c5ce7;
     font-size: 1.2em;
-    color: rgb(255, 255, 255); /* Icono negro */
+    color: white;
     width: 45px;
     height: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%; /* Lo hace circular */
+    border-radius: 50%;
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
@@ -339,74 +293,147 @@ footer {
 }
 
 .info-button:hover {
-    background-color: #8a2be2; /* Morado más oscuro al pasar el mouse */
+    background-color: #8a2be2;
     transform: scale(1.1);
 }
 
-
-
 /* --- ESTILOS PERSONALIZADOS PARA SWEETALERT2 --- */
-
-/* Contenedor principal del modal */
-.swal2-lucete-popup {
-    background: linear-gradient(135deg, #f8f9fa, #ffffff);
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    border: 1px solid #e9ecef;
+.swal2-container.swal2-backdrop-show {
+    background-color: rgba(0, 0, 0, 0.3);
 }
-
-/* Título del modal */
-.swal2-lucete-title {
+.swal2-lucete-popup-v2 {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e0e0e0;
+    font-family: 'Poppins', sans-serif !important;
+}
+.swal2-lucete-title-v2 {
     color: var(--color-principal) !important;
-    font-family: 'Poppins', sans-serif;
-    font-size: 2em;
-    font-weight: 600;
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-align: center;
 }
-
-/* Contenido del texto */
-.swal2-lucete-text {
-    font-size: 1em;
-    color: var(--color-texto);
-    line-height: 1.5;
-    padding: 0 15px;
-    font-weight: 300;
+.swal2-lucete-text-v2 {
+    font-size: 1.05em;
+    color: #333;
+    line-height: 1.6;
+    padding: 0 25px;
+    text-align: left;
 }
-
-/* Estilo del botón "Entendido" */
-.swal2-lucete-button {
+.swal2-lucete-button-v2 {
     background-color: var(--color-principal) !important;
     color: white !important;
-    border-radius: 50px !important;
-    padding: 10px 30px !important;
-    font-weight: bold !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 35px !important;
+    font-weight: 600 !important;
     font-size: 1.1em !important;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.swal2-lucete-button-v2:hover {
+    background-color: #7a49f0 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.swal2-lucete-button:hover {
-    background-color: #5d4ae5 !important;
-    transform: scale(1.05);
-}
-
-/* Ocultar el icono por defecto */
-.swal2-icon {
-    display: none !important;
-}
-
-/* Animación de entrada */
-.swal2-show {
-    animation-name: swal2-fadeIn;
-    -webkit-animation-duration: 0.5s;
-    animation-duration: 0.5s;
-}
-
-@keyframes swal2-fadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
+/* --- Media Queries para dispositivos pequeños (responsive design) --- */
+@media (max-width: 992px) {
+    .main-layout {
+        flex-direction: column;
+        margin: 20px;
     }
-    100% {
-        opacity: 1;
-        transform: scale(1);
+    .sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+    .main-content {
+        padding: 20px;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px; /* Espacio entre los items del menú */
+    }
+    .sidebar-item {
+        flex-grow: 1; /* Los items se adaptan al ancho disponible */
+        text-align: center;
+        margin: 0;
+        padding: 15px;
+    }
+    header h1 {
+        font-size: 2em;
+    }
+    header p {
+        font-size: 1em;
+    }
+    .header-buttons {
+        top: 15px;
+        left: 15px;
+        right: 15px;
+    }
+    .regresar-dashboard {
+        padding: 8px 16px;
+    }
+    .info-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr; /* Una sola columna para las tarjetas */
+    }
+    .sidebar-nav {
+        flex-direction: column; /* Volvemos a columna para mejor legibilidad */
+        gap: 0;
+    }
+    .sidebar-item {
+        flex-basis: auto;
+        text-align: left;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 5em 0;
+    }
+    .header-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        top: 20px;
+    }
+    .regresar-dashboard,
+    .info-button {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box; /* Asegura que el padding no afecte el ancho */
+    }
+    .info-button {
+        height: auto;
+    }
+    header h1 {
+        font-size: 1.8em;
+    }
+    .swal2-lucete-title-v2 {
+        font-size: 1.5em;
+    }
+    .swal2-lucete-text-v2 {
+        font-size: 0.9em;
+        padding: 0 10px;
+    }
+    .swal2-lucete-button-v2 {
+        font-size: 1em !important;
+        padding: 10px 25px !important;
     }
 }
