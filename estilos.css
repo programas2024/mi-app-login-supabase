@@ -92,37 +92,118 @@ header p {
     margin-bottom: 25px;
 }
 
-/* Estilos de los juegos y cofres */
-.juegos-container, .cofres-container, .fragmentos-container {
+/* Estilos del grid para todas las secciones */
+.grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
 }
 
+/* Estilos base para las tarjetas */
 .juego-card, .cofre-card, .fragmento-card {
     background-color: var(--color-fondo);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .juego-card:hover, .cofre-card:hover, .fragmento-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
-.juego-card h3 {
-    margin-top: 0;
-    font-size: 1.2em;
+h3 {
+    margin: 0;
+    font-size: 1.4em;
+    color: var(--color-principal);
 }
 
-.recompensa {
-    font-weight: bold;
-    color: #4CAF50;
+p {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* ESTILOS ESPECÍFICOS POR SECCIÓN */
+
+/* Estilos de Destacados */
+.card-destacados {
+    background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
+    border: 1px solid #c9e2ff;
+}
+.card-destacados h3 { color: #2a6df2; }
+
+/* Estilos de Juegos Rápidos */
+.card-rapidos {
+    background-color: #fffae6;
+    border: 1px solid #ffeb99;
+}
+.card-rapidos h3 { color: #f5b11b; }
+
+/* Estilos de Cofres */
+.cofre-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 200px;
+}
+
+.cofre-icono {
+    font-size: 3.5em;
     margin: 10px 0;
 }
 
+.cofre-comun {
+    background-color: #f0f0f0;
+    border: 2px solid #ccc;
+}
+
+.cofre-plata {
+    background-color: #e0e0e0;
+    border: 2px solid #b2b2b2;
+}
+
+.cofre-leyenda {
+    background-color: #ffefc4;
+    border: 2px solid gold;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+/* Estilos de Fragmentos */
+.fragmento-card {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+}
+.fragmento-card .icono {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+/* Estilos de Más Productos (Bloqueados) */
+.card-proximamente {
+    background-color: #eaeaea;
+    border: 1px dashed #999;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-proximamente h3 { color: #6c6c6c; }
+
+.estado-juego {
+    position: absolute;
+    top: 15px;
+    right: -25px;
+    background-color: #e74c3c;
+    color: white;
+    padding: 5px 25px;
+    font-weight: bold;
+    font-size: 0.8em;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Estilos de botones */
 .boton-jugar, .boton-comprar {
     background-color: var(--color-principal);
     color: var(--color-fondo-claro);
@@ -136,21 +217,6 @@ header p {
 
 .boton-jugar:hover, .boton-comprar:hover {
     background-color: var(--color-secundario);
-}
-
-/* Estilos específicos para los cofres */
-.cofre-icono {
-    font-size: 3em;
-}
-
-.cofre-card.cofre-casual { background-color: #fce4ec; border: 2px solid #e91e63; }
-.cofre-card.cofre-leyenda { background-color: #fffde7; border: 2px solid #ffc107; }
-
-/* Estilos de los fragmentos */
-.fragmento-card .icono {
-    font-size: 2.5em;
-    display: block;
-    margin-bottom: 10px;
 }
 
 /* Pie de página */
@@ -178,18 +244,8 @@ footer {
         justify-content: center;
     }
     .sidebar-item {
-        flex-basis: 45%; /* Para que se vean en dos columnas */
+        flex-basis: 45%;
         text-align: center;
         margin: 5px;
     }
-}
-
-/* Agrega esta regla CSS si no la tienes */
-.seccion-contenido {
-    display: none;
-}
-
-/* La primera sección que quieras que se muestre al cargar la página debe ser visible por defecto */
-#destacados {
-    display: block;
 }
