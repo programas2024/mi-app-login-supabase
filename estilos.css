@@ -285,3 +285,60 @@ footer {
     header h1 { font-size: 2em; }
     header p { font-size: 1em; }
 }
+
+/* Archivo: estilos.css */
+
+/* Variables de color y demás estilos... (mantener todo lo anterior) */
+
+/* NUEVOS ESTILOS PARA LOS BOTONES DEL ENCABEZADO */
+.header-buttons {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    right: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+}
+
+/* Estilo para el botón de regresar */
+.regresar-dashboard {
+    text-decoration: none;
+    color: white; /* Letra blanca */
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 50px;
+    /* Degradado azul claro */
+    background: linear-gradient(135deg, #74b9ff, #53a6ff);
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.regresar-dashboard:hover {
+    background: linear-gradient(135deg, #53a6ff, #3895ff);
+    transform: scale(1.05);
+}
+
+/* Estilo para el botón de información */
+.info-button {
+    background-color: #6c5ce7; /* Morado, tu color principal */
+    font-size: 1.2em;
+    color: rgb(255, 255, 255); /* Icono negro */
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%; /* Lo hace circular */
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.info-button:hover {
+    background-color: #8a2be2; /* Morado más oscuro al pasar el mouse */
+    transform: scale(1.1);
+}
