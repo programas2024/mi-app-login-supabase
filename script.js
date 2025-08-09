@@ -176,39 +176,44 @@ async function signOut() {
 }
 
 // --- 5. Funciones de Gestión de Perfil (usadas en dashboard.html y profile.html) ---
-
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
 
     try {
         const { data, error } = await supabase
             .from('profiles')
-            .select('username, country, gold, diamonds, perla') // Asegúrate de que la columna 'perla' esté en la tabla
+            .select('username, country, gold, diamonds, perla')
             .eq('id', userId)
             .single();
 
         if (error) {
             console.error('Error al cargar perfil:', error);
-            
+
             // Si el perfil no se encuentra (PGRST116), intenta crearlo
             if (error.code === 'PGRST116') {
                 console.log('Perfil no encontrado, intentando crear uno básico.');
+                
+                // --- AQUI: SOLUCIÓN AL PROBLEMA ---
+                // Genera un nombre de usuario único usando una porción del ID del usuario.
+                const uniqueUsername = `jugador-${userId.slice(0, 8)}`;
+
                 const { error: insertError } = await supabase
                     .from('profiles')
-                    // AQUI: Se agrega 'perla: 0' para que los nuevos usuarios tengan 0 perlas por defecto
-                    .insert([{ id: userId, username: 'Nuevo Jugador', country: 'Desconocido', gold: 0, diamonds: 0, perla: 0 }]);
+                    .insert([{ 
+                        id: userId, 
+                        username: uniqueUsername, // Usar el nombre de usuario único
+                        country: 'Desconocido', 
+                        gold: 0, 
+                        diamonds: 0, 
+                        perla: 0 
+                    }]);
                 
                 if (insertError) {
                     console.error('Error al crear perfil básico:', insertError);
-                    if (insertError.code === '23505') {
-                        console.warn('Conflicto al crear perfil (ya existe). Intentando cargar de nuevo.');
-                        await loadUserProfile(userId);
-                        return;
-                    } else {
-                        showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial para tu cuenta: ' + insertError.message);
-                    }
+                    // Ya no entramos en un bucle infinito, pero manejamos otros posibles errores de inserción
+                    showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial: ' + insertError.message);
                 } else {
-                    showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico para ti. ¡Rellena tus datos en la sección de Perfil!');
+                    showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico. ¡Rellena tus datos en la sección de Perfil!');
                     await loadUserProfile(userId); // Se recarga para mostrar el perfil recién creado
                     return;
                 }
@@ -234,20 +239,10 @@ async function loadUserProfile(userId) {
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
             if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = data.perla;
 
-            // AQUI: Lógica para habilitar/deshabilitar el botón de la tienda
-            // Se asume que la variable 'shopBtn' ya fue declarada y asignada.
-           // Lógica para habilitar/deshabilitar el botón de la tienda
+            // Lógica para habilitar/deshabilitar el botón de la tienda
             if (shopBtn) {
                 const perlas = parseInt(data.perla, 10);
-                if (perlas > 20) {
-                    // Habilita el botón si las perlas son > 20
-                    shopBtn.disabled = false;
-                    // Opcional: podrías mostrar una notificación
-                    // showSwal('success', '¡Tienda Desbloqueada!', 'Ahora tienes más de 20 perlas. ¡Visítala!');
-                } else {
-                    // Deshabilita el botón en caso contrario
-                    shopBtn.disabled = true;
-                }
+                shopBtn.disabled = perlas <= 20;
             }
         }
     
