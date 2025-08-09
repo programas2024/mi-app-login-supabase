@@ -1,56 +1,96 @@
-/* Variables de color para fácil personalización */
+/* Variables de color para una personalización más fácil */
 :root {
-    --color-principal: #6c5ce7;
+    --color-principal: #8a2be2; /* Un morado vibrante, muy elegante */
     --color-secundario: #a29bfe;
-    --color-texto: #2d3436;
-    --color-fondo: #f0f4f8;
+    --color-acento: #ff6b6b; /* Un rojo para destacar botones */
+    --color-texto: #333;
+    --color-fondo: #f8f9fa; /* Fondo blanco grisáceo, muy limpio */
     --color-fondo-claro: #ffffff;
-    --sombra-suave: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --sombra-suave: 0 8px 24px rgba(0, 0, 0, 0.1);
+    --transicion-lenta: 0.5s ease;
 }
 
-/* Estilos generales */
+/* Estilos generales y tipografía */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif; /* Fuente más moderna */
     margin: 0;
     padding: 0;
     background-color: var(--color-fondo);
     color: var(--color-texto);
     line-height: 1.6;
+    scroll-behavior: smooth;
 }
 
+/* Encabezado */
 header {
-    background-color: var(--color-principal);
+    /* El fondo ya no es un degradado estático, sino un contenedor para las animaciones */
+    position: relative;
+    overflow: hidden; /* Esto es crucial para que las burbujas no se salgan del contenedor */
+    background: linear-gradient(135deg, var(--color-principal) 0%, #6a5acd 100%);
     color: var(--color-fondo-claro);
     text-align: center;
-    padding: 2em 0;
-    box-shadow: var(--sombra-suave);
+    padding: 5em 0; /* Aumentamos el padding para más espacio visual */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    z-index: 1; /* Aseguramos que el contenido esté por encima del fondo */
+}
+
+/* Efecto de burbujas en el fondo */
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                      radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    background-size: 200% 200%;
+    animation: moveBubbles 25s linear infinite;
+    z-index: 0;
+}
+
+/* Animación de las burbujas */
+@keyframes moveBubbles {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* Título y texto dentro del header */
+header h1, header p {
+    position: relative;
+    z-index: 2; /* Nos aseguramos de que el texto quede encima de las burbujas */
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4); /* Sombra de texto más intensa para que destaque */
 }
 
 header h1 {
-    margin: 0;
-    font-size: 2.5em;
+    font-size: 4.5em; /* Título mucho más grande */
+    font-weight: 900; /* Más peso para que se vea más impactante */
+    letter-spacing: 2px;
 }
 
 header p {
-    margin: 5px 0 0;
-    font-size: 1.2em;
+    font-size: 1.8em; /* Subtítulo más grande */
+    font-style: italic;
+    opacity: 0.95;
+    margin-top: 15px;
 }
-
 /* Estructura principal con Flexbox */
 .main-layout {
     display: flex;
-    max-width: 1300px;
-    margin: 20px auto;
+    max-width: 1400px;
+    margin: 40px auto;
 }
 
-/* Estilos de la barra lateral (Sidebar) */
+/* Barra lateral izquierda (Sidebar) */
 .sidebar {
-    width: 250px;
+    width: 280px;
     background-color: var(--color-fondo-claro);
-    padding: 20px;
-    border-radius: 12px;
+    padding: 30px;
+    border-radius: 20px;
     box-shadow: var(--sombra-suave);
-    margin-right: 20px;
+    margin-right: 30px;
 }
 
 .sidebar-nav {
@@ -59,70 +99,108 @@ header p {
 }
 
 .sidebar-item {
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
     background-color: var(--color-fondo);
-    border-radius: 8px;
+    border-radius: 12px;
     text-decoration: none;
     color: var(--color-texto);
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    transition: var(--transicion-lenta);
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background-color: var(--color-principal);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
 }
 
 .sidebar-item:hover {
-    background-color: var(--color-secundario);
+    background-color: var(--color-principal);
     color: var(--color-fondo-claro);
-    transform: translateX(5px);
+    transform: translateX(10px);
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
 }
 
-/* Estilos del contenido principal */
+.sidebar-item:hover::before {
+    transform: translateX(0);
+}
+
+/* Contenido principal */
 .main-content {
-    flex-grow: 1; /* Ocupa el espacio restante */
+    flex-grow: 1;
     background-color: var(--color-fondo-claro);
-    padding: 30px;
-    border-radius: 12px;
+    padding: 40px;
+    border-radius: 20px;
     box-shadow: var(--sombra-suave);
 }
 
 .main-content h2 {
-    font-size: 2em;
+    font-size: 2.5em;
     color: var(--color-principal);
-    border-bottom: 2px solid var(--color-principal);
-    padding-bottom: 10px;
-    margin-bottom: 25px;
+    border-bottom: 3px solid var(--color-acento);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
 }
 
-/* Estilos del grid para todas las secciones */
+/* Estilos de las tarjetas (juegos, cofres, etc.) */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
 }
 
-/* Estilos base para las tarjetas */
 .juego-card, .cofre-card, .fragmento-card {
     background-color: var(--color-fondo);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 15px;
+    padding: 25px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: var(--transicion-lenta);
+    border: 1px solid #e0e0e0;
 }
 
 .juego-card:hover, .cofre-card:hover, .fragmento-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
 h3 {
     margin: 0;
-    font-size: 1.4em;
+    font-size: 1.6em;
     color: var(--color-principal);
 }
 
 p {
-    font-size: 0.9em;
+    font-size: 1em;
     color: #666;
+    height: auto;
+    min-height: 40px;
+}
+
+.juego-card button, .cofre-card button {
+    background-color: var(--color-acento);
+    color: var(--color-fondo-claro);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.juego-card button:hover, .cofre-card button:hover {
+    background-color: #ff8c8c;
+    transform: scale(1.05);
 }
 
 /* ESTILOS ESPECÍFICOS POR SECCIÓN */
@@ -132,52 +210,28 @@ p {
     background: linear-gradient(135deg, #f0f8ff, #e6f0ff);
     border: 1px solid #c9e2ff;
 }
-.card-destacados h3 { color: #2a6df2; }
-
-/* Estilos de Juegos Rápidos */
-.card-rapidos {
-    background-color: #fffae6;
-    border: 1px solid #ffeb99;
-}
-.card-rapidos h3 { color: #f5b11b; }
 
 /* Estilos de Cofres */
-.cofre-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 200px;
-}
-
 .cofre-icono {
-    font-size: 3.5em;
+    font-size: 4em;
     margin: 10px 0;
+    animation: bounce 2s infinite;
 }
 
-.cofre-comun {
-    background-color: #f0f0f0;
-    border: 2px solid #ccc;
-}
-
-.cofre-plata {
-    background-color: #e0e0e0;
-    border: 2px solid #b2b2b2;
-}
-
+.cofre-comun { background-color: #e0e0e0; border: 2px solid #ccc; }
+.cofre-plata { background-color: #c0c0c0; border: 2px solid #808080; }
 .cofre-leyenda {
-    background-color: #ffefc4;
-    border: 2px solid gold;
-    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    background: linear-gradient(135deg, #ffd700, #ffec8b);
+    border: 3px solid gold;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+    animation: pulse 1.5s infinite;
 }
+.cofre-leyenda .cofre-icono { animation: none; }
 
 /* Estilos de Fragmentos */
-.fragmento-card {
-    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-}
 .fragmento-card .icono {
-    font-size: 3em;
-    margin-bottom: 10px;
+    font-size: 3.5em;
+    margin-bottom: 15px;
 }
 
 /* Estilos de Más Productos (Bloqueados) */
@@ -187,8 +241,6 @@ p {
     position: relative;
     overflow: hidden;
 }
-
-.card-proximamente h3 { color: #6c6c6c; }
 
 .estado-juego {
     position: absolute;
@@ -203,49 +255,36 @@ p {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Estilos de botones */
-.boton-jugar, .boton-comprar {
-    background-color: var(--color-principal);
-    color: var(--color-fondo-claro);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+/* Animaciones */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-.boton-jugar:hover, .boton-comprar:hover {
-    background-color: var(--color-secundario);
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-7px); }
 }
 
 /* Pie de página */
 footer {
     text-align: center;
-    padding: 1.5em 0;
-    background-color: var(--color-texto);
+    padding: 2em 0;
+    background-color: #2c3e50; /* Un gris oscuro elegante */
     color: var(--color-fondo-claro);
-    margin-top: 30px;
+    margin-top: 50px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
 }
 
 /* Media Queries para dispositivos móviles */
 @media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column;
-    }
-    .sidebar {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
-    .sidebar-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    .sidebar-item {
-        flex-basis: 45%;
-        text-align: center;
-        margin: 5px;
-    }
+    .main-layout { flex-direction: column; }
+    .sidebar { width: 100%; margin-right: 0; margin-bottom: 20px; }
+    .sidebar-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    .sidebar-item { flex-basis: 45%; text-align: center; margin: 5px; }
+    .main-content { padding: 20px; }
+    header h1 { font-size: 2em; }
+    header p { font-size: 1em; }
 }
