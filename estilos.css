@@ -342,3 +342,71 @@ footer {
     background-color: #8a2be2; /* Morado más oscuro al pasar el mouse */
     transform: scale(1.1);
 }
+
+
+
+/* --- ESTILOS PERSONALIZADOS PARA SWEETALERT2 --- */
+
+/* Contenedor principal del modal */
+.swal2-lucete-popup {
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e9ecef;
+}
+
+/* Título del modal */
+.swal2-lucete-title {
+    color: var(--color-principal) !important;
+    font-family: 'Poppins', sans-serif;
+    font-size: 2em;
+    font-weight: 600;
+}
+
+/* Contenido del texto */
+.swal2-lucete-text {
+    font-size: 1em;
+    color: var(--color-texto);
+    line-height: 1.5;
+    padding: 0 15px;
+    font-weight: 300;
+}
+
+/* Estilo del botón "Entendido" */
+.swal2-lucete-button {
+    background-color: var(--color-principal) !important;
+    color: white !important;
+    border-radius: 50px !important;
+    padding: 10px 30px !important;
+    font-weight: bold !important;
+    font-size: 1.1em !important;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.swal2-lucete-button:hover {
+    background-color: #5d4ae5 !important;
+    transform: scale(1.05);
+}
+
+/* Ocultar el icono por defecto */
+.swal2-icon {
+    display: none !important;
+}
+
+/* Animación de entrada */
+.swal2-show {
+    animation-name: swal2-fadeIn;
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+}
+
+@keyframes swal2-fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
