@@ -8,15 +8,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
- <header>
+    <header>
         <div class="header-buttons">
-            <a href="dashboard.html" class="header-button regresar-dashboard">
+            <!-- Ahora es un botón que se maneja con JavaScript -->
+            <button id="back-to-dashboard" class="header-button regresar-dashboard">
                 Regresar a Dashboard
-            </a>
+            </button>
             <button id="info-button" class="header-button info-button">
-                &#x1F6C8; </button>
+                &#x1F6C8;
+            </button>
         </div>
-        
         
         <h1>Tienda Lucete</h1>
         <p>¡Decora tu vida con nuestros juegos y productos!</p>
@@ -146,8 +147,10 @@
     <footer>
         <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
-     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="top.js"></script>
     <script src="info-button.js"></script>
+    <!-- Nuevo script para manejar la navegación de vuelta -->
+    <script src="tienda.js"></script>
 </body>
 </html>
