@@ -1,173 +1,699 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Lucete</title>
-    <link rel="stylesheet" href="estilos.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+* Variables CSS */
+        :root {
+            --color-principal: #5e32b0;
+            --color-acento: #ff6b6b;
+            --color-fondo: #ffffff;
+            --color-fondo-claro: #f4f7f9;
+            --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --transicion-lenta: all 0.3s ease-in-out;
+        }
+
+        /* Reset y estilos base */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--color-fondo-claro);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: #333;
+        }
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            padding: 4em 2em;
+            color: white;
+            background: linear-gradient(135deg, #6c5ce7, #5e32b0);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            transform: rotate(45deg);
+        }
+        header h1 {
+            font-size: 3.5em;
+            margin: 0;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+        header p {
+            font-size: 1.2em;
+            font-weight: 300;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        /* Layout principal */
+        .main-layout {
+            display: flex;
+            margin: 30px;
+            gap: 30px;
+        }
+
+        /* Barra lateral de navegación */
+        .sidebar {
+            width: 280px;
+            background-color: var(--color-fondo);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--sombra-suave);
+            position: sticky;
+            top: 30px;
+            align-self: flex-start;
+        }
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-item {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: var(--transicion-lenta);
+        }
+        .sidebar-item:hover, .sidebar-item.activo {
+            background-color: var(--color-principal);
+            color: white;
+            box-shadow: 0 4px 10px rgba(94, 50, 176, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex-grow: 1;
+            background-color: var(--color-fondo);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: var(--sombra-suave);
+        }
+        .main-content h2 {
+            font-size: 2em;
+            color: var(--color-principal);
+            border-bottom: 3px solid var(--color-acento);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos de las tarjetas */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .juego-card, .cofre-card, .fragmento-card {
+            background-color: var(--color-fondo-claro);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: var(--transicion-lenta);
+            border: 1px solid #e0e0e0;
+        }
+        .juego-card:hover, .cofre-card:hover, .fragmento-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            margin: 0;
+            font-size: 1.4em;
+            color: var(--color-principal);
+            margin-bottom: 5px;
+        }
+        p {
+            font-size: 0.9em;
+            color: #666;
+            height: auto;
+            min-height: 40px;
+            margin-top: 0;
+        }
+        .juego-card button, .cofre-card button {
+            background-color: var(--color-acento);
+            color: var(--color-fondo);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .juego-card button:hover, .cofre-card button:hover {
+            background-color: #ff9191;
+            transform: scale(1.03);
+        }
+
+        /* ESTILOS ESPECÍFICOS POR SECCIÓN */
+        .card-destacados {
+            background: linear-gradient(135deg, #e6f7ff, #d2f0ff);
+            border: 1px solid #b3e0ff;
+            position: relative;
+            overflow: hidden;
+        }
+        .juego-icono-container {
+            background-color: #5e32b0;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(94, 50, 176, 0.3);
+        }
+        .juego-icono {
+            font-size: 3em;
+            color: #fff;
+            transform: rotate(0deg);
+            transition: transform 0.5s ease-in-out;
+        }
+        .juego-card:hover .juego-icono {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        /* Animaciones específicas por juego */
+        .ahorcado:hover .juego-icono { animation: swing 1s ease-in-out infinite; }
+        .preguntados:hover .juego-icono { animation: pulse-icon 1.5s infinite; }
+        .sopa-letras:hover .juego-icono { animation: spin-and-zoom 1s ease-in-out infinite alternate; }
+        .memoria:hover .juego-icono { animation: flip 1s ease-in-out infinite; }
+        .adivina-carta:hover .juego-icono { animation: heartbeat 1.2s infinite; }
+        @keyframes swing {
+            0% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            100% { transform: rotate(15deg); }
+        }
+        @keyframes pulse-icon {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes spin-and-zoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.1) rotate(10deg); }
+        }
+        @keyframes flip {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+            75% { transform: rotateY(200deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Estilos de Juegos Rápidos */
+        .card-rapidos {
+            background: linear-gradient(135deg, #f7d794, #f9c74f);
+            border: 1px solid #e0ac1a;
+        }
+
+        /* Estilos para los Cofres */
+        .cofre-card {
+            background-color: var(--color-fondo);
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .cofre-icono-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block; /* Aseguramos que sea un elemento de bloque */
+            animation: none; /* Quitamos animaciones por defecto */
+        }
+
+        /* Cofre Común */
+        .cofre-comun {
+            background: linear-gradient(135deg, #d3b194, #a0785a); /* Tono café */
+            border: 2px solid #967055;
+        }
+        .cofre-comun .cofre-icono-container {
+            background-image: url('https://cdn-icons-png.flaticon.com/128/4579/4579853.png');
+            animation: shake 2s infinite;
+        }
+
+        /* Cofre de Plata */
+        .cofre-plata {
+            background: linear-gradient(135deg, #eceeef, #ced4da);
+            border: 2px solid #afb8c1;
+            position: relative;
+        }
+        .cofre-plata .cofre-icono-container {
+            background-image: url('https://cdn-icons-png.flaticon.com/128/7802/7802444.png');
+            animation: none;
+        }
+        .cofre-plata::before {
+            content: '';
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            animation: shine 2s infinite;
+        }
+        .cofre-plata:hover::before { animation-play-state: paused; }
+
+        /* Cofre de Leyenda (Oro) */
+        .cofre-leyenda {
+            background: linear-gradient(135deg, #ffd700, #ffecb3);
+            border: 3px solid #ffcc00;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            position: relative;
+        }
+        .cofre-leyenda .cofre-icono-container {
+            background-image: url('https://cdn-icons-png.flaticon.com/128/8330/8330776.png');
+            animation: none;
+        }
+        .cofre-leyenda:hover { animation: pulse 1.5s infinite; }
+
+        /* --- NUEVOS ESTILOS PARA FRAGMENTOS como botones --- */
+        .fragmento-card {
+            background-color: var(--color-fondo);
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .fragmento-icono-container {
+            font-size: 3.5em;
+            margin: 0 auto 15px;
+            line-height: 1;
+        }
+        .fragmento-card button {
+            background: var(--color-principal);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .fragmento-card button:hover {
+            background: linear-gradient(135deg, #7a49f0, #9669ff);
+            transform: scale(1.05);
+        }
+
+        .fragmento-oro {
+            background: linear-gradient(135deg, #f7e394, #e0c850);
+            border: 2px solid #e0c850;
+            box-shadow: 0 4px 15px rgba(224, 200, 80, 0.3);
+        }
+        .fragmento-diamantes {
+            background: linear-gradient(135deg, #e6f7ff, #b3e0ff);
+            border: 2px solid #99cfff;
+            box-shadow: 0 4px 15px rgba(179, 224, 255, 0.5);
+        }
+        .fragmento-perlas {
+            background: linear-gradient(135deg, #fffafa, #e6e6e6);
+            border: 2px solid #ccc;
+            box-shadow: 0 4px 15px rgba(204, 204, 204, 0.3);
+        }
+        .fragmento-lucete {
+            background: linear-gradient(135deg, #fef0c7, #f7d26b);
+            border: 2px solid #f7d26b;
+            box-shadow: 0 4px 15px rgba(247, 210, 107, 0.5);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateX(-150px); }
+            100% { transform: rotate(45deg) translateX(150px); }
+        }
+        @keyframes rotate-crown {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+
+        /* Pie de página */
+        footer {
+            text-align: center;
+            padding: 2em 0;
+            background-color: #2c3e50;
+            color: var(--color-fondo-claro);
+            margin-top: 50px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* --- ESTILOS PARA LOS BOTONES DEL ENCABEZADO --- */
+        .header-buttons {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+        }
+        .regresar-dashboard {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #74b9ff, #53a6ff);
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .regresar-dashboard:hover {
+            background: linear-gradient(135deg, #53a6ff, #3895ff);
+            transform: scale(1.05);
+        }
+        .info-button {
+            background-color: #6c5ce7;
+            font-size: 1.2em;
+            color: white;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .info-button:hover {
+            background-color: #8a2be2;
+            transform: scale(1.1);
+        }
+
+        /* --- ESTILOS PERSONALIZADOS PARA SWEETALERT2 --- */
+        .swal2-container.swal2-backdrop-show {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .swal2-lucete-popup-v2 {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        .swal2-lucete-title-v2 {
+            color: var(--color-principal) !important;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .swal2-lucete-text-v2 {
+            font-size: 1.05em;
+            color: #333;
+            line-height: 1.6;
+            padding: 0 25px;
+            text-align: left;
+        }
+        .swal2-lucete-button-v2 {
+            background-color: var(--color-principal) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 12px 35px !important;
+            font-weight: 600 !important;
+            font-size: 1.1em !important;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .swal2-lucete-button-v2:hover {
+            background-color: #7a49f0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- Media Queries para dispositivos pequeños (responsive design) --- */
+        @media (max-width: 992px) {
+            .main-layout {
+                flex-direction: column;
+                margin: 20px;
+            }
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                padding: 20px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .sidebar-nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .sidebar-item {
+                flex-grow: 1;
+                text-align: center;
+                margin: 0;
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            .header-buttons {
+                top: 15px;
+                left: 15px;
+                right: 15px;
+            }
+            .regresar-dashboard {
+                padding: 8px 16px;
+            }
+            .info-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-nav {
+                flex-direction: column;
+                gap: 0;
+            }
+            .sidebar-item {
+                flex-basis: auto;
+                text-align: left;
+                margin-bottom: 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            /* --- CAMBIO AQUÍ: AUMENTA EL PADDING SUPERIOR PARA MÁS ESPACIO EN MÓVILES --- */
+            header {
+                padding-top: 7em; /* Se incrementa para un encabezado más alto */
+                padding-bottom: 2em;
+            }
+            header h1 {
+                margin-top: 1.5em;
+                font-size: 1.8em;
+            }
+            .header-buttons {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                top: 20px;
+            }
+            .regresar-dashboard {
+                width: 100%;
+                text-align: center;
+                box-sizing: border-box;
+            }
+            .info-button {
+                width: 100%;
+                height: auto;
+                border-radius: 12px;
+                font-size: 1.2em;
+                padding: 10px 0;
+                box-sizing: border-box;
+            }
+            .swal2-lucete-title-v2 {
+                font-size: 1.5em;
+            }
+            .swal2-lucete-text-v2 {
+                font-size: 0.9em;
+                padding: 0 10px;
+            }
+            .swal2-lucete-button-v2 {
+                font-size: 1em !important;
+                padding: 10px 25px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="header-buttons">
-            <!-- Ahora es un botón que se maneja con JavaScript -->
-            <button id="back-to-dashboard" class="header-button regresar-dashboard">
-                Regresar a Dashboard
-            </button>
-            <button id="info-button" class="header-button info-button">
-                &#x1F6C8;
-            </button>
+            <a href="#" class="regresar-dashboard">Regresar al Dashboard</a>
+            <button class="info-button" onclick="mostrarInfo()">?</button>
         </div>
-        
-        <h1>Tienda Lucete</h1>
-        <p>¡Decora tu vida con nuestros juegos y productos!</p>
+        <h1>Tienda</h1>
+        <p>Encuentra juegos y objetos especiales</p>
     </header>
 
     <div class="main-layout">
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="#" class="sidebar-item" data-target="destacados">Destacados</a>
-                <a href="#" class="sidebar-item" data-target="juegos-rapidos">Juegos Rápidos</a>
-                <a href="#" class="sidebar-item" data-target="cofres">Cofres</a>
-                <a href="#" class="sidebar-item" data-target="fragmentos">Fragmentos</a>
-                <a href="#" class="sidebar-item" data-target="mas-productos">Más Productos</a>
+                <a href="#juegos-destacados" class="sidebar-item activo">Juegos Destacados</a>
+                <a href="#juegos-rapidos" class="sidebar-item">Juegos Rápidos</a>
+                <a href="#cofres" class="sidebar-item">Cofres</a>
+                <a href="#fragmentos" class="sidebar-item">Fragmentos</a>
             </nav>
         </aside>
 
         <main class="main-content">
-            <section id="destacados" class="seccion-contenido">
-                <h2>⭐ Destacados de la Tienda</h2>
+            <section id="juegos-destacados">
+                <h2>Juegos Destacados</h2>
                 <div class="grid-container">
-                    <!-- Tarjeta para Ahorcado -->
+                    <!-- Tarjeta de juego 1 -->
                     <div class="juego-card card-destacados ahorcado">
                         <div class="juego-icono-container">
-                            <span class="juego-icono">🧠</span>
+                            <span class="juego-icono">💀</span>
                         </div>
                         <h3>Ahorcado</h3>
-                        <p>Adivina la palabra oculta. ¡Desafía tu mente y tus reflejos!</p>
-                        <button class="boton-jugar">Jugar Ahora</button>
+                        <p>Adivina la palabra antes de quedarte sin intentos.</p>
+                        <button onclick="comprar('Ahorcado')">Jugar ahora</button>
                     </div>
-                    <!-- Tarjeta para Preguntados -->
+                    <!-- Tarjeta de juego 2 -->
                     <div class="juego-card card-destacados preguntados">
                         <div class="juego-icono-container">
                             <span class="juego-icono">❓</span>
                         </div>
                         <h3>Preguntados</h3>
-                        <p>Demuestra tus conocimientos en una carrera contra el tiempo. ¡Gana premios!</p>
-                        <button class="boton-jugar">Jugar Ahora</button>
-                    </div>
-                    <!-- Tarjeta para Sopa de Letras -->
-                    <div class="juego-card card-destacados sopa-letras">
-                        <div class="juego-icono-container">
-                            <span class="juego-icono">🔍</span>
-                        </div>
-                        <h3>Sopa de Letras</h3>
-                        <p>Encuentra las palabras escondidas antes de que se acabe el tiempo. ¡Rápido y divertido!</p>
-                        <button class="boton-jugar">Jugar Ahora</button>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="juegos-rapidos" class="seccion-contenido" style="display: none;">
-                <h2>🚀 Juegos Rápidos</h2>
-                <div class="grid-container">
-                    <!-- Tarjeta para Parejas de Memoria -->
-                    <div class="juego-card card-rapidos memoria">
-                        <div class="juego-icono-container">
-                            <span class="juego-icono">🃏</span>
-                        </div>
-                        <h3>Parejas de Memoria</h3>
-                        <p>Encuentra los pares y gana diamantes. ¡50 diamantes!</p>
-                        <button class="boton-jugar">Jugar Ahora</button>
-                    </div>
-                    <!-- Tarjeta para Adivina la Carta -->
-                    <div class="juego-card card-rapidos adivina-carta">
-                        <div class="juego-icono-container">
-                            <span class="juego-icono">♠️</span>
-                        </div>
-                        <h3>Adivina la Carta</h3>
-                        <p>Elige la carta ganadora y multiplica tus premios. ¡50 diamantes!</p>
-                        <button class="boton-jugar">Jugar Ahora</button>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="cofres" class="seccion-contenido" style="display: none;">
-                <h2>📦 Cofres Misteriosos</h2>
-                <div class="grid-container">
-                    <!-- Cofre Común -->
-                    <div class="cofre-card cofre-comun">
-                        <div class="cofre-icono-container">
-                            <i class="fas fa-box-open cofre-icono"></i>
-                        </div>
-                        <h3>Cofre Común</h3>
-                        <p>Recompensas sencillas para empezar la aventura.</p>
-                        <button class="boton-comprar">Abrir</button>
-                    </div>
-                    <!-- Cofre Plata -->
-                    <div class="cofre-card cofre-plata">
-                        <div class="cofre-icono-container">
-                            <i class="fas fa-gem cofre-icono"></i>
-                        </div>
-                        <h3>Cofre Plata</h3>
-                        <p>Premios valiosos y la oportunidad de grandes ganancias.</p>
-                        <button class="boton-comprar">Abrir</button>
-                    </div>
-                    <!-- Cofre Leyenda -->
-                    <div class="cofre-card cofre-leyenda">
-                        <div class="cofre-icono-container">
-                            <i class="fas fa-crown cofre-icono"></i>
-                        </div>
-                        <h3>Cofre Leyenda</h3>
-                        <p>Los premios más exclusivos. ¡Un tesoro digno de reyes!</p>
-                        <button class="boton-comprar">Abrir</button>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="fragmentos" class="seccion-contenido" style="display: none;">
-                <h2>✨ Fragmentos</h2>
-                <div class="grid-container">
-                    <div class="fragmento-card frag-oro">
-                        <span class="icono">🏅</span>
-                        <h3>Fragmento de Oro</h3>
-                    </div>
-                    <div class="fragmento-card frag-diamante">
-                        <span class="icono">💎</span>
-                        <h3>Fragmento de Diamantes</h3>
-                    </div>
-                    <div class="fragmento-card frag-perlas">
-                        <span class="icono">🔮</span>
-                        <h3>Fragmento de Perlas</h3>
-                    </div>
-                    <div class="fragmento-card frag-lucete">
-                        <span class="icono">✨</span>
-                        <h3>Fragmento Lucete</h3>
+                        <p>Demuestra tu conocimiento en diversas categorías.</p>
+                        <button onclick="comprar('Preguntados')">Jugar ahora</button>
                     </div>
                 </div>
             </section>
 
-            <section id="mas-productos" class="seccion-contenido" style="display: none;">
-                <h2>🛒 Próximos Juegos</h2>
+            <section id="juegos-rapidos">
+                <h2>Juegos Rápidos</h2>
                 <div class="grid-container">
-                    <div class="juego-card card-proximamente">
-                        <h3>Cofre Aleatorio</h3>
-                        <span class="cofre-icono">🎲</span>
-                        <p>Próximamente disponible. Da recompensas aleatorias.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    <!-- Tarjeta de juego 3 -->
+                    <div class="juego-card card-rapidos sopa-letras">
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🔠</span>
+                        </div>
+                        <h3>Sopa de Letras</h3>
+                        <p>Encuentra las palabras escondidas en el menor tiempo posible.</p>
+                        <button onclick="comprar('Sopa de Letras')">Jugar ahora</button>
                     </div>
-                    <div class="juego-card card-proximamente">
-                        <h3>Juego de Cartas</h3>
-                        <span class="juego-icono">🃏</span>
-                        <p>Próximamente disponible. Juega y gana premios exclusivos.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    <!-- Tarjeta de juego 4 -->
+                    <div class="juego-card card-rapidos memoria">
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🧠</span>
+                        </div>
+                        <h3>Juego de Memoria</h3>
+                        <p>Encuentra los pares de cartas iguales.</p>
+                        <button onclick="comprar('Juego de Memoria')">Jugar ahora</button>
                     </div>
-                    <div class="juego-card card-proximamente">
-                        <h3>Sudoku</h3>
-                        <span class="juego-icono">🔢</span>
-                        <p>Próximamente disponible. Desafía tu lógica.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    <!-- Tarjeta de juego 5 -->
+                    <div class="juego-card card-rapidos adivina-carta">
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🃏</span>
+                        </div>
+                        <h3>Adivina la Carta</h3>
+                        <p>Adivina la carta para ganar recompensas.</p>
+                        <button onclick="comprar('Adivina la Carta')">Jugar ahora</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cofres">
+                <h2>Cofres</h2>
+                <div class="grid-container">
+                    <!-- Cofre Común -->
+                    <div class="cofre-card cofre-comun">
+                        <div class="cofre-icono-container"></div>
+                        <h3>Cofre Común</h3>
+                        <p>Contiene recompensas básicas.</p>
+                        <button onclick="abrirCofre('Común')">Abrir (10 💎)</button>
+                    </div>
+                    <!-- Cofre de Plata -->
+                    <div class="cofre-card cofre-plata">
+                        <div class="cofre-icono-container"></div>
+                        <h3>Cofre de Plata</h3>
+                        <p>Contiene recompensas más raras.</p>
+                        <button onclick="abrirCofre('Plata')">Abrir (50 💎)</button>
+                    </div>
+                    <!-- Cofre de Leyenda (Oro) -->
+                    <div class="cofre-card cofre-leyenda">
+                        <div class="cofre-icono-container"></div>
+                        <h3>Cofre de Leyenda</h3>
+                        <p>El cofre más valioso, con premios épicos.</p>
+                        <button onclick="abrirCofre('Leyenda')">Abrir (200 💎)</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fragmentos">
+                <h2>Fragmentos</h2>
+                <div class="grid-container">
+                    <!-- Fragmento de Oro -->
+                    <div class="fragmento-card fragmento-oro">
+                        <div class="fragmento-icono-container">🏅</div>
+                        <h3>Fragmento de Oro</h3>
+                        <p>Un pequeño pedazo de gloria.</p>
+                        <button onclick="usarFragmento('Oro')">Usar Fragmento</button>
+                    </div>
+                    <!-- Fragmento de Diamantes -->
+                    <div class="fragmento-card fragmento-diamantes">
+                        <div class="fragmento-icono-container">💎</div>
+                        <h3>Fragmento de Diamantes</h3>
+                        <p>Un brillante y valioso fragmento.</p>
+                        <button onclick="usarFragmento('Diamantes')">Usar Fragmento</button>
+                    </div>
+                    <!-- Fragmento de Perlas -->
+                    <div class="fragmento-card fragmento-perlas">
+                        <div class="fragmento-icono-container">🔮</div>
+                        <h3>Fragmento de Perlas</h3>
+                        <p>Un pedazo de elegancia y mística.</p>
+                        <button onclick="usarFragmento('Perlas')">Usar Fragmento</button>
+                    </div>
+                    <!-- Fragmento Lucete -->
+                    <div class="fragmento-card fragmento-lucete">
+                        <div class="fragmento-icono-container">✨</div>
+                        <h3>Fragmento Lucete</h3>
+                        <p>Haz que tu estilo brille con este fragmento.</p>
+                        <button onclick="usarFragmento('Lucete')">Usar Fragmento</button>
                     </div>
                 </div>
             </section>
@@ -175,12 +701,75 @@
     </div>
 
     <footer>
-        <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
+        <p>&copy; 2025 Mi Aplicación de Juegos</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="top.js"></script>
-    <script src="info-button.js"></script>
-    <!-- Nuevo script para manejar la navegación de vuelta -->
-    <script src="tienda.js"></script>
-</body>
-</html>
+
+    <script>
+        function comprar(juego) {
+            Swal.fire({
+                title: 'Comprar juego',
+                text: `¿Deseas comprar el juego de ${juego}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, comprar',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'swal2-lucete-popup-v2',
+                    title: 'swal2-lucete-title-v2',
+                    htmlContainer: 'swal2-lucete-text-v2',
+                    confirmButton: 'swal2-lucete-button-v2',
+                    cancelButton: 'swal2-lucete-button-v2'
+                }
+            });
+        }
+
+        function abrirCofre(tipoCofre) {
+            Swal.fire({
+                title: 'Abrir cofre',
+                text: `¿Estás seguro de que quieres abrir el Cofre ${tipoCofre}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, abrir',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'swal2-lucete-popup-v2',
+                    title: 'swal2-lucete-title-v2',
+                    htmlContainer: 'swal2-lucete-text-v2',
+                    confirmButton: 'swal2-lucete-button-v2',
+                    cancelButton: 'swal2-lucete-button-v2'
+                }
+            });
+        }
+
+        function usarFragmento(tipoFragmento) {
+            Swal.fire({
+                title: 'Usar Fragmento',
+                text: `¿Deseas usar tu Fragmento de ${tipoFragmento}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, usar',
+                cancelButtonText: 'No, cancelar',
+                customClass: {
+                    popup: 'swal2-lucete-popup-v2',
+                    title: 'swal2-lucete-title-v2',
+                    htmlContainer: 'swal2-lucete-text-v2',
+                    confirmButton: 'swal2-lucete-button-v2',
+                    cancelButton: 'swal2-lucete-button-v2'
+                }
+            });
+        }
+
+        function mostrarInfo() {
+            Swal.fire({
+                title: 'Información de la Tienda',
+                html: 'Aquí puedes encontrar juegos destacados, juegos rápidos, cofres con premios y fragmentos especiales para mejorar tu experiencia.',
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                customClass: {
+                    popup: 'swal2-lucete-popup-v2',
+                    title: 'swal2-lucete-title-v2',
+                    htmlContainer: 'swal2-lucete-text-v2',
+                    confirmButton: 'swal2-lucete-button-v2'
+                }
+            });
+        }
