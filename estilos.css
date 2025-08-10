@@ -202,56 +202,110 @@ p {
 .ahorcado:hover .juego-icono { animation: swing 1s ease-in-out infinite; }
 .preguntados:hover .juego-icono { animation: pulse-icon 1.5s infinite; }
 .sopa-letras:hover .juego-icono { animation: spin-and-zoom 1s ease-in-out infinite alternate; }
+.memoria:hover .juego-icono { animation: flip 1s ease-in-out infinite; }
+.adivina-carta:hover .juego-icono { animation: heartbeat 1.2s infinite; }
 
 @keyframes swing {
     0% { transform: rotate(15deg); }
     50% { transform: rotate(-15deg); }
     100% { transform: rotate(15deg); }
 }
-
 @keyframes pulse-icon {
     0% { transform: scale(1); }
     50% { transform: scale(1.2); }
     100% { transform: scale(1); }
 }
-
 @keyframes spin-and-zoom {
     from { transform: scale(1); }
     to { transform: scale(1.1) rotate(10deg); }
 }
-
-/* Cofres y otros */
-.cofre-icono { font-size: 3.5em; margin: 10px 0; animation: bounce 2s infinite; }
-.cofre-comun { background-color: #f7f7f7; border: 2px solid #ddd; }
-.cofre-plata { background-color: #e9ecef; border: 2px solid #ced4da; }
-.cofre-leyenda {
-    background: linear-gradient(135deg, #ffd700, #ffecb3);
-    border: 3px solid #ffcc00;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-    animation: pulse 1.5s infinite;
+@keyframes flip {
+    0%, 100% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+    75% { transform: rotateY(200deg); }
+    100% { transform: rotateY(360deg); }
 }
-.cofre-leyenda .cofre-icono { animation: none; }
-.fragmento-card .icono { font-size: 3em; margin-bottom: 10px; }
-.card-proximamente {
-    background-color: #eaeaea;
-    border: 1px dashed #999;
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Estilos de Juegos Rápidos */
+.card-rapidos {
+    background: linear-gradient(135deg, #f7d794, #f9c74f);
+    border: 1px solid #e0ac1a;
+}
+
+/* Estilos para los Cofres */
+.cofre-card {
+    background-color: #f7f7f7;
+    padding: 30px 20px;
     position: relative;
     overflow: hidden;
 }
-.estado-juego {
-    position: absolute;
-    top: 15px;
-    right: -25px;
-    background-color: #e74c3c;
-    color: white;
-    padding: 5px 25px;
-    font-weight: bold;
-    font-size: 0.8em;
-    transform: rotate(45deg);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+.cofre-icono-container {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+    line-height: 1;
 }
 
-/* Animaciones */
+.cofre-comun {
+    background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+    border: 2px solid #ccc;
+}
+.cofre-comun .cofre-icono-container i { color: #888; }
+.cofre-comun .cofre-icono-container { animation: shake 2s infinite; }
+
+.cofre-plata {
+    background: linear-gradient(135deg, #eceeef, #ced4da);
+    border: 2px solid #afb8c1;
+    position: relative;
+}
+.cofre-plata .cofre-icono-container i { color: #5f666d; }
+.cofre-plata::before {
+    content: '';
+    position: absolute;
+    top: -20px; left: -20px;
+    width: 50px; height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+    animation: shine 2s infinite;
+}
+.cofre-plata .cofre-icono-container { animation: none; }
+.cofre-plata:hover::before { animation-play-state: paused; }
+
+.cofre-leyenda {
+    background: linear-gradient(135deg, #ffd700, #ffecb3);
+    border: 3px solid #ffcc00;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+    position: relative;
+}
+.cofre-leyenda::before {
+    content: '👑';
+    position: absolute;
+    top: 5px; right: 5px;
+    font-size: 2em;
+    animation: rotate-crown 4s linear infinite;
+    opacity: 0.8;
+}
+.cofre-leyenda .cofre-icono-container i { color: #ccac00; }
+.cofre-leyenda .cofre-icono-container { animation: none; }
+.cofre-leyenda:hover { animation: pulse 1.5s infinite; }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+@keyframes shine {
+    0% { transform: rotate(45deg) translateX(-150px); }
+    100% { transform: rotate(45deg) translateX(150px); }
+}
+@keyframes rotate-crown {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 

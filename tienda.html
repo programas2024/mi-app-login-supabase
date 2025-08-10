@@ -6,6 +6,7 @@
     <title>Tienda Lucete</title>
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
@@ -71,12 +72,20 @@
             <section id="juegos-rapidos" class="seccion-contenido" style="display: none;">
                 <h2>🚀 Juegos Rápidos</h2>
                 <div class="grid-container">
-                    <div class="juego-card card-rapidos">
+                    <!-- Tarjeta para Parejas de Memoria -->
+                    <div class="juego-card card-rapidos memoria">
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🃏</span>
+                        </div>
                         <h3>Parejas de Memoria</h3>
                         <p>Encuentra los pares y gana diamantes. ¡50 diamantes!</p>
                         <button class="boton-jugar">Jugar Ahora</button>
                     </div>
-                    <div class="juego-card card-rapidos">
+                    <!-- Tarjeta para Adivina la Carta -->
+                    <div class="juego-card card-rapidos adivina-carta">
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">♠️</span>
+                        </div>
                         <h3>Adivina la Carta</h3>
                         <p>Elige la carta ganadora y multiplica tus premios. ¡50 diamantes!</p>
                         <button class="boton-jugar">Jugar Ahora</button>
@@ -87,22 +96,31 @@
             <section id="cofres" class="seccion-contenido" style="display: none;">
                 <h2>📦 Cofres Misteriosos</h2>
                 <div class="grid-container">
+                    <!-- Cofre Común -->
                     <div class="cofre-card cofre-comun">
+                        <div class="cofre-icono-container">
+                            <i class="fas fa-box-open cofre-icono"></i>
+                        </div>
                         <h3>Cofre Común</h3>
-                        <span class="cofre-icono">🎁</span>
-                        <p>Contiene premios básicos.</p>
+                        <p>Recompensas sencillas para empezar la aventura.</p>
                         <button class="boton-comprar">Abrir</button>
                     </div>
+                    <!-- Cofre Plata -->
                     <div class="cofre-card cofre-plata">
+                        <div class="cofre-icono-container">
+                            <i class="fas fa-gem cofre-icono"></i>
+                        </div>
                         <h3>Cofre Plata</h3>
-                        <span class="cofre-icono">💎</span>
-                        <p>Premios de nivel medio.</p>
+                        <p>Premios valiosos y la oportunidad de grandes ganancias.</p>
                         <button class="boton-comprar">Abrir</button>
                     </div>
+                    <!-- Cofre Leyenda -->
                     <div class="cofre-card cofre-leyenda">
+                        <div class="cofre-icono-container">
+                            <i class="fas fa-crown cofre-icono"></i>
+                        </div>
                         <h3>Cofre Leyenda</h3>
-                        <span class="cofre-icono">👑</span>
-                        <p>Los premios más valiosos.</p>
+                        <p>Los premios más exclusivos. ¡Un tesoro digno de reyes!</p>
                         <button class="boton-comprar">Abrir</button>
                     </div>
                 </div>
