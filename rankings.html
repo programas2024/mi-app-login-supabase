@@ -10,6 +10,7 @@
     <style>
         body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fondo claro y vibrante */
     background: linear-gradient(135deg, #e0eafc, #cfdef3);
     color: #333;
     margin: 0;
@@ -24,6 +25,7 @@
 .container {
     width: 100%;
     max-width: 900px;
+    /* Contenedor semi-transparente que se adapta al fondo */
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(15px);
     border-radius: 20px;
@@ -51,6 +53,7 @@
 }
 
 #back-to-dashboard-from-rankings {
+    /* Estilo de botón elegante y de cristal */
     background: rgba(255, 255, 255, 0.6);
     color: #333;
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -79,17 +82,14 @@
     gap: 25px;
 }
 
-/* --- ESTILO DE LOS RANGOS MEJORADO --- */
 .rank-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 30px;
     border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    /* Sombra elegante de múltiples capas para profundidad */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 
-                0 0 0 2px rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     text-align: center;
     position: relative;
@@ -97,15 +97,28 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* Fondo semi-transparente para dar un efecto de cristal */
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
+    /* Fondo de item de ranking más claro */
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.rank-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: background 0.3s ease;
+}
+
+.rank-item:hover::before {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .rank-item:hover {
     transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-                0 0 0 2px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .current-user-rank {
@@ -123,8 +136,7 @@
     margin-bottom: 15px;
     position: relative;
     z-index: 1;
-    /* Sombra de texto refinada */
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     animation: fade-in 1s ease-out;
 }
 
@@ -138,7 +150,6 @@
     font-size: 2.2em;
     font-weight: bold;
     margin-bottom: 5px;
-    /* Degradado de texto más suave */
     background: linear-gradient(45deg, #1f1f1f, #888);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -150,46 +161,41 @@
     margin-bottom: 20px;
 }
 
-/* Colores de iconos y fondos */
-.rank-bronze-icon { color: #cd7f32; text-shadow: 0 0 8px #cd7f32; }
-.rank-silver-icon { color: #c0c0c0; text-shadow: 0 0 8px #c0c0c0; }
-.rank-gold-icon { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
-.rank-mystic-icon { color: #8a2be2; text-shadow: 0 0 8px #8a2be2; }
-.rank-diamond-icon { color: #00e5ff; text-shadow: 0 0 8px #00e5ff; }
-.rank-elite-icon { color: #e91e63; text-shadow: 0 0 8px #e91e63; }
-.rank-legendary-icon { color: #ff9800; text-shadow: 0 0 8px #ff9800; }
-.rank-celestial-icon { color: #4fc3f7; text-shadow: 0 0 8px #4fc3f7; }
-.rank-archangel-icon { color: #ffeb3b; text-shadow: 0 0 8px #ffeb3b; }
-.rank-titan-icon { color: #607d8b; text-shadow: 0 0 8px #607d8b; }
-.rank-dragon-icon { color: #c62828; text-shadow: 0 0 8px #c62828; }
-.rank-phoenix-icon { color: #ff5722; text-shadow: 0 0 8px #ff5722; }
-.rank-omnipotent-icon { color: #7b1fa2; text-shadow: 0 0 8px #7b1fa2; }
-.rank-infinite-icon { color: #00c853; text-shadow: 0 0 8px #00c853; }
+/* Icon Colors (Actualizado para el fondo claro) */
+.rank-bronze-icon { color: #cd7f32; text-shadow: 0 0 8px rgba(205, 127, 50, 0.5); }
+.rank-silver-icon { color: #c0c0c0; text-shadow: 0 0 8px rgba(192, 192, 192, 0.5); }
+.rank-gold-icon { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
+.rank-mystic-icon { color: #8a2be2; text-shadow: 0 0 8px rgba(138, 43, 226, 0.5); }
+.rank-diamond-icon { color: #00e5ff; text-shadow: 0 0 8px rgba(0, 229, 255, 0.5); }
+.rank-elite-icon { color: #e91e63; text-shadow: 0 0 8px rgba(233, 30, 99, 0.5); }
+.rank-legendary-icon { color: #ff9800; text-shadow: 0 0 8px rgba(255, 152, 0, 0.5); }
+.rank-celestial-icon { color: #4fc3f7; text-shadow: 0 0 8px rgba(79, 195, 247, 0.5); }
+.rank-archangel-icon { color: #ffeb3b; text-shadow: 0 0 8px rgba(255, 235, 59, 0.5); }
+.rank-titan-icon { color: #607d8b; text-shadow: 0 0 8px rgba(96, 125, 139, 0.5); }
+.rank-dragon-icon { color: #c62828; text-shadow: 0 0 8px rgba(198, 40, 40, 0.5); }
+.rank-phoenix-icon { color: #ff5722; text-shadow: 0 0 8px rgba(255, 87, 34, 0.5); }
+.rank-omnipotent-icon { color: #7b1fa2; text-shadow: 0 0 8px rgba(123, 31, 162, 0.5); }
+.rank-infinite-icon { color: #00c853; text-shadow: 0 0 8px rgba(0, 200, 83, 0.5); }
 .rank-mystery-icon { color: #666; text-shadow: none; }
 .rank-creator-icon { color: #00ff00; text-shadow: 0 0 15px #00ff00; animation: creator-glow 2s infinite alternate; }
 
-@keyframes creator-glow {
-    0% { text-shadow: 0 0 15px #00ff00; }
-    100% { text-shadow: 0 0 30px #00ff00, 0 0 40px rgba(0, 255, 0, 0.5); }
-}
-
-/* Fondos de Rangos Mejorados (con degradados sutiles y texturas) */
-.rank-bronze-bg { background: linear-gradient(135deg, #d8bc98, #c9b491); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-silver-bg { background: linear-gradient(135deg, #e0e0e0, #c0c0c0); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-gold-bg { background: linear-gradient(135deg, #f7e08e, #e8c962); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-mystic-bg { background: linear-gradient(135deg, #b88ce8, #a269d5); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-diamond-bg { background: linear-gradient(135deg, #b3e5fc, #81c8f1); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-elite-bg { background: linear-gradient(135deg, #f08e82, #e57373); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-legendary-bg { background: linear-gradient(135deg, #ffb366, #e69d52); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-celestial-bg { background: linear-gradient(135deg, #81d4fa, #4fc3f7); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-archangel-bg { background: linear-gradient(135deg, #ffecb3, #ffd54f); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-titan-bg { background: linear-gradient(135deg, #b0c4de, #8e9ca8); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-dragon-bg { background: linear-gradient(135deg, #ef9a9a, #e57373); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-phoenix-bg { background: linear-gradient(135deg, #ffab91, #ff8a65); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-omnipotent-bg { background: linear-gradient(135deg, #ce93d8, #ba68c8); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-infinite-bg { background: linear-gradient(135deg, #81c784, #4caf50); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-mystery-bg { background: linear-gradient(135deg, #f0f0f0, #d0d0d0); }
-.rank-creator-bg { background: linear-gradient(135deg, #c8e6c9, #a5d6a7); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); animation: creator-bg-pulse 2s infinite alternate; }
+/* Los backgrounds de los rangos ahora son más claros para que no desentonen con el nuevo fondo de la página */
+.rank-bronze-bg { background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'), linear-gradient(135deg, #efe2c9, #d0b094); }
+.rank-silver-bg { background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'), linear-gradient(135deg, #d3d3d3, #b0b0b0); }
+.rank-gold-bg { background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'), linear-gradient(135deg, #f7e08e, #e8c962); }
+.rank-mystic-bg { background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'), linear-gradient(135deg, #a797c5, #8a7a9e); }
+.rank-diamond-bg { background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'), linear-gradient(135deg, #b3e5fc, #81c8f1); }
+.rank-elite-bg { background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'), linear-gradient(135deg, #f08e82, #e57373); }
+.rank-legendary-bg { background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'), linear-gradient(135deg, #ffb366, #e69d52); }
+.rank-celestial-bg { background-image: url('https://www.transparenttextures.com/patterns/always-grey.png'), linear-gradient(135deg, #81d4fa, #4fc3f7); }
+.rank-archangel-bg { background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png'), linear-gradient(135deg, #ffecb3, #ffd54f); }
+.rank-titan-bg { background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png'), linear-gradient(135deg, #b0c4de, #8e9ca8); }
+.rank-dragon-bg { background-image: url('https://www.transparenttextures.com/patterns/dragon-scales.png'), linear-gradient(135deg, #ef9a9a, #e57373); }
+.rank-phoenix-bg { background-image: url('https://www.transparenttextures.com/patterns/cross-stripes.png'), linear-gradient(135deg, #ffab91, #ff8a65); }
+.rank-omnipotent-bg { background-image: url('https://www.transparenttextures.com/patterns/washi.png'), linear-gradient(135deg, #ce93d8, #ba68c8); }
+.rank-infinite-bg { background-image: url('https://www.transparenttextures.com/patterns/xv.png'), linear-gradient(135deg, #81c784, #4caf50); }
+.rank-mystery-bg { background: #f0f0f0; }
+.rank-creator-bg { background-image: url('https://www.transparenttextures.com/patterns/light-venetian-blinds.png'), linear-gradient(135deg, #c8e6c9, #a5d6a7); animation: creator-bg-pulse 2s infinite alternate; }
 
 @keyframes creator-bg-pulse {
     0% { background-color: #c8e6c9; box-shadow: inset 0 0 20px #00ff00; }
@@ -261,17 +267,19 @@
     100% { transform: scale(1); }
 }
 
+/* Estilos de SweetAlert */
 .swal2-dark-mode {
-    background: linear-gradient(135deg, #f0f0f0, #000000) !important;
+    /* Ajustado para un fondo claro */
+    background: linear-gradient(135deg, #2f5a6e, #887bfa) !important;
     color: #ffffff !important;
     border-radius: 20px;
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .swal2-title {
-    color: #000000 !important;
+    color: #333 !important;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    animation: none;
+    animation: none; /* Desactivamos el brillo del título para un estilo más limpio */
 }
 
 .swal2-confirm-button {
