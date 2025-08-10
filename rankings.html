@@ -8,20 +8,62 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        /* Importación de fuentes de Google Fonts para los nombres de los rangos */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        /* Definición de variables globales en la pseudo-clase :root */
+:root {
+    /* Fondos */
+    --body-bg: linear-gradient(135deg, #e0eafc, #cfdef3);
+    --container-bg: rgba(255, 255, 255, 0.7);
+
+    /* Colores base */
+    --text-color-primary: #333;
+    --text-color-secondary: #666;
+    --border-color-light: rgba(255, 255, 255, 0.3);
+    --button-bg-color: rgba(255, 255, 255, 0.6);
+    --button-hover-bg: rgba(255, 255, 255, 0.9);
+
+    /* Colores de rangos */
+    --color-bronze: #cd7f32;
+    --color-silver: #c0c0c0;
+    --color-gold: #ffd700;
+    --color-mystic: #8a2be2;
+    --color-diamond: #00e5ff;
+    --color-elite: #e91e63;
+    --color-legendary: #ff9800;
+    --color-celestial: #4fc3f7;
+    --color-archangel: #ffeb3b;
+    --color-titan: #607d8b;
+    --color-dragon: #c62828;
+    --color-phoenix: #ff5722;
+    --color-omnipotent: #7b1fa2;
+    --color-infinite: #00c853;
+    --color-mystery: #666;
+    --color-creator: #00ff00;
+
+    /* Fuentes */
+    --font-medieval: 'MedievalSharp', serif;
+    --font-cinzel: 'Cinzel Decorative', serif;
+    --font-teko: 'Teko', sans-serif;
+    --font-bangers: 'Bangers', sans-serif;
+    --font-nosifier: 'Nosifier', cursive;
+    --font-merriweather: 'Merriweather', serif;
+    --font-orbitron: 'Orbitron', sans-serif;
+    --font-pixel: 'Press Start 2P', cursive;
+    
+    /* Importación de fuentes de Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+}
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
-    color: #333;
+    background: var(--body-bg);
+    color: var(--text-color-primary);
     margin: 0;
     padding: 20px;
     display: flex;
@@ -34,13 +76,13 @@ body {
 .container {
     width: 100%;
     max-width: 900px;
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--container-bg);
     backdrop-filter: blur(15px);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     padding: 40px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--border-color-light);
 }
 
 .header {
@@ -48,22 +90,22 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    border-bottom: 2px solid #cfdef3;
+    border-bottom: 2px solid var(--border-color-light);
     padding-bottom: 20px;
 }
 
 .header h1 {
     font-size: 3em;
-    color: #333;
+    color: var(--text-color-primary);
     margin: 0;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     letter-spacing: 1px;
 }
 
 #back-to-dashboard-from-rankings {
-    background: rgba(255, 255, 255, 0.6);
-    color: #333;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: var(--button-bg-color);
+    color: var(--text-color-primary);
+    border: 1px solid var(--border-color-light);
     padding: 12px 25px;
     border-radius: 50px;
     cursor: pointer;
@@ -75,7 +117,7 @@ body {
 }
 
 #back-to-dashboard-from-rankings:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--button-hover-bg);
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
@@ -116,13 +158,13 @@ body {
 }
 
 .current-user-rank {
-    border: 3px solid #ffd700;
+    border: 3px solid var(--color-gold);
     animation: glow-border 1.8s infinite alternate;
 }
 
 @keyframes glow-border {
-    0% { box-shadow: 0 0 15px #ffd700; }
-    100% { box-shadow: 0 0 25px #ffd700, 0 0 35px rgba(255, 215, 0, 0.5); }
+    0% { box-shadow: 0 0 15px var(--color-gold); }
+    100% { box-shadow: 0 0 25px var(--color-gold), 0 0 35px rgba(255, 215, 0, 0.5); }
 }
 
 .rank-item-icon {
@@ -150,106 +192,89 @@ body {
 
 .rank-item-threshold {
     font-size: 1.1em;
-    color: #666;
+    color: var(--text-color-secondary);
     margin-bottom: 20px;
 }
 
 /* --- ESTILOS INDIVIDUALES Y ÚNICOS PARA CADA RANGO --- */
 
-/* BRONCE */
 .rank-item.bronze { background: linear-gradient(135deg, #7b3f00, #4c2800); background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'); }
-.rank-item.bronze .rank-item-title { font-family: 'MedievalSharp', serif; background-image: linear-gradient(45deg, #e0a37e, #fff8dc); }
-.rank-item.bronze .rank-item-icon { color: #cd7f32; text-shadow: 0 0 8px #cd7f32; }
+.rank-item.bronze .rank-item-title { font-family: var(--font-medieval); background-image: linear-gradient(45deg, #e0a37e, #fff8dc); }
+.rank-item.bronze .rank-item-icon { color: var(--color-bronze); text-shadow: 0 0 8px var(--color-bronze); }
 
-/* PLATA */
 .rank-item.silver { background: linear-gradient(135deg, #c0c0c0, #a9a9a9); background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'); }
-.rank-item.silver .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #333, #000); }
-.rank-item.silver .rank-item-icon { color: #c0c0c0; text-shadow: 0 0 8px #c0c0c0; }
+.rank-item.silver .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #333, #000); }
+.rank-item.silver .rank-item-icon { color: var(--color-silver); text-shadow: 0 0 8px var(--color-silver); }
 
-/* ORO */
 .rank-item.gold { background: linear-gradient(135deg, #ffd700, #e6c200); background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'); }
-.rank-item.gold .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #7f6e3c, #4d3a24); }
-.rank-item.gold .rank-item-icon { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
+.rank-item.gold .rank-item-title { font-family: var(--font-cinzel); background-image: linear-gradient(45deg, #7f6e3c, #4d3a24); }
+.rank-item.gold .rank-item-icon { color: var(--color-gold); text-shadow: 0 0 8px var(--color-gold); }
 
-/* MÍSTICO */
 .rank-item.mystic { background: linear-gradient(135deg, #8a2be2, #e91e63); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-item.mystic .rank-item-title { font-family: 'Nosifier', cursive; background-image: linear-gradient(45deg, #fff, #c0c0c0); }
-.rank-item.mystic .rank-item-icon { color: #8a2be2; text-shadow: 0 0 8px #8a2be2; }
+.rank-item.mystic .rank-item-title { font-family: var(--font-nosifier); background-image: linear-gradient(45deg, #fff, #c0c0c0); }
+.rank-item.mystic .rank-item-icon { color: var(--color-mystic); text-shadow: 0 0 8px var(--color-mystic); }
 
-/* DIAMANTE */
 .rank-item.diamond { background: linear-gradient(135deg, #00e5ff, #00c8ff); background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'); }
-.rank-item.diamond .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #fff, #b3e5fc); }
-.rank-item.diamond .rank-item-icon { color: #00e5ff; text-shadow: 0 0 8px #00e5ff; }
+.rank-item.diamond .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #fff, #b3e5fc); }
+.rank-item.diamond .rank-item-icon { color: var(--color-diamond); text-shadow: 0 0 8px var(--color-diamond); }
 
-/* ELITE */
 .rank-item.elite { background: linear-gradient(135deg, #e91e63, #d32f2f); background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'); }
-.rank-item.elite .rank-item-title { font-family: 'Bangers', sans-serif; background-image: linear-gradient(45deg, #fff, #ffcdd2); }
-.rank-item.elite .rank-item-icon { color: #e91e63; text-shadow: 0 0 8px #e91e63; }
+.rank-item.elite .rank-item-title { font-family: var(--font-bangers); background-image: linear-gradient(45deg, #fff, #ffcdd2); }
+.rank-item.elite .rank-item-icon { color: var(--color-elite); text-shadow: 0 0 8px var(--color-elite); }
 
-/* LEGENDARIO */
 .rank-item.legendary { background: linear-gradient(135deg, #ff5722, #e64a19); background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'); }
-.rank-item.legendary .rank-item-title { font-family: 'Merriweather', serif; background-image: linear-gradient(45deg, #fff, #ffccbc); }
-.rank-item.legendary .rank-item-icon { color: #ff9800; text-shadow: 0 0 8px #ff9800; }
+.rank-item.legendary .rank-item-title { font-family: var(--font-merriweather); background-image: linear-gradient(45deg, #fff, #ffccbc); }
+.rank-item.legendary .rank-item-icon { color: var(--color-legendary); text-shadow: 0 0 8px var(--color-legendary); }
 
-/* CELESTIAL */
 .rank-item.celestial { background: linear-gradient(135deg, #81d4fa, #b3e5fc); background-image: url('https://www.transparenttextures.com/patterns/always-grey.png'); }
-.rank-item.celestial .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #333, #0d47a1); }
-.rank-item.celestial .rank-item-icon { color: #4fc3f7; text-shadow: 0 0 8px #4fc3f7; }
+.rank-item.celestial .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #333, #0d47a1); }
+.rank-item.celestial .rank-item-icon { color: var(--color-celestial); text-shadow: 0 0 8px var(--color-celestial); }
 
-/* ARCHANGEL */
 .rank-item.archangel { background: linear-gradient(135deg, #ffeb3b, #fff176); background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png'); }
-.rank-item.archangel .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #333, #000); }
-.rank-item.archangel .rank-item-icon { color: #ffeb3b; text-shadow: 0 0 8px #ffeb3b; }
+.rank-item.archangel .rank-item-title { font-family: var(--font-cinzel); background-image: linear-gradient(45deg, #333, #000); }
+.rank-item.archangel .rank-item-icon { color: var(--color-archangel); text-shadow: 0 0 8px var(--color-archangel); }
 
-/* TITAN */
 .rank-item.titan { background: linear-gradient(135deg, #607d8b, #455a64); background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
-.rank-item.titan .rank-item-title { font-family: 'Orbitron', sans-serif; background-image: linear-gradient(45deg, #e0e0e0, #fff); }
-.rank-item.titan .rank-item-icon { color: #607d8b; text-shadow: 0 0 8px #607d8b; }
+.rank-item.titan .rank-item-title { font-family: var(--font-orbitron); background-image: linear-gradient(45deg, #e0e0e0, #fff); }
+.rank-item.titan .rank-item-icon { color: var(--color-titan); text-shadow: 0 0 8px var(--color-titan); }
 
-/* DRAGÓN */
 .rank-item.dragon { background: linear-gradient(135deg, #c62828, #b71c1c); background-image: url('https://www.transparenttextures.com/patterns/dragon-scales.png'); }
-.rank-item.dragon .rank-item-title { font-family: 'Bangers', sans-serif; background-image: linear-gradient(45deg, #fff, #ffccbc); }
-.rank-item.dragon .rank-item-icon { color: #c62828; text-shadow: 0 0 8px #c62828; }
+.rank-item.dragon .rank-item-title { font-family: var(--font-bangers); background-image: linear-gradient(45deg, #fff, #ffccbc); }
+.rank-item.dragon .rank-item-icon { color: var(--color-dragon); text-shadow: 0 0 8px var(--color-dragon); }
 
-/* PHOENIX */
 .rank-item.phoenix { background: linear-gradient(135deg, #ff5722, #ff8a65); background-image: url('https://www.transparenttextures.com/patterns/cross-stripes.png'); }
-.rank-item.phoenix .rank-item-title { font-family: 'Merriweather', serif; background-image: linear-gradient(45deg, #fff, #ffcdd2); }
-.rank-item.phoenix .rank-item-icon { color: #ff5722; text-shadow: 0 0 8px #ff5722; }
+.rank-item.phoenix .rank-item-title { font-family: var(--font-merriweather); background-image: linear-gradient(45deg, #fff, #ffcdd2); }
+.rank-item.phoenix .rank-item-icon { color: var(--color-phoenix); text-shadow: 0 0 8px var(--color-phoenix); }
 
-/* OMNIPOTENTE */
 .rank-item.omnipotent { background: linear-gradient(135deg, #7b1fa2, #9c27b0); background-image: url('https://www.transparenttextures.com/patterns/washi.png'); }
-.rank-item.omnipotent .rank-item-title { font-family: 'Nosifier', cursive; background-image: linear-gradient(45deg, #fff, #d1c4e9); }
-.rank-item.omnipotent .rank-item-icon { color: #7b1fa2; text-shadow: 0 0 8px #7b1fa2; }
+.rank-item.omnipotent .rank-item-title { font-family: var(--font-nosifier); background-image: linear-gradient(45deg, #fff, #d1c4e9); }
+.rank-item.omnipotent .rank-item-icon { color: var(--color-omnipotent); text-shadow: 0 0 8px var(--color-omnipotent); }
 
-/* INFINITO */
 .rank-item.infinite { background: linear-gradient(135deg, #00c853, #1de9b6); background-image: url('https://www.transparenttextures.com/patterns/xv.png'); }
-.rank-item.infinite .rank-item-title { font-family: 'Press Start 2P', cursive; background-image: linear-gradient(45deg, #fff, #b9f6ca); }
-.rank-item.infinite .rank-item-icon { color: #00c853; text-shadow: 0 0 8px #00c853; }
+.rank-item.infinite .rank-item-title { font-family: var(--font-pixel); background-image: linear-gradient(45deg, #fff, #b9f6ca); }
+.rank-item.infinite .rank-item-icon { color: var(--color-infinite); text-shadow: 0 0 8px var(--color-infinite); }
 
-/* MISTERIO */
 .rank-item.mystery { background: linear-gradient(135deg, #333, #1a1a1a); background-image: url('https://www.transparenttextures.com/patterns/light-venetian-blinds.png'); }
-.rank-item.mystery .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #fff, #c0c0c0); }
-.rank-item.mystery .rank-item-icon { color: #666; text-shadow: none; }
+.rank-item.mystery .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #fff, #c0c0c0); }
+.rank-item.mystery .rank-item-icon { color: var(--color-mystery); text-shadow: none; }
 
-/* CREADOR DEL UNIVERSO */
 .rank-item.creator { background: linear-gradient(135deg, #003300, #000); animation: creator-bg-pulse 2s infinite alternate; }
-.rank-item.creator .rank-item-title { font-family: 'Press Start 2P', cursive; background-image: linear-gradient(45deg, #00ff00, #99ff99); }
-.rank-item.creator .rank-item-icon { color: #00ff00; text-shadow: 0 0 15px #00ff00; animation: creator-glow 2s infinite alternate; }
+.rank-item.creator .rank-item-title { font-family: var(--font-pixel); background-image: linear-gradient(45deg, #00ff00, #99ff99); }
+.rank-item.creator .rank-item-icon { color: var(--color-creator); text-shadow: 0 0 15px var(--color-creator); animation: creator-glow 2s infinite alternate; }
 
 @keyframes creator-glow {
-    0% { text-shadow: 0 0 15px #00ff00; }
-    100% { text-shadow: 0 0 30px #00ff00, 0 0 40px rgba(0, 255, 0, 0.5); }
+    0% { text-shadow: 0 0 15px var(--color-creator); }
+    100% { text-shadow: 0 0 30px var(--color-creator), 0 0 40px rgba(0, 255, 0, 0.5); }
 }
 
 @keyframes creator-bg-pulse {
-    0% { background-color: #003300; box-shadow: inset 0 0 20px #00ff00; }
-    100% { background-color: #004400; box-shadow: inset 0 0 30px #00ff00; }
+    0% { background-color: #003300; box-shadow: inset 0 0 20px var(--color-creator); }
+    100% { background-color: #004400; box-shadow: inset 0 0 30px var(--color-creator); }
 }
 
-
 .loader-rankings {
-    border: 8px solid #cfdef3;
-    border-top: 8px solid #00e5ff;
+    border: 8px solid var(--body-bg);
+    border-top: 8px solid var(--color-diamond);
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -314,13 +339,13 @@ body {
 
 .swal2-dark-mode {
     background: linear-gradient(135deg, #f0f0f0, #e0e0e0) !important;
-    color: #333 !important;
+    color: var(--text-color-primary) !important;
     border-radius: 20px;
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .swal2-title {
-    color: #333 !important;
+    color: var(--text-color-primary) !important;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     animation: none;
 }
@@ -340,7 +365,7 @@ body {
 }
 
 .swal2-html-container p {
-    color: #666;
+    color: var(--text-color-secondary);
 }
 
 .swal2-html-container strong {
@@ -351,6 +376,7 @@ body {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
     </style>
 </head>
 <body>
