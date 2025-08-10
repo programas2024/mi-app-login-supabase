@@ -8,7 +8,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        /* Definición de variables globales en la pseudo-clase :root */
+        *
+ * Importación de fuentes de Google Fonts
+ * ¡ATENCIÓN! Todas las reglas @import deben ir al principio del archivo.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/*
+ * Definición de variables globales usando :root
+ * Las variables se declaran después de los @import.
+ */
 :root {
     /* Fondos */
     --body-bg: linear-gradient(135deg, #e0eafc, #cfdef3);
@@ -48,16 +64,6 @@
     --font-merriweather: 'Merriweather', serif;
     --font-orbitron: 'Orbitron', sans-serif;
     --font-pixel: 'Press Start 2P', cursive;
-    
-    /* Importación de fuentes de Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 }
 
 body {
@@ -273,7 +279,7 @@ body {
 }
 
 .loader-rankings {
-    border: 8px solid var(--body-bg);
+    border: 8px solid var(--border-color-light);
     border-top: 8px solid var(--color-diamond);
     border-radius: 50%;
     width: 60px;
@@ -376,6 +382,18 @@ body {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
     </style>
 </head>
