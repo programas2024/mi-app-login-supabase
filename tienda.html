@@ -404,6 +404,46 @@
             color: #e0e0e0;
         }
 
+        /* --- ESTILOS PARA LA NUEVA SECCIÓN DE SORTEO --- */
+        .sorteo-card {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border: 1px solid #ffcc80;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .sorteo-card h3 {
+            font-size: 2em;
+            color: #ff9800; /* Color naranja distintivo */
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .sorteo-card p {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .sorteo-card button {
+            background: linear-gradient(135deg, #ff9800, #ffb74d);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        .sorteo-card button:hover {
+            background: linear-gradient(135deg, #ff8a00, #ffa83d);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 152, 0, 0.4);
+        }
+
         /* Animaciones */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -604,7 +644,6 @@
             header p {
                 font-size: 1.3em;
             }
-            /* AQUI EL CAMBIO: Se ajusta el layout para que los botones se mantengan en una sola fila */
             .header-buttons {
                 flex-direction: row;
                 justify-content: space-between;
@@ -613,17 +652,20 @@
                 top: 20px;
             }
             .header-button {
-                width: auto; /* Se elimina el ancho fijo para que los botones tengan su tamaño natural */
+                width: auto;
                 text-align: center;
                 box-sizing: border-box;
             }
             .info-button {
-                width: 40px; /* Se vuelve a su tamaño original para dispositivos pequeños */
+                width: 40px;
                 height: 40px;
-                border-radius: 50%; /* Se vuelve a redondear el botón */
+                border-radius: 50%;
                 font-size: 1.2em;
-                padding: 0; /* Se elimina el padding para que no ocupe todo el espacio */
+                padding: 0;
                 box-sizing: border-box;
+            }
+            .sorteo-card {
+                padding: 25px;
             }
         }
     </style>
@@ -649,6 +691,7 @@
                 <a href="#destacados" class="sidebar-item activo" data-target="destacados">Destacados</a>
                 <a href="#juegos-rapidos" class="sidebar-item" data-target="juegos-rapidos">Juegos Rápidos</a>
                 <a href="#cofres" class="sidebar-item" data-target="cofres">Cofres</a>
+                <a href="#sorteo" class="sidebar-item" data-target="sorteo">Sorteo</a>
                 <a href="#fragmentos" class="sidebar-item" data-target="fragmentos">Fragmentos</a>
                 <a href="#proximos" class="sidebar-item" data-target="proximos">Próximos Juegos</a>
             </nav>
@@ -731,6 +774,16 @@
                 </div>
             </section>
 
+            <!-- NUEVA SECCIÓN DE SORTEO -->
+            <section id="sorteo" class="seccion-contenido">
+                <h2>🎁 Sorteos</h2>
+                <div class="sorteo-card">
+                    <h3>¡Gana premios al instante!</h3>
+                    <p>Ingresa un código de sorteo o promoción para desbloquear premios especiales, diamantes, cofres y más.</p>
+                    <button onclick="canjearCodigo()">Canjear Código</button>
+                </div>
+            </section>
+
             <section id="fragmentos" class="seccion-contenido">
                 <h2>✨ Fragmentos</h2>
                 <div class="grid-container">
@@ -800,7 +853,7 @@
         <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="tienda.js"></script>
 
     <script>
@@ -923,6 +976,61 @@
                     confirmButton: 'swal2-lucete-button-v2'
                 }
             });
+        }
+        
+        // --- FUNCIÓN PARA EL BOTÓN "CANJEAR CÓDIGO" ---
+        async function canjearCodigo() {
+            const { value: codigo } = await Swal.fire({
+                title: 'Canjear Código',
+                input: 'text',
+                inputLabel: 'Ingresa tu código de premio',
+                inputPlaceholder: 'Ej. CODIGO-PREMIUM',
+                showCancelButton: true,
+                confirmButtonText: 'Canjear',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Por favor, ingresa un código';
+                    }
+                },
+                customClass: {
+                    popup: 'swal2-lucete-popup-v2',
+                    title: 'swal2-lucete-title-v2',
+                    htmlContainer: 'swal2-lucete-text-v2',
+                    confirmButton: 'swal2-lucete-button-v2',
+                    cancelButton: 'swal2-lucete-button-v2',
+                    input: 'swal2-input'
+                }
+            });
+
+            if (codigo) {
+                // Lógica de canje (simulada)
+                if (codigo.toUpperCase() === 'CODIGO-SECRETO') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Código canjeado!',
+                        text: '¡Has recibido 50 fragmentos de diamante! 🎉',
+                        customClass: {
+                            popup: 'swal2-lucete-popup-v2',
+                            title: 'swal2-lucete-title-v2',
+                            htmlContainer: 'swal2-lucete-text-v2',
+                            confirmButton: 'swal2-lucete-button-v2'
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Código inválido',
+                        text: 'El código ingresado no es válido. Intenta de nuevo.',
+                        customClass: {
+                            popup: 'swal2-lucete-popup-v2',
+                            title: 'swal2-lucete-title-v2',
+                            htmlContainer: 'swal2-lucete-text-v2',
+                            confirmButton: 'swal2-lucete-button-v2'
+                        }
+                    });
+                }
+            }
         }
     </script>
 </body>
