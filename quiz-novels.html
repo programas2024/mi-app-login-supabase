@@ -601,115 +601,227 @@
         
       // Tus preguntas de ciencia deben ir aquí
 const allScienceQuestions = [
-    {
-        question: "¿Qué artista pintó el famoso cuadro 'La noche estrellada'?",
-        options: ["Claude Monet", "Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci"],
-        answer: 1,
-        explanation: "Vincent van Gogh creó esta obra maestra en 1889, mientras estaba en el asilo de Saint-Rémy-de-Provence."
-    },
-    {
-        question: "¿En qué ciudad se encuentra el famoso Museo del Prado?",
-        options: ["París", "Madrid", "Londres", "Florencia"],
-        answer: 1,
-        explanation: "El Museo del Prado es una de las pinacotecas más importantes del mundo y se encuentra en Madrid, España."
-    },
-    {
-        question: "¿Qué artista es conocido por la obra 'La persistencia de la memoria', con los relojes derretidos?",
-        options: ["Salvador Dalí", "Frida Kahlo", "Joan Miró", "Pablo Picasso"],
-        answer: 0,
-        explanation: "El artista surrealista Salvador Dalí es el autor de este icónico cuadro, pintado en 1931."
-    },
-    {
-        question: "¿Quién esculpió la famosa estatua de 'David' en la época del Renacimiento?",
-        options: ["Donatello", "Rafael Sanzio", "Miguel Ángel", "Sandro Botticelli"],
-        answer: 2,
-        explanation: "Miguel Ángel creó esta impresionante escultura de mármol entre 1501 y 1504."
-    },
-    {
-        question: "¿Qué artista es el principal representante del Pop Art y es famoso por sus latas de sopa Campbell's?",
-        options: ["Roy Lichtenstein", "Jackson Pollock", "Andy Warhol", "Jean-Michel Basquiat"],
-        answer: 2,
-        explanation: "Andy Warhol fue una figura central en el movimiento Pop Art, conocido por su crítica al consumismo y la cultura de masas."
-    },
-    {
-        question: "¿En qué país se encuentra la famosa ciudad de Petra, con su arquitectura tallada en la roca?",
-        options: ["Egipto", "Jordania", "Grecia", "Turquía"],
-        answer: 1,
-        explanation: "Petra es una antigua ciudad arqueológica en Jordania, famosa por su Templo de los Tesoros ('El Khazneh') y sus edificios excavados en la piedra."
-    },
-    {
-        question: "¿Qué pintora mexicana es reconocida por sus autorretratos y por su activismo político?",
-        options: ["María Izquierdo", "Leonora Carrington", "Remedios Varo", "Frida Kahlo"],
-        answer: 3,
-        explanation: "Frida Kahlo es una de las artistas más importantes de México, célebre por sus intensos autorretratos y su biografía personal."
-    },
-    {
-        question: "¿Qué obra de arte de Pablo Picasso retrata el bombardeo de un pueblo durante la Guerra Civil Española?",
-        options: ["Las señoritas de Avignon", "Guernica", "El viejo guitarrista ciego", "Retrato de Dora Maar"],
-        answer: 1,
-        explanation: "'Guernica' es un poderoso mural que Picasso pintó en 1937 para el pabellón español en la Exposición Internacional de París."
-    },
-    {
-        question: "¿Cuál es el nombre de la famosa escultura de una bailarina de Edgar Degas?",
-        options: ["El pensador", "La Venus de Milo", "La pequeña bailarina de catorce años", "El Discóbolo"],
-        answer: 2,
-        explanation: "Edgar Degas es conocido por sus representaciones de bailarinas, siendo esta una de sus esculturas más célebres."
-    },
-    {
-        question: "¿Qué famoso pintor y escultor fue uno de los padres del Cubismo?",
-        options: ["Salvador Dalí", "Henri Matisse", "Claude Monet", "Pablo Picasso"],
-        answer: 3,
-        explanation: "Pablo Picasso, junto con Georges Braque, desarrolló el Cubismo, un estilo que revolucionó el arte moderno."
-    },
-    {
-        question: "¿Qué movimiento artístico, caracterizado por sus impresiones de la vida cotidiana y paisajes con pinceladas sueltas, fue liderado por Claude Monet?",
-        options: ["Impresionismo", "Expresionismo", "Romanticismo", "Surrealismo"],
-        answer: 0,
-        explanation: "El Impresionismo, que toma su nombre del cuadro 'Impresión, sol naciente' de Monet, se centró en capturar la luz y el momento."
-    },
-    {
-        question: "¿Qué obra de arte de Pablo Picasso retrata el bombardeo de un pueblo durante la Guerra Civil Española?",
-        options: ["Las señoritas de Avignon", "Guernica", "El viejo guitarrista ciego", "Retrato de Dora Maar"],
-        answer: 1,
-        explanation: "'Guernica' es un poderoso mural que Picasso pintó en 1937 para el pabellón español en la Exposición Internacional de París."
-    },
-    {
-        question: "¿Quién es el artista detrás de la famosa obra de arte pop 'Campbell's Soup Cans'?",
-        options: ["Roy Lichtenstein", "Jackson Pollock", "Andy Warhol", "Jean-Michel Basquiat"],
-        answer: 2,
-        explanation: "Andy Warhol fue una figura central en el movimiento Pop Art, conocido por su crítica al consumismo y la cultura de masas."
-    },
-    {
-        question: "¿Qué famoso pintor y grabador holandés es conocido por su dominio del claroscuro en obras como 'La ronda de noche'?",
-        options: ["Johannes Vermeer", "Rembrandt van Rijn", "Pieter Bruegel el Viejo", "Hieronymus Bosch"],
-        answer: 1,
-        explanation: "Rembrandt es considerado uno de los mayores maestros del arte holandés y uno de los artistas más importantes de la historia del arte."
-    },
-    {
-        question: "¿Qué movimiento artístico buscaba expresar emociones profundas en lugar de la realidad objetiva, con figuras distorsionadas y colores intensos?",
-        options: ["Expresionismo", "Fauvismo", "Futurismo", "Dadaísmo"],
-        answer: 0,
-        explanation: "El Expresionismo fue un movimiento que se centró en la subjetividad, la experiencia emocional y la distorsión para transmitir la realidad interior del artista."
-    },
-    {
-        question: "¿Qué famosa pintura de Leonardo da Vinci se encuentra en el Museo del Louvre?",
-        options: ["La Última Cena", "La Gioconda (Mona Lisa)", "La Virgen de las Rocas", "Hombre de Vitruvio"],
-        answer: 1,
-        explanation: "'La Gioconda' o 'Mona Lisa' es una de las pinturas más famosas del mundo y es la joya de la corona del Museo del Louvre en París."
-    },
-    {
-        question: "¿Quién pintó los frescos del techo de la Capilla Sixtina en el Vaticano?",
-        options: ["Rafael Sanzio", "Leonardo da Vinci", "Miguel Ángel", "Donatello"],
-        answer: 2,
-        explanation: "Miguel Ángel dedicó cuatro años a pintar los más de 500 metros cuadrados del techo de la capilla entre 1508 y 1512."
-    },
-    {
-        question: "¿Qué obra de arte es una escultura icónica de un hombre en una pose de profundo pensamiento, creada por Auguste Rodin?",
-        options: ["El Discóbolo", "El Beso", "El pensador", "La Piedad"],
-        answer: 2,
-        explanation: "'El pensador' es una de las esculturas más famosas de la historia, a menudo utilizada como símbolo de la filosofía."
-    }
-];  // Variables del juego MEJORADAS
+  {
+    "question": "¿Qué novela de Gabriel García Márquez comienza con la famosa frase 'Muchos años después, frente al pelotón de fusilamiento, el coronel Aureliano Buendía había de recordar aquella tarde remota en que su padre lo llevó a conocer el hielo'?",
+    "options": [
+      "El amor en los tiempos del cólera",
+      "Cien años de soledad",
+      "Crónica de una muerte anunciada",
+      "El coronel no tiene quien le escriba"
+    ],
+    "answer": 1,
+    "explanation": "Cien años de soledad, publicada en 1967, es la obra más emblemática del autor colombiano y un pilar del realismo mágico."
+  },
+  {
+    "question": "¿Quién dirigió la trilogía original de 'El Señor de los Anillos'?",
+    "options": [
+      "George Lucas",
+      "Steven Spielberg",
+      "Peter Jackson",
+      "Christopher Nolan"
+    ],
+    "answer": 2,
+    "explanation": "El director neozelandés Peter Jackson llevó a la gran pantalla la épica saga de J.R.R. Tolkien, ganando 11 premios Óscar por la última película de la trilogía, El retorno del Rey."
+  },
+  {
+    "question": "¿Qué autor escribió la novela distópica '1984', donde se acuñó el término 'Gran Hermano'?",
+    "options": [
+      "Aldous Huxley",
+      "Ray Bradbury",
+      "George Orwell",
+      "Isaac Asimov"
+    ],
+    "answer": 2,
+    "explanation": "George Orwell, con su obra maestra '1984' publicada en 1949, imaginó una sociedad totalitaria que sigue siendo relevante para debates sobre la vigilancia y el control gubernamental."
+  },
+  {
+    "question": "En la película 'Pulp Fiction', ¿quién interpreta al gánster Vincent Vega?",
+    "options": [
+      "Bruce Willis",
+      "John Travolta",
+      "Samuel L. Jackson",
+      "Harvey Keitel"
+    ],
+    "answer": 1,
+    "explanation": "John Travolta, en uno de los papeles que relanzaron su carrera, interpreta a Vincent Vega, el socio de Jules Winnfield (Samuel L. Jackson) en la icónica película de Quentin Tarantino."
+  },
+  {
+    "question": "¿Qué personaje literario es un detective de Londres, famoso por su ingenio y su método deductivo, y vive en el 221B de Baker Street?",
+    "options": [
+      "Hércules Poirot",
+      "Philip Marlowe",
+      "Sherlock Holmes",
+      "Miss Marple"
+    ],
+    "answer": 2,
+    "explanation": "El legendario detective Sherlock Holmes, creado por el escritor británico Arthur Conan Doyle, es uno de los personajes más famosos de la ficción."
+  },
+  {
+    "question": "¿Qué actriz protagonizó la película 'El silencio de los inocentes' en el papel de la agente del FBI Clarice Starling?",
+    "options": [
+      "Julianne Moore",
+      "Jodie Foster",
+      "Nicole Kidman",
+      "Michelle Pfeiffer"
+    ],
+    "answer": 1,
+    "explanation": "Jodie Foster ganó el Óscar a la Mejor Actriz por su aclamada interpretación de Clarice Starling, una joven agente del FBI que persigue a un asesino en serie con la ayuda de un caníbal."
+  },
+  {
+    "question": "¿Qué obra literaria comienza con la frase 'Llamadme Ismael'?",
+    "options": [
+      "Don Quijote de la Mancha",
+      "La Odisea",
+      "Moby Dick",
+      "El viejo y el mar"
+    ],
+    "answer": 2,
+    "explanation": "Moby Dick, la épica novela de Herman Melville sobre la obsesión de un capitán por una ballena blanca, es una de las grandes obras de la literatura estadounidense."
+  },
+  {
+    "question": "¿Quién es el director de la película 'Parásitos' (Parasite), que ganó el Óscar a la Mejor Película en 2020?",
+    "options": [
+      "Quentin Tarantino",
+      "Bong Joon-ho",
+      "Alfonso Cuarón",
+      "Guillermo del Toro"
+    ],
+    "answer": 1,
+    "explanation": "El director surcoreano Bong Joon-ho hizo historia al ser la primera película de habla no inglesa en ganar el premio más prestigioso de la Academia."
+  },
+  {
+    "question": "¿Qué autor escribió 'El Código Da Vinci' y 'Ángeles y demonios'?",
+    "options": [
+      "Stephen King",
+      "George R.R. Martin",
+      "Dan Brown",
+      "John Grisham"
+    ],
+    "answer": 2,
+    "explanation": "Dan Brown es un autor conocido por sus thrillers con tramas complejas que mezclan historia, arte y conspiraciones, protagonizados por el profesor Robert Langdon."
+  },
+  {
+    "question": "¿Cuál es el nombre del famoso mago y director de la escuela de magia Hogwarts en la saga de 'Harry Potter'?",
+    "options": [
+      "Severus Snape",
+      "Albus Dumbledore",
+      "Lord Voldemort",
+      "Hagrid"
+    ],
+    "answer": 1,
+    "explanation": "Albus Dumbledore es el sabio y poderoso director de Hogwarts, quien guía y protege a Harry a lo largo de su lucha contra el mal."
+  },
+  {
+    "question": "¿Qué director es conocido por películas como 'Pulp Fiction', 'Kill Bill' y 'Reservoir Dogs'?",
+    "options": [
+      "Martin Scorsese",
+      "Quentin Tarantino",
+      "Alfred Hitchcock",
+      "Stanley Kubrick"
+    ],
+    "answer": 1,
+    "explanation": "Quentin Tarantino es famoso por su estilo único, diálogos agudos y referencias a la cultura pop."
+  },
+  {
+    "question": "¿En qué novela de Jane Austen, la protagonista es Elizabeth Bennet?",
+    "options": [
+      "Emma",
+      "Sensatez y sentimientos",
+      "Orgullo y prejuicio",
+      "Mansfield Park"
+    ],
+    "answer": 2,
+    "explanation": "Orgullo y prejuicio, publicada en 1813, es una de las novelas más populares de la literatura inglesa."
+  },
+  {
+    "question": "¿Qué actor interpretó a Neo en la película de ciencia ficción 'Matrix'?",
+    "options": [
+      "Tom Cruise",
+      "Keanu Reeves",
+      "Brad Pitt",
+      "Leonardo DiCaprio"
+    ],
+    "answer": 1,
+    "explanation": "Keanu Reeves se convirtió en un ícono del cine de acción por su papel como Neo, el elegido."
+  },
+  {
+    "question": "¿Cuál es el nombre del protagonista de 'Don Quijote de la Mancha'?",
+    "options": [
+      "Sancho Panza",
+      "Alonso Quijano",
+      "Rocinante",
+      "Aldonza Lorenzo"
+    ],
+    "answer": 1,
+    "explanation": "Alonso Quijano es el nombre real del personaje antes de convertirse en el famoso 'Don Quijote'."
+  },
+  {
+    "question": "¿Qué película de Martin Scorsese trata sobre la vida de un gánster y está basada en el libro 'Wiseguy'?",
+    "options": [
+      "Taxi Driver",
+      "Casino",
+      "Goodfellas",
+      "El lobo de Wall Street"
+    ],
+    "answer": 2,
+    "explanation": "Goodfellas, de 1990, es considerada una de las mejores películas de gánsteres de todos los tiempos."
+  },
+  {
+    "question": "¿Quién escribió 'El principito'?",
+    "options": [
+      "Julio Verne",
+      "Antoine de Saint-Exupéry",
+      "Victor Hugo",
+      "Albert Camus"
+    ],
+    "answer": 1,
+    "explanation": "'El principito' es una de las obras literarias más traducidas y vendidas del mundo, con profundas reflexiones filosóficas."
+  },
+  {
+    "question": "¿En qué película, Tom Hanks interpreta a un hombre que sobrevive a un accidente de avión y queda varado en una isla desierta?",
+    "options": [
+      "Náufrago",
+      "Salvar al soldado Ryan",
+      "Forrest Gump",
+      "Sully"
+    ],
+    "answer": 0,
+    "explanation": "'Náufrago' (Cast Away) es una película de 2000 dirigida por Robert Zemeckis y protagonizada por Tom Hanks."
+  },
+  {
+    "question": "¿Cuál es el nombre del autor de la novela 'Crimen y castigo'?",
+    "options": [
+      "León Tolstói",
+      "Fiódor Dostoievski",
+      "Antón Chéjov",
+      "Iván Turguénev"
+    ],
+    "answer": 1,
+    "explanation": "Fiódor Dostoievski es uno de los grandes novelistas de la literatura rusa, conocido por su exploración de la psicología humana."
+  },
+  {
+    "question": "¿Qué actriz es la protagonista de la película 'Barbie' (2023)?",
+    "options": [
+      "Ryan Gosling",
+      "Margot Robbie",
+      "America Ferrera",
+      "Greta Gerwig"
+    ],
+    "answer": 1,
+    "explanation": "Margot Robbie interpreta a Barbie, mientras que Ryan Gosling es Ken y Greta Gerwig la directora de la película."
+  },
+  {
+    "question": "¿Qué saga literaria y cinematográfica sigue las aventuras de un joven mago en un mundo de magia y hechicería?",
+    "options": [
+      "Las Crónicas de Narnia",
+      "El Señor de los Anillos",
+      "Harry Potter",
+      "Crepúsculo"
+    ],
+    "answer": 2,
+    "explanation": "Harry Potter, la saga creada por J.K. Rowling, se ha convertido en un fenómeno mundial tanto en los libros como en el cine."
+  }
+]; // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let incorrectAnswers = 0;
