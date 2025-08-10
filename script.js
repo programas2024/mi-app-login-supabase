@@ -50,6 +50,10 @@ let changeAvatarBtn; // Nueva referencia para el botón de cambiar avatar
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
 
+/**
+ * Muestra el cargador con un mensaje opcional.
+ * @param {string} message - El mensaje a mostrar en el cargador.
+ */
 function showLoader(message = 'Cargando...') {
     if (loaderDiv) {
         if (loaderText) {
@@ -59,12 +63,21 @@ function showLoader(message = 'Cargando...') {
     }
 }
 
+/**
+ * Oculta el cargador.
+ */
 function hideLoader() {
     if (loaderDiv) {
         loaderDiv.classList.add('loader-hidden');
     }
 }
 
+/**
+ * Muestra un SweetAlert2 con un ícono, título y texto.
+ * @param {string} icon - El ícono a mostrar ('success', 'error', 'warning', 'info', 'question').
+ * @param {string} title - El título de la alerta.
+ * @param {string} text - El texto del cuerpo de la alerta.
+ */
 function showSwal(icon, title, text) {
     const isAutoClose = (icon === 'success' || icon === 'info');
 
@@ -116,22 +129,28 @@ async function signUp() {
     }
 
     showLoader('Registrando...');
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    hideLoader();
+    try {
+        const { data, error } = await supabase.auth.signUp({ email, password });
 
-    if (error) {
-        let errorMessage = 'Error al registrarse. Inténtalo de nuevo.';
-        if (error.message.includes('User already registered')) {
-            errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
-        } else if (error.message.includes('AuthApiError: Password should be at least 6 characters')) {
-            errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+        if (error) {
+            let errorMessage = 'Error al registrarse. Inténtalo de nuevo.';
+            if (error.message.includes('User already registered')) {
+                errorMessage = 'Este correo ya está registrado. Intenta iniciar sesión.';
+            } else if (error.message.includes('AuthApiError: Password should be at least 6 characters')) {
+                errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+            }
+            showSwal('error', 'Fallo en Registro', errorMessage);
+        } else {
+            showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
+            signupEmail.value = '';
+            signupPassword.value = '';
+            showLoginForm();
         }
-        showSwal('error', 'Fallo en Registro', errorMessage);
-    } else {
-        showSwal('success', '¡Registro Exitoso!', 'Por favor, revisa tu correo electrónico para verificar tu cuenta e iniciar sesión.');
-        signupEmail.value = '';
-        signupPassword.value = '';
-        showLoginForm();
+    } catch (e) {
+        console.error("Error inesperado en signUp:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al registrarse.');
+    } finally {
+        hideLoader();
     }
 }
 
@@ -145,37 +164,53 @@ async function signIn() {
     }
 
     showLoader('Iniciando sesión...');
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    hideLoader();
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-        let errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
-        if (error.message.includes('Invalid login credentials')) {
-            errorMessage = 'Correo o contraseña incorrectos.';
-        } else if (error.message.includes('Email not confirmed')) {
-            errorMessage = 'Tu cuenta aún no ha sido verificada. Revisa tu correo.';
+        if (error) {
+            let errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
+            if (error.message.includes('Invalid login credentials')) {
+                errorMessage = 'Correo o contraseña incorrectos.';
+            } else if (error.message.includes('Email not confirmed')) {
+                errorMessage = 'Tu cuenta aún no ha sido verificada. Revisa tu correo.';
+            }
+            showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
+        } else {
+            showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
+            window.location.href = 'dashboard.html';
         }
-        showSwal('error', 'Fallo en Inicio de Sesión', errorMessage);
-    } else {
-        showSwal('success', '¡Bienvenido!', 'Inicio de sesión exitoso. Redirigiendo al juego...');
-        window.location.href = 'dashboard.html';
+    } catch (e) {
+        console.error("Error inesperado en signIn:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al iniciar sesión.');
+    } finally {
+        hideLoader();
     }
 }
 
 async function signOut() {
     showLoader('Cerrando sesión...');
-    const { error } = await supabase.auth.signOut();
-    hideLoader();
-
-    if (error) {
-        showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
-    } else {
-        showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
-        window.location.href = 'index.html';
+    try {
+        const { error } = await supabase.auth.signOut();
+        
+        if (error) {
+            showSwal('error', 'Error al cerrar sesión', 'No se pudo cerrar la sesión correctamente: ' + error.message);
+        } else {
+            showSwal('info', 'Sesión Cerrada', 'Has cerrado sesión. ¡Hasta pronto!');
+            window.location.href = 'index.html';
+        }
+    } catch (e) {
+        console.error("Error inesperado en signOut:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cerrar sesión.');
+    } finally {
+        hideLoader();
     }
 }
 
 // --- 5. Funciones de Gestión de Perfil (usadas en dashboard.html y profile.html) ---
+/**
+ * Carga los datos del perfil del usuario, o crea uno si no existe.
+ * @param {string} userId - El ID del usuario actual.
+ */
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
 
@@ -193,7 +228,6 @@ async function loadUserProfile(userId) {
             if (error.code === 'PGRST116') {
                 console.log('Perfil no encontrado, intentando crear uno básico.');
                 
-                // --- AQUI: SOLUCIÓN AL PROBLEMA ---
                 // Genera un nombre de usuario único usando una porción del ID del usuario.
                 const uniqueUsername = `jugador-${userId.slice(0, 8)}`;
 
@@ -210,7 +244,6 @@ async function loadUserProfile(userId) {
                 
                 if (insertError) {
                     console.error('Error al crear perfil básico:', insertError);
-                    // Ya no entramos en un bucle infinito, pero manejamos otros posibles errores de inserción
                     showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial: ' + insertError.message);
                 } else {
                     showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico. ¡Rellena tus datos en la sección de Perfil!');
@@ -237,7 +270,7 @@ async function loadUserProfile(userId) {
             if (countryInputProfile) countryInputProfile.value = data.country || '';
             if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
-            if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = data.perla;
+            if (pearlsDisplayProfile) pearlsDisplayDisplayProfile.textContent = data.perla;
 
             // Lógica para habilitar/deshabilitar el botón de la tienda
             if (shopBtn) {
@@ -261,73 +294,81 @@ async function loadUserProfile(userId) {
 }
 
 async function saveProfile() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        showSwal('error', 'Error', 'No hay sesión activa para guardar el perfil.');
-        return;
-    }
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            showSwal('error', 'Error', 'No hay sesión activa para guardar el perfil.');
+            return;
+        }
 
-    const newUsername = usernameInputProfile ? usernameInputProfile.value.trim() : '';
-    const newCountry = countryInputProfile ? countryInputProfile.value.trim() : '';
+        const newUsername = usernameInputProfile ? usernameInputProfile.value.trim() : '';
+        const newCountry = countryInputProfile ? countryInputProfile.value.trim() : '';
 
-    if (!newUsername) {
-        showSwal('warning', 'Nombre de Usuario', 'Por favor, ingresa un nombre de jugador.');
-        return;
-    }
+        if (!newUsername) {
+            showSwal('warning', 'Nombre de Usuario', 'Por favor, ingresa un nombre de jugador.');
+            return;
+        }
 
-    showLoader('Guardando perfil...');
-    const { error } = await supabase
-        .from('profiles')
-        .update({ username: newUsername, country: newCountry })
-        .eq('id', user.id);
-    
-    hideLoader();
-
-    if (error) {
-        showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
-    } else {
-        showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
-        await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
+        showLoader('Guardando perfil...');
+        const { error } = await supabase
+            .from('profiles')
+            .update({ username: newUsername, country: newCountry })
+            .eq('id', user.id);
+        
+        if (error) {
+            showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
+        } else {
+            showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
+            await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
+        }
+    } catch (e) {
+        console.error("Error inesperado en saveProfile:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al guardar el perfil.');
+    } finally {
+        hideLoader();
     }
 }
 
 async function giveGold() {
-    showLoader('Dando oro...');
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        showLoader('Dando oro...');
+        const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-        showSwal('error', 'Error', 'No hay sesión activa.');
+        if (!user) {
+            showSwal('error', 'Error', 'No hay sesión activa.');
+            return;
+        }
+
+        const { data: currentProfile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('gold')
+            .eq('id', user.id)
+            .single();
+
+        if (fetchError) {
+            showSwal('error', 'Error', 'No se pudo obtener el oro actual.');
+            return;
+        }
+
+        const newGold = (currentProfile.gold || 0) + 10;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ gold: newGold })
+            .eq('id', user.id);
+
+        if (error) {
+            showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
+        } else {
+            if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
+            showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
+        }
+    } catch (e) {
+        console.error("Error inesperado en giveGold:", e);
+        showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al dar oro.');
+    } finally {
         hideLoader();
-        return;
-    }
-
-    const { data: currentProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('gold')
-        .eq('id', user.id)
-        .single();
-
-    if (fetchError) {
-        showSwal('error', 'Error', 'No se pudo obtener el oro actual.');
-        hideLoader();
-        return;
-    }
-
-    const newGold = (currentProfile.gold || 0) + 10;
-
-    const { error } = await supabase
-        .from('profiles')
-        .update({ gold: newGold })
-        .eq('id', user.id);
-
-    hideLoader();
-
-    if (error) {
-        showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
-    } else {
-        if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
-        if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
-        showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
     }
 }
 
@@ -432,20 +473,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     if (emailToReset) {
                         showLoader('Enviando enlace de recuperación...');
-                        const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
-                            redirectTo: window.location.origin + '/reset-password.html'
-                        });
-                        hideLoader();
-
-                        if (error) {
-                            showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
-                        } else {
-                            showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                        try {
+                            const { error } = await supabase.auth.resetPasswordForEmail(emailToReset, {
+                                redirectTo: window.location.origin + '/reset-password.html'
+                            });
+                            if (error) {
+                                showSwal('error', 'Error', 'No se pudo enviar el correo de recuperación: ' + error.message);
+                            } else {
+                                showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
+                            }
+                        } catch (e) {
+                             console.error("Error inesperado al restablecer contraseña:", e);
+                             showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al enviar el enlace.');
+                        } finally {
+                            hideLoader();
                         }
                     }
                 });
             }
 
+            // Este listener se dispara cuando el usuario verifica su correo y regresa a la página
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log('Auth event in index.html:', event, 'Session:', session);
                 if (session && session.user && currentPage === 'index.html') {
@@ -506,7 +553,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 if (logoutBtnDashboard) logoutBtnDashboard.addEventListener('click', signOut);
 
-                // AQUI: Listener para el botón de la tienda
+                // Listener para el botón de la tienda
                 if (shopBtn) {
                     shopBtn.addEventListener('click', () => {
                         // Este código se ejecuta solo si el botón no está deshabilitado
