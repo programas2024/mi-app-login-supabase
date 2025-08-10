@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- NUEVA FUENTE PARA EL LEMA -->
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Variables CSS */
@@ -58,12 +60,12 @@
             letter-spacing: 2px;
             font-weight: 700;
         }
-         /* CAMBIO AQUI: Estilo del lema */
+       /* Estilo del lema */
         header p {
             font-family: 'Tangerine', cursive;
-            font-size: 2.2em; /* Aumentamos el tamaño para que se vea bien */
-            font-weight: 700; /* Lo hacemos más audaz */
-            color: #ffffff; /* Color blanco */
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #ffffff;
             margin-top: 10px;
             opacity: 1;
         }
@@ -539,7 +541,7 @@
                 margin-right: 0;
                 margin-bottom: 20px;
                 padding: 20px;
-                position: static; /* CAMBIO CLAVE: Permite que el sidebar se desplace con el scroll */
+                position: static;
             }
             .main-content {
                 padding: 20px;
@@ -560,7 +562,7 @@
                 font-size: 2em;
             }
             header p {
-                font-size: 1em;
+                font-size: 1.5em; /* Ajustado para la nueva fuente */
             }
             .header-buttons {
                 top: 15px;
@@ -573,7 +575,7 @@
             .info-button {
                 width: 40px;
                 height: 40px;
-                font-size: 1em;
+                font-size: 1.2em; /* Ajustado para el nuevo icono */
             }
         }
         @media (max-width: 768px) {
@@ -599,35 +601,29 @@
                 margin-top: 1.5em;
                 font-size: 1.8em;
             }
+            header p {
+                font-size: 1.3em;
+            }
+            /* AQUI EL CAMBIO: Se ajusta el layout para que los botones se mantengan en una sola fila */
             .header-buttons {
-                flex-direction: column;
-                align-items: stretch;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
                 gap: 10px;
                 top: 20px;
             }
             .header-button {
-                width: 100%;
+                width: auto; /* Se elimina el ancho fijo para que los botones tengan su tamaño natural */
                 text-align: center;
                 box-sizing: border-box;
             }
             .info-button {
-                width: 100%;
-                height: auto;
-                border-radius: 12px;
+                width: 40px; /* Se vuelve a su tamaño original para dispositivos pequeños */
+                height: 40px;
+                border-radius: 50%; /* Se vuelve a redondear el botón */
                 font-size: 1.2em;
-                padding: 10px 0;
+                padding: 0; /* Se elimina el padding para que no ocupe todo el espacio */
                 box-sizing: border-box;
-            }
-            .swal2-lucete-title-v2 {
-                font-size: 1.5em;
-            }
-            .swal2-lucete-text-v2 {
-                font-size: 0.9em;
-                padding: 0 10px;
-            }
-            .swal2-lucete-button-v2 {
-                font-size: 1em !important;
-                padding: 10px 25px !important;
             }
         }
     </style>
@@ -639,7 +635,7 @@
                 Regresar a Dashboard
             </button>
             <button id="info-button" class="header-button info-button" onclick="mostrarInfo()">
-                &#x1F6C8;
+                ?
             </button>
         </div>
 
@@ -803,6 +799,7 @@
     <footer>
         <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
  <script src="tienda.js"></script>
 
