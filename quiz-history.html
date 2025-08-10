@@ -1,11 +1,20 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Ciencia Extrema! 🔬</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Ciencia Extrema</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         :root {
             --primary-color: #6a11cb;
@@ -20,13 +29,11 @@
             --card-bg: #ffffff;
             --neon-shadow: 0 0 10px #2575fc, 0 0 20px #2575fc, 0 0 30px #2575fc;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: var(--bg-light);
             font-family: 'Poppins', sans-serif;
@@ -37,7 +44,6 @@
             color: var(--text-dark);
             overflow-x: hidden;
         }
-
         .quiz-container {
             background-color: var(--card-bg);
             border-radius: 25px;
@@ -51,7 +57,6 @@
             border: 3px solid rgba(106, 17, 203, 0.2);
             animation: glow 2s infinite alternate;
         }
-
         @keyframes glow {
             from {
                 box-shadow: 0 0 20px rgba(106, 17, 203, 0.3);
@@ -60,14 +65,12 @@
                 box-shadow: 0 0 30px rgba(37, 117, 252, 0.5);
             }
         }
-
         .header-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-
         .back-dashboard {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
@@ -83,18 +86,15 @@
             box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
             text-decoration: none;
         }
-
         .back-dashboard:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
         }
-
         .quiz-header {
             text-align: center;
             margin-bottom: 30px;
             position: relative;
         }
-
         .quiz-header h1 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-color);
@@ -108,7 +108,6 @@
             position: relative;
             display: inline-block;
         }
-
         .quiz-header h1::after {
             content: '';
             position: absolute;
@@ -120,14 +119,12 @@
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
-
         .quiz-header p {
             color: #666;
             font-size: 1.2em;
             max-width: 600px;
             margin: 0 auto;
         }
-
         .stats-container {
             display: flex;
             justify-content: space-between;
@@ -139,7 +136,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .stats-container::before {
             content: '';
             position: absolute;
@@ -149,20 +145,17 @@
             height: 100%;
             background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
         }
-
         .stat-box {
             text-align: center;
             flex: 1;
             padding: 10px;
             position: relative;
         }
-
         .stat-box h3 {
             font-size: 1.2em;
             margin-bottom: 10px;
             color: var(--primary-color);
         }
-
         .stat-value {
             font-size: 1.8em;
             font-weight: 700;
@@ -176,24 +169,20 @@
             margin: 0 auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .correct .stat-value {
             color: var(--correct-color);
             border: 3px solid var(--correct-color);
             animation: pulseCorrect 2s infinite;
         }
-
         .incorrect .stat-value {
             color: var(--incorrect-color);
             border: 3px solid var(--incorrect-color);
         }
-
         @keyframes pulseCorrect {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
-
         .timer-container {
             width: 100%;
             background-color: #f5f5f5;
@@ -203,7 +192,6 @@
             height: 20px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
-
         .timer-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--timer-color), #ff8a00);
@@ -213,7 +201,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .timer-bar::after {
             content: '';
             position: absolute;
@@ -221,18 +208,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, 
-                            rgba(255,255,255,0.1) 0%, 
-                            rgba(255,255,255,0.3) 50%, 
-                            rgba(255,255,255,0.1) 100%);
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
             animation: shine 2s infinite;
         }
-
         @keyframes shine {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
-
         .timer-text {
             text-align: center;
             font-weight: 700;
@@ -241,13 +223,11 @@
             font-size: 1.2em;
             text-shadow: 0 0 5px rgba(255, 138, 0, 0.3);
         }
-
         .question-container {
             margin-bottom: 30px;
             text-align: center;
             position: relative;
         }
-
         .question-number {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -264,12 +244,10 @@
             border: 3px solid white;
             animation: bounce 2s infinite;
         }
-
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-
         .question-text {
             font-size: 1.5em;
             font-weight: 700;
@@ -284,14 +262,12 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             border-left: 5px solid var(--primary-color);
         }
-
         .options-container {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .option-btn {
             background-color: white;
             border: 2px solid #e0e0e0;
@@ -307,13 +283,11 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .option-btn:hover {
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border-color: var(--primary-color);
         }
-
         .option-btn::before {
             content: attr(data-letter);
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -330,20 +304,17 @@
             font-size: 1.2em;
             box-shadow: 0 3px 10px rgba(106, 17, 203, 0.3);
         }
-
         .option-btn.correct {
             background-color: rgba(0, 176, 155, 0.1);
             border-color: var(--correct-color);
             color: var(--correct-color);
             animation: correctPulse 0.5s;
         }
-
         @keyframes correctPulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
         .option-btn.correct::after {
             content: '\f00c';
             font-family: 'Font Awesome 6 Free';
@@ -353,20 +324,17 @@
             color: var(--correct-color);
             font-size: 1.5em;
         }
-
         .option-btn.incorrect {
             background-color: rgba(255, 65, 108, 0.1);
             border-color: var(--incorrect-color);
             color: var(--incorrect-color);
             animation: shake 0.5s;
         }
-
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
             40%, 80% { transform: translateX(5px); }
         }
-
         .option-btn.incorrect::after {
             content: '\f00d';
             font-family: 'Font Awesome 6 Free';
@@ -376,25 +344,21 @@
             color: var(--incorrect-color);
             font-size: 1.5em;
         }
-
         .option-btn.disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .option-btn.hidden-option {
             display: none;
         }
-
         .boosters-container {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-top: 30px;
         }
-
         .booster-btn {
             background: linear-gradient(135deg, var(--boost-color), #4a00e0);
             color: white;
@@ -412,7 +376,6 @@
             overflow: hidden;
             z-index: 1;
         }
-
         .booster-btn::before {
             content: '';
             position: absolute;
@@ -425,16 +388,13 @@
             transition: opacity 0.3s ease;
             z-index: -1;
         }
-
         .booster-btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(142, 45, 226, 0.6);
         }
-
         .booster-btn:hover::before {
             opacity: 1;
         }
-
         .booster-btn:disabled {
             opacity: 0;
             height: 0;
@@ -443,11 +403,9 @@
             pointer-events: none;
             transition: all 0.3s ease;
         }
-
         .booster-btn i {
             font-size: 1.2em;
         }
-
         .feedback-container {
             margin-top: 20px;
             padding: 20px;
@@ -458,29 +416,24 @@
             animation: fadeIn 0.5s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .correct-feedback {
             background-color: rgba(0, 176, 155, 0.2);
             color: var(--correct-color);
             border-left: 5px solid var(--correct-color);
         }
-
         .incorrect-feedback {
             background-color: rgba(255, 65, 108, 0.2);
             color: var(--incorrect-color);
             border-left: 5px solid var(--incorrect-color);
         }
-
         .result-container {
             text-align: center;
             display: none;
         }
-
         .restart-btn {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -497,7 +450,6 @@
             z-index: 1;
             font-weight: 700;
         }
-
         .restart-btn::before {
             content: '';
             position: absolute;
@@ -510,21 +462,16 @@
             transition: opacity 0.3s ease;
             z-index: -1;
         }
-
         .restart-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(106, 17, 203, 0.6);
         }
-
         .restart-btn:hover::before {
             opacity: 1;
         }
-
         .restart-btn i {
             margin-right: 10px;
         }
-
-        /* Efectos especiales */
         .confetti {
             position: fixed;
             width: 15px;
@@ -535,7 +482,6 @@
             z-index: 9999;
             animation: confettiFall 5s linear forwards;
         }
-
         @keyframes confettiFall {
             0% { 
                 transform: translateY(0) rotate(0deg) translateX(0);
@@ -546,7 +492,6 @@
                 opacity: 0;
             }
         }
-
         .emoji-float {
             position: fixed;
             font-size: 2em;
@@ -554,7 +499,6 @@
             animation: floatUp 4s linear forwards;
             pointer-events: none;
         }
-
         @keyframes floatUp {
             0% { 
                 transform: translateY(0) rotate(0deg);
@@ -565,45 +509,36 @@
                 opacity: 0;
             }
         }
-
         .science-icon {
             position: absolute;
             font-size: 1.5em;
             opacity: 0.1;
             z-index: 0;
         }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .quiz-container {
                 padding: 25px;
                 width: 98%;
             }
-            
             .quiz-header h1 {
                 font-size: 2em;
             }
-            
             .question-text {
                 font-size: 1.3em;
                 padding: 15px;
             }
-            
             .option-btn {
                 padding: 15px;
                 font-size: 1em;
             }
-            
             .boosters-container {
                 flex-direction: column;
                 align-items: center;
             }
-            
             .booster-btn {
                 width: 100%;
                 justify-content: center;
             }
-            
             .stat-value {
                 width: 50px;
                 height: 50px;
@@ -613,137 +548,288 @@
     </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <!-- Iconos científicos flotantes -->
-        <i class="science-icon fas fa-atom" style="top: 10%; left: 5%;"></i>
-        <i class="science-icon fas fa-flask" style="top: 20%; right: 8%;"></i>
-        <i class="science-icon fas fa-dna" style="bottom: 15%; left: 7%;"></i>
-        <i class="science-icon fas fa-microscope" style="bottom: 25%; right: 5%;"></i>
-        
-        <div class="header-nav">
-            <a href="games4.html" class="back-dashboard">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
-            <h1 style="margin: 0; font-size: 1.8em; background: linear-gradient(135deg, #6a11cb, #2575fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                HISTORIA EXTREMA
-            </h1>
-            <div style="width: 100px;"></div> <!-- Espaciador -->
+    <div class="quiz-container"> <div class="header-nav">
+            <a href="games4.html" class="back-dashboard"><i class="fas fa-arrow-left"></i> Volver</a>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h3>Correctas</h3>
+                    <div class="stat-value" id="correct-count">0</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Incorrectas</h3>
+                    <div class="stat-value" id="incorrect-count">0</div>
+                </div>
+            </div>
         </div>
+
 
         <div class="quiz-header">
-            <p>Demuestra que eres un genio con estas preguntas sobre historia alucinantes</p>
-        </div>
-
-        <div class="stats-container">
-            <div class="stat-box correct">
-                <h3>✅ Correctas</h3>
-                <div class="stat-value" id="correct-count">0</div>
-            </div>
-            <div class="stat-box incorrect">
-                <h3>❌ Incorrectas</h3>
-                <div class="stat-value" id="incorrect-count">0</div>
-            </div>
+            <h1>Ciencia Extrema</h1>
+            <p>Pon a prueba tus conocimientos en historia  y gana perlas.</p>
         </div>
 
         <div class="timer-container">
-            <div class="timer-bar" id="timer-bar"></div>
-            <div class="timer-text" id="timer-text">2:00</div>
+            <div id="timer-bar" class="timer-bar"></div>
         </div>
+        <div class="timer-text" id="timer-text">0:00</div>
 
         <div class="question-container">
-            <div class="question-number" id="question-number">1</div>
-            <div class="question-text" id="question-text"></div>
-            
-            <div class="options-container" id="options-container">
-                <!-- Las opciones se insertarán aquí con JavaScript -->
-            </div>
-            
-            <div class="feedback-container" id="feedback-container"></div>
+            <div class="question-number" id="question-number">1 / 8</div>
+            <h2 class="question-text" id="question-text"></h2>
         </div>
 
+        <div class="options-container" id="options-container">
+            </div>
+
+        <div id="feedback-container" class="feedback-container"></div>
+        
         <div class="boosters-container">
-            <button class="booster-btn" id="fifty-fifty-booster">
-                <i class="fas fa-star-half-alt"></i> 50/50
-            </button>
-            <button class="booster-btn" id="time-booster">
-                <i class="fas fa-clock"></i> +30s
-            </button>
+            <button id="fifty-fifty-booster" class="booster-btn"><i class="fas fa-divide"></i> 50/50</button>
+            <button id="time-booster" class="booster-btn"><i class="fas fa-hourglass-half"></i> +30s</button>
         </div>
 
         <div class="result-container" id="result-container">
-            <button class="restart-btn" id="restart-btn">
-                <i class="fas fa-redo"></i> ¡Jugar otra vez!
-            </button>
+            <button id="restart-btn" class="restart-btn"><i class="fas fa-sync-alt"></i> Reiniciar</button>
         </div>
     </div>
+   
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Banco de preguntas de ciencia MEJORADO
-        const allScienceQuestions =  [
-            {
-                question: "¿En qué año comenzó la Primera Guerra Mundial?",
-                options: ["1914", "1918", "1939", "1945"],
-                answer: 0,
-                explanation: "¡Correcto! La Primera Guerra Mundial comenzó en 1914 tras el asesinato del archiduque Francisco Fernando de Austria."
-            },
-            {
-                question: "¿Quién fue el primer presidente de los Estados Unidos?",
-                options: ["Thomas Jefferson", "Abraham Lincoln", "George Washington", "John Adams"],
-                answer: 2,
-                explanation: "¡George Washington fue el primer presidente de EE.UU. y gobernó desde 1789 hasta 1797!"
-            },
-            {
-                question: "¿Qué civilización construyó las pirámides de Giza?",
-                options: ["Romanos", "Griegos", "Egipcios", "Mayas"],
-                answer: 2,
-                explanation: "¡Los egipcios construyeron las pirámides como tumbas para los faraones hace más de 4,500 años!"
-            },
-            {
-                question: "¿En qué año cayó el Muro de Berlín?",
-                options: ["1985", "1989", "1991", "1975"],
-                answer: 1,
-                explanation: "¡El Muro de Berlín cayó el 9 de noviembre de 1989, marcando el inicio de la reunificación alemana!"
-            },
-            {
-                question: "¿Quién escribió 'El Capital'?",
-                options: ["Friedrich Engels", "Vladimir Lenin", "Karl Marx", "Adam Smith"],
-                answer: 2,
-                explanation: "¡Karl Marx escribió 'El Capital', una obra fundamental del pensamiento socialista!"
-            },
-            {
-                question: "¿Qué imperio fue gobernado por Julio César?",
-                options: ["Bizantino", "Romano", "Otomano", "Persa"],
-                answer: 1,
-                explanation: "¡Julio César fue un líder militar y político clave en la República Romana antes de su transformación en imperio!"
-            },
-            {
-                question: "¿En qué año Cristóbal Colón llegó a América?",
-                options: ["1492", "1502", "1521", "1485"],
-                answer: 0,
-                explanation: "¡Colón llegó a América el 12 de octubre de 1492, creyendo que había llegado a las Indias!"
-            },
-            {
-                question: "¿Qué evento histórico ocurrió el 14 de julio de 1789?",
-                options: ["Independencia de EE.UU.", "Toma de la Bastilla", "Revolución Rusa", "Caída de Napoleón"],
-                answer: 1,
-                explanation: "¡La Toma de la Bastilla marcó el inicio de la Revolución Francesa!"
-            },
-            {
-                question: "¿Quién fue el líder de la Revolución Cubana?",
-                options: ["Che Guevara", "Fidel Castro", "Hugo Chávez", "Simón Bolívar"],
-                answer: 1,
-                explanation: "¡Fidel Castro lideró la Revolución Cubana que derrocó a Batista en 1959!"
-            },
-            {
-                question: "¿Qué país fue el primero en enviar un humano al espacio?",
-                options: ["EE.UU.", "China", "URSS", "Francia"],
-                answer: 2,
-                explanation: "¡La URSS envió a Yuri Gagarin al espacio en 1961, convirtiéndolo en el primer humano en el espacio!"
-            }
-        ];
-
-        // Variables del juego MEJORADAS
+<script>
+    // Todo tu código se ejecuta dentro de este evento.
+    // Esto asegura que los scripts de Supabase y SweetAlert2 ya estén cargados.
+    document.addEventListener('DOMContentLoaded', function() {
+        
+      // Tus preguntas de ciencia deben ir aquí
+const allScienceQuestions = [
+    {
+        question: "¿En qué año llegó Cristóbal Colón a América?",
+        options: ["1491", "1492", "1500", "1519"],
+        answer: 1,
+        explanation: "Cristóbal Colón llegó a la isla de Guanahani, en el continente americano, el 12 de octubre de 1492."
+    },
+    {
+        question: "¿Qué rey español ordenó la Armada Invencible contra Inglaterra?",
+        options: ["Felipe I", "Carlos I", "Felipe II", "Felipe III"],
+        answer: 2,
+        explanation: "Felipe II fue el monarca que intentó invadir Inglaterra con una gran flota en 1588, conocida como la 'Armada Invencible'."
+    },
+    {
+        question: "¿Cuál fue el imperio que construyó la Gran Muralla China?",
+        options: ["Imperio Ming", "Imperio Han", "Imperio Qin", "Imperio Tang"],
+        answer: 2,
+        explanation: "El Imperio Qin, bajo el emperador Qin Shi Huang, inició la unificación de los diferentes tramos de la muralla."
+    },
+    {
+        question: "¿Qué civilización antigua es famosa por haber desarrollado la escritura cuneiforme?",
+        options: ["Egipcia", "Romana", "Sumeria", "Griega"],
+        answer: 2,
+        explanation: "Los sumerios, en la antigua Mesopotamia, son considerados los inventores del primer sistema de escritura."
+    },
+    {
+        question: "¿En qué año se produjo la caída del Muro de Berlín?",
+        options: ["1985", "1989", "1991", "1993"],
+        answer: 1,
+        explanation: "El 9 de noviembre de 1989, el Muro de Berlín fue derribado, marcando el fin de la Guerra Fría y la reunificación de Alemania."
+    },
+    {
+        question: "¿Quién fue el líder de la Revolución Rusa en 1917?",
+        options: ["Iósif Stalin", "León Trotski", "Vladímir Lenin", "Aleksandr Kérenski"],
+        answer: 2,
+        explanation: "Vladímir Lenin fue el principal líder bolchevique y figura central de la Revolución de Octubre."
+    },
+    {
+        question: "¿Qué antiguo filósofo griego fue maestro de Alejandro Magno?",
+        options: ["Sócrates", "Platón", "Aristóteles", "Pitágoras"],
+        answer: 2,
+        explanation: "Aristóteles fue mentor de Alejandro Magno, a quien educó en filosofía, política, ciencias y arte."
+    },
+    {
+        question: "¿En qué país tuvo lugar la Batalla de Normandía durante la Segunda Guerra Mundial?",
+        options: ["Italia", "Francia", "Alemania", "Bélgica"],
+        answer: 1,
+        explanation: "La Batalla de Normandía, que marcó el inicio de la liberación de Europa occidental, tuvo lugar en las costas de Francia en 1944."
+    },
+    {
+        question: "¿Cuál fue la primera civilización conocida en la historia?",
+        options: ["Sumeria", "Egipcia", "Valle del Indo", "China"],
+        answer: 0,
+        explanation: "La civilización sumeria, ubicada en Mesopotamia, es ampliamente reconocida como la primera civilización de la historia."
+    },
+    {
+        question: "¿Quién descubrió la penicilina?",
+        options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Robert Koch"],
+        answer: 1,
+        explanation: "Alexander Fleming descubrió por accidente el hongo que produce la penicilina en 1928, revolucionando la medicina."
+    },
+    {
+        question: "¿Qué evento marca tradicionalmente el fin de la Edad Media?",
+        options: ["La caída del Imperio Romano de Occidente", "La invención de la imprenta", "El descubrimiento de América", "La toma de Constantinopla por los turcos"],
+        answer: 3,
+        explanation: "La toma de Constantinopla por el Imperio Otomano en 1453 es un hito que marca el fin de la Edad Media."
+    },
+    {
+        question: "¿Quién fue el primer emperador de Roma?",
+        options: ["Julio César", "Nerón", "Marco Aurelio", "César Augusto"],
+        answer: 3,
+        explanation: "César Augusto, sobrino nieto de Julio César, se convirtió en el primer emperador romano, dando inicio al Principado."
+    },
+    {
+        question: "¿Qué tratado puso fin a la Primera Guerra Mundial?",
+        options: ["Tratado de Tordesillas", "Tratado de Utrecht", "Tratado de Versalles", "Tratado de Westfalia"],
+        answer: 2,
+        explanation: "El Tratado de Versalles, firmado en 1919, fue el acuerdo de paz que puso fin oficialmente a la Gran Guerra."
+    },
+    {
+        question: "¿Qué famosa heroína francesa lideró a las tropas durante la Guerra de los Cien Años?",
+        options: ["María Antonieta", "Juana de Arco", "Catalina la Grande", "Isabel la Católica"],
+        answer: 1,
+        explanation: "Juana de Arco, la 'Doncella de Orleans', fue una figura clave en la liberación de Francia del dominio inglés."
+    },
+    {
+        question: "¿Qué volcán sepultó la ciudad de Pompeya?",
+        options: ["El Etna", "El Vesubio", "El Stromboli", "El Teide"],
+        answer: 1,
+        explanation: "El Vesubio hizo erupción en el año 79 d.C., sepultando las ciudades romanas de Pompeya y Herculano bajo ceniza volcánica."
+    },
+    {
+        question: "¿Quién escribió la 'Declaración de Independencia' de los Estados Unidos?",
+        options: ["George Washington", "Benjamin Franklin", "Thomas Jefferson", "John Adams"],
+        answer: 2,
+        explanation: "Thomas Jefferson fue el principal autor de la Declaración de Independencia, un documento fundamental en la historia de EE.UU."
+    },
+    {
+        question: "¿Qué acontecimiento marca el fin de la prehistoria?",
+        options: ["El descubrimiento del fuego", "La invención de la rueda", "La aparición de la escritura", "La Edad del Hierro"],
+        answer: 2,
+        explanation: "La invención de la escritura marca la transición de la prehistoria a la historia."
+    },
+    {
+        question: "¿En qué país se originaron los Juegos Olímpicos antiguos?",
+        options: ["Egipto", "Grecia", "Roma", "Persia"],
+        answer: 1,
+        explanation: "Los primeros Juegos Olímpicos se celebraron en la ciudad de Olimpia, en la antigua Grecia, en el año 776 a.C."
+    },
+    {
+        question: "¿Cuál era el nombre del código de leyes babilónico?",
+        options: ["Código de Ur-Nammu", "Código de Hammurabi", "Código de Ešnunna", "Código de Lipit-Ištar"],
+        answer: 1,
+        explanation: "El Código de Hammurabi es uno de los conjuntos de leyes más antiguos y completos que se han encontrado."
+    },
+    {
+        question: "¿Qué personaje es conocido por la frase 'Pienso, luego existo'?",
+        options: ["Socrates", "Platón", "René Descartes", "Isaac Newton"],
+        answer: 2,
+        explanation: "Esta famosa frase, 'Cogito, ergo sum', es de René Descartes, y es un pilar de la filosofía occidental."
+    },
+    {
+        question: "¿Cuál es el río más largo del mundo?",
+        options: ["Río Nilo", "Río Amazonas", "Río Misisipi", "Río Yangtsé"],
+        answer: 1,
+        explanation: "El río Amazonas, ubicado en América del Sur, es generalmente considerado el río más largo del mundo, aunque su longitud sigue siendo objeto de debate científico."
+    },
+    {
+        question: "¿Qué país es conocido como la 'Tierra del Sol Naciente'?",
+        options: ["Corea del Sur", "China", "Japón", "Tailandia"],
+        answer: 2,
+        explanation: "Japón es conocido como la 'Tierra del Sol Naciente' debido a su posición más oriental en Asia."
+    },
+    {
+        question: "¿Cuál es la capital de Australia?",
+        options: ["Sídney", "Melbourne", "Canberra", "Brisbane"],
+        answer: 2,
+        explanation: "Aunque Sídney y Melbourne son ciudades más conocidas, la capital de Australia es Canberra."
+    },
+    {
+        question: "¿En qué continente se encuentra el Desierto del Sahara?",
+        options: ["América del Norte", "Asia", "África", "Europa"],
+        answer: 2,
+        explanation: "El Desierto del Sahara es el desierto cálido más grande del mundo y se encuentra en el norte de África."
+    },
+    {
+        question: "¿Qué océano es el más grande de la Tierra?",
+        options: ["Océano Atlántico", "Océano Índico", "Océano Ártico", "Océano Pacífico"],
+        answer: 3,
+        explanation: "El Océano Pacífico cubre aproximadamente un tercio de la superficie del planeta y es el más grande."
+    },
+    {
+        question: "¿Cuál es la montaña más alta del mundo?",
+        options: ["K2", "Monte Everest", "Monte McKinley", "Monte Kilimanjaro"],
+        answer: 1,
+        explanation: "El Monte Everest, con una altura de 8.848 metros sobre el nivel del mar, se encuentra en la cordillera del Himalaya."
+    },
+    {
+        question: "¿Qué país tiene más husos horarios?",
+        options: ["Rusia", "Estados Unidos", "China", "Francia"],
+        answer: 3,
+        explanation: "Francia, debido a sus territorios de ultramar, tiene un total de 12 husos horarios diferentes."
+    },
+    {
+        question: "¿Qué ciudad es conocida como la 'Ciudad Eterna'?",
+        options: ["Atenas", "París", "Roma", "El Cairo"],
+        answer: 2,
+        explanation: "Roma, capital de Italia, ha sido conocida como la 'Ciudad Eterna' desde la antigüedad."
+    },
+    {
+        question: "¿Cuál es el país más pequeño del mundo por área terrestre?",
+        options: ["Mónaco", "Ciudad del Vaticano", "San Marino", "Nauru"],
+        answer: 1,
+        explanation: "La Ciudad del Vaticano, con una superficie de tan solo 0,44 km², es el país más pequeño del mundo."
+    },
+    {
+        question: "¿Qué estrecho separa el continente de América de Asia?",
+        options: ["Estrecho de Gibraltar", "Canal de Suez", "Estrecho de Magallanes", "Estrecho de Bering"],
+        answer: 3,
+        explanation: "El Estrecho de Bering separa la península de Chukotka en Rusia de la península de Seward en Alaska."
+    },
+    {
+        question: "¿En qué país se encuentra la Gran Barrera de Coral?",
+        options: ["Indonesia", "Filipinas", "Australia", "Fiyi"],
+        answer: 2,
+        explanation: "La Gran Barrera de Coral, el sistema de arrecifes más grande del mundo, se encuentra en la costa noreste de Australia."
+    },
+    {
+        question: "¿Cuál es el punto más profundo de los océanos?",
+        options: ["Fosa de Puerto Rico", "Fosa de las Sandwich del Sur", "Fosa de las Marianas", "Fosa de Java"],
+        answer: 2,
+        explanation: "El Abismo de Challenger, en la Fosa de las Marianas, es el punto más profundo conocido en la hidrosfera de la Tierra."
+    },
+    {
+        question: "¿Qué país es una isla con forma de bota?",
+        options: ["Grecia", "Japón", "Italia", "Portugal"],
+        answer: 2,
+        explanation: "Italia es un país con forma de bota que se proyecta en el Mar Mediterráneo."
+    },
+    {
+        question: "¿Qué cordillera se extiende a lo largo de la costa oeste de América del Sur?",
+        options: ["Montañas Rocosas", "Himalaya", "Alpes", "Cordillera de los Andes"],
+        answer: 3,
+        explanation: "La Cordillera de los Andes es la cadena montañosa más larga del mundo, y atraviesa varios países de Sudamérica."
+    },
+    {
+        question: "¿Cuál es el lago más grande de África?",
+        options: ["Lago Tanganica", "Lago Chad", "Lago Victoria", "Lago Malawi"],
+        answer: 2,
+        explanation: "El Lago Victoria es el lago de agua dulce más grande de África y el segundo más grande del mundo."
+    },
+    {
+        question: "¿Qué río pasa por Londres, Inglaterra?",
+        options: ["Río Sena", "Río Támesis", "Río Rin", "Río Elba"],
+        answer: 1,
+        explanation: "El Río Támesis fluye a través del sur de Inglaterra y pasa por el centro de Londres."
+    },
+    {
+        question: "¿En qué país se encuentra el volcán activo Popocatépetl?",
+        options: ["Guatemala", "Perú", "México", "Ecuador"],
+        answer: 2,
+        explanation: "El Popocatépetl es uno de los volcanes más grandes y activos de México."
+    },
+    {
+        question: "¿Qué país tiene la mayor población del mundo?",
+        options: ["China", "India", "Estados Unidos", "Indonesia"],
+        answer: 1,
+        explanation: "Según estimaciones recientes, India ha superado a China como el país más poblado del mundo."
+    }
+]; // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let incorrectAnswers = 0;
@@ -769,22 +855,64 @@
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
 
-        // Inicializar el juego CON ESTILO
+         // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
+        async function updatePearls(pearlsToAdd) {
+            if (!supabase) {
+                console.log('Supabase no está disponible');
+                return null;
+            }
+            // ... (el resto de la función updatePearls es el mismo) ...
+            try {
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                
+                if (authError || !user) {
+                    console.log('Usuario no autenticado');
+                    return null;
+                }
+                
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentPearls = profile.perla || 0;
+                const newTotal = currentPearls + pearlsToAdd;
+                
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ perla: newTotal })
+                    .eq('id', user.id);
+                
+                if (updateError) throw updateError;
+                
+                return newTotal;
+            } catch (error) {
+                console.error('Error actualizando perlas:', error);
+                return null;
+            }
+        }
+
+        // ... (El resto de tus funciones de juego, como initGame, showQuestion, etc., va aquí) ...
+
         function initGame() {
-            // Seleccionar preguntas que no se hayan usado recientemente
             const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
             
-            // Si ya usamos muchas preguntas, reiniciamos el contador
-            if (availableQuestions.length < 8) {
+            if (availableQuestions.length < 11) {
                 usedQuestions = [];
             }
             
-            // Seleccionar 8 preguntas aleatorias
             selectedQuestions = [...availableQuestions]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 8);
             
-            // Registrar las preguntas usadas
             selectedQuestions.forEach(q => usedQuestions.push(q.question));
             
             currentQuestionIndex = 0;
@@ -799,28 +927,29 @@
             startTimer();
             showQuestion();
             
-            resultContainer.style.display = 'none';
-            feedbackContainer.style.display = 'none';
+            if (resultContainer) resultContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             
-            // Resetear potenciadores
-            fiftyFiftyBooster.style.opacity = '1';
-            fiftyFiftyBooster.style.height = 'auto';
-            fiftyFiftyBooster.style.padding = '15px 25px';
-            fiftyFiftyBooster.style.margin = '0';
-            fiftyFiftyBooster.disabled = false;
+            if (fiftyFiftyBooster) {
+                fiftyFiftyBooster.style.opacity = '1';
+                fiftyFiftyBooster.style.height = 'auto';
+                fiftyFiftyBooster.style.padding = '15px 25px';
+                fiftyFiftyBooster.style.margin = '0';
+                fiftyFiftyBooster.disabled = false;
+            }
             
-            timeBooster.style.opacity = '1';
-            timeBooster.style.height = 'auto';
-            timeBooster.style.padding = '15px 25px';
-            timeBooster.style.margin = '0';
-            timeBooster.disabled = false;
+            if (timeBooster) {
+                timeBooster.style.opacity = '1';
+                timeBooster.style.height = 'auto';
+                timeBooster.style.padding = '15px 25px';
+                timeBooster.style.margin = '0';
+                timeBooster.disabled = false;
+            }
             
-            // Efecto especial de inicio
-            createEmoji('⚔', 5);
-            createEmoji('🏛', 5);
+            createEmoji('🚀', 5);
+            createEmoji('🎥', 5);
         }
 
-        // Mostrar pregunta con ANIMACIÓN
         function showQuestion() {
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
@@ -831,9 +960,8 @@
             questionNumber.textContent = currentQuestionIndex + 1;
             questionText.textContent = question.question;
             
-            // Animación de entrada
             questionText.style.animation = 'none';
-            void questionText.offsetWidth; // Trigger reflow
+            void questionText.offsetWidth; 
             questionText.style.animation = 'fadeIn 0.5s';
             
             optionsContainer.innerHTML = '';
@@ -844,45 +972,38 @@
                 optionBtn.textContent = option;
                 optionBtn.onclick = () => selectOption(index);
                 
-                // Animación escalonada
                 optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
                 optionBtn.style.opacity = '0';
                 
                 optionsContainer.appendChild(optionBtn);
             });
             
-            feedbackContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
             timeBoostUsed = false;
             
-            // Efecto especial
             if (Math.random() > 0.7) {
                 createEmoji('🤔', 1);
             }
         }
-
-        // Seleccionar opción CON EFECTOS
+        
         function selectOption(selectedIndex) {
             if (!gameActive) return;
             
             const question = selectedQuestions[currentQuestionIndex];
             const optionButtons = document.querySelectorAll('.option-btn');
             
-            // Deshabilitar todos los botones
             optionButtons.forEach(btn => {
                 btn.classList.add('disabled');
                 btn.onclick = null;
             });
             
-            // Marcar respuesta correcta
             optionButtons[question.answer].classList.add('correct');
             
-            // Verificar respuesta
             if (selectedIndex === question.answer) {
                 optionButtons[selectedIndex].classList.add('correct');
                 correctAnswers++;
                 
-                // Efectos especiales
                 createConfetti(20);
                 createEmoji('🎉', 3);
                 createEmoji('👏', 3);
@@ -893,7 +1014,6 @@
                 optionButtons[selectedIndex].classList.add('incorrect');
                 incorrectAnswers++;
                 
-                // Efecto especial
                 createEmoji('💥', 2);
                 playSound('wrong');
                 
@@ -902,7 +1022,6 @@
             
             updateStats();
             
-            // Siguiente pregunta con retraso
             setTimeout(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < selectedQuestions.length) {
@@ -913,34 +1032,30 @@
             }, 2000);
         }
 
-        // Mostrar feedback DIVERTIDO
         function showFeedback(message, isCorrect) {
+            if (!feedbackContainer) return;
             feedbackContainer.textContent = message;
             feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
             feedbackContainer.style.display = 'block';
             
-            // Efecto de vibración para respuestas incorrectas
             if (!isCorrect) {
                 feedbackContainer.style.animation = 'shake 0.5s';
             }
         }
 
-        // Actualizar estadísticas CON ESTILO
         function updateStats() {
-            correctCount.textContent = correctAnswers;
-            incorrectCount.textContent = incorrectAnswers;
+            if (correctCount) correctCount.textContent = correctAnswers;
+            if (incorrectCount) incorrectCount.textContent = incorrectAnswers;
             
-            // Efecto cuando se acierta
-            if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
+            if (correctCount && correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
                 correctCount.style.transform = 'scale(1.2)';
                 setTimeout(() => {
                     correctCount.style.transform = 'scale(1)';
                 }, 300);
             }
-            correctCount.dataset.prev = correctAnswers;
+            if (correctCount) correctCount.dataset.prev = correctAnswers;
         }
 
-        // Temporizador MEJORADO
         function startTimer() {
             clearInterval(timer);
             updateTimerDisplay();
@@ -957,6 +1072,7 @@
         }
 
         function updateTimerDisplay() {
+            if (!timerText || !timerBar) return;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -964,13 +1080,11 @@
             const percentage = (timeLeft / 120) * 100;
             timerBar.style.width = `${percentage}%`;
             
-            // Cambiar color según el tiempo
             if (timeLeft <= 10) {
                 timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
                 timerText.style.color = '#ff416c';
                 timerText.style.animation = 'pulse 0.5s infinite alternate';
                 
-                // Efecto de urgencia
                 if (timeLeft <= 5 && timeLeft > 0) {
                     createEmoji('⏰', 1);
                     timerText.style.fontWeight = 'bold';
@@ -988,57 +1102,53 @@
                 timerText.style.animation = 'none';
             }
         }
-
-        // Tiempo agotado CON RESULTADOS
+        
         function timeUp() {
             gameActive = false;
-            
-            // Efecto especial
             createEmoji('⌛', 3);
             playSound('timeup');
-            
-            // Mostrar resultados directamente
             endGame();
         }
 
-        // Final del juego CON SWEETALERT2 ESPECTACULAR
-        function endGame() {
+        async function endGame() {
             gameActive = false;
             clearInterval(timer);
             
             const totalQuestions = selectedQuestions.length;
             const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            let title, icon, imageUrl, color, message;
+            let title, icon, imageUrl, color, message, pearlsToAdd = 0;
             
-            // Determinar resultado
             if (percentage >= 90) {
                 title = "¡ERES UN GENIO! 🌟";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://cdn-icons-png.flaticon.com/128/2201/2201580.png";
                 color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento sobre historia es asombroso!`;
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento en la historia  es asombroso!`;
+                pearlsToAdd = 9;
             } else if (percentage >= 70) {
                 title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
+                imageUrl = "https://cdn-icons-png.flaticon.com/128/5344/5344529.png";
                 color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un experto destacado!`;
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un experto en la historia!`;
+                pearlsToAdd = 6;
             } else if (percentage >= 50) {
                 title = "¡BUEN INTENTO! 😊";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/biology-2026102_640.png";
+                imageUrl = "https://www.flaticon.es/icono-gratis/historia_4650548";
                 color = "#ff8a00";
                 message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
+                pearlsToAdd = 4;
             } else {
                 title = "¡SIGUE PRACTICANDO! 📚";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://www.flaticon.es/icono-gratis/libro-de-historia_6462711";
                 color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La historia es divertida! Sigue intentándolo.`;
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡La historia es divertida es  divertida! Sigue intentándolo.`;
+                pearlsToAdd = 2;
             }
             
-            // Mostrar resultado con Sweetalert2
-            Swal.fire({
+            const swalOptions = {
                 title: title,
                 html: `
                     <div style="text-align: center;">
@@ -1079,103 +1189,126 @@
                         playSound('win');
                     }
                 }
-            }).then((result) => {
+            };
+            
+            try {
+                const newPearlCount = await updatePearls(pearlsToAdd);
+                
+                if (newPearlCount !== null) {
+                    swalOptions.html += `
+                        <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <span style="font-weight: bold;">¡Has ganado:</span>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
+                                        <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
+                                        <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                                Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (pearlsToAdd > 0) {
+                        playSound('coin');
+                    }
+                }
+            } catch (error) {
+                console.error('Error al procesar recompensas:', error);
+            }
+            
+            Swal.fire(swalOptions).then((result) => {
                 if (result.isConfirmed) {
                     initGame();
                 }
             });
         }
-
-        // Potenciador 50/50 CON ESTILO
-        fiftyFiftyBooster.onclick = function() {
-            if (fiftyFiftyUsed || !gameActive) return;
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            const optionButtons = document.querySelectorAll('.option-btn');
-            let optionsToHide = [];
-            
-            // Encontrar dos opciones incorrectas
-            for (let i = 0; i < question.options.length; i++) {
-                if (i !== question.answer && optionsToHide.length < 2) {
-                    optionsToHide.push(i);
+        
+        if (fiftyFiftyBooster) {
+            fiftyFiftyBooster.onclick = function() {
+                if (fiftyFiftyUsed || !gameActive) return;
+                
+                const question = selectedQuestions[currentQuestionIndex];
+                const optionButtons = document.querySelectorAll('.option-btn');
+                let optionsToHide = [];
+                
+                for (let i = 0; i < question.options.length; i++) {
+                    if (i !== question.answer && optionsToHide.length < 2) {
+                        optionsToHide.push(i);
+                    }
                 }
-            }
-            
-            // Ocultar opciones con efecto
-            optionsToHide.forEach(index => {
-                optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                
+                optionsToHide.forEach(index => {
+                    optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                    setTimeout(() => {
+                        optionButtons[index].classList.add('hidden-option');
+                    }, 300);
+                });
+                
+                fiftyFiftyUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
                 setTimeout(() => {
-                    optionButtons[index].classList.add('hidden-option');
+                    this.disabled = true;
                 }, 300);
-            });
-            
-            fiftyFiftyUsed = true;
-            
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            // Sonido y emoji
-            playSound('booster');
-            createEmoji('✨', 2);
-            
-            // Mensaje con SweetAlert
-            Swal.fire({
-                title: '¡POTENCIADOR ACTIVADO!',
-                html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff',
-                willOpen: () => {
-                    createConfetti(10);
-                }
-            });
-        };
+                
+                playSound('booster');
+                createEmoji('✨', 2);
+                
+                Swal.fire({
+                    title: '¡POTENCIADOR ACTIVADO!',
+                    html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    willOpen: () => {
+                        createConfetti(10);
+                    }
+                });
+            };
+        }
 
-        // Potenciador de tiempo
-        timeBooster.onclick = function() {
-            if (timeBoostUsed || !gameActive) return;
-            
-            timeLeft += 30;
-            updateTimerDisplay();
-            timeBoostUsed = true;
-            
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            // Efectos especiales
-            createEmoji('⏱️', 2);
-            createEmoji('➕', 2);
-            playSound('booster');
-            
-            // Mensaje
-            Swal.fire({
-                title: '¡TIEMPO EXTRA!',
-                html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff'
-            });
-        };
+        if (timeBooster) {
+            timeBooster.onclick = function() {
+                if (timeBoostUsed || !gameActive) return;
+                
+                timeLeft += 30;
+                updateTimerDisplay();
+                timeBoostUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
+                setTimeout(() => {
+                    this.disabled = true;
+                }, 300);
+                
+                createEmoji('⏱️', 2);
+                createEmoji('➕', 2);
+                playSound('booster');
+                
+                Swal.fire({
+                    title: '¡TIEMPO EXTRA!',
+                    html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff'
+                });
+            };
+        }
 
-        // EFECTOS ESPECIALES DIVERTIDOS
-
-        // Crear confeti
         function createConfetti(count = 20, isTimeUp = false) {
             const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
             
@@ -1201,7 +1334,6 @@
             }
         }
 
-        // Crear emojis flotantes
         function createEmoji(emoji, count = 1) {
             for (let i = 0; i < count; i++) {
                 const emojiElement = document.createElement('div');
@@ -1220,7 +1352,6 @@
             }
         }
 
-        // Sonidos (usando AudioContext para mejor compatibilidad)
         function playSound(type) {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1250,8 +1381,10 @@
                         duration = 0.5;
                         break;
                     case 'win':
-                        // Pequeña melodía de victoria
                         playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
+                        return;
+                    case 'coin':
+                        playNotes([659, 784, 880], [0, 0.1, 0.2]);
                         return;
                     default:
                         frequency = 440;
@@ -1288,40 +1421,40 @@
             });
         }
 
-        // Reiniciar juego
-        restartBtn.onclick = function() {
-            createEmoji('🔄', 3);
-            initGame();
-        };
+        if (restartBtn) {
+            restartBtn.onclick = function() {
+                createEmoji('🔄', 3);
+                initGame();
+            };
+        }
 
-        // Iniciar juego al cargar
-        window.onload = function() {
-            // Efecto de bienvenida
-            setTimeout(() => {
-                Swal.fire({
-                    title: '¡BIENVENIDO A HISTORIA EXTREMA!',
-                    html: `
-                        <div style="font-size: 1.1em;">
-                            <p>Responde preguntas de historia antes de que se acabe el tiempo.</p>
-                            <p>¡Usa los potenciadores para ayudarte!</p>
-                        </div>
-                        <img src="https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png" style="height: 120px; margin: 15px 0;">
-                    `,
-                    confirmButtonText: '¡Comenzar!',
-                    confirmButtonColor: '#6a11cb',
-                    background: '#ffffff',
-                    showCancelButton: false,
-                    customClass: {
-                        popup: 'animated bounceIn'
-                    },
-                    willOpen: () => {
-                        createConfetti(20);
-                    }
-                }).then(() => {
-                    initGame();
-                });
-            }, 500);
-        };
-    </script>
+        // Iniciar juego con SweetAlert2 al cargar la página
+        setTimeout(() => {
+            Swal.fire({
+                title: '¡BIENVENIDO A PELICULA EXTREMA!',
+                html: `
+                    <div style="font-size: 1.1em;">
+                        <p>Responde preguntas sobre historia antes de que se acabe el tiempo.</p>
+                        <p>¡Usa los potenciadores para ayudarte!</p>
+                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/128/6843/6843867.png" style="height: 120px; margin: 15px 0;">
+                `,
+                confirmButtonText: '¡Comenzar!',
+                confirmButtonColor: '#6a11cb',
+                background: '#ffffff',
+                showCancelButton: false,
+                customClass: {
+                    popup: 'animated bounceIn'
+                },
+                willOpen: () => {
+                    createConfetti(20);
+                }
+            }).then(() => {
+                initGame();
+            });
+        }, 500);
+
+    }); // Fin de document.addEventListener('DOMContentLoaded')
+</script>
 </body>
 </html>

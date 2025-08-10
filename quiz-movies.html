@@ -1,11 +1,20 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Ciencia Extrema! 🔬</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Ciencia Extrema</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         :root {
             --primary-color: #6a11cb;
@@ -20,13 +29,11 @@
             --card-bg: #ffffff;
             --neon-shadow: 0 0 10px #2575fc, 0 0 20px #2575fc, 0 0 30px #2575fc;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: var(--bg-light);
             font-family: 'Poppins', sans-serif;
@@ -37,7 +44,6 @@
             color: var(--text-dark);
             overflow-x: hidden;
         }
-
         .quiz-container {
             background-color: var(--card-bg);
             border-radius: 25px;
@@ -51,7 +57,6 @@
             border: 3px solid rgba(106, 17, 203, 0.2);
             animation: glow 2s infinite alternate;
         }
-
         @keyframes glow {
             from {
                 box-shadow: 0 0 20px rgba(106, 17, 203, 0.3);
@@ -60,14 +65,12 @@
                 box-shadow: 0 0 30px rgba(37, 117, 252, 0.5);
             }
         }
-
         .header-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
-
         .back-dashboard {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             color: white;
@@ -83,18 +86,15 @@
             box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
             text-decoration: none;
         }
-
         .back-dashboard:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
         }
-
         .quiz-header {
             text-align: center;
             margin-bottom: 30px;
             position: relative;
         }
-
         .quiz-header h1 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-color);
@@ -108,7 +108,6 @@
             position: relative;
             display: inline-block;
         }
-
         .quiz-header h1::after {
             content: '';
             position: absolute;
@@ -120,14 +119,12 @@
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
-
         .quiz-header p {
             color: #666;
             font-size: 1.2em;
             max-width: 600px;
             margin: 0 auto;
         }
-
         .stats-container {
             display: flex;
             justify-content: space-between;
@@ -139,7 +136,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .stats-container::before {
             content: '';
             position: absolute;
@@ -149,20 +145,17 @@
             height: 100%;
             background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
         }
-
         .stat-box {
             text-align: center;
             flex: 1;
             padding: 10px;
             position: relative;
         }
-
         .stat-box h3 {
             font-size: 1.2em;
             margin-bottom: 10px;
             color: var(--primary-color);
         }
-
         .stat-value {
             font-size: 1.8em;
             font-weight: 700;
@@ -176,24 +169,20 @@
             margin: 0 auto;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .correct .stat-value {
             color: var(--correct-color);
             border: 3px solid var(--correct-color);
             animation: pulseCorrect 2s infinite;
         }
-
         .incorrect .stat-value {
             color: var(--incorrect-color);
             border: 3px solid var(--incorrect-color);
         }
-
         @keyframes pulseCorrect {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
-
         .timer-container {
             width: 100%;
             background-color: #f5f5f5;
@@ -203,7 +192,6 @@
             height: 20px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
-
         .timer-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--timer-color), #ff8a00);
@@ -213,7 +201,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .timer-bar::after {
             content: '';
             position: absolute;
@@ -221,18 +208,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, 
-                            rgba(255,255,255,0.1) 0%, 
-                            rgba(255,255,255,0.3) 50%, 
-                            rgba(255,255,255,0.1) 100%);
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
             animation: shine 2s infinite;
         }
-
         @keyframes shine {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
-
         .timer-text {
             text-align: center;
             font-weight: 700;
@@ -241,13 +223,11 @@
             font-size: 1.2em;
             text-shadow: 0 0 5px rgba(255, 138, 0, 0.3);
         }
-
         .question-container {
             margin-bottom: 30px;
             text-align: center;
             position: relative;
         }
-
         .question-number {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -264,12 +244,10 @@
             border: 3px solid white;
             animation: bounce 2s infinite;
         }
-
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
-
         .question-text {
             font-size: 1.5em;
             font-weight: 700;
@@ -284,14 +262,12 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             border-left: 5px solid var(--primary-color);
         }
-
         .options-container {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .option-btn {
             background-color: white;
             border: 2px solid #e0e0e0;
@@ -307,13 +283,11 @@
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .option-btn:hover {
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border-color: var(--primary-color);
         }
-
         .option-btn::before {
             content: attr(data-letter);
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -330,20 +304,17 @@
             font-size: 1.2em;
             box-shadow: 0 3px 10px rgba(106, 17, 203, 0.3);
         }
-
         .option-btn.correct {
             background-color: rgba(0, 176, 155, 0.1);
             border-color: var(--correct-color);
             color: var(--correct-color);
             animation: correctPulse 0.5s;
         }
-
         @keyframes correctPulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
         .option-btn.correct::after {
             content: '\f00c';
             font-family: 'Font Awesome 6 Free';
@@ -353,20 +324,17 @@
             color: var(--correct-color);
             font-size: 1.5em;
         }
-
         .option-btn.incorrect {
             background-color: rgba(255, 65, 108, 0.1);
             border-color: var(--incorrect-color);
             color: var(--incorrect-color);
             animation: shake 0.5s;
         }
-
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
             40%, 80% { transform: translateX(5px); }
         }
-
         .option-btn.incorrect::after {
             content: '\f00d';
             font-family: 'Font Awesome 6 Free';
@@ -376,25 +344,21 @@
             color: var(--incorrect-color);
             font-size: 1.5em;
         }
-
         .option-btn.disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .option-btn.hidden-option {
             display: none;
         }
-
         .boosters-container {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-top: 30px;
         }
-
         .booster-btn {
             background: linear-gradient(135deg, var(--boost-color), #4a00e0);
             color: white;
@@ -412,7 +376,6 @@
             overflow: hidden;
             z-index: 1;
         }
-
         .booster-btn::before {
             content: '';
             position: absolute;
@@ -425,16 +388,13 @@
             transition: opacity 0.3s ease;
             z-index: -1;
         }
-
         .booster-btn:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(142, 45, 226, 0.6);
         }
-
         .booster-btn:hover::before {
             opacity: 1;
         }
-
         .booster-btn:disabled {
             opacity: 0;
             height: 0;
@@ -443,11 +403,9 @@
             pointer-events: none;
             transition: all 0.3s ease;
         }
-
         .booster-btn i {
             font-size: 1.2em;
         }
-
         .feedback-container {
             margin-top: 20px;
             padding: 20px;
@@ -458,29 +416,24 @@
             animation: fadeIn 0.5s;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .correct-feedback {
             background-color: rgba(0, 176, 155, 0.2);
             color: var(--correct-color);
             border-left: 5px solid var(--correct-color);
         }
-
         .incorrect-feedback {
             background-color: rgba(255, 65, 108, 0.2);
             color: var(--incorrect-color);
             border-left: 5px solid var(--incorrect-color);
         }
-
         .result-container {
             text-align: center;
             display: none;
         }
-
         .restart-btn {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -497,7 +450,6 @@
             z-index: 1;
             font-weight: 700;
         }
-
         .restart-btn::before {
             content: '';
             position: absolute;
@@ -510,21 +462,16 @@
             transition: opacity 0.3s ease;
             z-index: -1;
         }
-
         .restart-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(106, 17, 203, 0.6);
         }
-
         .restart-btn:hover::before {
             opacity: 1;
         }
-
         .restart-btn i {
             margin-right: 10px;
         }
-
-        /* Efectos especiales */
         .confetti {
             position: fixed;
             width: 15px;
@@ -535,7 +482,6 @@
             z-index: 9999;
             animation: confettiFall 5s linear forwards;
         }
-
         @keyframes confettiFall {
             0% { 
                 transform: translateY(0) rotate(0deg) translateX(0);
@@ -546,7 +492,6 @@
                 opacity: 0;
             }
         }
-
         .emoji-float {
             position: fixed;
             font-size: 2em;
@@ -554,7 +499,6 @@
             animation: floatUp 4s linear forwards;
             pointer-events: none;
         }
-
         @keyframes floatUp {
             0% { 
                 transform: translateY(0) rotate(0deg);
@@ -565,45 +509,36 @@
                 opacity: 0;
             }
         }
-
         .science-icon {
             position: absolute;
             font-size: 1.5em;
             opacity: 0.1;
             z-index: 0;
         }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .quiz-container {
                 padding: 25px;
                 width: 98%;
             }
-            
             .quiz-header h1 {
                 font-size: 2em;
             }
-            
             .question-text {
                 font-size: 1.3em;
                 padding: 15px;
             }
-            
             .option-btn {
                 padding: 15px;
                 font-size: 1em;
             }
-            
             .boosters-container {
                 flex-direction: column;
                 align-items: center;
             }
-            
             .booster-btn {
                 width: 100%;
                 justify-content: center;
             }
-            
             .stat-value {
                 width: 50px;
                 height: 50px;
@@ -613,197 +548,156 @@
     </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <!-- Iconos científicos flotantes -->
-        <i class="science-icon fas fa-atom" style="top: 10%; left: 5%;"></i>
-        <i class="science-icon fas fa-flask" style="top: 20%; right: 8%;"></i>
-        <i class="science-icon fas fa-dna" style="bottom: 15%; left: 7%;"></i>
-        <i class="science-icon fas fa-microscope" style="bottom: 25%; right: 5%;"></i>
-        
-        <div class="header-nav">
-            <a href="games4.html" class="back-dashboard">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
-            <h1 style="margin: 0; font-size: 1.8em; background: linear-gradient(135deg, #6a11cb, #2575fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                PELICULA EXTREMA
-            </h1>
-            <div style="width: 100px;"></div> <!-- Espaciador -->
+    <div class="quiz-container"> <div class="header-nav">
+            <a href="games4.html" class="back-dashboard"><i class="fas fa-arrow-left"></i> Volver</a>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h3>Correctas</h3>
+                    <div class="stat-value" id="correct-count">0</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Incorrectas</h3>
+                    <div class="stat-value" id="incorrect-count">0</div>
+                </div>
+            </div>
         </div>
+
 
         <div class="quiz-header">
-            <p>Demuestra que eres un genio con estas preguntas sobre peliculas alucinantes</p>
-        </div>
-
-        <div class="stats-container">
-            <div class="stat-box correct">
-                <h3>✅ Correctas</h3>
-                <div class="stat-value" id="correct-count">0</div>
-            </div>
-            <div class="stat-box incorrect">
-                <h3>❌ Incorrectas</h3>
-                <div class="stat-value" id="incorrect-count">0</div>
-            </div>
+            <h1>Ciencia Extrema</h1>
+            <p>Pon a prueba tus conocimientos en peliculas  y gana perlas.</p>
         </div>
 
         <div class="timer-container">
-            <div class="timer-bar" id="timer-bar"></div>
-            <div class="timer-text" id="timer-text">2:00</div>
+            <div id="timer-bar" class="timer-bar"></div>
         </div>
+        <div class="timer-text" id="timer-text">0:00</div>
 
         <div class="question-container">
-            <div class="question-number" id="question-number">1</div>
-            <div class="question-text" id="question-text"></div>
-            
-            <div class="options-container" id="options-container">
-                <!-- Las opciones se insertarán aquí con JavaScript -->
-            </div>
-            
-            <div class="feedback-container" id="feedback-container"></div>
+            <div class="question-number" id="question-number">1 / 8</div>
+            <h2 class="question-text" id="question-text"></h2>
         </div>
 
+        <div class="options-container" id="options-container">
+            </div>
+
+        <div id="feedback-container" class="feedback-container"></div>
+        
         <div class="boosters-container">
-            <button class="booster-btn" id="fifty-fifty-booster">
-                <i class="fas fa-star-half-alt"></i> 50/50
-            </button>
-            <button class="booster-btn" id="time-booster">
-                <i class="fas fa-clock"></i> +30s
-            </button>
+            <button id="fifty-fifty-booster" class="booster-btn"><i class="fas fa-divide"></i> 50/50</button>
+            <button id="time-booster" class="booster-btn"><i class="fas fa-hourglass-half"></i> +30s</button>
         </div>
 
         <div class="result-container" id="result-container">
-            <button class="restart-btn" id="restart-btn">
-                <i class="fas fa-redo"></i> ¡Jugar otra vez!
-            </button>
+            <button id="restart-btn" class="restart-btn"><i class="fas fa-sync-alt"></i> Reiniciar</button>
         </div>
     </div>
+   
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // Banco de preguntas de ciencia MEJORADO
-        const allScienceQuestions =  [
-            {
-                question: "¿Qué película de 1997 ganó 11 Oscars incluyendo Mejor Película y protagonizó a Leonardo DiCaprio y Kate Winslet?",
-                options: ["El Padrino", "Titanic", "Forrest Gump", "Gladiador"],
-                answer: 1,
-                explanation: "¡Correcto! Titanic (1997) es una de las películas más premiadas de la historia. 'Yo soy el rey del mundo!' 🚢"
-            },
-            {
-                question: "¿Qué actor interpretó a Jack Sparrow en la saga 'Piratas del Caribe'?",
-                options: ["Brad Pitt", "Johnny Depp", "Orlando Bloom", "Robert Downey Jr."],
-                answer: 1,
-                explanation: "¡Johnny Depp dio vida al excéntrico capitán Jack Sparrow! 🏴‍☠️"
-            },
-            {
-                question: "¿Qué película de superhéroes tiene la escena post-créditos donde Nick Fury le dice a Tony Stark 'Quiero hablar contigo sobre la iniciativa Vengadores'?",
-                options: ["Iron Man", "Iron Man 2", "The Avengers", "Capitán América: El Primer Vengador"],
-                answer: 0,
-                explanation: "¡Fue en Iron Man (2008) donde comenzó todo el Universo Cinematográfico de Marvel! 🦾"
-            },
-            {
-                question: "¿Qué película animada de Disney tiene la canción 'Let It Go'?",
-                options: ["Moana", "Frozen", "Encanto", "Raya y el último dragón"],
-                answer: 1,
-                explanation: "¡Frozen (2013) convirtió 'Let It Go' en un himno mundial! ❄️"
-            },
-            {
-                question: "¿Qué director es conocido como 'El Rey Midas de Hollywood' por éxitos como E.T., Jurassic Park y Indiana Jones?",
-                options: ["James Cameron", "Steven Spielberg", "Christopher Nolan", "Quentin Tarantino"],
-                answer: 1,
-                explanation: "¡Steven Spielberg es uno de los directores más exitosos de la historia del cine! 🎥"
-            },
-            {
-                question: "¿Qué película tiene la icónica frase 'May the Force be with you'?",
-                options: ["Star Trek", "Star Wars", "Guardianes de la Galaxia", "Dune"],
-                answer: 1,
-                explanation: "¡Star Wars popularizó esta frase que los fans repiten hasta hoy! ⚔️"
-            },
-            {
-                question: "¿Qué película ganó el primer Oscar a Mejor Película Animada en 2002?",
-                options: ["Shrek", "Monsters Inc.", "Spirited Away", "Toy Story"],
-                answer: 0,
-                explanation: "¡Shrek hizo historia al ganar el primer Oscar en esta categoría! 🧅"
-            },
-            {
-                question: "¿Qué actor interpretó a Neo en la trilogía de Matrix?",
-                options: ["Keanu Reeves", "Brad Pitt", "Tom Cruise", "Will Smith"],
-                answer: 0,
-                explanation: "¡Keanu Reeves como Neo nos mostró que la pastilla roja era la correcta! 💊"
-            },
-            {
-                question: "¿Qué película tiene como protagonista a un joven mago llamado Harry Potter?",
-                options: ["El Señor de los Anillos", "Las Crónicas de Narnia", "Harry Potter", "Percy Jackson"],
-                answer: 2,
-                explanation: "¡La saga de Harry Potter consta de 8 películas basadas en los libros de J.K. Rowling! ⚡"
-            },
-            {
-                question: "¿Qué película de 2019 se convirtió en la más taquillera de la historia hasta ese momento?",
-                options: ["Avengers: Endgame", "Avatar", "Titanic", "Star Wars: El despertar de la Fuerza"],
-                answer: 0,
-                explanation: "¡Avengers: Endgame recaudó más de $2.798 billones! Concluyendo 22 películas del UCM. 💥"
-            },
-            {
-                question: "¿Qué película tiene la escena donde Jack Nicholson dice 'Here's Johnny!'?",
-                options: ["El Resplandor", "Atrapado en el Tiempo", "Alguien Voló sobre el Nido del Cuco", "Batman"],
-                answer: 0,
-                explanation: "¡El Resplandor (1980) de Stanley Kubrick es un clásico del terror! 🔪"
-            },
-            {
-                question: "¿Qué actriz interpretó a Katniss Everdeen en 'Los Juegos del Hambre'?",
-                options: ["Emma Watson", "Jennifer Lawrence", "Kristen Stewart", "Scarlett Johansson"],
-                answer: 1,
-                explanation: "¡Jennifer Lawrence saltó a la fama mundial con este papel! 🏹"
-            },
-            {
-                question: "¿Qué película tiene como protagonista a un tiburón asesino?",
-                options: ["Tiburón", "Deep Blue Sea", "The Meg", "Aguas Profundas"],
-                answer: 0,
-                explanation: "¡Tiburón (1975) de Spielberg creó el concepto de 'blockbuster de verano'! 🦈"
-            },
-            {
-                question: "¿Qué película de 1994 protagonizada por Tom Hanks ganó 6 Oscars incluyendo Mejor Película?",
-                options: ["Forrest Gump", "Philadelphia", "Náufrago", "Salvar al Soldado Ryan"],
-                answer: 0,
-                explanation: "¡Forrest Gump es considerada una de las mejores películas de la historia! 🏃‍♂️"
-            },
-            {
-                question: "¿Qué película tiene la canción 'My Heart Will Go On' como tema principal?",
-                options: ["Ghost", "Titanic", "El Guardaespaldas", "Dirty Dancing"],
-                answer: 1,
-                explanation: "¡Celine Dion hizo llorar al mundo con esta balada de Titanic! ♫"
-            },
-            {
-                question: "¿Qué actor interpretó a Tony Stark/Iron Man en el Universo Cinematográfico de Marvel?",
-                options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
-                answer: 1,
-                explanation: "¡Robert Downey Jr. dio vida al genio, millonario, playboy y filántropo! 🦾"
-            },
-            {
-                question: "¿Qué película de 1985 tiene como protagonista a Marty McFly y el Doc Brown?",
-                options: ["Regreso al Futuro", "Cortocircuito", "Exploradores", "D.A.R.Y.L."],
-                answer: 0,
-                explanation: "¡Regreso al Futuro es una trilogía clásica de los 80s! ⏱️"
-            },
-            {
-                question: "¿Qué película animada de Pixar fue la primera en ganar el Oscar a Mejor Película Animada?",
-                options: ["Toy Story", "Monsters Inc.", "Buscando a Nemo", "Los Increíbles"],
-                answer: 3,
-                explanation: "¡Los Increíbles (2004) fue la primera película animada de Pixar en ganar este premio! 💪"
-            },
-            {
-                question: "¿Qué película tiene la icónica escena de la ducha con la música 'Psycho' de Bernard Herrmann?",
-                options: ["El Exorcista", "Psicosis", "Halloween", "El Silencio de los Inocentes"],
-                answer: 1,
-                explanation: "¡Psicosis (1960) de Alfred Hitchcock revolucionó el cine de terror! 🚿"
-            },
-            {
-                question: "¿Qué película tiene la frase 'Elemental, querido Watson'?",
-                options: ["Sherlock Holmes", "El Perro de Baskerville", "El Sabueso de los Baskerville", "Ninguna de las anteriores"],
-                answer: 3,
-                explanation: "¡Curiosamente, esta frase nunca aparece en las novelas originales de Sherlock Holmes! 🕵️‍♂️"
-            }
-        ];
-
-        // Variables del juego MEJORADAS
+<script>
+    // Todo tu código se ejecuta dentro de este evento.
+    // Esto asegura que los scripts de Supabase y SweetAlert2 ya estén cargados.
+    document.addEventListener('DOMContentLoaded', function() {
+        
+      // Tus preguntas de ciencia deben ir aquí
+const allScienceQuestions = [
+    {
+        question: "¿Qué actor protagonizó la película 'Forrest Gump'?",
+        options: ["Tom Hanks", "Brad Pitt", "Johnny Depp", "Leonardo DiCaprio"],
+        answer: 0,
+        explanation: "Tom Hanks ganó el Óscar a Mejor Actor por su papel de Forrest Gump."
+    },
+    {
+        question: "¿Quién es el director de la película 'Pulp Fiction'?",
+        options: ["Martin Scorsese", "Steven Spielberg", "Quentin Tarantino", "Alfred Hitchcock"],
+        answer: 2,
+        explanation: "Quentin Tarantino es conocido por su estilo único en películas como 'Pulp Fiction' y 'Kill Bill'."
+    },
+    {
+        question: "¿Cuál de estas películas de Disney fue la primera en ser un largometraje animado?",
+        options: ["La Cenicienta", "El Rey León", "Blancanieves y los siete enanitos", "Bambi"],
+        answer: 2,
+        explanation: "Blancanieves y los siete enanitos, estrenada en 1937, fue la primera de este tipo."
+    },
+    {
+        question: "¿Qué famoso actor interpretó a Iron Man en el Universo Cinematográfico de Marvel?",
+        options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
+        answer: 1,
+        explanation: "Robert Downey Jr. dio vida a Tony Stark, también conocido como Iron Man, durante más de una década."
+    },
+    {
+        question: "¿En qué película el personaje de Rose DeWitt Bukater es interpretado por Kate Winslet?",
+        options: ["El Padrino", "Titanic", "El Diario de Noa", "El Mago de Oz"],
+        answer: 1,
+        explanation: "Kate Winslet interpretó a Rose, la protagonista de 'Titanic', junto a Leonardo DiCaprio."
+    },
+    {
+        question: "¿Qué actriz ganó el Óscar por su papel como una 'reina de belleza' en 'La Favorita'?",
+        options: ["Olivia Colman", "Emma Stone", "Rachel Weisz", "Yalitza Aparicio"],
+        answer: 0,
+        explanation: "Olivia Colman se llevó el Óscar a Mejor Actriz por su brillante interpretación de la Reina Anne."
+    },
+    {
+        question: "¿Cuál es el nombre del famoso agente secreto británico, también conocido como 007?",
+        options: ["Ethan Hunt", "Jason Bourne", "James Bond", "Jack Ryan"],
+        answer: 2,
+        explanation: "James Bond es el nombre del agente de ficción creado por el novelista Ian Fleming."
+    },
+    {
+        question: "La icónica frase '¡Houston, tenemos un problema!' es de la película:",
+        options: ["Gravity", "Apollo 13", "Star Wars", "E.T., el extraterrestre"],
+        answer: 1,
+        explanation: "La frase se hizo famosa en la película 'Apollo 13', protagonizada por Tom Hanks, aunque la versión original es ligeramente diferente."
+    },
+    {
+        question: "¿En qué película Tim Burton dirigió a Johnny Depp en el papel de un hombre con tijeras en lugar de manos?",
+        options: ["Sweeney Todd", "Sombras Tenebrosas", "Alicia en el país de las maravillas", "El Joven Manos de Tijera"],
+        answer: 3,
+        explanation: "El Joven Manos de Tijera fue una de las primeras y más icónicas colaboraciones entre Tim Burton y Johnny Depp."
+    },
+    {
+        question: "¿Qué actor se hizo famoso por su papel como el detective John McClane en la saga de 'Jungla de Cristal'?",
+        options: ["Sylvester Stallone", "Arnold Schwarzenegger", "Bruce Willis", "Mel Gibson"],
+        answer: 2,
+        explanation: "Bruce Willis protagonizó esta exitosa saga de películas de acción, comenzando en 1988."
+    },
+    {
+        question: "¿Quién interpretó a Jack Dawson en 'Titanic'?",
+        options: ["Tom Cruise", "Brad Pitt", "Leonardo DiCaprio", "Johnny Depp"],
+        answer: 2,
+        explanation: "Leonardo DiCaprio interpretó al joven y carismático Jack, enamorado de Rose a bordo del Titanic."
+    },
+    {
+        question: "¿Qué película ganó el Óscar a Mejor Película en 2020?",
+        options: ["1917", "Parásitos", "Joker", "El irlandés"],
+        answer: 1,
+        explanation: "La película surcoreana 'Parásitos' hizo historia al ser la primera película de habla no inglesa en ganar el Óscar a Mejor Película."
+    },
+    {
+        question: "¿Cuál es el apellido de Rocky, el famoso boxeador interpretado por Sylvester Stallone?",
+        options: ["Marlow", "Balboa", "Creed", "Tyson"],
+        answer: 1,
+        explanation: "El nombre completo del personaje es Robert 'Rocky' Balboa, conocido por su apodo 'El semental italiano'."
+    },
+    {
+        question: "¿En qué película de 'Harry Potter' el protagonista asiste al Baile de Navidad?",
+        options: ["Harry Potter y la piedra filosofal", "Harry Potter y el prisionero de Azkaban", "Harry Potter y el cáliz de fuego", "Harry Potter y la orden del fénix"],
+        answer: 2,
+        explanation: "El Baile de Navidad es un evento clave en 'Harry Potter y el cáliz de fuego', parte del Torneo de los Tres Magos."
+    },
+    {
+        question: "Antes de ser actor, ¿a qué se dedicaba Arnold Schwarzenegger?",
+        options: ["Luchador de lucha libre", "Fisicoculturista", "Cantante de rock", "Piloto de carreras"],
+        answer: 1,
+        explanation: "Arnold Schwarzenegger fue un exitoso fisicoculturista antes de convertirse en una estrella de cine y, más tarde, en político."
+    },
+    {
+        question: "¿Qué famoso director es conocido por películas como 'E.T. el Extraterrestre' y 'Jurassic Park'?",
+        options: ["James Cameron", "George Lucas", "Steven Spielberg", "Ridley Scott"],
+        answer: 2,
+        explanation: "Steven Spielberg es uno de los directores más influyentes de la historia del cine, con numerosos éxitos de taquilla."
+    }
+]; // Variables del juego MEJORADAS
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
         let incorrectAnswers = 0;
@@ -829,22 +723,64 @@
         const fiftyFiftyBooster = document.getElementById('fifty-fifty-booster');
         const timeBooster = document.getElementById('time-booster');
 
-        // Inicializar el juego CON ESTILO
+         // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      
+        async function updatePearls(pearlsToAdd) {
+            if (!supabase) {
+                console.log('Supabase no está disponible');
+                return null;
+            }
+            // ... (el resto de la función updatePearls es el mismo) ...
+            try {
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                
+                if (authError || !user) {
+                    console.log('Usuario no autenticado');
+                    return null;
+                }
+                
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentPearls = profile.perla || 0;
+                const newTotal = currentPearls + pearlsToAdd;
+                
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ perla: newTotal })
+                    .eq('id', user.id);
+                
+                if (updateError) throw updateError;
+                
+                return newTotal;
+            } catch (error) {
+                console.error('Error actualizando perlas:', error);
+                return null;
+            }
+        }
+
+        // ... (El resto de tus funciones de juego, como initGame, showQuestion, etc., va aquí) ...
+
         function initGame() {
-            // Seleccionar preguntas que no se hayan usado recientemente
             const availableQuestions = allScienceQuestions.filter(q => !usedQuestions.includes(q.question));
             
-            // Si ya usamos muchas preguntas, reiniciamos el contador
-            if (availableQuestions.length < 8) {
+            if (availableQuestions.length < 11) {
                 usedQuestions = [];
             }
             
-            // Seleccionar 8 preguntas aleatorias
             selectedQuestions = [...availableQuestions]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 8);
             
-            // Registrar las preguntas usadas
             selectedQuestions.forEach(q => usedQuestions.push(q.question));
             
             currentQuestionIndex = 0;
@@ -859,28 +795,29 @@
             startTimer();
             showQuestion();
             
-            resultContainer.style.display = 'none';
-            feedbackContainer.style.display = 'none';
+            if (resultContainer) resultContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             
-            // Resetear potenciadores
-            fiftyFiftyBooster.style.opacity = '1';
-            fiftyFiftyBooster.style.height = 'auto';
-            fiftyFiftyBooster.style.padding = '15px 25px';
-            fiftyFiftyBooster.style.margin = '0';
-            fiftyFiftyBooster.disabled = false;
+            if (fiftyFiftyBooster) {
+                fiftyFiftyBooster.style.opacity = '1';
+                fiftyFiftyBooster.style.height = 'auto';
+                fiftyFiftyBooster.style.padding = '15px 25px';
+                fiftyFiftyBooster.style.margin = '0';
+                fiftyFiftyBooster.disabled = false;
+            }
             
-            timeBooster.style.opacity = '1';
-            timeBooster.style.height = 'auto';
-            timeBooster.style.padding = '15px 25px';
-            timeBooster.style.margin = '0';
-            timeBooster.disabled = false;
+            if (timeBooster) {
+                timeBooster.style.opacity = '1';
+                timeBooster.style.height = 'auto';
+                timeBooster.style.padding = '15px 25px';
+                timeBooster.style.margin = '0';
+                timeBooster.disabled = false;
+            }
             
-            // Efecto especial de inicio
-            createEmoji('🎬', 5);
-            createEmoji('🍿', 5);
+            createEmoji('🚀', 5);
+            createEmoji('🎥', 5);
         }
 
-        // Mostrar pregunta con ANIMACIÓN
         function showQuestion() {
             if (currentQuestionIndex >= selectedQuestions.length) {
                 endGame();
@@ -891,9 +828,8 @@
             questionNumber.textContent = currentQuestionIndex + 1;
             questionText.textContent = question.question;
             
-            // Animación de entrada
             questionText.style.animation = 'none';
-            void questionText.offsetWidth; // Trigger reflow
+            void questionText.offsetWidth; 
             questionText.style.animation = 'fadeIn 0.5s';
             
             optionsContainer.innerHTML = '';
@@ -904,45 +840,38 @@
                 optionBtn.textContent = option;
                 optionBtn.onclick = () => selectOption(index);
                 
-                // Animación escalonada
                 optionBtn.style.animation = `fadeIn 0.3s ${index * 0.1}s forwards`;
                 optionBtn.style.opacity = '0';
                 
                 optionsContainer.appendChild(optionBtn);
             });
             
-            feedbackContainer.style.display = 'none';
+            if (feedbackContainer) feedbackContainer.style.display = 'none';
             fiftyFiftyUsed = false;
             timeBoostUsed = false;
             
-            // Efecto especial
             if (Math.random() > 0.7) {
                 createEmoji('🤔', 1);
             }
         }
-
-        // Seleccionar opción CON EFECTOS
+        
         function selectOption(selectedIndex) {
             if (!gameActive) return;
             
             const question = selectedQuestions[currentQuestionIndex];
             const optionButtons = document.querySelectorAll('.option-btn');
             
-            // Deshabilitar todos los botones
             optionButtons.forEach(btn => {
                 btn.classList.add('disabled');
                 btn.onclick = null;
             });
             
-            // Marcar respuesta correcta
             optionButtons[question.answer].classList.add('correct');
             
-            // Verificar respuesta
             if (selectedIndex === question.answer) {
                 optionButtons[selectedIndex].classList.add('correct');
                 correctAnswers++;
                 
-                // Efectos especiales
                 createConfetti(20);
                 createEmoji('🎉', 3);
                 createEmoji('👏', 3);
@@ -953,7 +882,6 @@
                 optionButtons[selectedIndex].classList.add('incorrect');
                 incorrectAnswers++;
                 
-                // Efecto especial
                 createEmoji('💥', 2);
                 playSound('wrong');
                 
@@ -962,7 +890,6 @@
             
             updateStats();
             
-            // Siguiente pregunta con retraso
             setTimeout(() => {
                 currentQuestionIndex++;
                 if (currentQuestionIndex < selectedQuestions.length) {
@@ -973,34 +900,30 @@
             }, 2000);
         }
 
-        // Mostrar feedback DIVERTIDO
         function showFeedback(message, isCorrect) {
+            if (!feedbackContainer) return;
             feedbackContainer.textContent = message;
             feedbackContainer.className = 'feedback-container ' + (isCorrect ? 'correct-feedback' : 'incorrect-feedback');
             feedbackContainer.style.display = 'block';
             
-            // Efecto de vibración para respuestas incorrectas
             if (!isCorrect) {
                 feedbackContainer.style.animation = 'shake 0.5s';
             }
         }
 
-        // Actualizar estadísticas CON ESTILO
         function updateStats() {
-            correctCount.textContent = correctAnswers;
-            incorrectCount.textContent = incorrectAnswers;
+            if (correctCount) correctCount.textContent = correctAnswers;
+            if (incorrectCount) incorrectCount.textContent = incorrectAnswers;
             
-            // Efecto cuando se acierta
-            if (correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
+            if (correctCount && correctAnswers > parseInt(correctCount.dataset.prev || 0)) {
                 correctCount.style.transform = 'scale(1.2)';
                 setTimeout(() => {
                     correctCount.style.transform = 'scale(1)';
                 }, 300);
             }
-            correctCount.dataset.prev = correctAnswers;
+            if (correctCount) correctCount.dataset.prev = correctAnswers;
         }
 
-        // Temporizador MEJORADO
         function startTimer() {
             clearInterval(timer);
             updateTimerDisplay();
@@ -1017,6 +940,7 @@
         }
 
         function updateTimerDisplay() {
+            if (!timerText || !timerBar) return;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             timerText.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -1024,13 +948,11 @@
             const percentage = (timeLeft / 120) * 100;
             timerBar.style.width = `${percentage}%`;
             
-            // Cambiar color según el tiempo
             if (timeLeft <= 10) {
                 timerBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
                 timerText.style.color = '#ff416c';
                 timerText.style.animation = 'pulse 0.5s infinite alternate';
                 
-                // Efecto de urgencia
                 if (timeLeft <= 5 && timeLeft > 0) {
                     createEmoji('⏰', 1);
                     timerText.style.fontWeight = 'bold';
@@ -1048,57 +970,53 @@
                 timerText.style.animation = 'none';
             }
         }
-
-        // Tiempo agotado CON RESULTADOS
+        
         function timeUp() {
             gameActive = false;
-            
-            // Efecto especial
             createEmoji('⌛', 3);
             playSound('timeup');
-            
-            // Mostrar resultados directamente
             endGame();
         }
 
-        // Final del juego CON SWEETALERT2 ESPECTACULAR
-        function endGame() {
+        async function endGame() {
             gameActive = false;
             clearInterval(timer);
             
             const totalQuestions = selectedQuestions.length;
             const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            let title, icon, imageUrl, color, message;
+            let title, icon, imageUrl, color, message, pearlsToAdd = 0;
             
-            // Determinar resultado
             if (percentage >= 90) {
                 title = "¡ERES UN GENIO! 🌟";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://www.flaticon.es/icono-gratis/cine_1655698";
                 color = "#00b09b";
-                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento sobre peliculas es asombroso!`;
+                message = `¡Increíble! Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Tu conocimiento en el cine es asombroso!`;
+                pearlsToAdd = 5;
             } else if (percentage >= 70) {
                 title = "¡EXCELENTE TRABAJO! 👍";
                 icon = "success";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/astronomy-2026101_640.png";
+                imageUrl = "https://cdn-icons-png.flaticon.com/128/3163/3163508.png";
                 color = "#2575fc";
-                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un experto destacado!`;
+                message = `¡Muy bien! Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Estás en el camino para convertirte en un experto en cine!`;
+                pearlsToAdd = 4;
             } else if (percentage >= 50) {
                 title = "¡BUEN INTENTO! 😊";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2017/01/31/15/33/biology-2026102_640.png";
+                imageUrl = "https://cdn-icons-png.flaticon.com/128/1296/1296690.png";
                 color = "#ff8a00";
                 message = `Obtuviste <strong>${correctAnswers} de ${totalQuestions}</strong> respuestas correctas.<br><br>¡Sigue aprendiendo y mejorarás!`;
+                pearlsToAdd = 3;
             } else {
                 title = "¡SIGUE PRACTICANDO! 📚";
                 icon = "info";
-                imageUrl = "https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png";
+                imageUrl = "https://www.flaticon.es/icono-gratis/camara-de-video_2477590";
                 color = "#ff416c";
-                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Las peliculas es divertida! Sigue intentándolo.`;
+                message = `Acertaste <strong>${correctAnswers} de ${totalQuestions}</strong>.<br><br>¡Las perliculas  son divertida! Sigue intentándolo.`;
+                pearlsToAdd = 1;
             }
             
-            // Mostrar resultado con Sweetalert2
-            Swal.fire({
+            const swalOptions = {
                 title: title,
                 html: `
                     <div style="text-align: center;">
@@ -1139,103 +1057,126 @@
                         playSound('win');
                     }
                 }
-            }).then((result) => {
+            };
+            
+            try {
+                const newPearlCount = await updatePearls(pearlsToAdd);
+                
+                if (newPearlCount !== null) {
+                    swalOptions.html += `
+                        <div style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.03); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <span style="font-weight: bold;">¡Has ganado:</span>
+                                <div style="display: flex; align-items: center;">
+                                    <span style="font-size: 1.5em; margin-right: 5px;">${pearlsToAdd}</span>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" style="fill: #8D6E63;">
+                                        <circle cx="12" cy="12" r="10" fill="#f5f5f5" stroke="#8D6E63" stroke-width="1"/>
+                                        <path d="M12 3a9 9 0 0 1 0 18" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                                Total acumulado: <strong>${newPearlCount} perla${newPearlCount !== 1 ? 's' : ''}</strong>
+                            </div>
+                        </div>
+                    `;
+                    
+                    if (pearlsToAdd > 0) {
+                        playSound('coin');
+                    }
+                }
+            } catch (error) {
+                console.error('Error al procesar recompensas:', error);
+            }
+            
+            Swal.fire(swalOptions).then((result) => {
                 if (result.isConfirmed) {
                     initGame();
                 }
             });
         }
-
-        // Potenciador 50/50 CON ESTILO
-        fiftyFiftyBooster.onclick = function() {
-            if (fiftyFiftyUsed || !gameActive) return;
-            
-            const question = selectedQuestions[currentQuestionIndex];
-            const optionButtons = document.querySelectorAll('.option-btn');
-            let optionsToHide = [];
-            
-            // Encontrar dos opciones incorrectas
-            for (let i = 0; i < question.options.length; i++) {
-                if (i !== question.answer && optionsToHide.length < 2) {
-                    optionsToHide.push(i);
+        
+        if (fiftyFiftyBooster) {
+            fiftyFiftyBooster.onclick = function() {
+                if (fiftyFiftyUsed || !gameActive) return;
+                
+                const question = selectedQuestions[currentQuestionIndex];
+                const optionButtons = document.querySelectorAll('.option-btn');
+                let optionsToHide = [];
+                
+                for (let i = 0; i < question.options.length; i++) {
+                    if (i !== question.answer && optionsToHide.length < 2) {
+                        optionsToHide.push(i);
+                    }
                 }
-            }
-            
-            // Ocultar opciones con efecto
-            optionsToHide.forEach(index => {
-                optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                
+                optionsToHide.forEach(index => {
+                    optionButtons[index].style.animation = 'fadeOut 0.3s forwards';
+                    setTimeout(() => {
+                        optionButtons[index].classList.add('hidden-option');
+                    }, 300);
+                });
+                
+                fiftyFiftyUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
                 setTimeout(() => {
-                    optionButtons[index].classList.add('hidden-option');
+                    this.disabled = true;
                 }, 300);
-            });
-            
-            fiftyFiftyUsed = true;
-            
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            // Sonido y emoji
-            playSound('booster');
-            createEmoji('✨', 2);
-            
-            // Mensaje con SweetAlert
-            Swal.fire({
-                title: '¡POTENCIADOR ACTIVADO!',
-                html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff',
-                willOpen: () => {
-                    createConfetti(10);
-                }
-            });
-        };
+                
+                playSound('booster');
+                createEmoji('✨', 2);
+                
+                Swal.fire({
+                    title: '¡POTENCIADOR ACTIVADO!',
+                    html: '<div style="font-size: 1.2em;">Se eliminaron <strong>2 respuestas incorrectas</strong> 🎯</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    willOpen: () => {
+                        createConfetti(10);
+                    }
+                });
+            };
+        }
 
-        // Potenciador de tiempo
-        timeBooster.onclick = function() {
-            if (timeBoostUsed || !gameActive) return;
-            
-            timeLeft += 30;
-            updateTimerDisplay();
-            timeBoostUsed = true;
-            
-            // Ocultar el botón del potenciador
-            this.style.opacity = '0';
-            this.style.height = '0';
-            this.style.padding = '0';
-            this.style.margin = '0';
-            setTimeout(() => {
-                this.disabled = true;
-            }, 300);
-            
-            // Efectos especiales
-            createEmoji('⏱️', 2);
-            createEmoji('➕', 2);
-            playSound('booster');
-            
-            // Mensaje
-            Swal.fire({
-                title: '¡TIEMPO EXTRA!',
-                html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
-                icon: 'info',
-                timer: 1500,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                background: '#ffffff'
-            });
-        };
+        if (timeBooster) {
+            timeBooster.onclick = function() {
+                if (timeBoostUsed || !gameActive) return;
+                
+                timeLeft += 30;
+                updateTimerDisplay();
+                timeBoostUsed = true;
+                
+                this.style.opacity = '0';
+                this.style.height = '0';
+                this.style.padding = '0';
+                this.style.margin = '0';
+                setTimeout(() => {
+                    this.disabled = true;
+                }, 300);
+                
+                createEmoji('⏱️', 2);
+                createEmoji('➕', 2);
+                playSound('booster');
+                
+                Swal.fire({
+                    title: '¡TIEMPO EXTRA!',
+                    html: '<div style="font-size: 1.2em;">+30 segundos añadidos ⏳</div>',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    background: '#ffffff'
+                });
+            };
+        }
 
-        // EFECTOS ESPECIALES DIVERTIDOS
-
-        // Crear confeti
         function createConfetti(count = 20, isTimeUp = false) {
             const colors = ['#6a11cb', '#2575fc', '#00b09b', '#ff8a00', '#ff416c', '#8e2de2'];
             
@@ -1261,7 +1202,6 @@
             }
         }
 
-        // Crear emojis flotantes
         function createEmoji(emoji, count = 1) {
             for (let i = 0; i < count; i++) {
                 const emojiElement = document.createElement('div');
@@ -1280,7 +1220,6 @@
             }
         }
 
-        // Sonidos (usando AudioContext para mejor compatibilidad)
         function playSound(type) {
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1310,8 +1249,10 @@
                         duration = 0.5;
                         break;
                     case 'win':
-                        // Pequeña melodía de victoria
                         playNotes([784, 659, 523, 659, 784, 880], [0, 0.1, 0.2, 0.3, 0.4, 0.5]);
+                        return;
+                    case 'coin':
+                        playNotes([659, 784, 880], [0, 0.1, 0.2]);
                         return;
                     default:
                         frequency = 440;
@@ -1348,40 +1289,40 @@
             });
         }
 
-        // Reiniciar juego
-        restartBtn.onclick = function() {
-            createEmoji('🔄', 3);
-            initGame();
-        };
+        if (restartBtn) {
+            restartBtn.onclick = function() {
+                createEmoji('🔄', 3);
+                initGame();
+            };
+        }
 
-        // Iniciar juego al cargar
-        window.onload = function() {
-            // Efecto de bienvenida
-            setTimeout(() => {
-                Swal.fire({
-                    title: '¡BIENVENIDO A LAS PELICULAS  EXTREMA!',
-                    html: `
-                        <div style="font-size: 1.1em;">
-                            <p>Responde preguntas de peliculas antes de que se acabe el tiempo.</p>
-                            <p>¡Usa los potenciadores para ayudarte!</p>
-                        </div>
-                        <img src="https://cdn.pixabay.com/photo/2016/09/08/21/09/physics-1654983_640.png" style="height: 120px; margin: 15px 0;">
-                    `,
-                    confirmButtonText: '¡Comenzar!',
-                    confirmButtonColor: '#6a11cb',
-                    background: '#ffffff',
-                    showCancelButton: false,
-                    customClass: {
-                        popup: 'animated bounceIn'
-                    },
-                    willOpen: () => {
-                        createConfetti(20);
-                    }
-                }).then(() => {
-                    initGame();
-                });
-            }, 500);
-        };
-    </script>
+        // Iniciar juego con SweetAlert2 al cargar la página
+        setTimeout(() => {
+            Swal.fire({
+                title: '¡BIENVENIDO A PELICULA EXTREMA!',
+                html: `
+                    <div style="font-size: 1.1em;">
+                        <p>Responde preguntas sobre peliculas antes de que se acabe el tiempo.</p>
+                        <p>¡Usa los potenciadores para ayudarte!</p>
+                    </div>
+                    <img src="https://cdn-icons-png.flaticon.com/128/9842/9842324.png" style="height: 120px; margin: 15px 0;">
+                `,
+                confirmButtonText: '¡Comenzar!',
+                confirmButtonColor: '#6a11cb',
+                background: '#ffffff',
+                showCancelButton: false,
+                customClass: {
+                    popup: 'animated bounceIn'
+                },
+                willOpen: () => {
+                    createConfetti(20);
+                }
+            }).then(() => {
+                initGame();
+            });
+        }, 500);
+
+    }); // Fin de document.addEventListener('DOMContentLoaded')
+</script>
 </body>
 </html>
