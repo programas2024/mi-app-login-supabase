@@ -1,94 +1,79 @@
-/* Variables de color para una personalización más fácil */
+/* Variables CSS */
 :root {
-    --color-principal: #6c5ce7;
-    --color-secundario: #a29bfe;
-    --color-acento: #ff7675;
-    --color-texto: #333;
-    --color-fondo: #f8f9fa;
-    --color-fondo-claro: #ffffff;
-    --sombra-suave: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --transicion-lenta: 0.5s ease;
+    --color-principal: #5e32b0;
+    --color-acento: #ff6b6b;
+    --color-fondo: #ffffff;
+    --color-fondo-claro: #f4f7f9;
+    --sombra-suave: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --transicion-lenta: all 0.3s ease-in-out;
 }
 
-/* Estilos generales y tipografía */
+/* Reset y estilos base */
 body {
     font-family: 'Poppins', sans-serif;
+    background-color: var(--color-fondo-claro);
     margin: 0;
     padding: 0;
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
     line-height: 1.6;
-    scroll-behavior: smooth;
+    color: #333;
+}
+* {
+    box-sizing: border-box;
 }
 
-/* Encabezado Sutil y Encantador */
+/* Encabezado */
 header {
+    text-align: center;
+    padding: 4em 2em;
+    color: white;
+    background: linear-gradient(135deg, #6c5ce7, #5e32b0);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #745ae7 0%, #a29bfe 100%);
-    color: var(--color-fondo-claro);
-    text-align: center;
-    padding: 3em 0;
-    box-shadow: var(--sombra-suave);
-    z-index: 1;
 }
 
 header::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                      radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
-                      radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-    background-size: 300% 300%;
-    animation: moveSubtle 30s linear infinite;
-    z-index: 0;
-    opacity: 0.8;
-}
-
-@keyframes moveSubtle {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 300% 300%; }
-}
-
-header h1, header p {
-    position: relative;
-    z-index: 2;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    top: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    transform: rotate(45deg);
 }
 
 header h1 {
-    font-size: 2.5em;
+    font-size: 3.5em;
+    margin: 0;
+    letter-spacing: 2px;
     font-weight: 700;
-    letter-spacing: 1px;
 }
 
 header p {
-    font-size: 1.1em;
-    font-style: italic;
+    font-size: 1.2em;
+    font-weight: 300;
+    margin-top: 10px;
     opacity: 0.9;
-    margin-top: 5px;
 }
 
-/* Estructura principal con Flexbox */
+/* Layout principal */
 .main-layout {
     display: flex;
-    max-width: 1400px;
-    margin: 40px auto;
+    margin: 30px;
     gap: 30px;
 }
 
-/* Barra lateral izquierda (Sidebar) */
+/* Barra lateral de navegación */
 .sidebar {
     width: 280px;
-    flex-shrink: 0;
-    background-color: var(--color-fondo-claro);
+    background-color: var(--color-fondo);
     padding: 30px;
     border-radius: 16px;
     box-shadow: var(--sombra-suave);
+    position: sticky;
+    top: 30px;
+    align-self: flex-start;
 }
 
 .sidebar-nav {
@@ -97,45 +82,26 @@ header p {
 }
 
 .sidebar-item {
-    padding: 18px;
-    margin-bottom: 12px;
-    background-color: var(--color-fondo);
-    border-radius: 10px;
     text-decoration: none;
-    color: var(--color-texto);
+    color: #555;
     font-weight: 600;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 10px;
     transition: var(--transicion-lenta);
-    position: relative;
-    overflow: hidden;
 }
 
-.sidebar-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 5px;
-    height: 100%;
+.sidebar-item:hover, .sidebar-item.activo {
     background-color: var(--color-principal);
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-}
-
-.sidebar-item:hover {
-    background-color: var(--color-principal);
-    color: var(--color-fondo-claro);
+    color: white;
+    box-shadow: 0 4px 10px rgba(94, 50, 176, 0.2);
     transform: translateX(5px);
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-}
-
-.sidebar-item:hover::before {
-    transform: translateX(0);
 }
 
 /* Contenido principal */
 .main-content {
     flex-grow: 1;
-    background-color: var(--color-fondo-claro);
+    background-color: var(--color-fondo);
     padding: 35px;
     border-radius: 16px;
     box-shadow: var(--sombra-suave);
@@ -157,7 +123,7 @@ header p {
 }
 
 .juego-card, .cofre-card, .fragmento-card {
-    background-color: var(--color-fondo);
+    background-color: var(--color-fondo-claro);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
@@ -175,6 +141,7 @@ h3 {
     margin: 0;
     font-size: 1.4em;
     color: var(--color-principal);
+    margin-bottom: 5px;
 }
 
 p {
@@ -182,11 +149,12 @@ p {
     color: #666;
     height: auto;
     min-height: 40px;
+    margin-top: 0;
 }
 
 .juego-card button, .cofre-card button {
     background-color: var(--color-acento);
-    color: var(--color-fondo-claro);
+    color: var(--color-fondo);
     border: none;
     padding: 12px 25px;
     border-radius: 50px;
@@ -202,7 +170,57 @@ p {
 }
 
 /* ESTILOS ESPECÍFICOS POR SECCIÓN */
-.card-destacados { background: linear-gradient(135deg, #e6f7ff, #d2f0ff); border: 1px solid #b3e0ff; }
+.card-destacados {
+    background: linear-gradient(135deg, #e6f7ff, #d2f0ff);
+    border: 1px solid #b3e0ff;
+    position: relative;
+    overflow: hidden;
+}
+
+.juego-icono-container {
+    background-color: #5e32b0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 5px 15px rgba(94, 50, 176, 0.3);
+}
+.juego-icono {
+    font-size: 3em;
+    color: #fff;
+    transform: rotate(0deg);
+    transition: transform 0.5s ease-in-out;
+}
+.juego-card:hover .juego-icono {
+    transform: rotate(10deg) scale(1.1);
+}
+
+/* Animaciones específicas por juego */
+.ahorcado:hover .juego-icono { animation: swing 1s ease-in-out infinite; }
+.preguntados:hover .juego-icono { animation: pulse-icon 1.5s infinite; }
+.sopa-letras:hover .juego-icono { animation: spin-and-zoom 1s ease-in-out infinite alternate; }
+
+@keyframes swing {
+    0% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+    100% { transform: rotate(15deg); }
+}
+
+@keyframes pulse-icon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes spin-and-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1) rotate(10deg); }
+}
+
+/* Cofres y otros */
 .cofre-icono { font-size: 3.5em; margin: 10px 0; animation: bounce 2s infinite; }
 .cofre-comun { background-color: #f7f7f7; border: 2px solid #ddd; }
 .cofre-plata { background-color: #e9ecef; border: 2px solid #ced4da; }
