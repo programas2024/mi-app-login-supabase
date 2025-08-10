@@ -270,9 +270,9 @@ async function loadUserProfile(userId) {
             if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = profileData.perla;
 
             // Lógica para habilitar/deshabilitar el botón de la tienda
+            // Se elimina la condición, el botón siempre estará habilitado.
             if (shopBtn) {
-                const perlas = parseInt(profileData.perla, 10);
-                shopBtn.disabled = perlas <= 20;
+                shopBtn.disabled = false;
             }
         }
     
