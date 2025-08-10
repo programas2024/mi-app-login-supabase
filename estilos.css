@@ -239,30 +239,43 @@ p {
 
 /* Estilos para los Cofres */
 .cofre-card {
-    background-color: #f7f7f7;
+    background-color: var(--color-fondo);
     padding: 30px 20px;
     position: relative;
     overflow: hidden;
 }
+
 .cofre-icono-container {
-    font-size: 3.5em;
-    margin-bottom: 15px;
-    line-height: 1;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block; /* Aseguramos que sea un elemento de bloque */
+    animation: none; /* Quitamos animaciones por defecto */
 }
 
+/* Cofre Común */
 .cofre-comun {
     background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
     border: 2px solid #ccc;
 }
-.cofre-comun .cofre-icono-container i { color: #888; }
-.cofre-comun .cofre-icono-container { animation: shake 2s infinite; }
+.cofre-comun .cofre-icono-container {
+    background-image: url('https://cdn-icons-png.flaticon.com/128/4579/4579853.png');
+    animation: shake 2s infinite;
+}
 
+/* Cofre de Plata */
 .cofre-plata {
     background: linear-gradient(135deg, #eceeef, #ced4da);
     border: 2px solid #afb8c1;
     position: relative;
 }
-.cofre-plata .cofre-icono-container i { color: #5f666d; }
+.cofre-plata .cofre-icono-container {
+    background-image: url('https://cdn-icons-png.flaticon.com/128/7802/7802444.png');
+    animation: none;
+}
 .cofre-plata::before {
     content: '';
     position: absolute;
@@ -272,25 +285,19 @@ p {
     transform: rotate(45deg);
     animation: shine 2s infinite;
 }
-.cofre-plata .cofre-icono-container { animation: none; }
 .cofre-plata:hover::before { animation-play-state: paused; }
 
+/* Cofre de Leyenda (Oro) */
 .cofre-leyenda {
     background: linear-gradient(135deg, #ffd700, #ffecb3);
     border: 3px solid #ffcc00;
     box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
     position: relative;
 }
-.cofre-leyenda::before {
-    content: '👑';
-    position: absolute;
-    top: 5px; right: 5px;
-    font-size: 2em;
-    animation: rotate-crown 4s linear infinite;
-    opacity: 0.8;
+.cofre-leyenda .cofre-icono-container {
+    background-image: url('https://cdn-icons-png.flaticon.com/128/8330/8330776.png');
+    animation: none;
 }
-.cofre-leyenda .cofre-icono-container i { color: #ccac00; }
-.cofre-leyenda .cofre-icono-container { animation: none; }
 .cofre-leyenda:hover { animation: pulse 1.5s infinite; }
 
 @keyframes shake {
