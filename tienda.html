@@ -536,6 +536,7 @@
                 margin-right: 0;
                 margin-bottom: 20px;
                 padding: 20px;
+                position: static; /* CAMBIO CLAVE: Permite que el sidebar se desplace con el scroll */
             }
             .main-content {
                 padding: 20px;
@@ -799,7 +800,9 @@
     <footer>
         <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
-<script src="tienda.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="tienda.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Seleccionamos todos los botones de la barra lateral
