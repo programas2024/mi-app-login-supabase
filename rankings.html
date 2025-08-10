@@ -8,391 +8,209 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-/*
- * Definición de variables globales usando :root
- * Las variables se declaran después de los @import.
- */
-:root {
-    /* Fondos */
-    --body-bg: linear-gradient(135deg, #e0eafc, #cfdef3);
-    --container-bg: rgba(255, 255, 255, 0.7);
-
-    /* Colores base */
-    --text-color-primary: #333;
-    --text-color-secondary: #666;
-    --border-color-light: rgba(255, 255, 255, 0.3);
-    --button-bg-color: rgba(255, 255, 255, 0.6);
-    --button-hover-bg: rgba(255, 255, 255, 0.9);
-
-    /* Colores de rangos */
-    --color-bronze: #cd7f32;
-    --color-silver: #c0c0c0;
-    --color-gold: #ffd700;
-    --color-mystic: #8a2be2;
-    --color-diamond: #00e5ff;
-    --color-elite: #e91e63;
-    --color-legendary: #ff9800;
-    --color-celestial: #4fc3f7;
-    --color-archangel: #ffeb3b;
-    --color-titan: #607d8b;
-    --color-dragon: #c62828;
-    --color-phoenix: #ff5722;
-    --color-omnipotent: #7b1fa2;
-    --color-infinite: #00c853;
-    --color-mystery: #666;
-    --color-creator: #00ff00;
-
-    /* Fuentes */
-    --font-medieval: 'MedievalSharp', serif;
-    --font-cinzel: 'Cinzel Decorative', serif;
-    --font-teko: 'Teko', sans-serif;
-    --font-bangers: 'Bangers', sans-serif;
-    --font-nosifier: 'Nosifier', cursive;
-    --font-merriweather: 'Merriweather', serif;
-    --font-orbitron: 'Orbitron', sans-serif;
-    --font-pixel: 'Press Start 2P', cursive;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: var(--body-bg);
-    color: var(--text-color-primary);
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    overflow-y: auto;
-}
-
-.container {
-    width: 100%;
-    max-width: 900px;
-    background: var(--container-bg);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    text-align: center;
-    border: 1px solid var(--border-color-light);
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    border-bottom: 2px solid var(--border-color-light);
-    padding-bottom: 20px;
-}
-
-.header h1 {
-    font-size: 3em;
-    color: var(--text-color-primary);
-    margin: 0;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    letter-spacing: 1px;
-}
-
-#back-to-dashboard-from-rankings {
-    background: var(--button-bg-color);
-    color: var(--text-color-primary);
-    border: 1px solid var(--border-color-light);
-    padding: 12px 25px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-}
-
-#back-to-dashboard-from-rankings:hover {
-    background: var(--button-hover-bg);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.rank-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
-}
-
-/* --- ESTILO BASE PARA TODOS LOS RANGOS --- */
-.rank-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 
-                0 0 0 2px rgba(255, 255, 255, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    backdrop-filter: blur(8px);
-}
-
-.rank-item:hover {
-    transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2),
-                0 0 0 2px rgba(255, 255, 255, 0.5);
-}
-
-.current-user-rank {
-    border: 3px solid var(--color-gold);
-    animation: glow-border 1.8s infinite alternate;
-}
-
-@keyframes glow-border {
-    0% { box-shadow: 0 0 15px var(--color-gold); }
-    100% { box-shadow: 0 0 25px var(--color-gold), 0 0 35px rgba(255, 215, 0, 0.5); }
-}
-
-.rank-item-icon {
-    font-size: 4em;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    animation: fade-in 1s ease-out;
-}
-
-.rank-item-info {
-    position: relative;
-    z-index: 1;
-    flex-grow: 1;
-}
-
-.rank-item-title {
-    font-size: 2.2em;
-    font-weight: bold;
-    margin-bottom: 5px;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.rank-item-threshold {
-    font-size: 1.1em;
-    color: var(--text-color-secondary);
-    margin-bottom: 20px;
-}
-
-/* --- ESTILOS INDIVIDUALES Y ÚNICOS PARA CADA RANGO --- */
-
-.rank-item.bronze { background: linear-gradient(135deg, #7b3f00, #4c2800); background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'); }
-.rank-item.bronze .rank-item-title { font-family: var(--font-medieval); background-image: linear-gradient(45deg, #e0a37e, #fff8dc); }
-.rank-item.bronze .rank-item-icon { color: var(--color-bronze); text-shadow: 0 0 8px var(--color-bronze); }
-
-.rank-item.silver { background: linear-gradient(135deg, #c0c0c0, #a9a9a9); background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'); }
-.rank-item.silver .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #333, #000); }
-.rank-item.silver .rank-item-icon { color: var(--color-silver); text-shadow: 0 0 8px var(--color-silver); }
-
-.rank-item.gold { background: linear-gradient(135deg, #ffd700, #e6c200); background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'); }
-.rank-item.gold .rank-item-title { font-family: var(--font-cinzel); background-image: linear-gradient(45deg, #7f6e3c, #4d3a24); }
-.rank-item.gold .rank-item-icon { color: var(--color-gold); text-shadow: 0 0 8px var(--color-gold); }
-
-.rank-item.mystic { background: linear-gradient(135deg, #8a2be2, #e91e63); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
-.rank-item.mystic .rank-item-title { font-family: var(--font-nosifier); background-image: linear-gradient(45deg, #fff, #c0c0c0); }
-.rank-item.mystic .rank-item-icon { color: var(--color-mystic); text-shadow: 0 0 8px var(--color-mystic); }
-
-.rank-item.diamond { background: linear-gradient(135deg, #00e5ff, #00c8ff); background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'); }
-.rank-item.diamond .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #fff, #b3e5fc); }
-.rank-item.diamond .rank-item-icon { color: var(--color-diamond); text-shadow: 0 0 8px var(--color-diamond); }
-
-.rank-item.elite { background: linear-gradient(135deg, #e91e63, #d32f2f); background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'); }
-.rank-item.elite .rank-item-title { font-family: var(--font-bangers); background-image: linear-gradient(45deg, #fff, #ffcdd2); }
-.rank-item.elite .rank-item-icon { color: var(--color-elite); text-shadow: 0 0 8px var(--color-elite); }
-
-.rank-item.legendary { background: linear-gradient(135deg, #ff5722, #e64a19); background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'); }
-.rank-item.legendary .rank-item-title { font-family: var(--font-merriweather); background-image: linear-gradient(45deg, #fff, #ffccbc); }
-.rank-item.legendary .rank-item-icon { color: var(--color-legendary); text-shadow: 0 0 8px var(--color-legendary); }
-
-.rank-item.celestial { background: linear-gradient(135deg, #81d4fa, #b3e5fc); background-image: url('https://www.transparenttextures.com/patterns/always-grey.png'); }
-.rank-item.celestial .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #333, #0d47a1); }
-.rank-item.celestial .rank-item-icon { color: var(--color-celestial); text-shadow: 0 0 8px var(--color-celestial); }
-
-.rank-item.archangel { background: linear-gradient(135deg, #ffeb3b, #fff176); background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png'); }
-.rank-item.archangel .rank-item-title { font-family: var(--font-cinzel); background-image: linear-gradient(45deg, #333, #000); }
-.rank-item.archangel .rank-item-icon { color: var(--color-archangel); text-shadow: 0 0 8px var(--color-archangel); }
-
-.rank-item.titan { background: linear-gradient(135deg, #607d8b, #455a64); background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
-.rank-item.titan .rank-item-title { font-family: var(--font-orbitron); background-image: linear-gradient(45deg, #e0e0e0, #fff); }
-.rank-item.titan .rank-item-icon { color: var(--color-titan); text-shadow: 0 0 8px var(--color-titan); }
-
-.rank-item.dragon { background: linear-gradient(135deg, #c62828, #b71c1c); background-image: url('https://www.transparenttextures.com/patterns/dragon-scales.png'); }
-.rank-item.dragon .rank-item-title { font-family: var(--font-bangers); background-image: linear-gradient(45deg, #fff, #ffccbc); }
-.rank-item.dragon .rank-item-icon { color: var(--color-dragon); text-shadow: 0 0 8px var(--color-dragon); }
-
-.rank-item.phoenix { background: linear-gradient(135deg, #ff5722, #ff8a65); background-image: url('https://www.transparenttextures.com/patterns/cross-stripes.png'); }
-.rank-item.phoenix .rank-item-title { font-family: var(--font-merriweather); background-image: linear-gradient(45deg, #fff, #ffcdd2); }
-.rank-item.phoenix .rank-item-icon { color: var(--color-phoenix); text-shadow: 0 0 8px var(--color-phoenix); }
-
-.rank-item.omnipotent { background: linear-gradient(135deg, #7b1fa2, #9c27b0); background-image: url('https://www.transparenttextures.com/patterns/washi.png'); }
-.rank-item.omnipotent .rank-item-title { font-family: var(--font-nosifier); background-image: linear-gradient(45deg, #fff, #d1c4e9); }
-.rank-item.omnipotent .rank-item-icon { color: var(--color-omnipotent); text-shadow: 0 0 8px var(--color-omnipotent); }
-
-.rank-item.infinite { background: linear-gradient(135deg, #00c853, #1de9b6); background-image: url('https://www.transparenttextures.com/patterns/xv.png'); }
-.rank-item.infinite .rank-item-title { font-family: var(--font-pixel); background-image: linear-gradient(45deg, #fff, #b9f6ca); }
-.rank-item.infinite .rank-item-icon { color: var(--color-infinite); text-shadow: 0 0 8px var(--color-infinite); }
-
-.rank-item.mystery { background: linear-gradient(135deg, #333, #1a1a1a); background-image: url('https://www.transparenttextures.com/patterns/light-venetian-blinds.png'); }
-.rank-item.mystery .rank-item-title { font-family: var(--font-teko); background-image: linear-gradient(45deg, #fff, #c0c0c0); }
-.rank-item.mystery .rank-item-icon { color: var(--color-mystery); text-shadow: none; }
-
-.rank-item.creator { background: linear-gradient(135deg, #003300, #000); animation: creator-bg-pulse 2s infinite alternate; }
-.rank-item.creator .rank-item-title { font-family: var(--font-pixel); background-image: linear-gradient(45deg, #00ff00, #99ff99); }
-.rank-item.creator .rank-item-icon { color: var(--color-creator); text-shadow: 0 0 15px var(--color-creator); animation: creator-glow 2s infinite alternate; }
-
-@keyframes creator-glow {
-    0% { text-shadow: 0 0 15px var(--color-creator); }
-    100% { text-shadow: 0 0 30px var(--color-creator), 0 0 40px rgba(0, 255, 0, 0.5); }
-}
-
-@keyframes creator-bg-pulse {
-    0% { background-color: #003300; box-shadow: inset 0 0 20px var(--color-creator); }
-    100% { background-color: #004400; box-shadow: inset 0 0 30px var(--color-creator); }
-}
-
-.loader-rankings {
-    border: 8px solid var(--border-color-light);
-    border-top: 8px solid var(--color-diamond);
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loader-hidden {
-    display: none;
-}
-
-.claim-reward-btn {
-    background: linear-gradient(45deg, #42a5f5, #2196f3);
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    margin-top: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-}
-
-.claim-reward-btn:hover:not([disabled]) {
-    transform: translateY(-2px) scale(1.05);
-    background: linear-gradient(45deg, #2196f3, #42a5f5);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.claim-reward-btn[disabled] {
-    background: #ccc !important;
-    cursor: not-allowed;
-    color: #888;
-    box-shadow: none;
-}
-
-.claim-reward-btn i {
-    animation: icon-pulse 1.5s infinite;
-}
-
-@keyframes icon-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.swal2-dark-mode {
-    background: linear-gradient(135deg, #f0f0f0, #e0e0e0) !important;
-    color: var(--text-color-primary) !important;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.swal2-title {
-    color: var(--text-color-primary) !important;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    animation: none;
-}
-
-.swal2-confirm-button {
-    background: linear-gradient(45deg, #42a5f5, #2196f3) !important;
-    border-radius: 50px !important;
-    padding: 10px 30px !important;
-    font-weight: bold !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.swal2-confirm-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.swal2-html-container p {
-    color: var(--text-color-secondary);
-}
-
-.swal2-html-container strong {
-    color: #42a5f5;
-}
-
-@keyframes fade-in {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 0 10px #00e5ff;
+        }
+        #back-to-dashboard-from-rankings {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        #back-to-dashboard-from-rankings:hover {
+            background-color: #555;
+        }
+        .rank-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .rank-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+        .current-user-rank {
+            border: 2px solid #ffd700;
+            background-color: rgba(255, 215, 0, 0.1) !important;
+            animation: pulse-border 1.5s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 10px #ffd700; }
+            50% { box-shadow: 0 0 20px #ffd700; }
+            100% { box-shadow: 0 0 10px #ffd700; }
+        }
+        .rank-item-icon {
+            font-size: 3em;
+            margin-right: 20px;
+            width: 60px;
+            text-align: center;
+        }
+        .rank-item-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .rank-item-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        .rank-item-threshold {
+            font-size: 1em;
+            color: #b0b0b0;
+        }
+
+        /* Icon Colors */
+        .rank-bronze-icon { color: #cd7f32; }
+        .rank-silver-icon { color: #c0c0c0; }
+        .rank-gold-icon { color: #ffd700; }
+        .rank-mystic-icon { color: #8a2be2; }
+        .rank-diamond-icon { color: #00e5ff; }
+        .rank-elite-icon { color: #e91e63; }
+        .rank-legendary-icon { color: #ff9800; }
+        .rank-celestial-icon { color: #4fc3f7; }
+        .rank-archangel-icon { color: #ffeb3b; }
+        .rank-titan-icon { color: #607d8b; }
+        .rank-dragon-icon { color: #c62828; }
+        .rank-phoenix-icon { color: #ff5722; }
+        .rank-omnipotent-icon { color: #7b1fa2; }
+        .rank-infinite-icon { color: #00c853; }
+        .rank-mystery-icon { color: #5a5a5a; }
+        .rank-creator-icon { color: #00ff00; }
+
+        /* Background Colors */
+        .rank-bronze-bg { background-color: #402f1f; }
+        .rank-silver-bg { background-color: #383838; }
+        .rank-gold-bg { background-color: #554425; }
+        .rank-mystic-bg { background-color: #3a1c6a; }
+        .rank-diamond-bg { background-color: #1a4f57; }
+        .rank-elite-bg { background-color: #5c182c; }
+        .rank-legendary-bg { background-color: #4f3b1a; }
+        .rank-celestial-bg { background-color: #1f3a40; }
+        .rank-archangel-bg { background-color: #574e2d; }
+        .rank-titan-bg { background-color: #2b353b; }
+        .rank-dragon-bg { background-color: #5c1919; }
+        .rank-phoenix-bg { background-color: #57211e; }
+        .rank-omnipotent-bg { background-color: #3b1d44; }
+        .rank-infinite-bg { background-color: #1e4f2c; }
+        .rank-mystery-bg { background-color: #2a2a2a; }
+        .rank-creator-bg { background-color: #002200; }
+
+        .loader-rankings {
+            border: 8px solid #333;
+            border-top: 8px solid #00c853;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader-hidden {
+            display: none;
+        }
+
+        .claim-reward-btn {
+            background: linear-gradient(to right, #28a745, #218838);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .claim-reward-btn:hover:not([disabled]) {
+            transform: scale(1.05);
+            background: linear-gradient(to right, #218838, #1e7e34);
+        }
+        .claim-reward-btn[disabled] {
+            background-color: #555 !important;
+            cursor: not-allowed;
+            color: #aaa;
+        }
+
+        .swal2-dark-mode {
+            background: #1e1e1e !important;
+            color: #e0e0e0 !important;
+        }
+        .swal2-confirm-button {
+            background-color: #00c853 !important;
+        }
+        .swal2-diamond-burst {
+            font-size: 4em;
+            color: #ffd700;
+            animation: diamond-burst 1s forwards;
+            display: inline-block;
+        }
+        @keyframes diamond-burst {
+            0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(30deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
     </style>
 </head>
 <body>
