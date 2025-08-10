@@ -19,7 +19,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-// --- 2. Referencias a Elementos HTML ---
+
+
+// --- 2. Referencias a Elementos HTML (Declaradas, asignadas dentro de DOMContentLoaded) ---
 // Se declaran aquí para que sean accesibles en todo el script, pero se asignan cuando el DOM está listo.
 let initialOptionsDiv, signupFormDiv, loginFormDiv;
 let signupEmail, signupPassword, registerBtn;
@@ -28,23 +30,23 @@ let showSignupBtn, showLoginBtn;
 let backToOptionsFromSignup, backToOptionsFromLogin;
 let forgotPasswordLink;
 
-// Elementos de la nueva estructura del dashboard
 let dashboardDiv;
-let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard, pearlsDisplayDashboard;
+let userEmailDashboardSpan, goldDisplayDashboard, diamondsDisplayDashboard, pearlsDisplayDashboard; // Referencia para las perlas en el dashboard
 let profileBtnDashboard, logoutBtnDashboard;
-let shopBtn;
-let loaderDiv, loaderText;
+let shopBtn; // Nueva referencia para el botón de la tienda
 
-// Elementos del perfil (se asumen que no han cambiado)
+
 let profileCard;
 let userEmailProfileSpan, usernameInputProfile, countryInputProfile;
 let saveProfileBtn, backToDashboardBtn, configureBtn;
-let goldDisplayProfile, diamondsDisplayProfile, pearlsDisplayProfile;
+let goldDisplayProfile, diamondsDisplayProfile, pearlsDisplayProfile; // Referencia para las perlas en el perfil
 
-// Elementos de la lógica del avatar (si es que existe)
-let avatarImg;
-let avatarUploadInput;
-let changeAvatarBtn;
+let loaderDiv, loaderText;
+
+let avatarImg; // Nueva referencia para la imagen del avatar
+let avatarUploadInput; // Nueva referencia para el input de archivo
+let changeAvatarBtn; // Nueva referencia para el botón de cambiar avatar
+
 
 // --- 3. Funciones de Utilidad (Ajustadas para SweetAlert2 y Loader) ---
 
@@ -211,7 +213,7 @@ async function signOut() {
  */
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
-    let profileData = null;
+    let profileData = null; // Variable para almacenar los datos del perfil
 
     try {
         const { data, error } = await supabase
@@ -240,15 +242,16 @@ async function loadUserProfile(userId) {
                 showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial: ' + insertError.message);
             } else {
                 showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico. ¡Rellena tus datos en la sección de Perfil!');
-                profileData = newProfile;
+                profileData = newProfile; // Usar los datos recién creados
             }
         } else if (error) {
             console.error('Error al cargar perfil:', error);
             showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
         } else {
-            profileData = data;
+            profileData = data; // Usar los datos de la búsqueda exitosa
         }
 
+        // Si tenemos datos del perfil, actualizamos el DOM
         if (profileData) {
             const user = (await supabase.auth.getUser()).data.user;
             
@@ -266,7 +269,8 @@ async function loadUserProfile(userId) {
             if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = profileData.diamonds;
             if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = profileData.perla;
 
-            // Habilitar botón de la tienda (siempre habilitado)
+            // Lógica para habilitar/deshabilitar el botón de la tienda
+            // Se elimina la condición, el botón siempre estará habilitado.
             if (shopBtn) {
                 shopBtn.disabled = false;
             }
@@ -277,13 +281,11 @@ async function loadUserProfile(userId) {
         showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al cargar tu perfil.');
     } finally {
         hideLoader();
-        // Mostrar el dashboard si está presente
-        if (dashboardDiv) {
-            dashboardDiv.classList.remove('dashboard-hidden');
-        }
-        // Mostrar la tarjeta de perfil si está presente
         if (profileCard) {
             profileCard.classList.remove('dashboard-hidden');
+        }
+        if (dashboardDiv) {
+            dashboardDiv.classList.remove('dashboard-hidden');
         }
     }
 }
@@ -314,7 +316,7 @@ async function saveProfile() {
             showSwal('error', 'Error al guardar', 'No se pudo guardar tu perfil: ' + error.message);
         } else {
             showSwal('success', '¡Perfil Guardado!', 'Tu información de perfil ha sido actualizada.');
-            await loadUserProfile(user.id);
+            await loadUserProfile(user.id); // Recargar el perfil para actualizar los spans mostrados
         }
     } catch (e) {
         console.error("Error inesperado en saveProfile:", e);
@@ -355,8 +357,8 @@ async function giveGold() {
         if (error) {
             showSwal('error', 'Error al dar oro', 'No se pudo actualizar el oro: ' + error.message);
         } else {
-            if (goldDisplayProfile) goldDisplayProfile.textContent = newGold;
-            if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold;
+            if (goldDisplayProfile) goldDisplayProfile.textContent = newGold; // Actualiza solo en la página de perfil
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = newGold; // Actualiza también en el dashboard si está visible
             showSwal('success', '¡Oro Obtenido!', `Has recibido 10 de oro. Total: ${newGold}`);
         }
     } catch (e) {
@@ -434,10 +436,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (user) {
             console.log('Usuario ya logueado al cargar index.html. Redirigiendo a dashboard.html...');
             window.location.href = 'dashboard.html';
-            return;
+            return; // Detener la ejecución del resto de la lógica de index.html
         } else {
+            // Si no hay usuario, muestra las opciones de inicio/registro
             showInitialOptions();
 
+            // Configura los event listeners solo si los elementos existen (estamos en index.html)
             if (registerBtn) registerBtn.addEventListener('click', signUp);
             if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', signIn);
             if (showSignupBtn) showSignupBtn.addEventListener('click', showSignupForm);
@@ -485,6 +489,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
+            // Este listener se dispara cuando el usuario verifica su correo y regresa a la página
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log('Auth event in index.html:', event, 'Session:', session);
                 if (session && session.user && currentPage === 'index.html') {
@@ -498,7 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     else if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
         console.log(`Cargando lógica de ${currentPage}`);
 
-        // Asignar referencias a elementos del dashboard/perfil según la nueva estructura
+        // Asignar referencias a elementos del dashboard/perfil
         dashboardDiv = document.getElementById('dashboard');
         userEmailDashboardSpan = document.getElementById('user-email');
         goldDisplayDashboard = document.getElementById('gold-display');
@@ -506,9 +511,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         pearlsDisplayDashboard = document.getElementById('pearl-display');
         profileBtnDashboard = document.getElementById('profile-btn');
         logoutBtnDashboard = document.getElementById('logout-btn');
-        shopBtn = document.getElementById('shop-btn');
-        loaderDiv = document.getElementById('loader');
-        loaderText = loaderDiv ? loaderDiv.querySelector('p') : null;
+        shopBtn = document.getElementById('shop-btn'); // Asignación de la nueva variable
+
+        profileCard = document.getElementById('profile-card');
+        userEmailProfileSpan = document.getElementById('user-email-profile');
+        usernameInputProfile = document.getElementById('edit-username');
+        countryInputProfile = document.getElementById('edit-country');
+        saveProfileBtn = document.getElementById('save-profile-btn');
+        backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        configureBtn = document.getElementById('configure-btn');
+        goldDisplayProfile = document.getElementById('gold-display-profile');
+        diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
+        pearlsDisplayProfile = document.getElementById('pearl-display-profile');
 
 
         // Siempre verifica la sesión al cargar estas páginas
@@ -517,10 +531,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (user) {
             // Usuario autenticado: Cargar perfil y mostrar contenido
             await loadUserProfile(user.id);
+
+            // Cargar conteos y listas iniciales de socialLogic.js
             await loadPendingFriendRequestsCount(user.id);
             await loadUnreadMessagesCount(user.id);
-            await loadFriendsList(user.id);
-            setupFriendsRealtimeSubscription();
+            
+            // ¡IMPORTANTE! Cargar la lista de amigos inicialmente
+            await loadFriendsList(user.id); 
+            
+            // Luego, configura la suscripción Realtime para futuras actualizaciones
+            setupFriendsRealtimeSubscription(); 
 
             if (currentPage === 'dashboard.html') {
                 if (profileBtnDashboard) {
@@ -533,22 +553,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Listener para el botón de la tienda
                 if (shopBtn) {
                     shopBtn.addEventListener('click', () => {
+                        // Este código se ejecuta solo si el botón no está deshabilitado
                         window.location.href = 'tienda.html';
                     });
                 }
             } else if (currentPage === 'profile.html') {
-                // Aquí deberías tener las referencias a los elementos del perfil
-                profileCard = document.getElementById('profile-card');
-                userEmailProfileSpan = document.getElementById('user-email-profile');
-                usernameInputProfile = document.getElementById('edit-username');
-                countryInputProfile = document.getElementById('edit-country');
-                saveProfileBtn = document.getElementById('save-profile-btn');
-                backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-                configureBtn = document.getElementById('configure-btn');
-                goldDisplayProfile = document.getElementById('gold-display-profile');
-                diamondsDisplayProfile = document.getElementById('diamonds-display-profile');
-                pearlsDisplayProfile = document.getElementById('pearl-display-profile');
-                
                 if (saveProfileBtn) saveProfileBtn.addEventListener('click', saveProfile);
                 if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => {
                     window.location.href = 'dashboard.html';
@@ -572,8 +581,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
-
-// Este listener se activa cuando la página se carga desde la caché (por ejemplo, al usar el botón "Atrás")
+// --- Tu código original para manejar la navegación hacia atrás/adelante ---
+// Este evento clave: 'pageshow' se mantiene y se conecta a la función de carga de perfil
 window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
         console.log('Regresando de otra página, el evento pageshow se ha activado.');
@@ -584,6 +593,18 @@ window.addEventListener('pageshow', function(event) {
                     loadUserProfile(user.id);
                 }
             });
+        }
+    }
+});
+
+// También puedes llamar a la función en el evento de carga inicial por si acaso,
+// para cubrir todos los casos.
+window.addEventListener('DOMContentLoaded', async () => {
+    const currentPage = window.location.pathname.split('/').pop();
+    if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            loadUserProfile(user.id);
         }
     }
 });
