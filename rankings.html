@@ -14,6 +14,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nosifier&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -103,7 +106,6 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(8px);
 }
 
@@ -152,37 +154,98 @@ body {
     margin-bottom: 20px;
 }
 
-/* --- ESTILOS INDIVIDUALES PARA CADA RANGO --- */
+/* --- ESTILOS INDIVIDUALES Y ÚNICOS PARA CADA RANGO --- */
 
-.rank-item.bronze .rank-item-title { font-family: 'MedievalSharp', serif; background-image: linear-gradient(45deg, #7b3f00, #b08d57); }
+/* BRONCE */
+.rank-item.bronze { background: linear-gradient(135deg, #7b3f00, #4c2800); background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'); }
+.rank-item.bronze .rank-item-title { font-family: 'MedievalSharp', serif; background-image: linear-gradient(45deg, #e0a37e, #fff8dc); }
 .rank-item.bronze .rank-item-icon { color: #cd7f32; text-shadow: 0 0 8px #cd7f32; }
-.rank-item.bronze { background: linear-gradient(135deg, #d8bc98, #c9a473); background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'); }
 
-.rank-item.silver .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #c0c0c0, #e0e0e0); }
+/* PLATA */
+.rank-item.silver { background: linear-gradient(135deg, #c0c0c0, #a9a9a9); background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'); }
+.rank-item.silver .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #333, #000); }
 .rank-item.silver .rank-item-icon { color: #c0c0c0; text-shadow: 0 0 8px #c0c0c0; }
-.rank-item.silver { background: linear-gradient(135deg, #e0e0e0, #c0c0c0); background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'); }
 
-.rank-item.gold .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #ffd700, #e6c200); }
+/* ORO */
+.rank-item.gold { background: linear-gradient(135deg, #ffd700, #e6c200); background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'); }
+.rank-item.gold .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #7f6e3c, #4d3a24); }
 .rank-item.gold .rank-item-icon { color: #ffd700; text-shadow: 0 0 8px #ffd700; }
-.rank-item.gold { background: linear-gradient(135deg, #f7e08e, #e8c962); background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'); }
 
-.rank-item.mystic .rank-item-title { font-family: 'Nosifier', cursive; background-image: linear-gradient(45deg, #8a2be2, #a269d5); }
+/* MÍSTICO */
+.rank-item.mystic { background: linear-gradient(135deg, #8a2be2, #e91e63); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
+.rank-item.mystic .rank-item-title { font-family: 'Nosifier', cursive; background-image: linear-gradient(45deg, #fff, #c0c0c0); }
 .rank-item.mystic .rank-item-icon { color: #8a2be2; text-shadow: 0 0 8px #8a2be2; }
-.rank-item.mystic { background: linear-gradient(135deg, #a797c5, #8a7a9e); background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'); }
 
-.rank-item.diamond .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #00e5ff, #00c8ff); }
+/* DIAMANTE */
+.rank-item.diamond { background: linear-gradient(135deg, #00e5ff, #00c8ff); background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'); }
+.rank-item.diamond .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #fff, #b3e5fc); }
 .rank-item.diamond .rank-item-icon { color: #00e5ff; text-shadow: 0 0 8px #00e5ff; }
-.rank-item.diamond { background: linear-gradient(135deg, #b3e5fc, #81c8f1); background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'); }
 
-.rank-item.elite .rank-item-title { font-family: 'Bangers', sans-serif; background-image: linear-gradient(45deg, #e91e63, #c2185b); }
+/* ELITE */
+.rank-item.elite { background: linear-gradient(135deg, #e91e63, #d32f2f); background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'); }
+.rank-item.elite .rank-item-title { font-family: 'Bangers', sans-serif; background-image: linear-gradient(45deg, #fff, #ffcdd2); }
 .rank-item.elite .rank-item-icon { color: #e91e63; text-shadow: 0 0 8px #e91e63; }
-.rank-item.elite { background: linear-gradient(135deg, #f08e82, #e57373); background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'); }
 
-.rank-item.legendary .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #ff9800, #e68a00); }
+/* LEGENDARIO */
+.rank-item.legendary { background: linear-gradient(135deg, #ff5722, #e64a19); background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'); }
+.rank-item.legendary .rank-item-title { font-family: 'Merriweather', serif; background-image: linear-gradient(45deg, #fff, #ffccbc); }
 .rank-item.legendary .rank-item-icon { color: #ff9800; text-shadow: 0 0 8px #ff9800; }
-.rank-item.legendary { background: linear-gradient(135deg, #ffb366, #e69d52); background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'); }
 
-/* ... y así sucesivamente para todos los demás rangos ... */
+/* CELESTIAL */
+.rank-item.celestial { background: linear-gradient(135deg, #81d4fa, #b3e5fc); background-image: url('https://www.transparenttextures.com/patterns/always-grey.png'); }
+.rank-item.celestial .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #333, #0d47a1); }
+.rank-item.celestial .rank-item-icon { color: #4fc3f7; text-shadow: 0 0 8px #4fc3f7; }
+
+/* ARCHANGEL */
+.rank-item.archangel { background: linear-gradient(135deg, #ffeb3b, #fff176); background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png'); }
+.rank-item.archangel .rank-item-title { font-family: 'Cinzel Decorative', serif; background-image: linear-gradient(45deg, #333, #000); }
+.rank-item.archangel .rank-item-icon { color: #ffeb3b; text-shadow: 0 0 8px #ffeb3b; }
+
+/* TITAN */
+.rank-item.titan { background: linear-gradient(135deg, #607d8b, #455a64); background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png'); }
+.rank-item.titan .rank-item-title { font-family: 'Orbitron', sans-serif; background-image: linear-gradient(45deg, #e0e0e0, #fff); }
+.rank-item.titan .rank-item-icon { color: #607d8b; text-shadow: 0 0 8px #607d8b; }
+
+/* DRAGÓN */
+.rank-item.dragon { background: linear-gradient(135deg, #c62828, #b71c1c); background-image: url('https://www.transparenttextures.com/patterns/dragon-scales.png'); }
+.rank-item.dragon .rank-item-title { font-family: 'Bangers', sans-serif; background-image: linear-gradient(45deg, #fff, #ffccbc); }
+.rank-item.dragon .rank-item-icon { color: #c62828; text-shadow: 0 0 8px #c62828; }
+
+/* PHOENIX */
+.rank-item.phoenix { background: linear-gradient(135deg, #ff5722, #ff8a65); background-image: url('https://www.transparenttextures.com/patterns/cross-stripes.png'); }
+.rank-item.phoenix .rank-item-title { font-family: 'Merriweather', serif; background-image: linear-gradient(45deg, #fff, #ffcdd2); }
+.rank-item.phoenix .rank-item-icon { color: #ff5722; text-shadow: 0 0 8px #ff5722; }
+
+/* OMNIPOTENTE */
+.rank-item.omnipotent { background: linear-gradient(135deg, #7b1fa2, #9c27b0); background-image: url('https://www.transparenttextures.com/patterns/washi.png'); }
+.rank-item.omnipotent .rank-item-title { font-family: 'Nosifier', cursive; background-image: linear-gradient(45deg, #fff, #d1c4e9); }
+.rank-item.omnipotent .rank-item-icon { color: #7b1fa2; text-shadow: 0 0 8px #7b1fa2; }
+
+/* INFINITO */
+.rank-item.infinite { background: linear-gradient(135deg, #00c853, #1de9b6); background-image: url('https://www.transparenttextures.com/patterns/xv.png'); }
+.rank-item.infinite .rank-item-title { font-family: 'Press Start 2P', cursive; background-image: linear-gradient(45deg, #fff, #b9f6ca); }
+.rank-item.infinite .rank-item-icon { color: #00c853; text-shadow: 0 0 8px #00c853; }
+
+/* MISTERIO */
+.rank-item.mystery { background: linear-gradient(135deg, #333, #1a1a1a); background-image: url('https://www.transparenttextures.com/patterns/light-venetian-blinds.png'); }
+.rank-item.mystery .rank-item-title { font-family: 'Teko', sans-serif; background-image: linear-gradient(45deg, #fff, #c0c0c0); }
+.rank-item.mystery .rank-item-icon { color: #666; text-shadow: none; }
+
+/* CREADOR DEL UNIVERSO */
+.rank-item.creator { background: linear-gradient(135deg, #003300, #000); animation: creator-bg-pulse 2s infinite alternate; }
+.rank-item.creator .rank-item-title { font-family: 'Press Start 2P', cursive; background-image: linear-gradient(45deg, #00ff00, #99ff99); }
+.rank-item.creator .rank-item-icon { color: #00ff00; text-shadow: 0 0 15px #00ff00; animation: creator-glow 2s infinite alternate; }
+
+@keyframes creator-glow {
+    0% { text-shadow: 0 0 15px #00ff00; }
+    100% { text-shadow: 0 0 30px #00ff00, 0 0 40px rgba(0, 255, 0, 0.5); }
+}
+
+@keyframes creator-bg-pulse {
+    0% { background-color: #003300; box-shadow: inset 0 0 20px #00ff00; }
+    100% { background-color: #004400; box-shadow: inset 0 0 30px #00ff00; }
+}
+
 
 .loader-rankings {
     border: 8px solid #cfdef3;
