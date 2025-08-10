@@ -213,6 +213,7 @@ async function signOut() {
  */
 async function loadUserProfile(userId) {
     showLoader('Cargando perfil...');
+    let profileData = null; // Variable para almacenar los datos del perfil
 
     try {
         const { data, error } = await supabase
@@ -221,60 +222,56 @@ async function loadUserProfile(userId) {
             .eq('id', userId)
             .single();
 
-        if (error) {
-            console.error('Error al cargar perfil:', error);
-
-            // Si el perfil no se encuentra (PGRST116), intenta crearlo
-            if (error.code === 'PGRST116') {
-                console.log('Perfil no encontrado, intentando crear uno básico.');
-                
-                // Genera un nombre de usuario único usando una porción del ID del usuario.
-                const uniqueUsername = `jugador-${userId.slice(0, 8)}`;
-
-                const { error: insertError } = await supabase
-                    .from('profiles')
-                    .insert([{ 
-                        id: userId, 
-                        username: uniqueUsername, // Usar el nombre de usuario único
-                        country: 'Desconocido', 
-                        gold: 0, 
-                        diamonds: 0, 
-                        perla: 0 
-                    }]);
-                
-                if (insertError) {
-                    console.error('Error al crear perfil básico:', insertError);
-                    showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial: ' + insertError.message);
-                } else {
-                    showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico. ¡Rellena tus datos en la sección de Perfil!');
-                    await loadUserProfile(userId); // Se recarga para mostrar el perfil recién creado
-                    return;
-                }
+        if (error && error.code === 'PGRST116') {
+            console.log('Perfil no encontrado, intentando crear uno básico.');
+            const uniqueUsername = `jugador-${userId.slice(0, 8)}`;
+            const newProfile = { 
+                id: userId, 
+                username: uniqueUsername, 
+                country: 'Desconocido', 
+                gold: 0, 
+                diamonds: 0, 
+                perla: 0 
+            };
+            const { error: insertError } = await supabase
+                .from('profiles')
+                .insert([newProfile]);
+            
+            if (insertError) {
+                console.error('Error al crear perfil básico:', insertError);
+                showSwal('error', 'Error Crítico', 'No se pudo crear el perfil inicial: ' + insertError.message);
             } else {
-                showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
+                showSwal('info', 'Perfil Creado', 'Se ha generado un perfil básico. ¡Rellena tus datos en la sección de Perfil!');
+                profileData = newProfile; // Usar los datos recién creados
             }
-        } 
-        
-        if (data) {
-            const user = (await supabase.auth.getUser()).data.user;
+        } else if (error) {
+            console.error('Error al cargar perfil:', error);
+            showSwal('error', 'Error de Perfil', 'No se pudo cargar la información de tu perfil: ' + error.message);
+        } else {
+            profileData = data; // Usar los datos de la búsqueda exitosa
+        }
 
+        // Si tenemos datos del perfil, actualizamos el DOM
+        if (profileData) {
+            const user = (await supabase.auth.getUser()).data.user;
+            
             // Actualizar datos en el dashboard
             if (userEmailDashboardSpan) userEmailDashboardSpan.textContent = user.email;
-            if (goldDisplayDashboard) goldDisplayDashboard.textContent = data.gold;
-            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = data.diamonds;
-            if (pearlsDisplayDashboard) pearlsDisplayDashboard.textContent = data.perla;
+            if (goldDisplayDashboard) goldDisplayDashboard.textContent = profileData.gold;
+            if (diamondsDisplayDashboard) diamondsDisplayDashboard.textContent = profileData.diamonds;
+            if (pearlsDisplayDashboard) pearlsDisplayDashboard.textContent = profileData.perla;
 
             // Actualizar datos en la página de perfil (si es la página actual)
             if (userEmailProfileSpan) userEmailProfileSpan.textContent = user.email;
-            if (usernameInputProfile) usernameInputProfile.value = data.username || '';
-            if (countryInputProfile) countryInputProfile.value = data.country || '';
-            if (goldDisplayProfile) goldDisplayProfile.textContent = data.gold;
-            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = data.diamonds;
-            if (pearlsDisplayProfile) pearlsDisplayDisplayProfile.textContent = data.perla;
+            if (usernameInputProfile) usernameInputProfile.value = profileData.username || '';
+            if (countryInputProfile) countryInputProfile.value = profileData.country || '';
+            if (goldDisplayProfile) goldDisplayProfile.textContent = profileData.gold;
+            if (diamondsDisplayProfile) diamondsDisplayProfile.textContent = profileData.diamonds;
+            if (pearlsDisplayProfile) pearlsDisplayProfile.textContent = profileData.perla;
 
             // Lógica para habilitar/deshabilitar el botón de la tienda
             if (shopBtn) {
-                const perlas = parseInt(data.perla, 10);
+                const perlas = parseInt(profileData.perla, 10);
                 shopBtn.disabled = perlas <= 20;
             }
         }
@@ -483,8 +480,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 showSwal('success', 'Enlace enviado', 'Si tu correo está registrado, recibirás un enlace para restablecer tu contraseña.');
                             }
                         } catch (e) {
-                             console.error("Error inesperado al restablecer contraseña:", e);
-                             showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al enviar el enlace.');
+                               console.error("Error inesperado al restablecer contraseña:", e);
+                               showSwal('error', 'Error Inesperado', 'Ha ocurrido un problema al enviar el enlace.');
                         } finally {
                             hideLoader();
                         }
@@ -584,36 +581,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
-
-function cargarPerfil() {
-    console.log("Cargando el perfil...");
-    // Aquí iría tu lógica actual, como una llamada a fetch() o a una función de la base de datos
-    // para obtener los datos del usuario y mostrarlos en el dashboard.
-    
-    // Ejemplo de cómo podrías actualizar el DOM:
-    const perfilDiv = document.getElementById('perfil-info');
-    if (perfilDiv) {
-        perfilDiv.innerHTML = '<h2>¡Perfil cargado!</h2><p>Bienvenido de nuevo, [Nombre de Usuario]</p>';
-    }
-}
-
-// --- Nuevo código para solucionar el problema ---
-// Este es el evento clave: 'pageshow'
+// --- Tu código original para manejar la navegación hacia atrás/adelante ---
+// Este evento clave: 'pageshow' se mantiene y se conecta a la función de carga de perfil
 window.addEventListener('pageshow', function(event) {
-    // La propiedad 'persisted' es 'true' si la página se está mostrando desde la caché.
-    // Esto significa que el usuario ha usado el botón de "atrás".
     if (event.persisted) {
         console.log('Regresando de otra página, el evento pageshow se ha activado.');
-        cargarPerfil();
-    } else {
-        // Esto se ejecutará en la carga inicial de la página.
-        console.log('Página cargada por primera vez.');
-        // Puedes llamar a cargarPerfil() aquí también si no lo haces en otro sitio
-        // para asegurarte de que siempre se carga.
-        // cargarPerfil();
+        const currentPage = window.location.pathname.split('/').pop();
+        if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
+            supabase.auth.getUser().then(({ data: { user } }) => {
+                if (user) {
+                    loadUserProfile(user.id);
+                }
+            });
+        }
     }
 });
 
 // También puedes llamar a la función en el evento de carga inicial por si acaso,
 // para cubrir todos los casos.
-window.addEventListener('DOMContentLoaded', cargarPerfil);
+window.addEventListener('DOMContentLoaded', async () => {
+    const currentPage = window.location.pathname.split('/').pop();
+    if (currentPage === 'dashboard.html' || currentPage === 'profile.html') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            loadUserProfile(user.id);
+        }
+    }
+});
