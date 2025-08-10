@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda de Fragmentos y Cofres</title>
+    <title>Tienda Lucete</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -388,7 +388,7 @@
             align-items: center;
             z-index: 3;
         }
-        .regresar-dashboard {
+        .header-button {
             text-decoration: none;
             color: white;
             font-weight: 600;
@@ -398,8 +398,9 @@
             border: none;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .regresar-dashboard:hover {
+        .header-button:hover {
             background: linear-gradient(135deg, #53a6ff, #3895ff);
             transform: scale(1.05);
         }
@@ -504,7 +505,7 @@
                 left: 15px;
                 right: 15px;
             }
-            .regresar-dashboard {
+            .header-button {
                 padding: 8px 16px;
             }
             .info-button {
@@ -543,7 +544,7 @@
                 gap: 10px;
                 top: 20px;
             }
-            .regresar-dashboard {
+            .header-button {
                 width: 100%;
                 text-align: center;
                 box-sizing: border-box;
@@ -573,26 +574,32 @@
 <body>
     <header>
         <div class="header-buttons">
-            <a href="#" class="regresar-dashboard">Regresar al Dashboard</a>
-            <button class="info-button" onclick="mostrarInfo()">?</button>
+            <button id="back-to-dashboard" class="header-button regresar-dashboard">
+                Regresar a Dashboard
+            </button>
+            <button id="info-button" class="header-button info-button" onclick="mostrarInfo()">
+                &#x1F6C8;
+            </button>
         </div>
-        <h1>Tienda</h1>
-        <p>Encuentra juegos y objetos especiales</p>
+
+        <h1>Tienda Lucete</h1>
+        <p>¡Decora tu vida con nuestros juegos y productos!</p>
     </header>
 
     <div class="main-layout">
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="#juegos-destacados" class="sidebar-item activo">Juegos Destacados</a>
+                <a href="#destacados" class="sidebar-item activo">Destacados</a>
                 <a href="#juegos-rapidos" class="sidebar-item">Juegos Rápidos</a>
                 <a href="#cofres" class="sidebar-item">Cofres</a>
                 <a href="#fragmentos" class="sidebar-item">Fragmentos</a>
+                <a href="#proximos" class="sidebar-item">Próximos Juegos</a>
             </nav>
         </aside>
 
         <main class="main-content">
-            <section id="juegos-destacados">
-                <h2>Juegos Destacados</h2>
+            <section id="destacados" class="seccion-contenido">
+                <h2>⭐ Destacados de la Tienda</h2>
                 <div class="grid-container">
                     <!-- Tarjeta de juego 1 -->
                     <div class="juego-card card-destacados ahorcado">
@@ -600,8 +607,8 @@
                             <span class="juego-icono">💀</span>
                         </div>
                         <h3>Ahorcado</h3>
-                        <p>Adivina la palabra antes de quedarte sin intentos.</p>
-                        <button onclick="comprar('Ahorcado')">Jugar ahora</button>
+                        <p>Adivina la palabra oculta antes de quedarte sin vidas.</p>
+                        <button class="boton-jugar" onclick="comprar('Ahorcado')">Jugar Ahora</button>
                     </div>
                     <!-- Tarjeta de juego 2 -->
                     <div class="juego-card card-destacados preguntados">
@@ -609,32 +616,32 @@
                             <span class="juego-icono">❓</span>
                         </div>
                         <h3>Preguntados</h3>
-                        <p>Demuestra tu conocimiento en diversas categorías.</p>
-                        <button onclick="comprar('Preguntados')">Jugar ahora</button>
+                        <p>Demuestra tus conocimientos en preguntas de cultura general.</p>
+                        <button class="boton-jugar" onclick="comprar('Preguntados')">Jugar Ahora</button>
                     </div>
-                </div>
-            </section>
-
-            <section id="juegos-rapidos">
-                <h2>Juegos Rápidos</h2>
-                <div class="grid-container">
                     <!-- Tarjeta de juego 3 -->
-                    <div class="juego-card card-rapidos sopa-letras">
+                    <div class="juego-card card-destacados sopa-letras">
                         <div class="juego-icono-container">
                             <span class="juego-icono">🔠</span>
                         </div>
                         <h3>Sopa de Letras</h3>
-                        <p>Encuentra las palabras escondidas en el menor tiempo posible.</p>
-                        <button onclick="comprar('Sopa de Letras')">Jugar ahora</button>
+                        <p>Encuentra las palabras escondidas lo más rápido posible.</p>
+                        <button class="boton-jugar" onclick="comprar('Sopa de Letras')">Jugar Ahora</button>
                     </div>
+                </div>
+            </section>
+
+            <section id="juegos-rapidos" class="seccion-contenido">
+                <h2>🚀 Juegos Rápidos</h2>
+                <div class="grid-container">
                     <!-- Tarjeta de juego 4 -->
                     <div class="juego-card card-rapidos memoria">
                         <div class="juego-icono-container">
                             <span class="juego-icono">🧠</span>
                         </div>
-                        <h3>Juego de Memoria</h3>
-                        <p>Encuentra los pares de cartas iguales.</p>
-                        <button onclick="comprar('Juego de Memoria')">Jugar ahora</button>
+                        <h3>Parejas de Memoria</h3>
+                        <p>Encuentra los pares y gana diamantes. ¡50 diamantes!</p>
+                        <button class="boton-jugar" onclick="comprar('Juego de Memoria')">Jugar Ahora</button>
                     </div>
                     <!-- Tarjeta de juego 5 -->
                     <div class="juego-card card-rapidos adivina-carta">
@@ -642,41 +649,41 @@
                             <span class="juego-icono">🃏</span>
                         </div>
                         <h3>Adivina la Carta</h3>
-                        <p>Adivina la carta para ganar recompensas.</p>
-                        <button onclick="comprar('Adivina la Carta')">Jugar ahora</button>
+                        <p>Elige la carta ganadora y multiplica tus premios. ¡50 diamantes!</p>
+                        <button class="boton-jugar" onclick="comprar('Adivina la Carta')">Jugar Ahora</button>
                     </div>
                 </div>
             </section>
 
-            <section id="cofres">
-                <h2>Cofres</h2>
+            <section id="cofres" class="seccion-contenido">
+                <h2>📦 Cofres Misteriosos</h2>
                 <div class="grid-container">
                     <!-- Cofre Común -->
                     <div class="cofre-card cofre-comun">
                         <div class="cofre-icono-container"></div>
                         <h3>Cofre Común</h3>
-                        <p>Contiene recompensas básicas.</p>
-                        <button onclick="abrirCofre('Común')">Abrir (10 💎)</button>
+                        <p>Contiene premios básicos.</p>
+                        <button class="boton-comprar" onclick="abrirCofre('Común')">Abrir</button>
                     </div>
                     <!-- Cofre de Plata -->
                     <div class="cofre-card cofre-plata">
                         <div class="cofre-icono-container"></div>
-                        <h3>Cofre de Plata</h3>
-                        <p>Contiene recompensas más raras.</p>
-                        <button onclick="abrirCofre('Plata')">Abrir (50 💎)</button>
+                        <h3>Cofre Plata</h3>
+                        <p>Premios de nivel medio.</p>
+                        <button class="boton-comprar" onclick="abrirCofre('Plata')">Abrir</button>
                     </div>
                     <!-- Cofre de Leyenda (Oro) -->
                     <div class="cofre-card cofre-leyenda">
                         <div class="cofre-icono-container"></div>
-                        <h3>Cofre de Leyenda</h3>
-                        <p>El cofre más valioso, con premios épicos.</p>
-                        <button onclick="abrirCofre('Leyenda')">Abrir (200 💎)</button>
+                        <h3>Cofre Leyenda</h3>
+                        <p>Los premios más valiosos.</p>
+                        <button class="boton-comprar" onclick="abrirCofre('Leyenda')">Abrir</button>
                     </div>
                 </div>
             </section>
 
-            <section id="fragmentos">
-                <h2>Fragmentos</h2>
+            <section id="fragmentos" class="seccion-contenido">
+                <h2>✨ Fragmentos</h2>
                 <div class="grid-container">
                     <!-- Fragmento de Oro -->
                     <div class="fragmento-card fragmento-oro">
@@ -708,14 +715,73 @@
                     </div>
                 </div>
             </section>
+            <section id="proximos" class="seccion-contenido" style="display: none;">
+                <h2>🛒 Próximos Juegos</h2>
+                <div class="grid-container">
+                    <div class="juego-card card-proximamente">
+                        <h3>Cofre Aleatorio</h3>
+                        <span class="juego-icono">🎲</span>
+                        <p>Próximamente disponible. Da recompensas aleatorias.</p>
+                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    </div>
+                    <div class="juego-card card-proximamente">
+                        <h3>Juego de Cartas</h3>
+                        <span class="juego-icono">🃏</span>
+                        <p>Próximamente disponible. Juega y gana premios exclusivos.</p>
+                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    </div>
+                    <div class="juego-card card-proximamente">
+                        <h3>Sudoku</h3>
+                        <span class="juego-icono">🔢</span>
+                        <p>Próximamente disponible. Desafía tu lógica.</p>
+                        <span class="estado-juego bloqueado">Bloqueado</span>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
     <footer>
-        <p>&copy; 2025 Mi Aplicación de Juegos</p>
+        <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const sections = document.querySelectorAll('.seccion-contenido');
+
+            const showSection = (id) => {
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                const targetSection = document.getElementById(id);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            };
+
+            const setActive = (target) => {
+                sidebarItems.forEach(item => item.classList.remove('activo'));
+                const activeItem = document.querySelector(`.sidebar-item[data-target="${target}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('activo');
+                }
+            };
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = item.dataset.target;
+                    showSection(target);
+                    setActive(target);
+                });
+            });
+
+            // Mostrar la primera sección por defecto
+            showSection('destacados');
+            setActive('destacados');
+        });
+
         function comprar(juego) {
             Swal.fire({
                 title: 'Comprar juego',
