@@ -1,4 +1,4 @@
-/* Variables CSS */
+
         :root {
             --color-principal: #5e32b0;
             --color-acento: #ff6b6b;
@@ -557,3 +557,21 @@
                 padding: 10px 25px !important;
             }
         }
+        @media (max-width: 360px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+            .header-buttons {
+                top: 10px;
+            }
+            .regresar-dashboard {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+            .info-button {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9em;
+            }
+        }
+        
