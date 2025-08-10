@@ -584,3 +584,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+function cargarPerfil() {
+    console.log("Cargando el perfil...");
+    // Aquí iría tu lógica actual, como una llamada a fetch() o a una función de la base de datos
+    // para obtener los datos del usuario y mostrarlos en el dashboard.
+    
+    // Ejemplo de cómo podrías actualizar el DOM:
+    const perfilDiv = document.getElementById('perfil-info');
+    if (perfilDiv) {
+        perfilDiv.innerHTML = '<h2>¡Perfil cargado!</h2><p>Bienvenido de nuevo, [Nombre de Usuario]</p>';
+    }
+}
+
+// --- Nuevo código para solucionar el problema ---
+// Este es el evento clave: 'pageshow'
+window.addEventListener('pageshow', function(event) {
+    // La propiedad 'persisted' es 'true' si la página se está mostrando desde la caché.
+    // Esto significa que el usuario ha usado el botón de "atrás".
+    if (event.persisted) {
+        console.log('Regresando de otra página, el evento pageshow se ha activado.');
+        cargarPerfil();
+    } else {
+        // Esto se ejecutará en la carga inicial de la página.
+        console.log('Página cargada por primera vez.');
+        // Puedes llamar a cargarPerfil() aquí también si no lo haces en otro sitio
+        // para asegurarte de que siempre se carga.
+        // cargarPerfil();
+    }
+});
+
+// También puedes llamar a la función en el evento de carga inicial por si acaso,
+// para cubrir todos los casos.
+window.addEventListener('DOMContentLoaded', cargarPerfil);
