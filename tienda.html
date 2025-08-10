@@ -352,6 +352,54 @@
             box-shadow: 0 4px 15px rgba(247, 210, 107, 0.5);
         }
 
+        /* --- ESTILOS MEJORADOS PARA "PRÓXIMOS JUEGOS" --- */
+        .card-proximamente {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #e3e3e3, #c5c5c5);
+            border: 1px solid #a3a3a3;
+            filter: grayscale(80%);
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.8;
+            transition: all 0.5s ease;
+        }
+
+        .card-proximamente:hover {
+            transform: none; /* Desactiva la animación al pasar el ratón */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        /* El banner "Bloqueado" */
+        .bloqueado-banner {
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background-color: #ff4d4d;
+            color: white;
+            font-weight: bold;
+            padding: 5px 35px;
+            font-size: 0.9em;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 10;
+            animation: pulse-banner 2s infinite;
+        }
+
+        .card-proximamente h3 {
+            color: #666;
+        }
+        .card-proximamente p {
+            color: #888;
+        }
+        .card-proximamente .juego-icono-container {
+            background-color: #a3a3a3;
+        }
+        .card-proximamente .juego-icono {
+            color: #e0e0e0;
+        }
+
+        /* Animaciones */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -367,6 +415,11 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        @keyframes pulse-banner {
+            0% { transform: scale(1) rotate(45deg); }
+            50% { transform: scale(1.05) rotate(45deg); }
+            100% { transform: scale(1) rotate(45deg); }
+        }
 
         /* Pie de página */
         footer {
@@ -707,23 +760,32 @@
             <section id="proximos" class="seccion-contenido">
                 <h2>🛒 Próximos Juegos</h2>
                 <div class="grid-container">
+                    <!-- Tarjeta de Cofre Aleatorio -->
                     <div class="juego-card card-proximamente">
+                        <span class="bloqueado-banner">Bloqueado</span>
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🎲</span>
+                        </div>
                         <h3>Cofre Aleatorio</h3>
-                        <span class="juego-icono">🎲</span>
-                        <p>Próximamente disponible. Da recompensas aleatorias.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                        <p>Descubre qué misterios te depara la suerte.</p>
                     </div>
+                    <!-- Tarjeta de Juego de Cartas -->
                     <div class="juego-card card-proximamente">
+                        <span class="bloqueado-banner">Bloqueado</span>
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🃏</span>
+                        </div>
                         <h3>Juego de Cartas</h3>
-                        <span class="juego-icono">🃏</span>
-                        <p>Próximamente disponible. Juega y gana premios exclusivos.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                        <p>Juega contra la IA y demuestra tu estrategia.</p>
                     </div>
+                    <!-- Tarjeta de Sudoku -->
                     <div class="juego-card card-proximamente">
+                        <span class="bloqueado-banner">Bloqueado</span>
+                        <div class="juego-icono-container">
+                            <span class="juego-icono">🔢</span>
+                        </div>
                         <h3>Sudoku</h3>
-                        <span class="juego-icono">🔢</span>
-                        <p>Próximamente disponible. Desafía tu lógica.</p>
-                        <span class="estado-juego bloqueado">Bloqueado</span>
+                        <p>Un clásico para desafiar tu lógica numérica.</p>
                     </div>
                 </div>
             </section>
@@ -733,8 +795,7 @@
     <footer>
         <p>&copy; 2025 Tienda Lucete. Todos los derechos reservados.</p>
     </footer>
-
-      <script src="tienda.js"></script>
+<script src="tienda.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Seleccionamos todos los botones de la barra lateral
