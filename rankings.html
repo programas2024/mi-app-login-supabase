@@ -9,208 +9,323 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background-color: #1e1e1e;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            position: relative;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
-        }
-        .header h1 {
-            font-size: 2.5em;
-            color: #ffffff;
-            margin: 0;
-            text-shadow: 0 0 10px #00e5ff;
-        }
-        #back-to-dashboard-from-rankings {
-            background-color: #333;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        #back-to-dashboard-from-rankings:hover {
-            background-color: #555;
-        }
-        .rank-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .rank-item {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .rank-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        }
-        .current-user-rank {
-            border: 2px solid #ffd700;
-            background-color: rgba(255, 215, 0, 0.1) !important;
-            animation: pulse-border 1.5s infinite;
-        }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 10px #ffd700; }
-            50% { box-shadow: 0 0 20px #ffd700; }
-            100% { box-shadow: 0 0 10px #ffd700; }
-        }
-        .rank-item-icon {
-            font-size: 3em;
-            margin-right: 20px;
-            width: 60px;
-            text-align: center;
-        }
-        .rank-item-info {
-            flex-grow: 1;
-            text-align: left;
-        }
-        .rank-item-title {
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-        .rank-item-threshold {
-            font-size: 1em;
-            color: #b0b0b0;
-        }
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    overflow-y: auto;
+}
 
-        /* Icon Colors */
-        .rank-bronze-icon { color: #cd7f32; }
-        .rank-silver-icon { color: #c0c0c0; }
-        .rank-gold-icon { color: #ffd700; }
-        .rank-mystic-icon { color: #8a2be2; }
-        .rank-diamond-icon { color: #00e5ff; }
-        .rank-elite-icon { color: #e91e63; }
-        .rank-legendary-icon { color: #ff9800; }
-        .rank-celestial-icon { color: #4fc3f7; }
-        .rank-archangel-icon { color: #ffeb3b; }
-        .rank-titan-icon { color: #607d8b; }
-        .rank-dragon-icon { color: #c62828; }
-        .rank-phoenix-icon { color: #ff5722; }
-        .rank-omnipotent-icon { color: #7b1fa2; }
-        .rank-infinite-icon { color: #00c853; }
-        .rank-mystery-icon { color: #5a5a5a; }
-        .rank-creator-icon { color: #00ff00; }
+.container {
+    width: 100%;
+    max-width: 900px;
+    background: rgba(20, 20, 50, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+    padding: 40px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        /* Background Colors */
-        .rank-bronze-bg { background-color: #402f1f; }
-        .rank-silver-bg { background-color: #383838; }
-        .rank-gold-bg { background-color: #554425; }
-        .rank-mystic-bg { background-color: #3a1c6a; }
-        .rank-diamond-bg { background-color: #1a4f57; }
-        .rank-elite-bg { background-color: #5c182c; }
-        .rank-legendary-bg { background-color: #4f3b1a; }
-        .rank-celestial-bg { background-color: #1f3a40; }
-        .rank-archangel-bg { background-color: #574e2d; }
-        .rank-titan-bg { background-color: #2b353b; }
-        .rank-dragon-bg { background-color: #5c1919; }
-        .rank-phoenix-bg { background-color: #57211e; }
-        .rank-omnipotent-bg { background-color: #3b1d44; }
-        .rank-infinite-bg { background-color: #1e4f2c; }
-        .rank-mystery-bg { background-color: #2a2a2a; }
-        .rank-creator-bg { background-color: #002200; }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #5a5a5a;
+    padding-bottom: 20px;
+}
 
-        .loader-rankings {
-            border: 8px solid #333;
-            border-top: 8px solid #00c853;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loader-hidden {
-            display: none;
-        }
+.header h1 {
+    font-size: 3em;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 0 15px #00e5ff, 0 0 20px #00e5ff;
+    letter-spacing: 1px;
+}
 
-        .claim-reward-btn {
-            background: linear-gradient(to right, #28a745, #218838);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-        .claim-reward-btn:hover:not([disabled]) {
-            transform: scale(1.05);
-            background: linear-gradient(to right, #218838, #1e7e34);
-        }
-        .claim-reward-btn[disabled] {
-            background-color: #555 !important;
-            cursor: not-allowed;
-            color: #aaa;
-        }
+#back-to-dashboard-from-rankings {
+    background: #4a4a4a;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
-        .swal2-dark-mode {
-            background: #1e1e1e !important;
-            color: #e0e0e0 !important;
-        }
-        .swal2-confirm-button {
-            background-color: #00c853 !important;
-        }
-        .swal2-diamond-burst {
-            font-size: 4em;
-            color: #ffd700;
-            animation: diamond-burst 1s forwards;
-            display: inline-block;
-        }
-        @keyframes diamond-burst {
-            0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(30deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.2); }
-        }
+#back-to-dashboard-from-rankings:hover {
+    background: #6a6a6a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.rank-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.rank-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-radius: 25px;
+    border: 2px solid transparent;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.rank-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    transition: background 0.3s ease;
+}
+
+.rank-item:hover::before {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.rank-item:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+}
+
+.current-user-rank {
+    border: 3px solid #ffd700;
+    animation: glow-border 1.8s infinite alternate;
+}
+
+@keyframes glow-border {
+    0% { box-shadow: 0 0 15px #ffd700; }
+    100% { box-shadow: 0 0 25px #ffd700, 0 0 35px rgba(255, 215, 0, 0.5); }
+}
+
+.rank-item-icon {
+    font-size: 4em;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    animation: fade-in 1s ease-out;
+}
+
+.rank-item-info {
+    position: relative;
+    z-index: 1;
+    flex-grow: 1;
+}
+
+.rank-item-title {
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(45deg, #ffffff, #c0c0c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.rank-item-threshold {
+    font-size: 1.1em;
+    color: #b0b0b0;
+    margin-bottom: 20px;
+}
+
+/* Icon Colors (Actualizado con efectos) */
+.rank-bronze-icon { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; }
+.rank-silver-icon { color: #c0c0c0; text-shadow: 0 0 10px #c0c0c0; }
+.rank-gold-icon { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+.rank-mystic-icon { color: #8a2be2; text-shadow: 0 0 10px #8a2be2; }
+.rank-diamond-icon { color: #00e5ff; text-shadow: 0 0 10px #00e5ff; }
+.rank-elite-icon { color: #e91e63; text-shadow: 0 0 10px #e91e63; }
+.rank-legendary-icon { color: #ff9800; text-shadow: 0 0 10px #ff9800; }
+.rank-celestial-icon { color: #4fc3f7; text-shadow: 0 0 10px #4fc3f7; }
+.rank-archangel-icon { color: #ffeb3b; text-shadow: 0 0 10px #ffeb3b; }
+.rank-titan-icon { color: #607d8b; text-shadow: 0 0 10px #607d8b; }
+.rank-dragon-icon { color: #c62828; text-shadow: 0 0 10px #c62828; }
+.rank-phoenix-icon { color: #ff5722; text-shadow: 0 0 10px #ff5722; }
+.rank-omnipotent-icon { color: #7b1fa2; text-shadow: 0 0 10px #7b1fa2; }
+.rank-infinite-icon { color: #00c853; text-shadow: 0 0 10px #00c853; }
+.rank-mystery-icon { color: #5a5a5a; text-shadow: none; }
+.rank-creator-icon { color: #00ff00; text-shadow: 0 0 20px #00ff00; animation: creator-glow 2s infinite alternate; }
+
+@keyframes creator-glow {
+    0% { text-shadow: 0 0 15px #00ff00; }
+    100% { text-shadow: 0 0 30px #00ff00, 0 0 40px rgba(0, 255, 0, 0.5); }
+}
+
+/* Backgrounds de los Rangos (Mejorados con gradientes y texturas) */
+.rank-bronze-bg { background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'), linear-gradient(135deg, #4d3a24, #2c1e13); }
+.rank-silver-bg { background-image: url('https://www.transparenttextures.com/patterns/diagmonds-light.png'), linear-gradient(135deg, #6c6c6c, #4a4a4a); }
+.rank-gold-bg { background-image: url('https://www.transparenttextures.com/patterns/gold-foil.png'), linear-gradient(135deg, #a88a44, #7f6e3c); }
+.rank-mystic-bg { background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png'), linear-gradient(135deg, #5e3b97, #3a225e); }
+.rank-diamond-bg { background-image: url('https://www.transparenttextures.com/patterns/escher-esque.png'), linear-gradient(135deg, #008899, #005a66); }
+.rank-elite-bg { background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png'), linear-gradient(135deg, #c0392b, #8e2e21); }
+.rank-legendary-bg { background-image: url('https://www.transparenttextures.com/patterns/brushed-metal.png'), linear-gradient(135deg, #e67e22, #b5651c); }
+.rank-celestial-bg { background-image: url('https://www.transparenttextures.com/patterns/always-grey.png'), linear-gradient(135deg, #5185a5, #365e78); }
+.rank-archangel-bg { background-image: url('https://www.transparenttextures.com/patterns/purty-wood.png'), linear-gradient(135deg, #c9b130, #9f8d27); }
+.rank-titan-bg { background-image: url('https://www.transparenttextures.com/patterns/dark-matter.png'), linear-gradient(135deg, #667c8b, #44545d); }
+.rank-dragon-bg { background-image: url('https://www.transparenttextures.com/patterns/dragon-scales.png'), linear-gradient(135deg, #740a0a, #4a0707); }
+.rank-phoenix-bg { background-image: url('https://www.transparenttextures.com/patterns/cross-stripes.png'), linear-gradient(135deg, #a73c15, #8a2d10); }
+.rank-omnipotent-bg { background-image: url('https://www.transparenttextures.com/patterns/washi.png'), linear-gradient(135deg, #5b287a, #3a1a4c); }
+.rank-infinite-bg { background-image: url('https://www.transparenttextures.com/patterns/xv.png'), linear-gradient(135deg, #009944, #00662d); }
+.rank-mystery-bg { background: #1a1a1a; }
+.rank-creator-bg { background-image: url('https://www.transparenttextures.com/patterns/light-venetian-blinds.png'), linear-gradient(135deg, #003300, #001100); animation: creator-bg-pulse 2s infinite alternate; }
+
+@keyframes creator-bg-pulse {
+    0% { background-color: #003300; box-shadow: inset 0 0 20px #00ff00; }
+    100% { background-color: #004400; box-shadow: inset 0 0 30px #00ff00; }
+}
+
+.loader-rankings {
+    border: 8px solid #333;
+    border-top: 8px solid #00e5ff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-hidden {
+    display: none;
+}
+
+.claim-reward-btn {
+    background: linear-gradient(45deg, #1abc9c, #16a085);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.claim-reward-btn:hover:not([disabled]) {
+    transform: translateY(-2px) scale(1.05);
+    background: linear-gradient(45deg, #16a085, #1abc9c);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.claim-reward-btn[disabled] {
+    background: #3a3a3a !important;
+    cursor: not-allowed;
+    color: #999;
+    box-shadow: none;
+}
+
+.claim-reward-btn i {
+    animation: icon-pulse 1.5s infinite;
+}
+
+@keyframes icon-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Estilos de SweetAlert */
+.swal2-dark-mode {
+    background: linear-gradient(135deg, #1a1a1a, #2c2c2c) !important;
+    color: #e0e0e0 !important;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.swal2-title {
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: text-glow 2s infinite alternate;
+}
+
+@keyframes text-glow {
+    0% { text-shadow: 0 0 8px rgba(255, 255, 255, 0.5); }
+    100% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+}
+
+.swal2-confirm-button {
+    background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    border-radius: 50px !important;
+    padding: 10px 30px !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.swal2-confirm-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.swal2-html-container p {
+    color: #c0c0c0;
+}
+
+.swal2-html-container strong {
+    color: #ffd700;
+}
+
+.swal2-diamond-burst {
+    font-size: 5em;
+    color: #ffd700;
+    animation: diamond-burst 1s forwards cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    display: inline-block;
+    text-shadow: 0 0 20px #ffd700;
+}
+
+@keyframes diamond-burst {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(30deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
     </style>
 </head>
 <body>
