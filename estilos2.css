@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.interfaz-bonita {
+    display: flex;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.crucigrama-contenedor {
+    display: grid;
+    grid-template-columns: repeat(10, 30px); /* Define 10 columnas de 30px */
+    grid-auto-rows: 30px; /* Altura automática de las filas */
+    gap: 5px; /* Espacio entre celdas */
+    margin-right: 30px;
+}
+
+.fila {
+    display: contents; /* Permite que los inputs se posicionen directamente en la grid del contenedor */
+}
+
+.letra {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    text-transform: uppercase;
+}
+
+.letra:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.pistas-contenedor {
+    width: 250px;
+}
+
+.pistas-contenedor h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.lista-pistas {
+    list-style: none;
+    padding: 0;
+}
+
+.lista-pistas li {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 14px;
+}
+
+/* Puedes añadir estilos específicos para las letras que forman parte de una palabra */
+/* Por ejemplo, para resaltar la palabra "HIPOPOTAMO" */
+.h-hipopotamo {
+    /* Estilos específicos si los necesitas */
+}

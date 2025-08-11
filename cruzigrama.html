@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Elegante</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* Estilos del contenedor movidos al body */
+            background: #ffffff;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            color: #4a4a4a;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(9, 40px);
+            grid-template-rows: repeat(9, 40px);
+            gap: 1px;
+            border: 3px solid #333;
+            background-color: #333;
+            box-shadow: inset 5px 5px 10px #c2c6cd, inset -5px -5px 10px #f8feff;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: inset 2px 2px 5px #babecc, inset -2px -2px 5px #ffffff;
+        }
+
+        /* Borde interno grueso para los bloques 3x3 */
+        .cell[data-col="2"], .cell[data-col="5"] {
+            border-right: 2px solid #333;
+        }
+
+        .cell[data-row="2"], .cell[data-row="5"] {
+            border-bottom: 2px solid #333;
+        }
+
+        /* Solución: quitamos el borde de la celda en el borde del tablero
+           para que no se superponga con el borde principal */
+        .cell[data-col="8"] {
+            border-right: none;
+        }
+
+        .cell:hover:not(.cell-fixed) {
+            background-color: #e6f7ff;
+        }
+
+        .cell.selected {
+            background-color: #b0e0e6;
+            transform: scale(1.05);
+            box-shadow: inset 4px 4px 8px #96c4c9, inset -4px -4px 8px #c6fcfd;
+        }
+
+        .cell-fixed {
+            background-color: #d1d9e6;
+            cursor: not-allowed;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .cell-fixed:hover {
+            background-color: #d1d9e6;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: 5px 5px 10px #babecc, -5px -5px 10px #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 7px 7px 15px #babecc, -7px -7px 15px #ffffff;
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: inset 2px 2px 5px #babecc, inset -2px -2px 5px #ffffff;
+        }
+
+        /* Estilos específicos para los nuevos botones */
+        #back-button {
+            background: linear-gradient(145deg, #7e5aff, #59d8ff);
+            margin-right: 1100px;
+        }
+        
+        #solve-button {
+            background: linear-gradient(145deg, #4c9baf, #4645a0);
+        }
+
+        #check-button {
+            background: linear-gradient(145deg, #2196F3, #c9eaff);
+        }
+
+        #new-game-button {
+            background: linear-gradient(145deg, #fc6a5f, #da190b);
+        }
+
+        #help-button {
+            background: linear-gradient(145deg, #ff9307, #f5ff6d);
+        }
+
+        .error {
+            color: #f44336;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+         /* ======================================= */
+        /* MEDIA QUERIES PARA RESPONSIVIDAD */
+        /* ======================================= */
+
+        /* Para tablets y dispositivos medianos (max-width: 768px) */
+        @media (max-width: 768px) {
+            #board {
+                grid-template-columns: repeat(9, 35px);
+                grid-template-rows: repeat(9, 35px);
+            }
+            .cell {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            .top-controls {
+                justify-content: center;
+                padding: 0;
+            }
+            #back-button {
+                margin-right: 0;
+            }
+        }
+        
+        /* Para móviles y dispositivos pequeños (max-width: 480px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            #board {
+                grid-template-columns: repeat(9, 30px);
+                grid-template-rows: repeat(9, 30px);
+                gap: 0.5px;
+            }
+            .cell {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9em;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            .top-controls {
+                justify-content: center;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <button id="back-button" title="Volver a la página anterior">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
+    </div>
+    <h1>Sudoku</h1>
+    <div id="board"></div>
+    <div class="controls">
+       <button id="check-button" title="Comprobar si tu solución es correcta">
+                <i class="fas fa-check-circle"></i> Comprobar
+            </button>
+            <button id="help-button" title="Obtener una pista para una celda vacía">
+                <i class="fas fa-question-circle"></i> Ayuda
+            </button>
+            <button id="solve-button" title="Rellenar el tablero con la solución completa">
+                <i class="fas fa-lightbulb"></i> Resolver
+            </button>
+            <button id="new-game-button" title="Empezar un nuevo juego desde cero">
+                <i class="fas fa-sync-alt"></i> Nuevo Juego
+            </button>
+    </div>
+
+    <script>
+        const boardElement = document.getElementById('board');
+        const solveButton = document.getElementById('solve-button');
+        const newGameButton = document.getElementById('new-game-button');
+        const checkButton = document.getElementById('check-button');
+        const helpButton = document.getElementById('help-button');
+        const backButton = document.getElementById('back-button');
+
+        let board = [];
+        let solvedBoard = [];
+        let selectedCell = null;
+        let initialBoard = [];
+        let helpUsed = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: '¡Bienvenido a Sudoku!',
+                text: 'Presiona en una celda vacía y usa las teclas numéricas para jugar.',
+                icon: 'info',
+                confirmButtonText: '¡A Jugar!',
+                customClass: {
+                    container: 'swal2-poppins-font'
+                }
+            });
+            createBoard();
+            newGame();
+        });
+
+        newGameButton.addEventListener('click', newGame);
+        solveButton.addEventListener('click', solveSudoku);
+        checkButton.addEventListener('click', checkSudoku);
+        helpButton.addEventListener('click', giveHelp);
+        document.addEventListener('keydown', handleKeyPress);
+        backButton.addEventListener('click', () => {
+            window.location.href = 'games.html';
+        });
+
+        function createBoard() {
+            boardElement.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', handleCellClick);
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        // --- LÓGICA DE GENERACIÓN DE PUZZLES ALEATORIOS ---
+        function newGame() {
+            board = Array.from({ length: 9 }, () => Array(9).fill(0));
+            
+            fillBoard(board);
+            
+            solvedBoard = JSON.parse(JSON.stringify(board));
+            initialBoard = JSON.parse(JSON.stringify(board));
+
+            // Elimina números para crear el puzzle (la dificultad se puede ajustar aquí)
+            removeNumbers(initialBoard, 50);
+
+            board = JSON.parse(JSON.stringify(initialBoard));
+            renderBoard();
+            selectedCell = null;
+            helpUsed = false;
+            helpButton.style.display = 'inline-block';
+        }
+
+        function fillBoard(grid) {
+            function isSafe(row, col, num) {
+                for (let x = 0; x < 9; x++) {
+                    if (grid[row][x] === num || grid[x][col] === num) return false;
+                }
+                let startRow = row - row % 3, startCol = col - col % 3;
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (grid[i + startRow][j + startCol] === num) return false;
+                    }
+                }
+                return true;
+            }
+
+            function solve() {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (grid[row][col] === 0) {
+                            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
+                            for (const num of numbers) {
+                                if (isSafe(row, col, num)) {
+                                    grid[row][col] = num;
+                                    if (solve()) return true;
+                                    grid[row][col] = 0;
+                                }
+                            }
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            solve();
+        }
+
+        function removeNumbers(grid, count) {
+            let removedCount = 0;
+            while (removedCount < count) {
+                let row = Math.floor(Math.random() * 9);
+                let col = Math.floor(Math.random() * 9);
+                if (grid[row][col] !== 0) {
+                    const temp = grid[row][col];
+                    grid[row][col] = 0;
+                    if (!hasUniqueSolution(grid)) {
+                        grid[row][col] = temp;
+                    } else {
+                        removedCount++;
+                    }
+                }
+            }
+        }
+
+        function hasUniqueSolution(grid) {
+            let solutions = 0;
+            const tempGrid = JSON.parse(JSON.stringify(grid));
+            
+            function countSolutions(board) {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (board[row][col] === 0) {
+                            for (let num = 1; num <= 9; num++) {
+                                if (isValid(board, row, col, num)) {
+                                    board[row][col] = num;
+                                    countSolutions(board);
+                                    if (solutions > 1) return;
+                                    board[row][col] = 0;
+                                }
+                            }
+                            return;
+                        }
+                    }
+                }
+                solutions++;
+            }
+            
+            countSolutions(tempGrid);
+            return solutions === 1;
+        }
+
+        // --- FIN LÓGICA DE GENERACIÓN ---
+
+        function renderBoard() {
+            const cells = boardElement.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / 9);
+                const col = index % 9;
+                const value = board[row][col];
+                
+                cell.textContent = value === 0 ? '' : value;
+                cell.classList.remove('cell-fixed', 'selected', 'error');
+
+                if (initialBoard[row][col] !== 0) {
+                    cell.classList.add('cell-fixed');
+                }
+            });
+        }
+
+        function handleCellClick(event) {
+            if (selectedCell) {
+                selectedCell.classList.remove('selected');
+            }
+            selectedCell = event.target;
+            selectedCell.classList.add('selected');
+        }
+
+        function handleKeyPress(event) {
+            if (selectedCell) {
+                const row = parseInt(selectedCell.dataset.row);
+                const col = parseInt(selectedCell.dataset.col);
+
+                if (initialBoard[row][col] !== 0) {
+                    return;
+                }
+
+                const number = parseInt(event.key);
+                if (number >= 1 && number <= 9) {
+                    board[row][col] = number;
+                    selectedCell.textContent = number;
+                    if (isValid(board, row, col, number)) {
+                        selectedCell.classList.remove('error');
+                    }
+                } else if (event.key === 'Backspace' || event.key === 'Delete') {
+                    board[row][col] = 0;
+                    selectedCell.textContent = '';
+                    selectedCell.classList.remove('error');
+                }
+            }
+        }
+
+        function isValid(sudokuBoard, row, col, num) {
+            for (let i = 0; i < 9; i++) {
+                if (sudokuBoard[row][i] === num) return false;
+            }
+            for (let i = 0; i < 9; i++) {
+                if (sudokuBoard[i][col] === num) return false;
+            }
+            const startRow = Math.floor(row / 3) * 3;
+            const startCol = Math.floor(col / 3) * 3;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (sudokuBoard[startRow + i][startCol + j] === num) return false;
+                }
+            }
+            return true;
+        }
+
+        function solveSudoku() {
+            const cells = boardElement.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                if (initialBoard[row][col] === 0) {
+                    cell.textContent = solvedBoard[row][col];
+                    board[row][col] = solvedBoard[row][col];
+                    cell.classList.remove('error');
+                }
+            });
+            Swal.fire({
+                title: 'Sudoku Resuelto',
+                text: '¡El tablero ha sido completado!',
+                imageUrl: 'https://cdn-icons-png.flaticon.com/128/265/265738.png',
+                imageWidth: 80,
+                imageHeight: 80,
+                imageAlt: 'Sudoku completado',
+                confirmButtonText: '¡Genial!'
+            });
+        }
+
+        function checkSudoku() {
+            let correct = true;
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    const cell = boardElement.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+                    if (board[r][c] !== solvedBoard[r][c]) {
+                        if (board[r][c] !== 0) {
+                            cell.classList.add('error');
+                        }
+                        correct = false;
+                    } else {
+                        cell.classList.remove('error');
+                    }
+                }
+            }
+
+            if (correct) {
+                Swal.fire({
+                    title: '¡Felicidades!',
+                    text: '¡Has completado el Sudoku correctamente!',
+                    imageUrl: 'https://cdn-icons-png.flaticon.com/128/11412/11412145.png',
+                    imageWidth: 80,
+                    imageHeight: 80,
+                    imageAlt: 'Icono de control de calidad',
+                    confirmButtonText: '¡Increíble!'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Comprueba tu informacion',
+                    text: 'Revisa por favor las celdas rojas o empieza  escribir para comprobar..',
+                    imageUrl: 'https://cdn-icons-png.flaticon.com/128/5261/5261327.png',
+                    imageWidth: 80,
+                    imageHeight: 80,
+                    imageAlt: 'Icono de exclamación en un círculo',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        }
+
+        function giveHelp() {
+            if (helpUsed) {
+                return;
+            }
+
+            const emptyCells = [];
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (board[r][c] === 0) {
+                        emptyCells.push({row: r, col: c});
+                    }
+                }
+            }
+
+            if (emptyCells.length > 0) {
+                const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                const correctNumber = solvedBoard[randomCell.row][randomCell.col];
+                
+                board[randomCell.row][randomCell.col] = correctNumber;
+                const cellElement = boardElement.querySelector(`[data-row="${randomCell.row}"][data-col="${randomCell.col}"]`);
+                cellElement.textContent = correctNumber;
+                
+                helpUsed = true;
+                helpButton.style.display = 'none';
+
+                Swal.fire({
+                    title: '¡Ayuda!',
+                    text: `Se ha revelado un número en la celda [${randomCell.row+1}, ${randomCell.col+1}].`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                 Swal.fire({
+                    title: 'Lo siento',
+                    text: 'No hay celdas vacías para darte una pista.',
+                    imageUrl: 'https://cdn-icons-png.flaticon.com/128/2988/2988036.png',
+                    imageWidth: 80,
+                    imageHeight: 80,
+                    imageAlt: 'Icono de exclamación en un círculo',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        }
+    </script>
+</body>
+</html>
