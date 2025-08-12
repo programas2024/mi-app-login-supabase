@@ -253,6 +253,111 @@
                 font-size: 0.9em;
             }
         }
+
+        /* ================================================= */
+/* ESTILOS PARA LA TARJETA DE SUDOKU */
+/* ================================================= */
+.game-card.sudoku {
+    /* Fondo con gradiente sutil */
+    background: linear-gradient(145deg, #e0f2f1, #b2dfdb);
+    border: none;
+    color: #004d40;
+    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.game-card.sudoku:hover {
+    background: linear-gradient(315deg, #b2dfdb, #e0f2f1);
+    transform: scale(1.03);
+    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
+}
+
+.game-card.sudoku .game-card-icon {
+    color: #00897b; /* Color verde azulado que simboliza orden y lógica */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.game-card.sudoku:hover .game-card-icon {
+    transform: translateY(-5px) scale(1.1);
+    color: #004d40;
+}
+
+.game-card.sudoku button {
+    background-color: #00897b;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-weight: 600;
+    cursor: pointer; /* Añadir cursor para indicar que es un botón */
+    transition: all 0.3s ease;
+    box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
+}
+
+.game-card.sudoku button:hover {
+    background-color: #00695c;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
+}
+
+.game-card.sudoku button:active {
+    transform: translateY(0);
+    box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
+}
+
+/* ================================================= */
+/* ESTILOS PARA LA TARJETA DE CAMINITO */
+/* ================================================= */
+.game-card.caminito {
+    /* Fondo con gradiente cálido */
+    background: linear-gradient(145deg, #ffd700, #ffa500);
+    border: none;
+    
+    color: #cc5500;
+    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.game-card.caminito:hover {
+    background: linear-gradient(315deg, #ff9a02, #fdd06e);
+    transform: scale(1.03);
+    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
+}
+
+.game-card.caminito .game-card-icon {
+    color: #ff6a00;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.game-card.caminito:hover .game-card-icon {
+    transform: translateY(-5px) scale(1.1);
+    color: #f5883a;
+}
+
+.game-card.caminito button {
+    background-color: #a3600e;
+    color: white;
+    border: none;
+    
+    padding: 10px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+}
+
+.game-card.caminito button:hover {
+    background-color: #e57c00;
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
+}
+
+.game-card.caminito button:active {
+    transform: translateY(0);
+    box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
+}
     </style>
 </head>
 <body>
@@ -295,8 +400,24 @@
                 <p>Completa el Suduku entre las casillas faltantes  horizontales y verticales. ¡Un clásico que nunca pasa de moda!</p>
                 <button onclick="window.location.href='cruzigrama.html'">Jugar Ahora</button>
             </div>
+       
+        
+        <div class="game-card caminito" id="caminito-game-card">
+            <div class="game-card-content">
+                <div class="game-card-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div class="game-card-info">
+                    <h3 class="game-card-title">Caminito</h3>
+                    <p class="game-card-description">Conquista la cima y gana recompensas. ¡Un juego de estrategia y suerte!</p>
+                </div>
+            </div>
+            <button onclick="window.location.href='caminito.html'">Jugar Ahora</button>
         </div>
+        
     </div>
+
+    
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
