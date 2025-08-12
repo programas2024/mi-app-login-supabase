@@ -411,13 +411,66 @@
             });
         }
 
-        function handleCellClick(event) {
-            if (selectedCell) {
-                selectedCell.classList.remove('selected');
-            }
-            selectedCell = event.target;
-            selectedCell.classList.add('selected');
-        }
+         function handleCellClick(event) {
+            const cell = event.target;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            if (initialBoard[row][col] !== 0) {
+                // Si la celda es fija, no hacemos nada
+                return;
+            }
+
+            // Quita la selección de la celda anterior
+            if (selectedCell) {
+                selectedCell.classList.remove('selected');
+            }
+            selectedCell = cell;
+            selectedCell.classList.add('selected');
+
+            // Si la celda ya tiene un input, no hacemos nada
+            if (cell.querySelector('input')) {
+                return;
+            }
+
+            // Crear un input temporal para forzar el teclado en móviles
+            const input = document.createElement('input');
+            input.type = 'tel'; // Usa 'tel' para forzar el teclado numérico en la mayoría de los móviles
+            input.maxLength = 1;
+            input.value = cell.textContent;
+            
+            // Estilos para que el input se vea como la celda
+            input.style.width = '100%';
+            input.style.height = '100%';
+            input.style.border = 'none';
+            input.style.textAlign = 'center';
+            input.style.fontSize = 'inherit';
+            input.style.fontFamily = 'inherit';
+            input.style.background = 'transparent';
+            input.style.outline = 'none';
+
+            cell.textContent = '';
+            cell.appendChild(input);
+            input.focus();
+
+            input.addEventListener('input', () => {
+                let value = input.value;
+                
+                // Limpiar el valor para asegurarnos de que sea un número entre 1 y 9
+                value = value.replace(/[^1-9]/g, '');
+                
+                if (value) {
+                    board[row][col] = parseInt(value);
+                } else {
+                    board[row][col] = 0;
+                }
+
+                // Actualizar la celda y limpiar el input
+                cell.textContent = value;
+                cell.classList.remove('selected');
+                selectedCell = null;
+            });
+        }
 
         function handleKeyPress(event) {
             if (selectedCell) {
