@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camino Mágico de Recompensas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #8A2BE2;
+            --color-secondary: #FF1493;
+            --color-accent: #00FFFF;
+            --color-success: #7CFC00;
+            --color-text: #FFFFFF;
+            --color-bg: #0F0526;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--color-bg);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--color-text);
+            overflow-x: hidden;
+             background: url('https://i.redd.it/pixel-lakes-sunny-and-sunset-pixel-art-landscape-series-v0-3vciy9e2f0sb1.jpg?width=3840&format=pjpg&auto=webp&s=aba19dac3ecb5f9dcb51ef0459ca40654ab5bbcd') 
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 20px 0;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 5, 38, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .path-container {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            padding: 20px 0;
+            scrollbar-width: none;
+        }
+
+        .path-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .path {
+            display: flex;
+            height: 150px;
+            position: relative;
+            align-items: flex-end;
+            min-width: fit-content;
+        }
+
+        .path-line {
+            position: absolute;
+            height: 4px;
+            width: 100%;
+            background: linear-gradient(to right, 
+                var(--color-primary), 
+                var(--color-secondary), 
+                var(--color-accent));
+            bottom: 70px;
+            z-index: 1;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
+        }
+
+        .step {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 15px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            filter: blur(5px);
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .step.active {
+            transform: scale(1.2) translateY(-10px);
+            box-shadow: 0 0 25px var(--color-accent);
+            animation: pulse 2s infinite;
+        }
+
+        .step.final {
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            box-shadow: 0 0 30px #FFD700;
+        }
+
+        .step.final::after {
+            content: '🏆';
+            font-size: 1.8rem;
+        }
+
+        .step.reward {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step.reward::after {
+            content: '🎁';
+            position: absolute;
+            font-size: 1.2rem;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .step.completed {
+            background: linear-gradient(135deg, var(--color-success), #ADFF2F);
+            box-shadow: 0 0 15px var(--color-success);
+        }
+
+        .step.current {
+            background: linear-gradient(135deg, var(--color-accent), #1E90FF);
+            box-shadow: 0 0 20px var(--color-accent);
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            width: 15px;
+            height: 2px;
+            background: #ccc;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .claim-btn {
+            background: linear-gradient(135deg, #FFD700, #FF8C00);
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .claim-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+        }
+
+        .dice-container {
+            width: 100px;
+            height: 100px;
+            perspective: 1000px;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: rotateX(0) rotateY(0) rotateZ(0);
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255,255,255,0.8);
+        }
+
+        .dice-dot {
+            width: 18px;
+            height: 18px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 5px rgba(138, 43, 226, 0.7);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.5);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.7);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #555, #777);
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px var(--color-accent); }
+            50% { box-shadow: 0 0 30px var(--color-primary); }
+            100% { box-shadow: 0 0 15px var(--color-accent); }
+        }
+
+        @keyframes roll {
+            0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+            100% { transform: rotateX(1440deg) rotateY(1440deg) rotateZ(720deg); }
+        }
+
+        .rolling {
+            animation: roll 2s ease-out;
+        }
+
+        .dice-glow {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 20px;
+            background: radial-gradient(circle, var(--color-accent), transparent 70%);
+            opacity: 0;
+            z-index: -1;
+            filter: blur(10px);
+            transition: opacity 0.5s;
+        }
+
+        .rolling-glow {
+            opacity: 0.7;
+        }
+
+        /* Estilos para SweetAlert2 */
+        .swal2-popup {
+            background: #1a0933 !important;
+            border: 1px solid #8A2BE2 !important;
+            border-radius: 15px !important;
+        }
+
+        .swal2-title {
+            color: #00FFFF !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .swal2-html-container {
+            color: #FFFFFF !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #8A2BE2, #FF1493) !important;
+            border: none !important;
+            border-radius: 50px !important;
+        }
+
+        .currency-icon {
+            margin-right: 10px;
+            color: #FFD700;
+        }
+
+        .pearl-icon {
+            color: #00FFFF;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Camino Mágico de Recompensas</h1>
+    
+    <div class="game-container">
+        <div class="path-container">
+            <div class="path-line"></div>
+            <div class="path" id="path"></div>
+        </div>
+        
+        <button id="rollButton">Lanzar Dado</button>
+        <button id="claimButton" class="claim-btn">Reclamar Premio 🏆</button>
+        
+        <div class="dice-container">
+            <div class="dice-glow" id="diceGlow"></div>
+            <div class="dice" id="dice"></div>
+        </div>
+        
+        <div class="status" id="status">Presiona "Lanzar Dado" para comenzar</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/+esm"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuración de Supabase
+            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const pathElement = document.getElementById('path');
+            const diceElement = document.getElementById('dice');
+            const diceGlow = document.getElementById('diceGlow');
+            const rollButton = document.getElementById('rollButton');
+            const claimButton = document.getElementById('claimButton');
+            const statusElement = document.getElementById('status');
+            
+            const totalSteps = 20;
+            let currentPosition = 0;
+            let gameOver = false;
+            
+            // Crear el camino
+            function createPath() {
+                pathElement.innerHTML = '';
+                for (let i = 0; i <= totalSteps; i++) {
+                    const step = document.createElement('div');
+                    step.className = 'step';
+                    step.textContent = i + 1;
+                    
+                    if (i === 0) {
+                        step.classList.add('current');
+                    }
+                    
+                    if ((i + 1) % 4 === 0 && i !== totalSteps) {
+                        step.classList.add('reward');
+                    }
+                    
+                    if (i === totalSteps) {
+                        step.classList.add('final');
+                        step.textContent = '';
+                    }
+                    
+                    pathElement.appendChild(step);
+                }
+            }
+            
+            // Crear las caras del dado
+            function createDiceFaces() {
+                const faces = [
+                    // Cara 1
+                    { dots: [[50, 50]] },
+                    // Cara 2
+                    { dots: [[25, 25], [75, 75]] },
+                    // Cara 3
+                    { dots: [[25, 25], [50, 50], [75, 75]] },
+                    // Cara 4
+                    { dots: [[25, 25], [25, 75], [75, 25], [75, 75]] },
+                    // Cara 5
+                    { dots: [[25, 25], [25, 75], [50, 50], [75, 25], [75, 75]] },
+                    // Cara 6
+                    { dots: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]] }
+                ];
+                
+                diceElement.innerHTML = '';
+                
+                faces.forEach((face, index) => {
+                    const faceElement = document.createElement('div');
+                    faceElement.className = 'dice-face';
+                    faceElement.style.transform = getFaceTransform(index + 1);
+                    
+                    face.dots.forEach(dot => {
+                        const dotElement = document.createElement('div');
+                        dotElement.className = 'dice-dot';
+                        dotElement.style.left = `${dot[0]}%`;
+                        dotElement.style.top = `${dot[1]}%`;
+                        dotElement.style.transform = 'translate(-50%, -50%)';
+                        faceElement.appendChild(dotElement);
+                    });
+                    
+                    diceElement.appendChild(faceElement);
+                });
+            }
+            
+            // Obtener transformación para cada cara del dado
+            function getFaceTransform(face) {
+                switch(face) {
+                    case 1: return 'rotateX(0deg) rotateY(0deg) translateZ(50px)';
+                    case 2: return 'rotateX(180deg) rotateY(0deg) translateZ(50px)';
+                    case 3: return 'rotateX(90deg) rotateY(0deg) translateZ(50px)';
+                    case 4: return 'rotateX(-90deg) rotateY(0deg) translateZ(50px)';
+                    case 5: return 'rotateX(0deg) rotateY(90deg) translateZ(50px)';
+                    case 6: return 'rotateX(0deg) rotateY(-90deg) translateZ(50px)';
+                    default: return '';
+                }
+            }
+            
+            // Lanzar el dado
+            function rollDice() {
+                if (gameOver) return;
+                
+                rollButton.disabled = true;
+                diceElement.classList.add('rolling');
+                diceGlow.classList.add('rolling-glow');
+                
+                setTimeout(() => {
+                    const result = Math.floor(Math.random() * 6) + 1;
+                    showDiceResult(result);
+                    
+                    setTimeout(() => {
+                        movePlayer(result);
+                        diceElement.classList.remove('rolling');
+                        diceGlow.classList.remove('rolling-glow');
+                        rollButton.disabled = false;
+                    }, 500);
+                }, 2000);
+            }
+            
+            // Mostrar el resultado del dado
+            function showDiceResult(result) {
+                const rotations = {
+                    1: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
+                    2: 'rotateX(180deg) rotateY(0deg) rotateZ(0deg)',
+                    3: 'rotateX(90deg) rotateY(0deg) rotateZ(0deg)',
+                    4: 'rotateX(-90deg) rotateY(0deg) rotateZ(0deg)',
+                    5: 'rotateX(0deg) rotateY(90deg) rotateZ(0deg)',
+                    6: 'rotateX(0deg) rotateY(-90deg) rotateZ(0deg)'
+                };
+                
+                diceElement.style.transform = rotations[result];
+            }
+            
+            // Mover al jugador
+            function movePlayer(steps) {
+                if (currentPosition + steps > totalSteps) {
+                    steps = totalSteps - currentPosition;
+                    statusElement.textContent = `¡Casi! Necesitas exactamente ${steps} para ganar.`;
+                } else {
+                    statusElement.textContent = `🎲 Sacaste ${steps}! Avanzas ${steps} pasos.`;
+                }
+                
+                let stepsRemaining = steps;
+                const moveInterval = setInterval(() => {
+                    if (stepsRemaining <= 0) {
+                        clearInterval(moveInterval);
+                        
+                        if (currentPosition === totalSteps) {
+                            gameOver = true;
+                            statusElement.textContent = '✨ ¡Felicidades! Has llegado al final del camino. ✨';
+                            rollButton.disabled = true;
+                            claimButton.style.display = 'block';
+                        }
+                        return;
+                    }
+                    
+                    const stepsElements = document.querySelectorAll('.step');
+                    stepsElements[currentPosition].classList.remove('current');
+                    stepsElements[currentPosition].classList.add('completed');
+                    
+                    currentPosition++;
+                    stepsRemaining--;
+                    
+                    stepsElements[currentPosition].classList.add('current');
+                    
+                    stepsElements[currentPosition].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }, 300);
+            }
+            
+            // Reclamar premio final
+            async function claimReward() {
+                claimButton.disabled = true;
+                claimButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reclamando...';
+                
+                try {
+                    // Obtener el usuario actual
+                    const { data: { user }, error: authError } = await supabase.auth.getUser();
+                    
+                    if (authError || !user) {
+                        throw new Error('No hay usuario autenticado');
+                    }
+                    
+                    // Obtener el perfil actual para actualizar las cantidades
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('gold, diamonds, perla')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profileError) {
+                        throw profileError;
+                    }
+                    
+                    const currentGold = profile.gold || 0;
+                    const currentDiamonds = profile.diamonds || 0;
+                    const currentPerlas = profile.perla || 0;
+                    
+                    // Actualizar el perfil con las nuevas recompensas
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({
+                            gold: currentGold + 20,
+                            diamonds: currentDiamonds + 20,
+                            perla: currentPerlas + 4
+                        })
+                        .eq('id', user.id);
+                    
+                    if (updateError) {
+                        throw updateError;
+                    }
+                    
+                    // Mostrar SweetAlert con las recompensas
+                    Swal.fire({
+                        title: '¡Premio Reclamado!',
+                        html: `
+                            <div style="text-align: center;">
+                                <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
+                                <div class="reward-item">
+                                    <i class="fas fa-coins currency-icon"></i> <span>20 Oro</span>
+                                </div>
+                                <div class="reward-item">
+                                    <i class="fas fa-gem currency-icon"></i> <span>20 Diamantes</span>
+                                </div>
+                                <div class="reward-item">
+                                    <i class="fas fa-pearl pearl-icon"></i> <span>4 Perlas</span>
+                                </div>
+                            </div>
+                        `,
+                        confirmButtonText: '¡Gracias!',
+                        customClass: {
+                            popup: 'swal2-popup',
+                            title: 'swal2-title',
+                            htmlContainer: 'swal2-html-container',
+                            confirmButton: 'swal2-confirm'
+                        },
+                        willOpen: () => {
+                            // Efecto de confeti al reclamar
+                            confetti({
+                                particleCount: 200,
+                                spread: 180,
+                                origin: { y: 0.6 },
+                                colors: ['#FFD700', '#00FFFF', '#FF1493', '#8A2BE2'],
+                                shapes: ['circle', 'star'],
+                                scalar: 1.5
+                            });
+                        }
+                    });
+                    
+                    claimButton.textContent = 'Reclamado ✅';
+                    
+                } catch (error) {
+                    console.error('Error al reclamar premio:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo reclamar el premio. Intenta de nuevo.',
+                        confirmButtonText: 'Entendido'
+                    });
+                    claimButton.disabled = false;
+                    claimButton.innerHTML = 'Reclamar Premio 🏆';
+                }
+            }
+            
+            // Event listeners
+            rollButton.addEventListener('click', rollDice);
+            claimButton.addEventListener('click', claimReward);
+            
+            // Inicializar el juego
+            createPath();
+            createDiceFaces();
+            showDiceResult(1);
+        });
+    </script>
+</body>
+</html>
