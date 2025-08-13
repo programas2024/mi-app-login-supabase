@@ -11,8 +11,8 @@
         :root {
             --color-primary: #8A2BE2;
             --color-secondary: #FF1493;
-            --color-accent: #00FFFF;
-            --color-success: #7CFC00;
+            --color-accent: #a7bcff;
+            --color-success: #f0a4ff;
             --color-text: #FFFFFF;
             --color-bg: #0F0526;
         }
@@ -1225,20 +1225,38 @@
 // Botón de información
 document.getElementById('infoButton').addEventListener('click', function() {
     Swal.fire({
-        title: 'Camino Mágico de Recompensas',
+        title: '<span style="color: #8A2BE2; font-family: \'Montserrat\', sans-serif;">Camino Mágico</span>',
         html: `
-            <div style="text-align: left;">
-                <p>🎲 <strong>Lanza el dado</strong> para avanzar en el camino mágico.</p>
-                <p>🏆 <strong>Recompensas</strong> cada 20 niveles y premio especial en el nivel 60.</p>
-                <p>✨ <strong>Premio final</strong> al llegar al nivel 120.</p>
-                <p>⏳ <strong>3 tiros por día</strong> (se reinician cada 6 horas).</p>
+            <div style="text-align: center;">
+                <img src="https://cdn-icons-png.flaticon.com/128/7681/7681227.png" 
+                     style="width: 80px; height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6));">
+                <div style="text-align: left; color: #dcdcdc; font-size: 0.95rem;">
+                    <p style="margin-bottom: 10px;"><i class="fas fa-dice" style="color: #FF1493;"></i> <strong>Lanza el dado</strong> para avanzar en el camino</p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #00FFFF;"></i> <strong>Recompensas</strong> cada 20 niveles</p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-star" style="color: #FFD700;"></i> <strong>Premio especial</strong> en el nivel 60</p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-trophy" style="color: #7CFC00;"></i> <strong>Gran premio</strong> al completar los 120 niveles</p>
+                    <p><i class="fas fa-clock" style="color: #8A2BE2;"></i> <strong>3 tiros diarios</strong> (se renuevan cada 6 horas)</p>
+                </div>
             </div>
         `,
-        icon: 'info',
-        confirmButtonText: '¡Entendido!',
         background: 'rgba(15, 5, 38, 0.95)',
-        color: '#FFFFFF',
-        iconColor: '#8A2BE2'
+        width: '400px',
+        padding: '20px',
+        backdrop: `
+            rgba(15,5,38,0.8)
+            url("https://i.gifer.com/origin/b4/b4d657e7ef262b88eb5f7ac021edda87.gif")
+            center top
+            no-repeat
+        `,
+        showConfirmButton: true,
+        confirmButtonText: '¡A jugar!',
+        confirmButtonColor: '#8A2BE2',
+        customClass: {
+            container: 'swal2-container-magic',
+            popup: 'swal2-popup-magic',
+            title: 'swal2-title-magic',
+            htmlContainer: 'swal2-html-magic'
+        }
     });
 });
     </script>
