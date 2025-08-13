@@ -403,12 +403,81 @@
                 font-size: 1.8rem;
             }
         }
+
+        /* Estilos adicionales */
+        .player-info {
+            background: rgba(138, 43, 226, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 95%;
+            border: 1px solid var(--color-primary);
+        }
+
+        .player-name, .current-level {
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        .level-label {
+            font-size: 0.7rem;
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .player-tag {
+            position: absolute;
+            top: -15px;
+            background: var(--color-accent);
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .reward-label {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            background: var(--color-secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            transform: rotate(15deg);
+            box-shadow: 0 2px 10px rgba(255, 20, 147, 0.5);
+        }
+
+        .final-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        .step {
+            transition: all 0.3s ease, transform 0.5s ease;
+        }
     </style>
 </head>
 <body>
     <h1>Camino Mágico de Recompensas</h1>
     
-    <div class="game-container">
+    <<div class="game-container">
+        <div class="player-info" id="playerInfo">
+            <div class="player-name" id="playerName">Jugador: Cargando...</div>
+            <div class="current-level">Nivel actual: <span id="currentLevel">0</span></div>
+        </div>
+        
         <div class="path-container">
             <div class="path-line"></div>
             <div class="path" id="path"></div>
@@ -447,6 +516,10 @@
             const claimButton = document.getElementById('claimButton');
             const statusElement = document.getElementById('status');
             const rollsCounter = document.getElementById('rollsCounter');
+               // Elementos nuevos
+            const playerNameElement = document.getElementById('playerName');
+            const currentLevelElement = document.getElementById('currentLevel');
+            const playerInfoElement = document.getElementById('playerInfo');
             
             const totalSteps = 120;
             let currentPosition = 0;
@@ -454,40 +527,142 @@
             let rollsRemaining = 3;
             let lastRollDate = null;
             
-            // Crear el camino
+            
+            // Crear el camino con mejoras visuales
             function createPath() {
                 pathElement.innerHTML = '';
                 for (let i = 0; i <= totalSteps; i++) {
                     const step = document.createElement('div');
                     step.className = 'step';
                     step.textContent = i + 1;
+                    step.id = `step-${i}`;
+                    
+                    // Añadir etiqueta de nivel
+                    const levelLabel = document.createElement('div');
+                    levelLabel.className = 'level-label';
+                    levelLabel.textContent = `Nivel ${i + 1}`;
+                    step.appendChild(levelLabel);
                     
                     if (i === 0) {
                         step.classList.add('current');
+                        // Añadir nombre del jugador en el paso actual
+                        const playerTag = document.createElement('div');
+                        playerTag.className = 'player-tag';
+                        playerTag.id = 'playerTag';
+                        playerTag.textContent = 'Tú';
+                        step.appendChild(playerTag);
                     }
                     
-                    // Marcar cada 20 niveles como recompensa
                     if ((i + 1) % 20 === 0 && i !== totalSteps) {
                         step.classList.add('reward');
+                        const rewardLabel = document.createElement('div');
+                        rewardLabel.className = 'reward-label';
+                        rewardLabel.textContent = '¡Premio!';
+                        step.appendChild(rewardLabel);
                     }
                     
                     if (i === totalSteps) {
                         step.classList.add('final');
-                        step.textContent = '120';
+                        step.textContent = '';
+                        const finalLabel = document.createElement('div');
+                        finalLabel.className = 'final-label';
+                        finalLabel.textContent = 'META';
+                        step.appendChild(finalLabel);
                     }
                     
                     pathElement.appendChild(step);
                 }
+            }
+
+
+            // Mover al jugador con mejoras visuales
+            async function movePlayer(steps) {
+                if (currentPosition + steps > totalSteps) {
+                    steps = totalSteps - currentPosition;
+                    statusElement.textContent = `¡Casi! Necesitas exactamente ${steps} para ganar.`;
+                } else {
+                    statusElement.textContent = `🎲 Sacaste ${steps}! Avanzas ${steps} pasos.`;
+                }
                 
-                // Asegurarse de que el paso final tenga el trofeo
-                const finalStep = document.querySelector('.step.final');
-                if (finalStep) {
-                    const trophy = document.createElement('span');
-                    trophy.textContent = '🏆';
-                    trophy.style.display = 'block';
-                    trophy.style.fontSize = '2rem';
-                    trophy.style.marginTop = '5px';
-                    finalStep.appendChild(trophy);
+                // Actualizar nivel actual en la UI
+                currentLevelElement.textContent = currentPosition + 1;
+                
+                let stepsRemaining = steps;
+                const moveInterval = setInterval(() => {
+                    if (stepsRemaining <= 0) {
+                        clearInterval(moveInterval);
+                        checkRewards();
+                        return;
+                    }
+                    
+                    const currentStep = document.getElementById(`step-${currentPosition}`);
+                    const nextStep = document.getElementById(`step-${currentPosition + 1}`);
+                    
+                    // Quitar clases del paso actual
+                    currentStep.classList.remove('current');
+                    currentStep.classList.add('completed');
+                    
+                    // Mover el tag del jugador
+                    const playerTag = document.getElementById('playerTag');
+                    if (playerTag) {
+                        playerTag.remove();
+                    }
+                    
+                    currentPosition++;
+                    stepsRemaining--;
+                    
+                    // Aplicar clases al nuevo paso
+                    nextStep.classList.add('current');
+                    
+                    // Añadir tag del jugador al nuevo paso
+                    const newPlayerTag = document.createElement('div');
+                    newPlayerTag.className = 'player-tag';
+                    newPlayerTag.id = 'playerTag';
+                    newPlayerTag.textContent = 'Tú';
+                    nextStep.appendChild(newPlayerTag);
+                    
+                    // Actualizar nivel actual en la UI
+                    currentLevelElement.textContent = currentPosition + 1;
+                    
+                    // Scroll suave para mostrar el paso actual
+                    nextStep.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                    
+                    // Efecto de salto
+                    nextStep.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        nextStep.style.transform = 'translateY(0)';
+                    }, 300);
+                    
+                }, 500);
+            }
+
+            // Cargar información del jugador
+            async function loadPlayerInfo() {
+                try {
+                    const { data: { user }, error: authError } = await supabase.auth.getUser();
+                    
+                    if (authError || !user) {
+                        playerNameElement.textContent = 'Jugador: Invitado';
+                        return;
+                    }
+                    
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('username')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (profileError) throw profileError;
+                    
+                    playerNameElement.textContent = `Jugador: ${profile.username || 'Anónimo'}`;
+                    
+                } catch (error) {
+                    console.error('Error al cargar información del jugador:', error);
+                    playerNameElement.textContent = 'Jugador: Error al cargar';
                 }
             }
             
@@ -1096,6 +1271,7 @@
             createDiceFaces();
             showDiceResult(1);
             loadGameState();
+            loadPlayerInfo();
         });
     </script>
 </body>
