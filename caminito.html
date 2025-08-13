@@ -360,6 +360,57 @@
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 2s infinite linear;
+        }
+
+        .milestone {
+            position: absolute;
+            height: 20px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            top: -5px;
+        }
+
+        .milestone-label {
+            position: absolute;
+            top: 20px;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+        }
+
         @keyframes pulse {
             0% { box-shadow: 0 0 15px var(--color-accent); }
             50% { box-shadow: 0 0 30px var(--color-primary); }
@@ -369,6 +420,11 @@
         @keyframes roll {
             0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
             100% { transform: rotateX(1440deg) rotateY(1440deg) rotateZ(720deg); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .rolling {
@@ -443,6 +499,7 @@
                 width: 60px;
                 height: 60px;
                 font-size: 1.1rem;
+                margin: 0 10px;
             }
             
             .step.final::after {
@@ -458,6 +515,16 @@
         <div class="player-info" id="playerInfo">
             <div class="player-name" id="playerName">Jugador: Cargando...</div>
             <div class="current-level">Nivel actual: <span id="currentLevel">0</span></div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+            <!-- Marcadores cada 20 niveles -->
+            <div class="milestone" style="left: 16.66%;"><span class="milestone-label">Nivel 20</span></div>
+            <div class="milestone" style="left: 33.33%;"><span class="milestone-label">Nivel 40</span></div>
+            <div class="milestone" style="left: 50%;"><span class="milestone-label">Nivel 60</span></div>
+            <div class="milestone" style="left: 66.66%;"><span class="milestone-label">Nivel 80</span></div>
+            <div class="milestone" style="left: 83.33%;"><span class="milestone-label">Nivel 100</span></div>
         </div>
         
         <div class="path-container">
@@ -500,6 +567,7 @@
             const rollsCounter = document.getElementById('rollsCounter');
             const playerNameElement = document.getElementById('playerName');
             const currentLevelElement = document.getElementById('currentLevel');
+            const progressFill = document.getElementById('progressFill');
             
             const totalSteps = 120;
             let currentPosition = 0;
@@ -558,8 +626,27 @@
                 
                 // Actualizar nivel actual en la UI
                 currentLevelElement.textContent = currentPosition + 1;
+                updateProgressBar();
+                
+                // Centrar el paso actual al cargar
+                setTimeout(() => {
+                    const currentStep = document.getElementById(`step-${currentPosition}`);
+                    if (currentStep) {
+                        currentStep.scrollIntoView({
+                            behavior: 'auto',
+                            block: 'nearest',
+                            inline: 'center'
+                        });
+                    }
+                }, 100);
             }
 
+            // Actualizar barra de progreso
+            function updateProgressBar() {
+                const progress = (currentPosition / totalSteps) * 100;
+                progressFill.style.width = `${progress}%`;
+            }
+            
             // Crear las caras del dado
             function createDiceFaces() {
                 const faces = [
@@ -704,6 +791,7 @@
                     
                     // Actualizar nivel actual en la UI
                     currentLevelElement.textContent = currentPosition + 1;
+                    updateProgressBar();
                     
                     // Scroll suave para mostrar el paso actual
                     nextStep.scrollIntoView({
@@ -784,7 +872,7 @@
                     
                     // Mostrar SweetAlert con la recompensa
                     Swal.fire({
-                        title: `¡Recompensa de nivel ${level}!`,
+                        title: `¡Recompensa de nivel ${level + 1}!`,
                         html: `
                             <div style="text-align: center;">
                                 <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
@@ -938,6 +1026,7 @@
                 // Actualizar la interfaz
                 createPath();
                 updateRollsCounter();
+                updateProgressBar();
                 
                 claimButton.style.display = 'none';
                 claimButton.disabled = false;
@@ -1033,6 +1122,7 @@
                         // Actualizar la interfaz
                         createPath();
                         updateRollsCounter();
+                        updateProgressBar();
                         
                         if (currentPosition === totalSteps) {
                             gameOver = true;
