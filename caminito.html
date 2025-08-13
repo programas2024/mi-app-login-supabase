@@ -47,15 +47,16 @@
         }
 
         .game-container {
-            width: 100%;
+            width: 90%;
             max-width: 900px;
             background: rgba(15, 5, 38, 0.7);
-            border-radius: 20px;
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
             padding: 30px;
             margin-bottom: 30px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.15);
+           
         }
 
         .player-info {
@@ -65,7 +66,7 @@
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            width: 95%;
             border: 1px solid var(--color-primary);
         }
 
@@ -307,7 +308,7 @@
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
+            width: 90%;
         }
 
         .rolls-counter {
@@ -506,10 +507,55 @@
                 font-size: 1.8rem;
             }
         }
+
+        .top-buttons {
+    position: fixed;
+    top: 20px;
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+    z-index: 1000;
+}
+
+.back-button, .info-button {
+    background: rgba(138, 43, 226, 0.3);
+    color: white;
+    border: 1px solid var(--color-primary);
+    border-radius: 50px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-button:hover, .info-button:hover {
+    background: rgba(138, 43, 226, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+}
+
+.back-button i, .info-button i {
+    font-size: 1rem;
+}
     </style>
 </head>
 <body>
-    <h1>Camino Mágico de Recompensas</h1>
+
+    <div class="top-buttons">
+    <button class="back-button" onclick="window.location.href='games4.html'">
+        <i class="fas fa-arrow-left"></i> Volver
+    </button>
+    <button class="info-button" id="infoButton">
+        <i class="fas fa-info-circle"></i> Información
+    </button>
+</div>
+    <h1>Camino Mágico</h1>
     
     <div class="game-container">
         <div class="player-info" id="playerInfo">
@@ -1173,6 +1219,28 @@
             loadGameState();
             loadPlayerInfo();
         });
+
+        
+        
+// Botón de información
+document.getElementById('infoButton').addEventListener('click', function() {
+    Swal.fire({
+        title: 'Camino Mágico de Recompensas',
+        html: `
+            <div style="text-align: left;">
+                <p>🎲 <strong>Lanza el dado</strong> para avanzar en el camino mágico.</p>
+                <p>🏆 <strong>Recompensas</strong> cada 20 niveles y premio especial en el nivel 60.</p>
+                <p>✨ <strong>Premio final</strong> al llegar al nivel 120.</p>
+                <p>⏳ <strong>3 tiros por día</strong> (se reinician cada 6 horas).</p>
+            </div>
+        `,
+        icon: 'info',
+        confirmButtonText: '¡Entendido!',
+        background: 'rgba(15, 5, 38, 0.95)',
+        color: '#FFFFFF',
+        iconColor: '#8A2BE2'
+    });
+});
     </script>
 </body>
 </html>
