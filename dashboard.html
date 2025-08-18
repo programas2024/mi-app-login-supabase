@@ -1857,6 +1857,73 @@
     align-items: center; /* Alinea los elementos verticalmente en el centro */
     gap: -2px; /* Espacio más reducido entre los elementos */
 }
+
+.btn-vip-custom {
+    background: linear-gradient(135deg, #9c27b0, #3f51b5);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 5px 0;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: -8px;
+    /* Nuevas propiedades para centrar contenido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre icono y texto */
+    width: 100%; /* Ocupa todo el ancho disponible */
+}
+
+    
+    
+    
+    .btn-vip-custom:focus {
+        outline: none
+    }
+    
+    .btn-vip-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(156, 39, 176, 0.3);
+        background: linear-gradient(135deg, #8e24aa, #3949ab);
+    }
+    
+    .btn-vip-custom:active {
+        transform: translateY(0);
+    }
+    
+    .btn-vip-custom::before {
+        content: "";
+        position: absolute;
+        top: 10%;
+        left: -90%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 45%,
+           
+            rgba(255, 255, 255, 0) 55%
+        );
+        transform: rotate(30deg);
+        animation: shine 3s infinite;
+    }
+    
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(30deg); }
+        100% { transform: translateX(100%) rotate(30deg); }
+    }
+    
+    .btn-vip-custom i {
+        margin-right: 8px;
+        color: #ffeb3b;
+    }
 </style>
 </head>
 <body>
@@ -1879,7 +1946,14 @@
                 <button id="shop-btn" class="btn-shop-custom" title="Explorar la tienda del juego para comprar ítems.">
                     <i class="fas fa-store"></i> Tienda
                 </button>
-                <div class="game-actions">
+                 <div class="game-actions">
+        <button id="vip-btn" class="sidebar-btn btn-vip-custom" title="Accede a beneficios exclusivos VIP." onclick="window.location.href='caminito.html'">
+            <i class="fas fa-crown"></i> VIP
+        </button>
+                 
+                 <div>
+                    
+                 </div>
                     <button id="chest-btn" class="sidebar-btn btn-chest-custom" title="Abre un cofre para obtener recompensas.">
                         <i class="fas fa-box-open"></i> Cofre Gratis
                     </button>

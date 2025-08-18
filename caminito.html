@@ -548,9 +548,9 @@
 <body>
 
     <div class="top-buttons">
-    <button class="back-button" onclick="window.location.href='games.html'">
-        <i class="fas fa-arrow-left"></i> Volver
-    </button>
+    <button id="back-to-dashboard" class="header-button regresar-dashboard">
+                Regresar a Dashboard
+            </button>
     <button class="info-button" id="infoButton">
         <i class="fas fa-info-circle"></i> Información
     </button>
@@ -593,6 +593,7 @@
         <div class="status" id="status">Presiona "Lanzar Dado" para comenzar</div>
     </div>
 
+    <script src="tienda.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
