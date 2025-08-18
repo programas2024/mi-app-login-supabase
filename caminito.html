@@ -775,29 +775,7 @@
                 }
             }
 
-            // Cargar datos del jugador
-            async function loadPlayerData() {
-                try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .select('username, camino')
-                        .eq('id', playerId)
-                        .single();
-
-                    if (data) {
-                        playerUsername = data.username || 'Usuario';
-                        
-                        // Cargar progreso desde campo JSONB 'camino'
-                        if (data.camino) {
-                            currentPosition = data.camino.position || 0;
-                            rollsRemaining = data.camino.rollsRemaining || 3;
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error cargando datos:", error);
-                    throw error;
-                }
-            }
+            
 
             // Cargar progreso local
             function loadLocalProgress() {
@@ -1027,48 +1005,120 @@
                 }
             }
 
-            // Reclamar recompensa
-            async function claimReward() {
-                if (availableRewards.length === 0) return;
+            // Reclamar recompensa - VERSIÓN ACTUALIZADA
+    async function claimReward() {
+        if (availableRewards.length === 0) return;
+        
+        const reward = availableRewards[0];
+        const rewardName = getRewardName(reward.type);
+        
+        try {
+            if (isGuest) {
+                // Para invitados - solo mensaje local
+                await Swal.fire({
+                    title: `¡Recompensa obtenida!`,
+                    html: `🎉 Ganaste <b>${reward.amount} ${rewardName}</b><br>
+                          <small>Inicia sesión para guardar tus recompensas permanentemente</small>`,
+                    icon: 'info',
+                    confirmButtonText: '¡Genial!'
+                });
+            } else {
+                // Para usuarios autenticados - guardar en Supabase
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ 
+                        [reward.type]: supabase.rpc('increment', { val: reward.amount }),
+                        camino: {
+                            position: currentPosition,
+                            rollsRemaining: rollsRemaining,
+                            lastPlayed: new Date().toISOString()
+                        }
+                    })
+                    .eq('id', playerId);
                 
-                const reward = availableRewards[0];
+                if (error) throw error;
                 
-                if (isGuest) {
-                    await Swal.fire({
-                        title: `Recompensa obtenida (solo local)`,
-                        html: `Ganaste <b>${reward.amount} ${getRewardName(reward.type)}</b><br>
-                              <small>Inicia sesión para guardar tus recompensas</small>`,
-                        icon: 'info'
+                // Guardar también en tabla rewards para historial
+                await supabase
+                    .from('rewards')
+                    .insert({
+                        user_id: playerId,
+                        type: reward.type,
+                        amount: reward.amount,
+                        level: reward.level,
+                        claimed_at: new Date().toISOString()
                     });
-                } else {
-                    try {
-                        await supabase
-                            .from('rewards')
-                            .insert({
-                                user_id: playerId,
-                                type: reward.type,
-                                amount: reward.amount,
-                                level: reward.level,
-                                claimed_at: new Date().toISOString()
-                            });
-                        
-                        await Swal.fire({
-                            title: `¡Recompensa guardada!`,
-                            html: `Ganaste <b>${reward.amount} ${getRewardName(reward.type)}</b>`,
-                            icon: 'success'
-                        });
-                    } catch (error) {
-                        console.error("Error guardando recompensa:", error);
-                        Swal.fire('Error', 'No se pudo guardar la recompensa', 'error');
-                    }
-                }
-
-                const step = document.querySelector(`.step:nth-child(${reward.level + 1})`);
-                if (step) step.classList.add('claimed');
                 
-                availableRewards = [];
-                updateClaimButton();
+                // Mensaje de éxito con estilo
+                await Swal.fire({
+                    title: `¡Premio Obtenido!`,
+                    html: `🏆 <b>+${reward.amount} ${rewardName}</b> añadidos a tu perfil<br>
+                          <div style="margin-top:15px;font-size:0.9em;color:#aaa">
+                            Ahora tienes: <br>
+                            💎 Diamantes: ${(playerData.diamonds || 0) + reward.amount * (reward.type === 'diamonds' ? 1 : 0)}<br>
+                            🌊 Perlas: ${(playerData.pearls || 0) + reward.amount * (reward.type === 'perla' ? 1 : 0)}<br>
+                            💰 Oro: ${(playerData.gold || 0) + reward.amount * (reward.type === 'gold' ? 1 : 0)}
+                          </div>`,
+                    icon: 'success',
+                    confirmButtonText: '¡Vale!',
+                    background: 'linear-gradient(135deg, #1a0633, #2a0b50)',
+                    color: 'white'
+                });
+                
+                // Actualizar datos locales
+                playerData[reward.type] = (playerData[reward.type] || 0) + reward.amount;
             }
+            
+            // Marcar nivel como reclamado visualmente
+            const step = document.querySelector(`.step:nth-child(${reward.level + 1})`);
+            if (step) {
+                step.classList.remove('active');
+                step.classList.add('claimed');
+                step.innerHTML = `<div style="font-size:1.5em">🎁</div><div class="level-label">Nivel ${reward.level + 1}</div>`;
+            }
+            
+            // Limpiar recompensas disponibles
+            availableRewards = [];
+            updateClaimButton();
+            
+        } catch (error) {
+            console.error("Error al reclamar recompensa:", error);
+            await Swal.fire({
+                title: 'Error',
+                text: 'No se pudo guardar la recompensa. Intenta nuevamente.',
+                icon: 'error'
+            });
+        }
+    }
+
+    // Función para cargar datos del jugador - ACTUALIZADA
+    async function loadPlayerData() {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('username, camino, diamonds, perla, gold')
+                .eq('id', playerId)
+                .single();
+
+            if (data) {
+                playerUsername = data.username || 'Usuario';
+                playerData = {
+                    diamonds: data.diamonds || 0,
+                    pearls: data.pearls || 0,
+                    gold: data.gold || 0
+                };
+                
+                // Cargar progreso desde campo JSONB 'camino'
+                if (data.camino) {
+                    currentPosition = data.camino.position || 0;
+                    rollsRemaining = data.camino.rollsRemaining || 3;
+                }
+            }
+        } catch (error) {
+            console.error("Error cargando datos:", error);
+            throw error;
+        }
+    }
 
             // Guardar progreso
             async function saveProgress() {
