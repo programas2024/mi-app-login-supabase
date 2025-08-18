@@ -47,17 +47,64 @@
         }
 
         .game-container {
-            width: 90%;
-            max-width: 900px;
-            background: rgba(15, 5, 38, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            padding: 30px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-           
-        }
+    width: 90%;
+    max-width: 900px;
+    background: linear-gradient(145deg, rgba(40, 5, 60, 0.8), rgba(80, 10, 90, 0.7));
+    border-radius: 16px;
+    box-shadow: 
+        0 8px 32px rgba(110, 20, 120, 0.4),
+        inset 0 4px 12px rgba(255, 180, 230, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 180, 230, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo sutil */
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+        circle,
+        rgba(255, 100, 200, 0.1) 0%,
+        transparent 70%
+    );
+    animation: rotateGlow 20s linear infinite;
+    pointer-events: none;
+}
+
+/* Borde decorativo interior */
+.game-container::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 14px;
+    border: 1px solid rgba(180, 80, 220, 0.3);
+    pointer-events: none;
+}
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Efecto hover sutil */
+.game-container:hover {
+    box-shadow: 
+        0 10px 40px rgba(130, 30, 140, 0.5),
+        inset 0 4px 15px rgba(255, 190, 240, 0.15);
+    transform: translateY(-2px);
+    transition: all 0.4s ease;
+}
 
         .player-info {
             background: rgba(138, 43, 226, 0.2);
@@ -96,60 +143,40 @@
             min-width: fit-content;
         }
 
-        .path-line {
-            position: absolute;
-            height: 4px;
-            width: 100%;
-            background: linear-gradient(to right, 
-                var(--color-primary), 
-                var(--color-secondary), 
-                var(--color-accent));
-            bottom: 70px;
-            z-index: 1;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
-        }
+        
+       .step {
+    width: 100px;  /* Más ancho */
+    height: 140px;  /* Más cuadrado */
+    border-radius: 12px;  /* Esquinas menos redondeadas */
+    display: flex;
+   
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 15px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  /* Sombra más suave */
+    font-size: 1.1rem;
+    color: white;
+    background: rgba(70, 80, 90, 0.5);  /* Fondo más opaco */
+    backdrop-filter: blur(3px);  /* Menos blur */
+    border: 1px solid rgba(255, 255, 255, 0.15);  /* Borde más fino */
+    flex-shrink: 0;
+    text-transform: uppercase;  /* Texto en mayúsculas */
+    letter-spacing: 1px;  /* Espaciado entre letras */
+}
 
-        .step {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin: 0 15px;
-            position: relative;
-            z-index: 2;
-            transition: all 0.4s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            font-size: 1.3rem;
-            color: white;
-            background: rgba(99, 110, 114, 0.3);
-            backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
+/* Efecto hover más discreto */
+.step:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: rgba(80, 90, 100, 0.6);
+}
+       
 
-        .step::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: inherit;
-            filter: blur(8px);
-            z-index: -1;
-            opacity: 0.6;
-        }
-
-        .step::after {
-            content: '';
-            position: absolute;
-            right: -15px;
-            width: 15px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
-        }
+      
 
         .step:last-child::after {
             display: none;
@@ -272,7 +299,7 @@
 
         button {
             background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-            color: white;
+            color: rgb(255, 255, 255);
             border: none;
             padding: 12px 25px;
             font-size: 1rem;
@@ -592,637 +619,736 @@
         
         <div class="status" id="status">Presiona "Lanzar Dado" para comenzar</div>
     </div>
+    
 
-    <script src="tienda.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configuración de Supabase
-            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-            
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+   <script src="tienda.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const pathElement = document.getElementById('path');
-            const diceElement = document.getElementById('dice');
-            const diceGlow = document.getElementById('diceGlow');
-            const rollButton = document.getElementById('rollButton');
-            const claimButton = document.getElementById('claimButton');
-            const statusElement = document.getElementById('status');
-            const rollsCounter = document.getElementById('rollsCounter');
-            const playerNameElement = document.getElementById('playerName');
-            const currentLevelElement = document.getElementById('currentLevel');
-            const progressFill = document.getElementById('progressFill');
-            
-            const totalSteps = 120;
-            let currentPosition = 0;
-            let gameOver = false;
-            let rollsRemaining = 3;
-            let lastRollDate = null;
-            
-            // Crear el camino con mejoras visuales
-            function createPath() {
-                pathElement.innerHTML = '';
-                for (let i = 0; i <= totalSteps; i++) {
-                    const step = document.createElement('div');
-                    step.className = 'step';
-                    step.textContent = i + 1;
-                    step.id = `step-${i}`;
-                    
-                    // Añadir etiqueta de nivel
-                    const levelLabel = document.createElement('div');
-                    levelLabel.className = 'level-label';
-                    levelLabel.textContent = `Nivel ${i + 1}`;
-                    step.appendChild(levelLabel);
-                    
-                    if (i === currentPosition) {
-                        step.classList.add('current');
-                        // Añadir tag del jugador al paso actual
-                        const playerTag = document.createElement('div');
-                        playerTag.className = 'player-tag';
-                        playerTag.id = 'playerTag';
-                        playerTag.textContent = 'Tú';
-                        step.appendChild(playerTag);
-                    }
-                    
-                    if (i < currentPosition) {
-                        step.classList.add('completed');
-                    }
-                    
-                    if ((i + 1) % 20 === 0 && i !== totalSteps) {
-                        step.classList.add('reward');
-                        const rewardLabel = document.createElement('div');
-                        rewardLabel.className = 'reward-label';
-                        rewardLabel.textContent = '¡Premio!';
-                        step.appendChild(rewardLabel);
-                    }
-                    
-                    if (i === totalSteps) {
-                        step.classList.add('final');
-                        step.textContent = '';
-                        const finalLabel = document.createElement('div');
-                        finalLabel.className = 'final-label';
-                        finalLabel.textContent = 'META';
-                        step.appendChild(finalLabel);
-                    }
-                    
-                    pathElement.appendChild(step);
-                }
-                
-                // Actualizar nivel actual en la UI
-                currentLevelElement.textContent = currentPosition + 1;
-                updateProgressBar();
-                
-                // Centrar el paso actual al cargar
-                setTimeout(() => {
-                    const currentStep = document.getElementById(`step-${currentPosition}`);
-                    if (currentStep) {
-                        currentStep.scrollIntoView({
-                            behavior: 'auto',
-                            block: 'nearest',
-                            inline: 'center'
-                        });
-                    }
-                }, 100);
-            }
+    const pathElement = document.getElementById('path');
+    const diceElement = document.getElementById('dice');
+    const diceGlow = document.getElementById('diceGlow');
+    const rollButton = document.getElementById('rollButton');
+    const claimButton = document.getElementById('claimButton');
+    const statusElement = document.getElementById('status');
+    const rollsCounter = document.getElementById('rollsCounter');
+    const playerNameElement = document.getElementById('playerName');
+    const currentLevelElement = document.getElementById('currentLevel');
+    const progressFill = document.getElementById('progressFill');
+    
+    const totalSteps = 120;
+    let currentPosition = 0;
+    let gameOver = false;
+    let rollsRemaining = 3;
+    let lastRollDate = null;
+    let availableRewards = [];
+    let rewardClaimed = false;
 
-            // Actualizar barra de progreso
-            function updateProgressBar() {
-                const progress = (currentPosition / totalSteps) * 100;
-                progressFill.style.width = `${progress}%`;
+    // Crear el camino con mejoras visuales
+    function createPath() {
+        pathElement.innerHTML = '';
+        for (let i = 0; i <= totalSteps; i++) {
+            const step = document.createElement('div');
+            step.className = 'step';
+            step.textContent = i + 1;
+            step.id = `step-${i}`;
+            
+            // Añadir etiqueta de nivel
+            const levelLabel = document.createElement('div');
+            levelLabel.className = 'level-label';
+            levelLabel.textContent = `Nivel ${i + 1}`;
+            step.appendChild(levelLabel);
+            
+            if (i === currentPosition) {
+                step.classList.add('current');
+                // Añadir tag del jugador al paso actual
+                const playerTag = document.createElement('div');
+                playerTag.className = 'player-tag';
+                playerTag.id = 'playerTag';
+                playerTag.textContent = 'Tú';
+                step.appendChild(playerTag);
             }
             
-            // Crear las caras del dado
-            function createDiceFaces() {
-                const faces = [
-                    // Cara 1
-                    { dots: [[50, 50]] },
-                    // Cara 2
-                    { dots: [[25, 25], [75, 75]] },
-                    // Cara 3
-                    { dots: [[25, 25], [50, 50], [75, 75]] },
-                    // Cara 4
-                    { dots: [[25, 25], [25, 75], [75, 25], [75, 75]] },
-                    // Cara 5
-                    { dots: [[25, 25], [25, 75], [50, 50], [75, 25], [75, 75]] },
-                    // Cara 6
-                    { dots: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]] }
-                ];
-                
-                diceElement.innerHTML = '';
-                
-                faces.forEach((face, index) => {
-                    const faceElement = document.createElement('div');
-                    faceElement.className = 'dice-face';
-                    faceElement.style.transform = getFaceTransform(index + 1);
-                    
-                    face.dots.forEach(dot => {
-                        const dotElement = document.createElement('div');
-                        dotElement.className = 'dice-dot';
-                        dotElement.style.left = `${dot[0]}%`;
-                        dotElement.style.top = `${dot[1]}%`;
-                        dotElement.style.transform = 'translate(-50%, -50%)';
-                        faceElement.appendChild(dotElement);
-                    });
-                    
-                    diceElement.appendChild(faceElement);
+            if (i < currentPosition) {
+                step.classList.add('completed');
+            }
+            
+            // Cada 3 niveles marcar como recompensa
+            if ((i + 1) % 3 === 0 && i !== totalSteps) {
+                step.classList.add('reward');
+                const rewardLabel = document.createElement('div');
+                rewardLabel.className = 'reward-label';
+                rewardLabel.textContent = '¡Premio!';
+                step.appendChild(rewardLabel);
+            }
+            
+            // Cada 20 niveles marcar como recompensa mayor
+            if ((i + 1) % 20 === 0 && i !== totalSteps) {
+                step.classList.add('major-reward');
+                const rewardLabel = document.createElement('div');
+                rewardLabel.className = 'reward-label major';
+                rewardLabel.textContent = '¡Gran Premio!';
+                step.appendChild(rewardLabel);
+            }
+            
+            if (i === totalSteps) {
+                step.classList.add('final');
+                step.textContent = '';
+                const finalLabel = document.createElement('div');
+                finalLabel.className = 'final-label';
+                finalLabel.textContent = 'META';
+                step.appendChild(finalLabel);
+            }
+            
+            pathElement.appendChild(step);
+        }
+        
+        // Actualizar nivel actual en la UI
+        currentLevelElement.textContent = currentPosition + 1;
+        updateProgressBar();
+        
+        // Centrar el paso actual al cargar
+        setTimeout(() => {
+            const currentStep = document.getElementById(`step-${currentPosition}`);
+            if (currentStep) {
+                currentStep.scrollIntoView({
+                    behavior: 'auto',
+                    block: 'nearest',
+                    inline: 'center'
                 });
             }
+        }, 100);
+    }
+
+    // Actualizar barra de progreso
+    function updateProgressBar() {
+        const progress = (currentPosition / totalSteps) * 100;
+        progressFill.style.width = `${progress}%`;
+    }
+    
+    // Crear las caras del dado
+    function createDiceFaces() {
+        const faces = [
+            // Cara 1
+            { dots: [[50, 50]] },
+            // Cara 2
+            { dots: [[25, 25], [75, 75]] },
+            // Cara 3
+            { dots: [[25, 25], [50, 50], [75, 75]] },
+            // Cara 4
+            { dots: [[25, 25], [25, 75], [75, 25], [75, 75]] },
+            // Cara 5
+            { dots: [[25, 25], [25, 75], [50, 50], [75, 25], [75, 75]] },
+            // Cara 6
+            { dots: [[25, 25], [25, 50], [25, 75], [75, 25], [75, 50], [75, 75]] }
+        ];
+        
+        diceElement.innerHTML = '';
+        
+        faces.forEach((face, index) => {
+            const faceElement = document.createElement('div');
+            faceElement.className = 'dice-face';
+            faceElement.style.transform = getFaceTransform(index + 1);
             
-            function getFaceTransform(face) {
-                switch(face) {
-                    case 1: return 'rotateX(0deg) rotateY(0deg) translateZ(50px)';
-                    case 2: return 'rotateX(180deg) rotateY(0deg) translateZ(50px)';
-                    case 3: return 'rotateX(90deg) rotateY(0deg) translateZ(50px)';
-                    case 4: return 'rotateX(-90deg) rotateY(0deg) translateZ(50px)';
-                    case 5: return 'rotateX(0deg) rotateY(90deg) translateZ(50px)';
-                    case 6: return 'rotateX(0deg) rotateY(-90deg) translateZ(50px)';
-                    default: return '';
-                }
+            face.dots.forEach(dot => {
+                const dotElement = document.createElement('div');
+                dotElement.className = 'dice-dot';
+                dotElement.style.left = `${dot[0]}%`;
+                dotElement.style.top = `${dot[1]}%`;
+                dotElement.style.transform = 'translate(-50%, -50%)';
+                faceElement.appendChild(dotElement);
+            });
+            
+            diceElement.appendChild(faceElement);
+        });
+    }
+    
+    function getFaceTransform(face) {
+        switch(face) {
+            case 1: return 'rotateX(0deg) rotateY(0deg) translateZ(50px)';
+            case 2: return 'rotateX(180deg) rotateY(0deg) translateZ(50px)';
+            case 3: return 'rotateX(90deg) rotateY(0deg) translateZ(50px)';
+            case 4: return 'rotateX(-90deg) rotateY(0deg) translateZ(50px)';
+            case 5: return 'rotateX(0deg) rotateY(90deg) translateZ(50px)';
+            case 6: return 'rotateX(0deg) rotateY(-90deg) translateZ(50px)';
+            default: return '';
+        }
+    }
+    
+    // Lanzar el dado
+    async function rollDice() {
+        if (gameOver) return;
+        
+        // Verificar tiros disponibles
+        if (rollsRemaining <= 0) {
+            statusElement.textContent = 'No tienes más tiros disponibles hoy. Vuelve mañana.';
+            return;
+        }
+        
+        rollButton.disabled = true;
+        diceElement.classList.add('rolling');
+        diceGlow.classList.add('rolling-glow');
+        
+        setTimeout(async () => {
+            // Resultado aleatorio del 1 al 6
+            const result = Math.floor(Math.random() * 6) + 1;
+            
+            showDiceResult(result);
+            
+            // Reducir tiros restantes
+            rollsRemaining--;
+            updateRollsCounter();
+            lastRollDate = new Date().toISOString();
+            
+            // Guardar estado del juego
+            await saveGameState();
+            
+            setTimeout(() => {
+                movePlayer(result);
+                diceElement.classList.remove('rolling');
+                diceGlow.classList.remove('rolling-glow');
+                rollButton.disabled = false;
+            }, 500);
+        }, 2000);
+    }
+    
+    function showDiceResult(result) {
+        const rotations = {
+            1: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
+            2: 'rotateX(180deg) rotateY(0deg) rotateZ(0deg)',
+            3: 'rotateX(90deg) rotateY(0deg) rotateZ(0deg)',
+            4: 'rotateX(-90deg) rotateY(0deg) rotateZ(0deg)',
+            5: 'rotateX(0deg) rotateY(90deg) rotateZ(0deg)',
+            6: 'rotateX(0deg) rotateY(-90deg) rotateZ(0deg)'
+        };
+        
+        diceElement.style.transform = rotations[result];
+    }
+    
+    // Mover al jugador
+    async function movePlayer(steps) {
+        if (currentPosition + steps > totalSteps) {
+            steps = totalSteps - currentPosition;
+            statusElement.textContent = `¡Casi! Necesitas exactamente ${steps} para ganar.`;
+        } else {
+            statusElement.textContent = `🎲 Sacaste ${steps}! Avanzas ${steps} pasos.`;
+        }
+        
+        let stepsRemaining = steps;
+        const moveInterval = setInterval(() => {
+            if (stepsRemaining <= 0) {
+                clearInterval(moveInterval);
+                checkRewards();
+                return;
             }
             
-            // Lanzar el dado
-            async function rollDice() {
-                if (gameOver) return;
-                
-                // Verificar tiros disponibles
-                if (rollsRemaining <= 0) {
-                    statusElement.textContent = 'No tienes más tiros disponibles hoy. Vuelve mañana.';
-                    return;
-                }
-                
-                rollButton.disabled = true;
-                diceElement.classList.add('rolling');
-                diceGlow.classList.add('rolling-glow');
-                
-                setTimeout(async () => {
-                    // Resultado aleatorio del 1 al 6
-                    const result = Math.floor(Math.random() * 6) + 1;
-                    
-                    showDiceResult(result);
-                    
-                    // Reducir tiros restantes
-                    rollsRemaining--;
-                    updateRollsCounter();
-                    lastRollDate = new Date().toISOString();
-                    
-                    // Guardar estado del juego
-                    await saveGameState();
-                    
-                    setTimeout(() => {
-                        movePlayer(result);
-                        diceElement.classList.remove('rolling');
-                        diceGlow.classList.remove('rolling-glow');
-                        rollButton.disabled = false;
-                    }, 500);
-                }, 2000);
+            const currentStep = document.getElementById(`step-${currentPosition}`);
+            const nextStep = document.getElementById(`step-${currentPosition + 1}`);
+            
+            // Quitar clases del paso actual
+            currentStep.classList.remove('current');
+            currentStep.classList.add('completed');
+            
+            // Mover el tag del jugador
+            const playerTag = document.getElementById('playerTag');
+            if (playerTag) {
+                playerTag.remove();
             }
             
-            function showDiceResult(result) {
-                const rotations = {
-                    1: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
-                    2: 'rotateX(180deg) rotateY(0deg) rotateZ(0deg)',
-                    3: 'rotateX(90deg) rotateY(0deg) rotateZ(0deg)',
-                    4: 'rotateX(-90deg) rotateY(0deg) rotateZ(0deg)',
-                    5: 'rotateX(0deg) rotateY(90deg) rotateZ(0deg)',
-                    6: 'rotateX(0deg) rotateY(-90deg) rotateZ(0deg)'
-                };
-                
-                diceElement.style.transform = rotations[result];
+            currentPosition++;
+            stepsRemaining--;
+            
+            // Aplicar clases al nuevo paso
+            nextStep.classList.add('current');
+            
+            // Añadir tag del jugador al nuevo paso
+            const newPlayerTag = document.createElement('div');
+            newPlayerTag.className = 'player-tag';
+            newPlayerTag.id = 'playerTag';
+            newPlayerTag.textContent = 'Tú';
+            nextStep.appendChild(newPlayerTag);
+            
+            // Actualizar nivel actual en la UI
+            currentLevelElement.textContent = currentPosition + 1;
+            updateProgressBar();
+            
+            // Scroll suave para mostrar el paso actual
+            nextStep.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+            
+            // Efecto de salto
+            nextStep.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                nextStep.style.transform = 'translateY(0)';
+            }, 300);
+            
+        }, 500);
+    }
+    
+    // Verificar recompensas
+    function checkRewards() {
+        rewardClaimed = false;
+        
+        // Verificar si llegó a un nivel de recompensa menor (cada 3 niveles)
+        if (currentPosition % 3 === 0 && currentPosition > 0) {
+            availableRewards.push({
+                type: 'small',
+                level: currentPosition
+            });
+        }
+        
+        // Verificar si llegó a un nivel de recompensa mayor (cada 20 niveles)
+        if (currentPosition % 20 === 0 && currentPosition > 0) {
+            availableRewards.push({
+                type: 'major',
+                level: currentPosition
+            });
+        }
+        
+        // Recompensa especial en el nivel 60
+        if (currentPosition === 60) {
+            availableRewards.push({
+                type: 'special',
+                level: currentPosition
+            });
+        }
+        
+        if (currentPosition === totalSteps) {
+            availableRewards.push({
+                type: 'final',
+                level: currentPosition
+            });
+            gameOver = true;
+            rollButton.disabled = true;
+        }
+        
+        // Mostrar botón de reclamar si hay recompensas disponibles
+        updateClaimButton();
+        
+        // Guardar estado del juego
+        saveGameState();
+    }
+    
+    // Actualizar botón de reclamar
+    function updateClaimButton() {
+        if (availableRewards.length > 0) {
+            const nextReward = availableRewards[0];
+            let buttonText = '';
+            
+            switch(nextReward.type) {
+                case 'small':
+                    buttonText = `Reclamar Premio Nivel ${nextReward.level + 1}`;
+                    break;
+                case 'major':
+                    buttonText = `Reclamar Gran Premio Nivel ${nextReward.level + 1}`;
+                    break;
+                case 'special':
+                    buttonText = `Reclamar Premio Especial Nivel 60`;
+                    break;
+                case 'final':
+                    buttonText = `Reclamar Premio Final 🏆`;
+                    break;
             }
             
-            // Mover al jugador
-            async function movePlayer(steps) {
-                if (currentPosition + steps > totalSteps) {
-                    steps = totalSteps - currentPosition;
-                    statusElement.textContent = `¡Casi! Necesitas exactamente ${steps} para ganar.`;
-                } else {
-                    statusElement.textContent = `🎲 Sacaste ${steps}! Avanzas ${steps} pasos.`;
-                }
-                
-                let stepsRemaining = steps;
-                const moveInterval = setInterval(() => {
-                    if (stepsRemaining <= 0) {
-                        clearInterval(moveInterval);
-                        checkRewards();
-                        return;
+            claimButton.textContent = buttonText;
+            claimButton.style.display = 'block';
+            
+            // Scroll al botón de reclamar
+            setTimeout(() => {
+                claimButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        } else {
+            claimButton.style.display = 'none';
+        }
+    }
+    
+    // Actualizar contador de tiros
+    function updateRollsCounter() {
+        rollsCounter.textContent = `Tiros restantes hoy: ${rollsRemaining}`;
+        if (rollsRemaining <= 0) {
+            rollButton.disabled = true;
+        }
+    }
+    
+    // Reclamar premio
+    async function claimReward() {
+        if (availableRewards.length === 0 || rewardClaimed) return;
+        
+        claimButton.disabled = true;
+        rewardClaimed = true;
+        
+        const reward = availableRewards.shift();
+        let rewardData;
+        
+        switch(reward.type) {
+            case 'small':
+                rewardData = await giveSmallReward(reward.level);
+                break;
+            case 'major':
+                rewardData = await giveRandomReward(reward.level);
+                break;
+            case 'special':
+                rewardData = await giveSpecialReward();
+                break;
+            case 'final':
+                rewardData = await giveFinalReward();
+                break;
+        }
+        
+        // Mostrar SweetAlert con la recompensa
+        Swal.fire({
+            title: rewardData.title,
+            html: rewardData.html,
+            confirmButtonText: '¡Gracias!',
+            willOpen: () => {
+                window.confetti({
+                    particleCount: rewardData.confettiCount || 100,
+                    spread: rewardData.confettiSpread || 70,
+                    origin: { y: 0.6 },
+                    colors: rewardData.confettiColors || ['#FFD700', '#00FFFF']
+                });
+            }
+        }).then(() => {
+            // Actualizar botón para la siguiente recompensa
+            updateClaimButton();
+            claimButton.disabled = false;
+            rewardClaimed = false;
+            
+            // Si era el premio final, reiniciar el juego
+            if (reward.type === 'final') {
+                resetGame();
+            }
+        });
+    }
+    
+    // Dar recompensa pequeña cada 3 niveles (4-8 unidades)
+    async function giveSmallReward(level) {
+        const rewards = [
+            { name: 'Oro', amount: Math.floor(Math.random() * 5) + 4, icon: 'fa-coins', color: '#FFD700' },
+            { name: 'Diamantes', amount: Math.floor(Math.random() * 5) + 4, icon: 'fa-gem', color: '#00FFFF' },
+            { name: 'Perlas', amount: Math.floor(Math.random() * 3) + 2, icon: 'fa-pearl', color: '#FFFFFF' },
+            { name: 'Poción de energía', amount: 1, icon: 'fa-flask', color: '#FF1493' }
+        ];
+        
+        const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+        
+        let updateData = {};
+        if (randomReward.name === 'Oro') {
+            updateData.gold = await incrementCurrency('gold', randomReward.amount);
+        } else if (randomReward.name === 'Diamantes') {
+            updateData.diamonds = await incrementCurrency('diamonds', randomReward.amount);
+        } else if (randomReward.name === 'Perlas') {
+            updateData.perla = await incrementCurrency('perla', randomReward.amount);
+        }
+        
+        return {
+            title: `¡Recompensa de nivel ${level + 1}!`,
+            html: `
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
+                    <div class="reward-item">
+                        <i class="fas ${randomReward.icon}" style="margin-right: 10px; color: ${randomReward.color};"></i> 
+                        <span>${randomReward.amount} ${randomReward.name}</span>
+                    </div>
+                </div>
+            `,
+            confettiCount: 50,
+            confettiSpread: 50,
+            confettiColors: [randomReward.color]
+        };
+    }
+    
+    // Dar recompensa aleatoria cada 20 niveles
+    async function giveRandomReward(level) {
+        const rewards = [
+            { name: 'Oro', amount: Math.floor(level / 2) + 10, icon: 'fa-coins', color: '#FFD700' },
+            { name: 'Diamantes', amount: Math.floor(level / 3) + 5, icon: 'fa-gem', color: '#00FFFF' },
+            { name: 'Perlas', amount: Math.floor(level / 5) + 2, icon: 'fa-pearl', color: '#FFFFFF' },
+            { name: 'Poción de energía', amount: 1, icon: 'fa-flask', color: '#FF1493' }
+        ];
+        
+        const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+        
+        let updateData = {};
+        if (randomReward.name === 'Oro') {
+            updateData.gold = await incrementCurrency('gold', randomReward.amount);
+        } else if (randomReward.name === 'Diamantes') {
+            updateData.diamonds = await incrementCurrency('diamonds', randomReward.amount);
+        } else if (randomReward.name === 'Perlas') {
+            updateData.perla = await incrementCurrency('perla', randomReward.amount);
+        }
+        
+        return {
+            title: `¡Gran Recompensa de nivel ${level + 1}!`,
+            html: `
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
+                    <div class="reward-item">
+                        <i class="fas ${randomReward.icon}" style="margin-right: 10px; color: ${randomReward.color};"></i> 
+                        <span>${randomReward.amount} ${randomReward.name}</span>
+                    </div>
+                </div>
+            `,
+            confettiCount: 100,
+            confettiSpread: 70,
+            confettiColors: [randomReward.color, '#8A2BE2']
+        };
+    }
+    
+    // Recompensa especial en el nivel 60
+    async function giveSpecialReward() {
+        await Promise.all([
+            incrementCurrency('gold', 100),
+            incrementCurrency('diamonds', 100),
+            incrementCurrency('perla', 100)
+        ]);
+        
+        return {
+            title: '¡Premio Especial Nivel 60!',
+            html: `
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
+                    <div class="reward-item">
+                        <i class="fas fa-coins currency-icon"></i> <span>100 Oro</span>
+                    </div>
+                    <div class="reward-item">
+                        <i class="fas fa-gem currency-icon"></i> <span>100 Diamantes</span>
+                    </div>
+                    <div class="reward-item">
+                        <i class="fas fa-pearl pearl-icon"></i> <span>100 Perlas</span>
+                    </div>
+                </div>
+            `,
+            confettiCount: 300,
+            confettiSpread: 180,
+            confettiColors: ['#FFD700', '#00FFFF', '#FF1493', '#8A2BE2']
+        };
+    }
+    
+    // Premio final al completar el juego
+    async function giveFinalReward() {
+        await Promise.all([
+            incrementCurrency('gold', 200),
+            incrementCurrency('diamonds', 200),
+            incrementCurrency('perla', 50)
+        ]);
+        
+        return {
+            title: '¡Premio Final Reclamado!',
+            html: `
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
+                    <div class="reward-item">
+                        <i class="fas fa-coins currency-icon"></i> <span>200 Oro</span>
+                    </div>
+                    <div class="reward-item">
+                        <i class="fas fa-gem currency-icon"></i> <span>200 Diamantes</span>
+                    </div>
+                    <div class="reward-item">
+                        <i class="fas fa-pearl pearl-icon"></i> <span>50 Perlas</span>
+                    </div>
+                </div>
+            `,
+            confettiCount: 500,
+            confettiSpread: 200,
+            confettiColors: ['#FFD700', '#00FFFF', '#FF1493', '#8A2BE2']
+        };
+    }
+    
+    // Incrementar moneda en la base de datos
+    async function incrementCurrency(currency, amount) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return 0;
+        
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select(currency)
+            .eq('id', user.id)
+            .single();
+        
+        const currentValue = profile[currency] || 0;
+        const newValue = currentValue + amount;
+        
+        await supabase
+            .from('profiles')
+            .update({ [currency]: newValue })
+            .eq('id', user.id);
+        
+        return newValue;
+    }
+    
+    // Reiniciar el juego
+    function resetGame() {
+        currentPosition = 0;
+        gameOver = false;
+        rollsRemaining = 3;
+        lastRollDate = new Date().toISOString();
+        availableRewards = [];
+        rewardClaimed = false;
+        
+        // Actualizar la interfaz
+        createPath();
+        updateRollsCounter();
+        updateProgressBar();
+        updateClaimButton();
+        
+        rollButton.disabled = false;
+        statusElement.textContent = '¡Juego reiniciado! Puedes comenzar de nuevo.';
+        
+        // Guardar estado del juego
+        saveGameState();
+    }
+    
+    // Guardar estado del juego
+    async function saveGameState() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                localStorage.setItem('caminoGameState', JSON.stringify({
+                    currentPosition,
+                    rollsRemaining,
+                    lastRollDate,
+                    availableRewards
+                }));
+                return;
+            }
+            
+            await supabase
+                .from('profiles')
+                .update({
+                    camino: {
+                        currentPosition,
+                        rollsRemaining,
+                        lastRollDate,
+                        availableRewards
                     }
-                    
-                    const currentStep = document.getElementById(`step-${currentPosition}`);
-                    const nextStep = document.getElementById(`step-${currentPosition + 1}`);
-                    
-                    // Quitar clases del paso actual
-                    currentStep.classList.remove('current');
-                    currentStep.classList.add('completed');
-                    
-                    // Mover el tag del jugador
-                    const playerTag = document.getElementById('playerTag');
-                    if (playerTag) {
-                        playerTag.remove();
-                    }
-                    
-                    currentPosition++;
-                    stepsRemaining--;
-                    
-                    // Aplicar clases al nuevo paso
-                    nextStep.classList.add('current');
-                    
-                    // Añadir tag del jugador al nuevo paso
-                    const newPlayerTag = document.createElement('div');
-                    newPlayerTag.className = 'player-tag';
-                    newPlayerTag.id = 'playerTag';
-                    newPlayerTag.textContent = 'Tú';
-                    nextStep.appendChild(newPlayerTag);
-                    
-                    // Actualizar nivel actual en la UI
-                    currentLevelElement.textContent = currentPosition + 1;
-                    updateProgressBar();
-                    
-                    // Scroll suave para mostrar el paso actual
-                    nextStep.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'nearest',
-                        inline: 'center'
-                    });
-                    
-                    // Efecto de salto
-                    nextStep.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        nextStep.style.transform = 'translateY(0)';
-                    }, 300);
-                    
-                }, 500);
-            }
+                })
+                .eq('id', user.id);
             
-            // Verificar recompensas
-            function checkRewards() {
-                // Verificar si llegó a un nivel de recompensa (cada 20 niveles)
-                if (currentPosition % 20 === 0 && currentPosition > 0) {
-                    giveRandomReward(currentPosition);
-                }
-                
-                // Recompensa especial en el nivel 60
-                if (currentPosition === 60) {
-                    giveSpecialReward();
-                }
-                
-                if (currentPosition === totalSteps) {
-                    gameOver = true;
-                    statusElement.textContent = '✨ ¡Felicidades! Has llegado al final del camino. ✨';
-                    rollButton.disabled = true;
-                    claimButton.style.display = 'block';
-                    
-                    // Scroll al botón de reclamar
-                    setTimeout(() => {
-                        claimButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 500);
-                }
-                
-                // Guardar estado del juego
-                saveGameState();
-            }
+        } catch (error) {
+            console.error('Error al guardar estado del juego:', error);
+            localStorage.setItem('caminoGameState', JSON.stringify({
+                currentPosition,
+                rollsRemaining,
+                lastRollDate,
+                availableRewards
+            }));
+        }
+    }
+    
+    // Cargar estado del juego
+    async function loadGameState() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
             
-            // Actualizar contador de tiros
-            function updateRollsCounter() {
-                rollsCounter.textContent = `Tiros restantes hoy: ${rollsRemaining}`;
-                if (rollsRemaining <= 0) {
-                    rollButton.disabled = true;
-                }
-            }
+            let savedState;
             
-            // Dar recompensa aleatoria cada 20 niveles
-            async function giveRandomReward(level) {
-                const rewards = [
-                    { name: 'Oro', amount: Math.floor(level / 2) + 10, icon: 'fa-coins', color: '#FFD700' },
-                    { name: 'Diamantes', amount: Math.floor(level / 3) + 5, icon: 'fa-gem', color: '#00FFFF' },
-                    { name: 'Perlas', amount: Math.floor(level / 5) + 2, icon: 'fa-pearl', color: '#FFFFFF' },
-                    { name: 'Poción de energía', amount: 1, icon: 'fa-flask', color: '#FF1493' }
-                ];
-                
-                const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-                
-                try {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    
-                    if (!user) return;
-                    
-                    let updateData = {};
-                    if (randomReward.name === 'Oro') {
-                        updateData.gold = await incrementCurrency('gold', randomReward.amount);
-                    } else if (randomReward.name === 'Diamantes') {
-                        updateData.diamonds = await incrementCurrency('diamonds', randomReward.amount);
-                    } else if (randomReward.name === 'Perlas') {
-                        updateData.perla = await incrementCurrency('perla', randomReward.amount);
-                    }
-                    
-                    // Mostrar SweetAlert con la recompensa
-                    Swal.fire({
-                        title: `¡Recompensa de nivel ${level + 1}!`,
-                        html: `
-                            <div style="text-align: center;">
-                                <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
-                                <div class="reward-item">
-                                    <i class="fas ${randomReward.icon}" style="margin-right: 10px; color: ${randomReward.color};"></i> 
-                                    <span>${randomReward.amount} ${randomReward.name}</span>
-                                </div>
-                            </div>
-                        `,
-                        confirmButtonText: '¡Gracias!',
-                        willOpen: () => {
-                            window.confetti({
-                                particleCount: 100,
-                                spread: 70,
-                                origin: { y: 0.6 },
-                                colors: [randomReward.color, '#8A2BE2']
-                            });
-                        }
-                    });
-                    
-                } catch (error) {
-                    console.error('Error al guardar recompensa:', error);
-                }
-            }
-            
-            // Recompensa especial en el nivel 60
-            async function giveSpecialReward() {
-                try {
-                    await Promise.all([
-                        incrementCurrency('gold', 100),
-                        incrementCurrency('diamonds', 100),
-                        incrementCurrency('perla', 100)
-                    ]);
-                    
-                    Swal.fire({
-                        title: '¡Premio Especial Nivel 60!',
-                        html: `
-                            <div style="text-align: center;">
-                                <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
-                                <div class="reward-item">
-                                    <i class="fas fa-coins currency-icon"></i> <span>100 Oro</span>
-                                </div>
-                                <div class="reward-item">
-                                    <i class="fas fa-gem currency-icon"></i> <span>100 Diamantes</span>
-                                </div>
-                                <div class="reward-item">
-                                    <i class="fas fa-pearl pearl-icon"></i> <span>100 Perlas</span>
-                                </div>
-                            </div>
-                        `,
-                        confirmButtonText: '¡Increíble!',
-                        willOpen: () => {
-                            window.confetti({
-                                particleCount: 300,
-                                spread: 180,
-                                origin: { y: 0.6 },
-                                colors: ['#FFD700', '#00FFFF', '#FF1493', '#8A2BE2']
-                            });
-                        }
-                    });
-                    
-                } catch (error) {
-                    console.error('Error al guardar recompensa especial:', error);
-                }
-            }
-            
-            // Incrementar moneda en la base de datos
-            async function incrementCurrency(currency, amount) {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return 0;
-                
+            if (user) {
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select(currency)
+                    .select('camino, username')
                     .eq('id', user.id)
                     .single();
                 
-                const currentValue = profile[currency] || 0;
-                const newValue = currentValue + amount;
-                
-                await supabase
-                    .from('profiles')
-                    .update({ [currency]: newValue })
-                    .eq('id', user.id);
-                
-                return newValue;
-            }
-            
-            // Reclamar premio final
-            async function claimReward() {
-                claimButton.disabled = true;
-                claimButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reclamando...';
-                
-                try {
-                    await Promise.all([
-                        incrementCurrency('gold', 200),
-                        incrementCurrency('diamonds', 200),
-                        incrementCurrency('perla', 50)
-                    ]);
-                    
-                    Swal.fire({
-                        title: '¡Premio Final Reclamado!',
-                        html: `
-                            <div style="text-align: center;">
-                                <p style="font-size: 1.2em; margin-bottom: 20px; color: #dcdcdc;">Has ganado:</p>
-                                <div class="reward-item">
-                                    <i class="fas fa-coins currency-icon"></i> <span>200 Oro</span>
-                                </div>
-                                <div class="reward-item">
-                                    <i class="fas fa-gem currency-icon"></i> <span>200 Diamantes</span>
-                                </div>
-                                <div class="reward-item">
-                                    <i class="fas fa-pearl pearl-icon"></i> <span>50 Perlas</span>
-                                </div>
-                            </div>
-                        `,
-                        confirmButtonText: '¡Gracias!',
-                        willOpen: () => {
-                            window.confetti({
-                                particleCount: 500,
-                                spread: 200,
-                                origin: { y: 0.6 },
-                                colors: ['#FFD700', '#00FFFF', '#FF1493', '#8A2BE2']
-                            });
-                        }
-                    });
-                    
-                    // Reiniciar el juego
-                    resetGame();
-                    
-                } catch (error) {
-                    console.error('Error al reclamar premio:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo reclamar el premio. Intenta de nuevo.',
-                        confirmButtonText: 'Entendido'
-                    });
-                    claimButton.disabled = false;
-                    claimButton.innerHTML = 'Reclamar Premio 🏆';
+                if (profile && profile.camino) {
+                    savedState = profile.camino;
                 }
+                
+                if (profile && profile.username) {
+                    playerNameElement.textContent = `Jugador: ${profile.username}`;
+                }
+            } else {
+                const localState = localStorage.getItem('caminoGameState');
+                if (localState) {
+                    savedState = JSON.parse(localState);
+                }
+                playerNameElement.textContent = 'Jugador: Invitado';
             }
             
-            // Reiniciar el juego
-            function resetGame() {
-                currentPosition = 0;
-                gameOver = false;
-                rollsRemaining = 3;
-                lastRollDate = new Date().toISOString();
+            if (savedState) {
+                // Verificar si han pasado más de 6 horas desde el último tiro
+                const now = new Date();
+                const lastRoll = new Date(savedState.lastRollDate);
+                const diffHours = (now - lastRoll) / (1000 * 60 * 60);
+                
+                if (diffHours >= 6) {
+                    rollsRemaining = 3;
+                    lastRollDate = now.toISOString();
+                } else {
+                    rollsRemaining = savedState.rollsRemaining || 0;
+                    lastRollDate = savedState.lastRollDate;
+                }
+                
+                currentPosition = savedState.currentPosition || 0;
+                availableRewards = savedState.availableRewards || [];
                 
                 // Actualizar la interfaz
                 createPath();
                 updateRollsCounter();
                 updateProgressBar();
+                updateClaimButton();
                 
-                claimButton.style.display = 'none';
-                claimButton.disabled = false;
-                claimButton.innerHTML = 'Reclamar Premio 🏆';
-                
-                rollButton.disabled = false;
-                statusElement.textContent = '¡Juego reiniciado! Puedes comenzar de nuevo.';
-                
-                // Guardar estado del juego
-                saveGameState();
-            }
-            
-            // Guardar estado del juego
-            async function saveGameState() {
-                try {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    
-                    if (!user) {
-                        localStorage.setItem('caminoGameState', JSON.stringify({
-                            currentPosition,
-                            rollsRemaining,
-                            lastRollDate
-                        }));
-                        return;
-                    }
-                    
-                    await supabase
-                        .from('profiles')
-                        .update({
-                            camino: {
-                                currentPosition,
-                                rollsRemaining,
-                                lastRollDate
-                            }
-                        })
-                        .eq('id', user.id);
-                    
-                } catch (error) {
-                    console.error('Error al guardar estado del juego:', error);
-                    localStorage.setItem('caminoGameState', JSON.stringify({
-                        currentPosition,
-                        rollsRemaining,
-                        lastRollDate
-                    }));
+                if (currentPosition === totalSteps) {
+                    gameOver = true;
+                    rollButton.disabled = true;
+                    statusElement.textContent = '✨ ¡Felicidades! Has llegado al final del camino. ✨';
                 }
             }
             
-            // Cargar estado del juego
-            async function loadGameState() {
-                try {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    
-                    let savedState;
-                    
-                    if (user) {
-                        const { data: profile } = await supabase
-                            .from('profiles')
-                            .select('camino, username')
-                            .eq('id', user.id)
-                            .single();
-                        
-                        if (profile && profile.camino) {
-                            savedState = profile.camino;
-                        }
-                        
-                        if (profile && profile.username) {
-                            playerNameElement.textContent = `Jugador: ${profile.username}`;
-                        }
-                    } else {
-                        const localState = localStorage.getItem('caminoGameState');
-                        if (localState) {
-                            savedState = JSON.parse(localState);
-                        }
-                        playerNameElement.textContent = 'Jugador: Invitado';
-                    }
-                    
-                    if (savedState) {
-                        // Verificar si han pasado más de 6 horas desde el último tiro
-                        const now = new Date();
-                        const lastRoll = new Date(savedState.lastRollDate);
-                        const diffHours = (now - lastRoll) / (1000 * 60 * 60);
-                        
-                        if (diffHours >= 6) {
-                            rollsRemaining = 3;
-                            lastRollDate = now.toISOString();
-                        } else {
-                            rollsRemaining = savedState.rollsRemaining || 0;
-                            lastRollDate = savedState.lastRollDate;
-                        }
-                        
-                        currentPosition = savedState.currentPosition || 0;
-                        
-                        // Actualizar la interfaz
-                        createPath();
-                        updateRollsCounter();
-                        updateProgressBar();
-                        
-                        if (currentPosition === totalSteps) {
-                            gameOver = true;
-                            claimButton.style.display = 'block';
-                            rollButton.disabled = true;
-                            statusElement.textContent = '✨ ¡Felicidades! Has llegado al final del camino. ✨';
-                        }
-                    }
-                    
-                } catch (error) {
-                    console.error('Error al cargar estado del juego:', error);
-                }
+        } catch (error) {
+            console.error('Error al cargar estado del juego:', error);
+        }
+    }
+    
+    // Cargar información del jugador
+    async function loadPlayerInfo() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                playerNameElement.textContent = 'Jugador: Invitado';
+                return;
             }
             
-            // Cargar información del jugador
-            async function loadPlayerInfo() {
-                try {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    
-                    if (!user) {
-                        playerNameElement.textContent = 'Jugador: Invitado';
-                        return;
-                    }
-                    
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('username')
-                        .eq('id', user.id)
-                        .single();
-                    
-                    if (profile && profile.username) {
-                        playerNameElement.textContent = `Jugador: ${profile.username}`;
-                    }
-                    
-                } catch (error) {
-                    console.error('Error al cargar información del jugador:', error);
-                    playerNameElement.textContent = 'Jugador: Error al cargar';
-                }
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', user.id)
+                .single();
+            
+            if (profile && profile.username) {
+                playerNameElement.textContent = `Jugador: ${profile.username}`;
             }
             
-            // Event listeners
-            rollButton.addEventListener('click', rollDice);
-            claimButton.addEventListener('click', claimReward);
-            
-            // Inicializar el juego
-            createDiceFaces();
-            showDiceResult(1);
-            loadGameState();
-            loadPlayerInfo();
-        });
+        } catch (error) {
+            console.error('Error al cargar información del jugador:', error);
+            playerNameElement.textContent = 'Jugador: Error al cargar';
+        }
+    }
+    
+    // Event listeners
+    rollButton.addEventListener('click', rollDice);
+    claimButton.addEventListener('click', claimReward);
+    
+    // Inicializar el juego
+    createDiceFaces();
+    showDiceResult(1);
+    loadGameState();
+    loadPlayerInfo();
+});
 
-        
-        
 // Botón de información
 document.getElementById('infoButton').addEventListener('click', function() {
     Swal.fire({
@@ -1233,7 +1359,8 @@ document.getElementById('infoButton').addEventListener('click', function() {
                      style="width: 80px; height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6));">
                 <div style="text-align: left; color: #dcdcdc; font-size: 0.95rem;">
                     <p style="margin-bottom: 10px;"><i class="fas fa-dice" style="color: #FF1493;"></i> <strong>Lanza el dado</strong> para avanzar en el camino</p>
-                    <p style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #00FFFF;"></i> <strong>Recompensas</strong> cada 20 niveles</p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-gift" style="color: #00FFFF;"></i> <strong>Recompensas pequeñas</strong> cada 3 niveles (4-8 unidades)</p>
+                    <p style="margin-bottom: 10px;"><i class="fas fa-gifts" style="color: #FFD700;"></i> <strong>Recompensas mayores</strong> cada 20 niveles</p>
                     <p style="margin-bottom: 10px;"><i class="fas fa-star" style="color: #FFD700;"></i> <strong>Premio especial</strong> en el nivel 60</p>
                     <p style="margin-bottom: 10px;"><i class="fas fa-trophy" style="color: #7CFC00;"></i> <strong>Gran premio</strong> al completar los 120 niveles</p>
                     <p><i class="fas fa-clock" style="color: #8A2BE2;"></i> <strong>3 tiros diarios</strong> (se renuevan cada 6 horas)</p>
@@ -1260,6 +1387,6 @@ document.getElementById('infoButton').addEventListener('click', function() {
         }
     });
 });
-    </script>
+</script>
 </body>
 </html>
