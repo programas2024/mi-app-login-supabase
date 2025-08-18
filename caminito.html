@@ -6,6 +6,9 @@
     <title>VIP Diamond Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+   
     <style>
         :root {
             --gold: linear-gradient(135deg, #FFD700, #D4AF37);
@@ -772,63 +775,94 @@
     <div class="loading-spinner" id="loadingSpinner" style="display: none;">
         <div class="spinner"></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-       document.addEventListener('DOMContentLoaded', async function() {
+      document.addEventListener('DOMContentLoaded', async function() {
+    console.log('[DEBUG] DOM completamente cargado');
+    
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
     
+    console.log('[DEBUG] Inicializando cliente Supabase');
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Obtener el ID del usuario autenticado
     let userId = null;
     
     try {
-        // Verificar sesión activa
+        console.log('[DEBUG] Verificando sesión de usuario');
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         
-        if (authError) throw authError;
-        if (!user) throw new Error('Usuario no autenticado');
+        if (authError) {
+            console.error('[ERROR] Error en auth.getUser():', authError);
+            throw authError;
+        }
+        
+        if (!user) {
+            console.error('[ERROR] No hay usuario autenticado');
+            throw new Error('Usuario no autenticado');
+        }
         
         userId = user.id;
-        console.log('ID de usuario obtenido:', userId);
+        console.log('[DEBUG] ID de usuario obtenido:', userId);
         
         // Verificar si existe el perfil
+        console.log('[DEBUG] Verificando perfil existente para userId:', userId);
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('id')
+            .select('id, gold, diamonds, perla')
             .eq('id', userId)
             .single();
         
-        if (profileError || !profile) {
-            // Crear perfil si no existe
-            const { error: createError } = await supabase
+        if (profileError) {
+            console.error('[ERROR] Error al buscar perfil:', profileError);
+            throw profileError;
+        }
+        
+        if (!profile) {
+            console.log('[DEBUG] Perfil no encontrado, creando nuevo perfil');
+            const { data: newProfile, error: createError } = await supabase
                 .from('profiles')
                 .insert([{ 
                     id: userId,
                     gold: 0,
                     diamonds: 0,
-                    perla: 0
-                }]);
+                    perla: 0,
+                    updated_at: new Date().toISOString()
+                }])
+                .select()
+                .single();
             
-            if (createError) throw createError;
-            console.log('Nuevo perfil creado para el usuario');
+            if (createError) {
+                console.error('[ERROR] Error al crear perfil:', createError);
+                throw createError;
+            }
+            
+            console.log('[DEBUG] Nuevo perfil creado:', newProfile);
+        } else {
+            console.log('[DEBUG] Perfil encontrado:', profile);
         }
         
     } catch (error) {
-        console.error('Error al obtener usuario:', error);
+        console.error('[ERROR CRÍTICO] Error en inicialización:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+        });
         alert('Error al verificar la sesión. Por favor inicia sesión nuevamente.');
-        // Redirigir a login o mostrar mensaje
         return;
     }
 
-    // Configuración
-    const currentLevel = 15; // Cambiar según el nivel actual del usuario
+    // Configuración de niveles y recompensas
+    console.log('[DEBUG] Configurando niveles y recompensas');
+    const currentLevel = 15;
     const freeLevels = 30;
     const premiumLevels = 30;
     
-    // Recompensas mejoradas
     const freeRewards = {
         5: { type: 'gold', amount: 100, special: false },
         10: { type: 'pearl', amount: 3, special: true },
@@ -847,14 +881,15 @@
         30: { type: 'gold', amount: 2000, special: true }
     };
     
-    // Generar niveles gratis
+    // Generar niveles
+    console.log('[DEBUG] Generando niveles de recompensas');
     const freeLevelsContainer = document.getElementById('freeLevels');
+    const premiumLevelsContainer = document.getElementById('premiumLevels');
+    
     for (let i = 1; i <= freeLevels; i++) {
         createLevel(i, 'free', freeRewards, freeLevelsContainer, i <= currentLevel);
     }
     
-    // Generar niveles premium
-    const premiumLevelsContainer = document.getElementById('premiumLevels');
     for (let i = 1; i <= premiumLevels; i++) {
         createLevel(i, 'premium', premiumRewards, premiumLevelsContainer, i <= currentLevel);
     }
@@ -864,24 +899,20 @@
         const level = document.createElement('div');
         level.className = `level ${type}-level ${isUnlocked ? '' : 'locked'}`;
         
-        // Número del nivel
         const levelNumber = document.createElement('div');
         levelNumber.className = 'level-number';
         levelNumber.textContent = number;
         level.appendChild(levelNumber);
         
-        // Estado del nivel
         const levelStatus = document.createElement('div');
         levelStatus.className = 'level-status';
         levelStatus.textContent = isUnlocked ? (number === currentLevel ? 'ACTUAL' : 'COMPLETADO') : 'BLOQUEADO';
         level.appendChild(levelStatus);
         
-        // Recompensas
         if (rewards[number]) {
             const rewardContainer = document.createElement('div');
             rewardContainer.className = 'reward-container';
             
-            // Icono de recompensa
             const rewardIcon = document.createElement('div');
             rewardIcon.className = `reward ${rewards[number].type} ${rewards[number].special ? 'pulse' : ''}`;
             rewardIcon.textContent = 
@@ -889,66 +920,23 @@
                 rewards[number].type === 'pearl' ? '🔘' : '💎';
             rewardContainer.appendChild(rewardIcon);
             
-            // Cantidad de recompensa
             const rewardAmount = document.createElement('div');
             rewardAmount.className = `reward-amount ${rewards[number].type}-amount`;
             rewardAmount.textContent = rewards[number].amount;
             rewardContainer.appendChild(rewardAmount);
             
-            // Botón de reclamar
             if (isUnlocked) {
                 const claimBtn = document.createElement('button');
                 claimBtn.className = `claim-btn ${type === 'premium' ? 'premium' : ''}`;
                 claimBtn.textContent = rewards[number].special ? '¡RECLAMAR!' : 'Reclamar';
                 
                 claimBtn.addEventListener('click', async function() {
-                    if (!userId) {
-                        alert('No se pudo identificar tu usuario. Por favor inicia sesión nuevamente.');
-                        return;
-                    }
-                    
-                    // Mostrar spinner de carga
-                    document.getElementById('loadingSpinner').style.display = 'flex';
-                    
-                    try {
-                        // Efecto de confeti
-                        createConfetti(this);
-                        
-                        // Actualizar la base de datos
-                        const updateField = rewards[number].type === 'gold' ? 'gold' : 
-                                          rewards[number].type === 'pearl' ? 'perla' : 'diamonds';
-                        
-                        const { data, error } = await supabase
-                            .from('profiles')
-                            .update({ 
-                                [updateField]: supabase.rpc('increment', {
-                                    column: updateField,
-                                    amount: rewards[number].amount
-                                })
-                            })
-                            .eq('id', userId);
-                        
-                        if (error) throw error;
-                        
-                        // Mostrar modal de recompensa
-                        showReward(number, type, rewards[number]);
-                        
-                        this.textContent = '¡Reclamado!';
-                        this.style.background = '#00B894';
-                        this.disabled = true;
-                    } catch (error) {
-                        console.error('Error al actualizar recompensa:', error);
-                        alert('Error al reclamar la recompensa. Por favor intenta nuevamente.');
-                    } finally {
-                        // Ocultar spinner de carga
-                        document.getElementById('loadingSpinner').style.display = 'none';
-                    }
+                    await handleRewardClaim(number, type, rewards[number], this);
                 });
                 
                 rewardContainer.appendChild(claimBtn);
             }
             
-            // Badge especial
             if (rewards[number].special) {
                 const specialBadge = document.createElement('div');
                 specialBadge.className = 'special-badge';
@@ -962,6 +950,114 @@
         container.appendChild(level);
     }
     
+    // Función para manejar el reclamo de recompensas
+    async function handleRewardClaim(level, type, reward, buttonElement) {
+        console.log(`[DEBUG] Intentando reclamar recompensa: Nivel ${level} ${type}`, reward);
+        
+        if (!userId) {
+            console.error('[ERROR] userId no definido al intentar reclamar');
+            alert('No se pudo identificar tu usuario. Por favor inicia sesión nuevamente.');
+            return;
+        }
+        
+        document.getElementById('loadingSpinner').style.display = 'flex';
+        
+        try {
+            // Efecto visual
+            createConfetti(buttonElement);
+            
+            // Obtener valores actuales primero
+            console.log('[DEBUG] Obteniendo perfil actual para userId:', userId);
+            const { data: currentProfile, error: fetchError } = await supabase
+                .from('profiles')
+                .select('gold, diamonds, perla')
+                .eq('id', userId)
+                .single();
+            
+            if (fetchError) {
+                console.error('[ERROR] Error al obtener perfil:', fetchError);
+                throw fetchError;
+            }
+            
+            console.log('[DEBUG] Perfil actual:', currentProfile);
+            
+            // Determinar campo a actualizar
+            const fieldMap = {
+                gold: 'gold',
+                pearl: 'perla',
+                diamond: 'diamonds'
+            };
+            
+            const updateField = fieldMap[reward.type];
+            
+            if (!updateField) {
+                const errorMsg = `Tipo de recompensa no válido: ${reward.type}`;
+                console.error('[ERROR]', errorMsg);
+                throw new Error(errorMsg);
+            }
+            
+            // Calcular nuevo valor
+            const currentValue = currentProfile[updateField] || 0;
+            const newValue = currentValue + reward.amount;
+            
+            console.log(`[DEBUG] Actualizando ${updateField} de ${currentValue} a ${newValue}`);
+            
+            // Actualizar en Supabase
+            const { data: updatedProfile, error: updateError } = await supabase
+                .from('profiles')
+                .update({ 
+                    [updateField]: newValue,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', userId)
+                .select();
+            
+            if (updateError) {
+                console.error('[ERROR] Error en la actualización:', {
+                    error: updateError,
+                    query: {
+                        table: 'profiles',
+                        updates: {
+                            [updateField]: newValue,
+                            updated_at: new Date().toISOString()
+                        },
+                        userId: userId
+                    }
+                });
+                throw updateError;
+            }
+            
+            console.log('[DEBUG] Perfil actualizado con éxito:', updatedProfile);
+            
+            // Mostrar feedback al usuario
+            showReward(level, type, reward);
+            
+            buttonElement.textContent = '¡Reclamado!';
+            buttonElement.style.background = '#00B894';
+            buttonElement.disabled = true;
+            
+        } catch (error) {
+            console.error('[ERROR DETALLADO] Error al procesar recompensa:', {
+                message: error.message,
+                name: error.name,
+                stack: error.stack,
+                details: error.details,
+                hint: error.hint,
+                code: error.code,
+                level: level,
+                type: type,
+                reward: reward,
+                userId: userId
+            });
+            
+            alert(`Error al reclamar la recompensa: ${error.message}`);
+        } finally {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+    }
+    
+    // [Resto de las funciones (showReward, createConfetti, etc.) permanecen igual]
+    
     // Modal de recompensa
     const rewardModal = document.getElementById('rewardModal');
     const rewardIcon = document.getElementById('rewardIcon');
@@ -970,39 +1066,19 @@
     const rewardAmount = document.getElementById('rewardAmount');
     const rewardClose = document.getElementById('rewardClose');
     
-    // Función para mostrar recompensa
     function showReward(level, type, reward) {
-        // Configurar el modal según el tipo
         rewardModal.className = `reward-modal ${type}`;
-        
-        // Configurar icono
-        rewardIcon.textContent = 
-            reward.type === 'gold' ? '💰' : 
-            reward.type === 'pearl' ? '🔘' : '💎';
-        
-        // Configurar título y mensaje
+        rewardIcon.textContent = reward.type === 'gold' ? '💰' : reward.type === 'pearl' ? '🔘' : '💎';
         rewardTitle.textContent = reward.special ? '¡RECOMPENSA ESPECIAL!' : '¡Felicidades!';
         
-        // Configurar cantidad
         let rewardText = '';
-        if (reward.type === 'gold') {
-            rewardText = `${reward.amount} de Oro`;
-            rewardIcon.textContent = '💰';
-        } else if (reward.type === 'pearl') {
-            rewardText = `${reward.amount} Perlas`;
-            rewardIcon.textContent = '🔘';
-        } else {
-            rewardText = `${reward.amount} Diamantes`;
-            rewardIcon.textContent = '💎';
-        }
+        if (reward.type === 'gold') rewardText = `${reward.amount} de Oro`;
+        else if (reward.type === 'pearl') rewardText = `${reward.amount} Perlas`;
+        else rewardText = `${reward.amount} Diamantes`;
         
         rewardMessage.textContent = `Has alcanzado el Nivel ${level} ${type === 'premium' ? 'VIP' : ''}`;
         rewardAmount.textContent = rewardText;
-        
-        // Mostrar modal
         rewardModal.style.display = 'flex';
-        
-        // Crear confeti adicional
         createConfetti(rewardModal);
     }
     
@@ -1010,7 +1086,6 @@
         rewardModal.style.display = 'none';
     });
     
-    // Efecto de confeti
     function createConfetti(element) {
         const rect = element.getBoundingClientRect();
         const colors = ['#FFD700', '#00FFFF', '#FF1493', '#7CFC00', '#FF4500'];
@@ -1024,7 +1099,6 @@
             confetti.style.opacity = '1';
             document.body.appendChild(confetti);
             
-            // Animación
             const angle = Math.random() * Math.PI * 2;
             const velocity = 5 + Math.random() * 5;
             const x = Math.cos(angle) * velocity;
@@ -1037,7 +1111,7 @@
             
             const animate = () => {
                 posX += x;
-                posY += y + 0.5; // Gravedad
+                posY += y + 0.5;
                 opacity -= 0.02;
                 scale -= 0.01;
                 
@@ -1078,8 +1152,7 @@
     
     // Botón de volver
     document.getElementById('backBtn').addEventListener('click', () => {
-        // Simular redirección
-        console.log('Redirigiendo al dashboard...');
+        console.log('[DEBUG] Redirigiendo al dashboard');
         // window.location.href = '/dashboard';
     });
 });
