@@ -9,13 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <!-- GSAP para animaciones -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-  
-  <!-- Font Awesome para iconos (opcional) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-
-  :root {
+        :root {
             --primary: #4a00e0;
             --secondary: #8e2de2;
             --accent: #00c6ff;
@@ -372,10 +370,72 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+        
+        .levels-container {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .level-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .level-card.current {
+            background: rgba(74, 0, 224, 0.2);
+            border: 2px solid var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .level-card h3 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .level-card p {
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        
+        .level-rewards {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .level-rewards ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .level-rewards li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .level-progress {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .level-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 <body>
-  <div class="container">
+    <div class="container">
         <header>
             <div class="logo">JUEGO VIP</div>
             <div class="user-info">
@@ -393,8 +453,8 @@
             <h1>Sistema de Recompensas VIP</h1>
             <p>Completa misiones para ganar puntos VIP y subir de nivel.</p>
             
-            <div class="levels-container">
-                <!-- Aquí irían los niveles de recompensas -->
+            <div class="levels-container" id="levelsContainer">
+                <!-- Los niveles se cargarán dinámicamente -->
             </div>
         </main>
     </div>
@@ -424,18 +484,12 @@
     </div>
     
     <script>
-      document.addEventListener('DOMContentLoaded', async function() {
-    console.log('[DEBUG] DOM completamente cargado');
-    
-    // Configuración de Supabase
-    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-    
-    console.log('[DEBUG] Inicializando cliente Supabase');
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-
-     // Variables globales
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        // Variables globales
+        let supabase = null;
         let userId = null;
         let userVipPoints = 0;
         let userVipLevel = 1;
@@ -446,7 +500,8 @@
                 title: "Iniciar Sesión",
                 description: "Inicia sesión en el juego para reclamar esta misión",
                 reward: 5, // Puntos VIP
-                cooldownHours: 24
+                cooldownHours: 24,
+                check: async () => true // Siempre disponible al iniciar sesión
             },
             diamonds: {
                 title: "Tener 300+ Diamantes",
@@ -459,7 +514,7 @@
                         .select('diamonds')
                         .eq('id', userId)
                         .single();
-                    return profile.diamonds >= 300;
+                    return profile && profile.diamonds >= 300;
                 }
             },
             pearls: {
@@ -473,23 +528,46 @@
                         .select('perla')
                         .eq('id', userId)
                         .single();
-                    return profile.perla >= 10;
+                    return profile && profile.perla >= 10;
                 }
+            },
+            daily_play: {
+                title: "Jugar 3 Partidas",
+                description: "Juega al menos 3 partidas hoy",
+                reward: 7,
+                cooldownHours: 24,
+                check: async () => {
+                    // Simulación - en una app real, consultarías la base de datos
+                    return Math.random() > 0.5; // 50% de probabilidad para demostración
+                }
+            },
+            invite_friend: {
+                title: "Invitar a un Amigo",
+                description: "Invita a un amigo a unirse al juego",
+                reward: 15,
+                cooldownHours: 24,
+                check: async () => false // Por defecto no completada
             }
         };
 
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initializeApp();
-            setupEventListeners();
-            
-            // Verificar misiones cada minuto
-            setInterval(checkMissions, 60000);
-        });
+        // Configuración de niveles VIP
+        const vipLevelsConfig = [
+            { level: 1, pointsRequired: 0, rewards: ["Acceso a chat VIP", "Emojis exclusivos"] },
+            { level: 2, pointsRequired: 100, rewards: ["Avatar especial", "+5% de oro en partidas"] },
+            { level: 3, pointsRequired: 250, rewards: ["Marco de perfil", "+10% de experiencia"] },
+            { level: 4, pointsRequired: 500, rewards: ["Título exclusivo", "Acceso a torneos VIP"] },
+            { level: 5, pointsRequired: 1000, rewards: ["Skin exclusiva", "+15% de recompensas"] }
+        ];
 
         // Inicializar la aplicación
-        async function initializeApp() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('[DEBUG] DOM completamente cargado');
+            
             try {
+                // Inicializar Supabase
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('[DEBUG] Cliente Supabase inicializado');
+                
                 // Obtener usuario autenticado
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
                 
@@ -500,27 +578,46 @@
                 
                 if (!user) {
                     console.error('[ERROR] No hay usuario autenticado');
-                    throw new Error('Usuario no autenticado');
+                    // Para propósitos de demostración, usar un usuario simulado
+                    userId = 'demo-user-id';
+                    console.log('[DEBUG] Usando usuario de demostración');
+                } else {
+                    userId = user.id;
+                    console.log('[DEBUG] ID de usuario obtenido:', userId);
                 }
-                
-                userId = user.id;
-                console.log('[DEBUG] ID de usuario obtenido:', userId);
                 
                 // Cargar perfil de usuario
                 await loadUserProfile();
                 
-                // Cargar y verificar misiones
+                // Cargar niveles VIP
+                renderVipLevels();
+                
+                // Configurar event listeners
+                setupEventListeners();
+                
+                // Verificar misiones cada minuto
+                setInterval(checkMissions, 60000);
+                
+                // Verificar misiones inicialmente
                 await checkMissions();
                 
             } catch (error) {
                 console.error('[ERROR CRÍTICO] Error en inicialización:', error);
-                alert('Error al inicializar la aplicación. Por favor recarga la página.');
+                // Para propósitos de demostración, continuar con datos de ejemplo
+                userVipPoints = 75;
+                userVipLevel = calculateVipLevel(userVipPoints);
+                document.getElementById('userPoints').textContent = userVipPoints;
+                document.getElementById('userLevel').textContent = userVipLevel;
+                renderVipLevels();
+                setupEventListeners();
             }
-        }
+        });
 
         // Cargar perfil de usuario
         async function loadUserProfile() {
             try {
+                if (!userId) return;
+                
                 const { data: profile, error } = await supabase
                     .from('profiles')
                     .select('vip_points, vip_level')
@@ -551,6 +648,8 @@
         // Crear perfil de usuario si no existe
         async function createUserProfile() {
             try {
+                if (!userId) return;
+                
                 const { data, error } = await supabase
                     .from('profiles')
                     .insert([{ 
@@ -577,13 +676,69 @@
 
         // Calcular nivel VIP basado en puntos
         function calculateVipLevel(points) {
-            // Fórmula: nivel = floor(puntos / 100) + 1
-            return Math.floor(points / 100) + 1;
+            // Encontrar el nivel máximo que el usuario ha alcanzado
+            for (let i = vipLevelsConfig.length - 1; i >= 0; i--) {
+                if (points >= vipLevelsConfig[i].pointsRequired) {
+                    return vipLevelsConfig[i].level;
+                }
+            }
+            return 1;
+        }
+
+        // Renderizar niveles VIP
+        function renderVipLevels() {
+            const container = document.getElementById('levelsContainer');
+            container.innerHTML = '';
+            
+            vipLevelsConfig.forEach(levelConfig => {
+                const isCurrentLevel = levelConfig.level === userVipLevel;
+                const isUnlocked = userVipPoints >= levelConfig.pointsRequired;
+                const progress = Math.min(100, ((userVipPoints - levelConfig.pointsRequired) / 
+                    (vipLevelsConfig[levelConfig.level]?.pointsRequired - levelConfig.pointsRequired || 100)) * 100);
+                
+                const levelCard = document.createElement('div');
+                levelCard.className = `level-card ${isCurrentLevel ? 'current' : ''}`;
+                
+                levelCard.innerHTML = `
+                    <h3>Nivel ${levelConfig.level} ${isCurrentLevel ? '⭐' : ''}</h3>
+                    <p>${levelConfig.pointsRequired} puntos requeridos</p>
+                    
+                    ${isCurrentLevel ? `
+                        <div class="level-progress">
+                            <div class="level-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <p>${userVipPoints - levelConfig.pointsRequired}/${vipLevelsConfig[levelConfig.level]?.pointsRequired - levelConfig.pointsRequired || 100} puntos para el siguiente nivel</p>
+                    ` : ''}
+                    
+                    <div class="level-rewards">
+                        <strong>Recompensas:</strong>
+                        <ul>
+                            ${levelConfig.rewards.map(reward => `<li>${reward}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    ${isUnlocked ? '<div style="color: #2ecc71; margin-top: 10px;">¡Desbloqueado!</div>' : 
+                      `<div style="color: #e74c3c; margin-top: 10px;">Faltan ${levelConfig.pointsRequired - userVipPoints} puntos</div>`}
+                `;
+                
+                container.appendChild(levelCard);
+            });
         }
 
         // Cargar misiones desde la base de datos
         async function loadMissions() {
             try {
+                if (!userId) {
+                    // Para demostración, devolver misiones de ejemplo
+                    return {
+                        login: { completed: true, claimed: false, cooldown: null, last_claimed: null },
+                        diamonds: { completed: false, claimed: false, cooldown: null, last_claimed: null },
+                        pearls: { completed: true, claimed: true, cooldown: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(), last_claimed: new Date().toISOString() },
+                        daily_play: { completed: true, claimed: false, cooldown: null, last_claimed: null },
+                        invite_friend: { completed: false, claimed: false, cooldown: null, last_claimed: null }
+                    };
+                }
+                
                 const { data: missions, error } = await supabase
                     .from('user_missions')
                     .select('*')
@@ -618,6 +773,8 @@
         // Inicializar misiones para un usuario nuevo
         async function initializeMissions() {
             try {
+                if (!userId) return;
+                
                 const missionsToInsert = Object.keys(vipMissionsConfig).map(missionId => ({
                     user_id: userId,
                     mission_id: missionId,
@@ -661,25 +818,16 @@
                     }
                     
                     // Verificar si la misión está completada
-                    let isCompleted = false;
+                    let isCompleted = userMission.completed;
                     
-                    if (missionConfig.check) {
-                        isCompleted = await missionConfig.check();
-                    } else {
-                        // Misión de login siempre está disponible si no está reclamada
-                        isCompleted = missionId === 'login' && !userMission.claimed;
+                    // Si no está completada o reclamada, verificar condición
+                    if (!userMission.completed && !userMission.claimed) {
+                        if (missionConfig.check) {
+                            isCompleted = await missionConfig.check();
+                        }
                     }
                     
-                    // Actualizar estado en base de datos si cambió
-                    if (isCompleted !== userMission.completed) {
-                        await updateMissionStatus(missionId, {
-                            completed: isCompleted,
-                            claimed: userMission.claimed,
-                            cooldown_until: userMission.cooldown,
-                            last_claimed: userMission.last_claimed
-                        });
-                    }
-                    
+                    // Si la misión está completada pero no reclamada, contar como disponible
                     if (isCompleted && !userMission.claimed) {
                         availableMissions++;
                     }
@@ -690,29 +838,6 @@
                 
             } catch (error) {
                 console.error('[ERROR] Error al verificar misiones:', error);
-            }
-        }
-
-        // Actualizar estado de misión en base de datos
-        async function updateMissionStatus(missionId, status) {
-            try {
-                const { error } = await supabase
-                    .from('user_missions')
-                    .upsert({
-                        user_id: userId,
-                        mission_id: missionId,
-                        completed: status.completed,
-                        claimed: status.claimed,
-                        cooldown_until: status.cooldown_until,
-                        last_claimed: status.last_claimed
-                    })
-                    .eq('user_id', userId)
-                    .eq('mission_id', missionId);
-                
-                if (error) throw error;
-                
-            } catch (error) {
-                console.error('[ERROR] Error al actualizar misión:', error);
             }
         }
 
@@ -844,6 +969,7 @@
                     background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
                     color: 'white',
                     showConfirmButton: false,
+                    showCloseButton: true,
                     customClass: {
                         popup: 'mission-popup'
                     },
@@ -890,36 +1016,41 @@
                     }
                 });
                 
-                // Calcular fecha de próximo cooldown (24 horas)
+                // Calcular fecha de próximo cooldown
                 const now = new Date();
                 const cooldownUntil = new Date(now.getTime() + missionConfig.cooldownHours * 60 * 60 * 1000);
                 
-                // Actualizar misión en base de datos
-                const { error: missionError } = await supabase
-                    .from('user_missions')
-                    .update({
-                        claimed: true,
-                        cooldown_until: cooldownUntil.toISOString(),
-                        last_claimed: now.toISOString()
-                    })
-                    .eq('user_id', userId)
-                    .eq('mission_id', missionId);
+                // Actualizar misión en base de datos (si estamos usando Supabase)
+                if (userId && userId !== 'demo-user-id') {
+                    const { error: missionError } = await supabase
+                        .from('user_missions')
+                        .update({
+                            claimed: true,
+                            cooldown_until: cooldownUntil.toISOString(),
+                            last_claimed: now.toISOString()
+                        })
+                        .eq('user_id', userId)
+                        .eq('mission_id', missionId);
+                    
+                    if (missionError) throw missionError;
+                }
                 
-                if (missionError) throw missionError;
-                
-                // Actualizar puntos VIP en perfil
+                // Actualizar puntos VIP
                 const newVipPoints = userVipPoints + missionConfig.reward;
                 const newVipLevel = calculateVipLevel(newVipPoints);
                 
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .update({
-                        vip_points: newVipPoints,
-                        vip_level: newVipLevel
-                    })
-                    .eq('id', userId);
-                
-                if (profileError) throw profileError;
+                // Actualizar en base de datos (si estamos usando Supabase)
+                if (userId && userId !== 'demo-user-id') {
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({
+                            vip_points: newVipPoints,
+                            vip_level: newVipLevel
+                        })
+                        .eq('id', userId);
+                    
+                    if (profileError) throw profileError;
+                }
                 
                 // Actualizar variables locales
                 userVipPoints = newVipPoints;
@@ -928,6 +1059,7 @@
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
                 document.getElementById('userLevel').textContent = userVipLevel;
+                renderVipLevels();
                 
                 // Mostrar confirmación con efecto
                 Swal.fire({
@@ -938,7 +1070,12 @@
                     background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
                     color: 'white',
                     willOpen: () => {
-                        createConfetti(document.querySelector('.swal2-popup'));
+                        // Lanzar confeti
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
                     }
                 });
                 
@@ -967,57 +1104,12 @@
             document.getElementById('closeModal').addEventListener('click', () => {
                 document.getElementById('infoModal').style.display = 'none';
             });
-        }
-
-        // Efecto de confeti
-        function createConfetti(element) {
-            const rect = element.getBoundingClientRect();
-            const colors = ['#FFD700', '#00FFFF', '#FF1493', '#7CFC00', '#FF4500'];
             
-            for (let i = 0; i < 20; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.left = `${rect.left + rect.width/2}px`;
-                confetti.style.top = `${rect.top}px`;
-                confetti.style.opacity = '1';
-                document.body.appendChild(confetti);
-                
-                const angle = Math.random() * Math.PI * 2;
-                const velocity = 5 + Math.random() * 5;
-                const x = Math.cos(angle) * velocity;
-                const y = Math.sin(angle) * velocity;
-                
-                let posX = rect.left + rect.width/2;
-                let posY = rect.top;
-                let opacity = 1;
-                let scale = 0.5 + Math.random();
-                
-                const animate = () => {
-                    posX += x;
-                    posY += y + 0.5;
-                    opacity -= 0.02;
-                    scale -= 0.01;
-                    
-                    confetti.style.left = `${posX}px`;
-                    confetti.style.top = `${posY}px`;
-                    confetti.style.opacity = opacity;
-                    confetti.style.transform = `scale(${scale}) rotate(${posX}deg)`;
-                    
-                    if (opacity > 0) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        confetti.remove();
-                    }
-                };
-                
-                requestAnimationFrame(animate);
-            }
+            // Evento del botón de cerrar recompensa
+            document.getElementById('rewardClose').addEventListener('click', () => {
+                document.getElementById('rewardModal').style.display = 'none';
+            });
         }
-    });
-
-
-
     </script>
 </body>
 </html>
