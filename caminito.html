@@ -1229,113 +1229,163 @@ function loadMissions() {
   }
 }
 
-// Mostrar modal de misiones
+// Función para mostrar el modal de misiones (versión corregida)
 async function showMissionsModal() {
-  // Verificar misiones antes de mostrar
-  await checkMissions();
-  
-  // Crear contenido del modal
-  const missionsContent = document.createElement('div');
-  missionsContent.className = 'missions-container';
-  
-  // Título
-  const title = document.createElement('h2');
-  title.textContent = 'Misiones VIP';
-  title.className = 'missions-title';
-  missionsContent.appendChild(title);
-  
-  // Descripción
-  const desc = document.createElement('p');
-  desc.textContent = 'Completa misiones para ganar puntos VIP y avanzar de nivel.';
-  desc.className = 'missions-desc';
-  missionsContent.appendChild(desc);
-  
-  // Lista de misiones
-  const missionsList = document.createElement('div');
-  missionsList.className = 'missions-list';
-  
-  for (const [key, mission] of Object.entries(vipMissions)) {
-    const missionItem = document.createElement('div');
-    missionItem.className = `mission-item ${mission.completed ? 'completed' : ''} ${mission.claimed ? 'claimed' : ''}`;
+  try {
+    // Mostrar loader primero
+    const { isDismissed } = await Swal.fire({
+      title: 'Cargando misiones...',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
     
-    // Icono
-    const missionIcon = document.createElement('div');
-    missionIcon.className = 'mission-icon';
-    missionIcon.textContent = mission.claimed ? '✅' : mission.completed ? '🎯' : '🔒';
-    missionItem.appendChild(missionIcon);
-    
-    // Contenido
-    const missionContent = document.createElement('div');
-    missionContent.className = 'mission-content';
-    
-    const missionTitle = document.createElement('h3');
-    missionTitle.textContent = mission.title;
-    missionContent.appendChild(missionTitle);
-    
-    const missionDesc = document.createElement('p');
-    missionDesc.textContent = mission.description;
-    missionContent.appendChild(missionDesc);
-    
-    // Recompensa
-    const missionReward = document.createElement('div');
-    missionReward.className = 'mission-reward';
-    missionReward.textContent = `+${mission.reward} Puntos VIP`;
-    missionContent.appendChild(missionReward);
-    
-    missionItem.appendChild(missionContent);
-    
-    // Botón de reclamar
-    if (mission.completed && !mission.claimed) {
-      const claimBtn = document.createElement('button');
-      claimBtn.className = 'claim-mission-btn';
-      claimBtn.textContent = 'Reclamar';
-      
-      claimBtn.addEventListener('click', async () => {
-        await claimMission(key);
-        Swal.close();
-        await showMissionsModal(); // Recargar modal
-      });
-      
-      missionItem.appendChild(claimBtn);
-    } else if (mission.claimed) {
-      const claimedText = document.createElement('div');
-      claimedText.className = 'mission-claimed';
-      claimedText.textContent = 'Reclamado';
-      missionItem.appendChild(claimedText);
-    } else if (mission.cooldown) {
-      const cooldownText = document.createElement('div');
-      cooldownText.className = 'mission-cooldown';
-      cooldownText.textContent = `Disponible en ${formatCooldown(mission.cooldown)}`;
-      missionItem.appendChild(cooldownText);
-    }
-    
-    missionsList.appendChild(missionItem);
-  }
-  
-  missionsContent.appendChild(missionsList);
-  
-  // Mostrar con SweetAlert
-  Swal.fire({
-    html: missionsContent,
-    width: '800px',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    color: 'white',
-    showConfirmButton: false,
-    customClass: {
-      popup: 'mission-popup'
-    },
-    willOpen: () => {
-      // Animación de entrada
-      gsap.from('.mission-item', {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        stagger: 0.1
-      });
-    }
-  });
-}
+    if (isDismissed) return;
 
+    // Verificar misiones
+    await checkMissions();
+    
+    // Crear contenido con estilos forzados
+    const missionsContent = document.createElement('div');
+    missionsContent.className = 'missions-container';
+    missionsContent.style.cssText = `
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    `;
+
+    // Crear botón de cerrar
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'mission-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', () => Swal.close());
+    missionsContent.appendChild(closeBtn);
+
+    // Título
+    const title = document.createElement('h2');
+    title.textContent = 'Misiones VIP';
+    title.className = 'missions-title';
+    missionsContent.appendChild(title);
+    
+    // Descripción
+    const desc = document.createElement('p');
+    desc.textContent = 'Completa misiones para ganar puntos VIP y avanzar de nivel.';
+    desc.className = 'missions-desc';
+    missionsContent.appendChild(desc);
+    
+    // Lista de misiones
+    const missionsList = document.createElement('div');
+    missionsList.className = 'missions-list';
+    
+    for (const [key, mission] of Object.entries(vipMissions)) {
+      const missionItem = document.createElement('div');
+      missionItem.className = `mission-item ${mission.completed ? 'completed' : ''} ${mission.claimed ? 'claimed' : ''}`;
+      
+      // Icono
+      const missionIcon = document.createElement('div');
+      missionIcon.className = 'mission-icon';
+      missionIcon.textContent = mission.claimed ? '✅' : mission.completed ? '🎯' : '🔒';
+      missionItem.appendChild(missionIcon);
+      
+      // Contenido
+      const missionContent = document.createElement('div');
+      missionContent.className = 'mission-content';
+      
+      const missionTitle = document.createElement('h3');
+      missionTitle.textContent = mission.title;
+      missionContent.appendChild(missionTitle);
+      
+      const missionDesc = document.createElement('p');
+      missionDesc.textContent = mission.description;
+      missionContent.appendChild(missionDesc);
+      
+      // Recompensa
+      const missionReward = document.createElement('div');
+      missionReward.className = 'mission-reward';
+      missionReward.textContent = `+${mission.reward} Puntos VIP`;
+      missionContent.appendChild(missionReward);
+      
+      missionItem.appendChild(missionContent);
+      
+      // Botón de reclamar
+      if (mission.completed && !mission.claimed) {
+        const claimBtn = document.createElement('button');
+        claimBtn.className = 'claim-mission-btn';
+        claimBtn.textContent = 'Reclamar';
+        
+        claimBtn.addEventListener('click', async () => {
+          await claimMission(key);
+          Swal.close();
+          await showMissionsModal(); // Recargar modal
+        });
+        
+        missionItem.appendChild(claimBtn);
+      } else if (mission.claimed) {
+        const claimedText = document.createElement('div');
+        claimedText.className = 'mission-claimed';
+        claimedText.textContent = 'Reclamado';
+        missionItem.appendChild(claimedText);
+      } else if (mission.cooldown) {
+        const cooldownText = document.createElement('div');
+        cooldownText.className = 'mission-cooldown';
+        cooldownText.textContent = `Disponible en ${formatCooldown(mission.cooldown)}`;
+        missionItem.appendChild(cooldownText);
+      }
+      
+      missionsList.appendChild(missionItem);
+    }
+    
+    missionsContent.appendChild(missionsList);
+    
+    // Mostrar modal con verificación de estilos
+    setTimeout(() => {
+      Swal.fire({
+        html: missionsContent,
+        width: '800px',
+        background: 'linear-gradient(145deg, #1e1e3a 0%, #141432 100%)',
+        color: 'white',
+        showConfirmButton: false,
+        customClass: {
+          popup: 'mission-popup'
+        },
+        didOpen: () => {
+          // Forzar visibilidad
+          missionsContent.style.display = 'none';
+          missionsContent.offsetHeight; // Trigger reflow
+          missionsContent.style.display = 'block';
+          
+          // Animación
+          if (typeof gsap !== 'undefined') {
+            gsap.from('.mission-item', {
+              opacity: 0,
+              y: 20,
+              duration: 0.5,
+              stagger: 0.1
+            });
+          } else {
+            // Fallback si GSAP no está cargado
+            document.querySelectorAll('.mission-item').forEach((item, i) => {
+              item.style.opacity = 0;
+              item.style.transform = 'translateY(20px)';
+              setTimeout(() => {
+                item.style.transition = `all 0.3s ${i * 0.1}s ease-out`;
+                item.style.opacity = 1;
+                item.style.transform = 'translateY(0)';
+              }, 10);
+            });
+          }
+        }
+      });
+    }, 50);
+    
+  } catch (error) {
+    console.error('Error al mostrar misiones:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'No se pudieron cargar las misiones',
+      icon: 'error'
+    });
+  }
+}
 // Formatear tiempo de cooldown
 function formatCooldown(cooldownDate) {
   const now = new Date();
@@ -1895,12 +1945,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Crear botón de cerrar
-const closeBtn = document.createElement('button');
-closeBtn.className = 'mission-close-btn';
-closeBtn.innerHTML = '&times;';
-closeBtn.addEventListener('click', () => Swal.close());
-missionsContent.appendChild(closeBtn);
+
     </script>
 </body>
 </html>
