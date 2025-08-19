@@ -1273,7 +1273,7 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-     // Configuración de misiones VIP
+    // Configuración de misiones VIP
         let vipMissions = {};
         let userId = null;
         let userProfile = null;
@@ -1285,7 +1285,13 @@
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
                 
                 if (authError) throw authError;
-                if (!user) throw new Error('Usuario no autenticado');
+                if (!user) {
+                    console.log("Usuario no autenticado, ocultando misiones VIP");
+                    document.getElementById('missionsBtn').classList.add('hidden');
+                    document.getElementById('missionsContainer').innerHTML = 
+                        '<p class="reset-info">Inicia sesión para acceder a las misiones VIP</p>';
+                    return;
+                }
                 
                 userId = user.id;
                 console.log('Usuario ID:', userId);
@@ -1301,6 +1307,7 @@
                 
                 // Crear perfil si no existe
                 if (!profile) {
+                    console.log("Creando nuevo perfil para usuario:", userId);
                     const { data: newProfile, error: createError } = await supabase
                         .from('profiles')
                         .insert([{ 
@@ -1311,7 +1318,8 @@
                             vip_points: 0,
                             vip_missions: {},
                             last_mission_reset: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
+                            updated_at: new Date().toISOString(),
+                            claimed_levels: { free: [], premium: [] }
                         }])
                         .select()
                         .single();
@@ -1324,7 +1332,7 @@
                 } else {
                     userProfile = profile;
                     // Verificar si necesitamos reiniciar las misiones (cada 24 horas)
-                    const lastReset = new Date(profile.last_mission_reset);
+                    const lastReset = new Date(profile.last_mission_reset || new Date());
                     const now = new Date();
                     const hoursDiff = (now - lastReset) / (1000 * 60 * 60);
                     
@@ -1346,11 +1354,8 @@
                 
             } catch (error) {
                 console.error('Error inicializando misiones:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'No se pudieron cargar las misiones. Por favor, recarga la página.',
-                    icon: 'error'
-                });
+                document.getElementById('missionsContainer').innerHTML = 
+                    '<p class="reset-info">Error al cargar las misiones. Por favor, recarga la página.</p>';
             }
         }
         
@@ -1361,7 +1366,7 @@
                     title: "Iniciar Sesión",
                     description: "Inicia sesión en el juego para reclamar esta misión",
                     reward: 5,
-                    completed: true, // Se marca como completada automáticamente al iniciar sesión
+                    completed: true,
                     claimed: false,
                     type: "login"
                 },
@@ -1499,7 +1504,18 @@
         // Renderizar misiones en la interfaz
         function renderMissions() {
             const container = document.getElementById('missionsContainer');
+            if (!container) {
+                console.error('No se encontró el contenedor de misiones');
+                return;
+            }
+            
             container.innerHTML = '';
+            
+            // Verificar si hay misiones para mostrar
+            if (Object.keys(vipMissions).length === 0) {
+                container.innerHTML = '<p class="reset-info">No hay misiones disponibles</p>';
+                return;
+            }
             
             Object.entries(vipMissions).forEach(([key, mission]) => {
                 const card = document.createElement('div');
@@ -1527,13 +1543,13 @@
                 
                 if (mission.type === 'diamonds') {
                     progress = Math.min(100, (userProfile.diamonds / mission.target) * 100);
-                    progressText = `${userProfile.diamonds}/${mission.target} diamantes`;
+                    progressText = `${userProfile.diamonds || 0}/${mission.target} diamantes`;
                 } else if (mission.type === 'pearls') {
                     progress = Math.min(100, (userProfile.perla / mission.target) * 100);
-                    progressText = `${userProfile.perla}/${mission.target} perlas`;
+                    progressText = `${userProfile.perla || 0}/${mission.target} perlas`;
                 } else if (mission.type === 'gold') {
                     progress = Math.min(100, (userProfile.gold / mission.target) * 100);
-                    progressText = `${userProfile.gold}/${mission.target} oro`;
+                    progressText = `${userProfile.gold || 0}/${mission.target} oro`;
                 } else if (mission.type === 'login') {
                     progress = mission.completed ? 100 : 0;
                     progressText = mission.completed ? 'Sesión iniciada' : 'Inicia sesión';
@@ -1641,6 +1657,24 @@
                 
                 // Revertir cambios
                 mission.claimed = false;
+            }
+        }
+        
+        // Función para verificar si un nivel ha sido reclamado (para evitar el error)
+        function isLevelClaimed(levelId, isPremium = false) {
+            try {
+                // Verificar si claimedLevels existe y tiene la estructura esperada
+                if (!userProfile || !userProfile.claimed_levels) {
+                    return false;
+                }
+                
+                const claimedLevels = userProfile.claimed_levels;
+                const levelsArray = isPremium ? claimedLevels.premium : claimedLevels.free;
+                
+                return Array.isArray(levelsArray) && levelsArray.includes(levelId);
+            } catch (error) {
+                console.error('Error en isLevelClaimed:', error);
+                return false;
             }
         }
         
