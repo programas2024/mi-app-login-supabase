@@ -483,7 +483,7 @@
     </div>
     
     
-   <script>
+  <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
@@ -494,20 +494,21 @@
     let userVipPoints = 0;
     let userVipLevel = 1;
     let userProfile = {}; // Perfil completo del usuario
-    
-    // Configuración de misiones VIP
+    let claimedLevels = []; // Niveles ya reclamados
+
+    // Configuración de misiones VIP (solo las 3 que solicitaste)
     const vipMissionsConfig = {
         login: {
-            title: "Iniciar Sesión",
+            title: "Iniciar Sesión Diario",
             description: "Inicia sesión en el juego para reclamar esta misión",
-            reward: 5, // Puntos VIP
+            reward: 10, // Puntos VIP
             cooldownHours: 24,
             check: async () => true // Siempre disponible al iniciar sesión
         },
         diamonds: {
             title: "Tener 300+ Diamantes",
             description: "Acumula más de 300 diamantes en tu inventario",
-            reward: 10,
+            reward: 5,
             cooldownHours: 24,
             check: async () => {
                 const { data: profile } = await supabase
@@ -521,7 +522,7 @@
         pearls: {
             title: "Tener 10+ Perlas",
             description: "Consigue al menos 10 perlas mágicas",
-            reward: 8,
+            reward: 5,
             cooldownHours: 24,
             check: async () => {
                 const { data: profile } = await supabase
@@ -531,23 +532,6 @@
                     .single();
                 return profile && profile.perla >= 10;
             }
-        },
-        daily_play: {
-            title: "Jugar 3 Partidas",
-            description: "Juega al menos 3 partidas hoy",
-            reward: 7,
-            cooldownHours: 24,
-            check: async () => {
-                // Simulación - en una app real, consultarías la base de datos
-                return Math.random() > 0.5; // 50% de probabilidad para demostración
-            }
-        },
-        invite_friend: {
-            title: "Invitar a un Amigo",
-            description: "Invita a un amigo a unirse al juego",
-            reward: 15,
-            cooldownHours: 24,
-            check: async () => false // Por defecto no completada
         }
     };
 
@@ -680,13 +664,15 @@
                 // Datos de demostración
                 userProfile = {
                     gold: 100,
-                    diamonds: 50,
-                    perla: 20,
+                    diamonds: 350, // Más de 300 para cumplir la misión
+                    perla: 15,    // Más de 10 para cumplir la misión
                     vip_points: 75,
-                    vip_level: 1
+                    vip_level: 1,
+                    claimed_levels: [] // Inicialmente ningún nivel reclamado
                 };
                 userVipPoints = userProfile.vip_points;
                 userVipLevel = userProfile.vip_level;
+                claimedLevels = userProfile.claimed_levels || [];
                 
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
@@ -711,6 +697,7 @@
                 userProfile = profile;
                 userVipPoints = profile.vip_points || 0;
                 userVipLevel = calculateVipLevel(userVipPoints);
+                claimedLevels = profile.claimed_levels || [];
                 
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
@@ -736,7 +723,7 @@
                     perla: 0,
                     vip_points: 0,
                     vip_level: 1,
-                    claimed_levels: { free: [], premium: [] },
+                    claimed_levels: [],
                     updated_at: new Date().toISOString()
                 }])
                 .select()
@@ -746,6 +733,7 @@
             
             console.log('[DEBUG] Nuevo perfil creado:', data);
             userProfile = data;
+            claimedLevels = [];
             
         } catch (error) {
             console.error('[ERROR] Error al crear perfil:', error);
@@ -802,6 +790,7 @@
         vipLevelsConfig.forEach(levelConfig => {
             const isCurrentLevel = levelConfig.level === userVipLevel;
             const isUnlocked = userVipPoints >= levelConfig.pointsRequired;
+            const isClaimed = claimedLevels.includes(levelConfig.level);
             
             const levelCard = document.createElement('div');
             levelCard.className = `level-card ${isCurrentLevel ? 'current' : ''}`;
@@ -821,14 +810,16 @@
                     </ul>
                 </div>
                 
-                ${isUnlocked ? 
-                    '<div style="color: #2ecc71; margin-top: 10px;">¡Desbloqueado!</div>' : 
-                    `<div style="color: #e74c3c; margin-top: 10px;">Faltan ${levelConfig.pointsRequired - userVipPoints} puntos</div>`
+                ${isClaimed ? 
+                    '<div style="color: #f1c40f; margin-top: 10px;">Recompensa Reclamada</div>' : 
+                    isUnlocked ? 
+                        '<div style="color: #2ecc71; margin-top: 10px;">¡Desbloqueado!</div>' : 
+                        `<div style="color: #e74c3c; margin-top: 10px;">Faltan ${levelConfig.pointsRequired - userVipPoints} puntos</div>`
                 }
             `;
             
-            // Añadir botón para reclamar recompensa si está desbloqueado
-            if (isUnlocked) {
+            // Añadir botón para reclamar recompensa si está desbloqueado y no reclamado
+            if (isUnlocked && !isClaimed) {
                 const claimBtn = document.createElement('button');
                 claimBtn.className = 'btn';
                 claimBtn.style.marginTop = '10px';
@@ -855,6 +846,26 @@
             
             // Reclamar la recompensa
             const message = await levelConfig.claim();
+            
+            // Marcar nivel como reclamado
+            if (!claimedLevels.includes(levelConfig.level)) {
+                claimedLevels.push(levelConfig.level);
+                
+                // Actualizar en base de datos
+                if (userId && userId !== 'demo-user-id') {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update({
+                            claimed_levels: claimedLevels
+                        })
+                        .eq('id', userId);
+                    
+                    if (error) throw error;
+                }
+            }
+            
+            // Actualizar UI
+            renderVipLevels();
             
             // Mostrar confirmación
             Swal.fire({
@@ -890,10 +901,8 @@
                 // Para demostración, devolver misiones de ejemplo
                 return {
                     login: { completed: true, claimed: false, cooldown: null, last_claimed: null },
-                    diamonds: { completed: false, claimed: false, cooldown: null, last_claimed: null },
-                    pearls: { completed: true, claimed: true, cooldown: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(), last_claimed: new Date().toISOString() },
-                    daily_play: { completed: true, claimed: false, cooldown: null, last_claimed: null },
-                    invite_friend: { completed: false, claimed: false, cooldown: null, last_claimed: null }
+                    diamonds: { completed: true, claimed: false, cooldown: null, last_claimed: null },
+                    pearls: { completed: true, claimed: false, cooldown: null, last_claimed: null }
                 };
             }
             
@@ -1014,13 +1023,13 @@
             
             // Título
             const title = document.createElement('h2');
-            title.textContent = 'Misiones VIP';
+            title.textContent = 'Misiones VIP Diarias';
             title.className = 'missions-title';
             missionsContent.appendChild(title);
             
             // Descripción
             const desc = document.createElement('p');
-            desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel.';
+            desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel. Cada misión se puede reclamar una vez al día.';
             desc.className = 'missions-desc';
             missionsContent.appendChild(desc);
             
@@ -1103,7 +1112,7 @@
                 } else if (userMission.claimed) {
                     const claimedText = document.createElement('div');
                     claimedText.className = 'mission-claimed';
-                    claimedText.textContent = 'Reclamado';
+                    claimedText.textContent = 'Reclamado Hoy';
                     missionItem.appendChild(claimedText);
                     
                     // Mostrar tiempo hasta siguiente disponibilidad
@@ -1165,7 +1174,7 @@
                 }
             });
             
-            // Calcular fecha de próximo cooldown
+            // Calcular fecha de próximo cooldown (24 horas)
             const now = new Date();
             const cooldownUntil = new Date(now.getTime() + missionConfig.cooldownHours * 60 * 60 * 1000);
             
