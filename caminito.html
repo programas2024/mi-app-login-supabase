@@ -984,7 +984,10 @@
                 };
                 
                 // Verificar si está en cooldown
-                if (userMission.cooldown && new Date() < new Date(userMission.cooldown)) {
+                const now = new Date();
+                const isOnCooldown = userMission.cooldown && new Date(userMission.cooldown) > now;
+                
+                if (isOnCooldown) {
                     continue;
                 }
                 
@@ -1046,7 +1049,7 @@
             
             // Descripción
             const desc = document.createElement('p');
-            desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel. Cada misión se puede reclamar una vez al día.';
+            desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel. Cada misión se puede reclamar una vez cada 24 horas.';
             desc.className = 'missions-desc';
             missionsContent.appendChild(desc);
             
@@ -1076,20 +1079,23 @@
                     last_claimed: null
                 };
                 
+                const now = new Date();
+                const isOnCooldown = userMission.cooldown && new Date(userMission.cooldown) > now;
+                
                 // Verificar si la misión está completada (especialmente para la misión de login)
                 let isCompleted = userMission.completed;
-                if (!isCompleted && missionConfig.check) {
+                if (!isCompleted && missionConfig.check && !isOnCooldown) {
                     isCompleted = await missionConfig.check();
                 }
                 
                 const missionItem = document.createElement('div');
-                missionItem.className = `mission-item ${isCompleted ? 'completed' : ''} ${userMission.claimed ? 'claimed' : ''}`;
+                missionItem.className = `mission-item ${isCompleted && !isOnCooldown ? 'completed' : ''} ${userMission.claimed || isOnCooldown ? 'claimed' : ''}`;
                 
-                // Icono - mostrar ✅ si está reclamada, 🎯 si está completada pero no reclamada, 🔒 si no está completada
+                // Icono - mostrar ✅ si está reclamada o en cooldown, 🎯 si está completada pero no reclamada, 🔒 si no está completada
                 const missionIcon = document.createElement('div');
                 missionIcon.className = 'mission-icon';
                 
-                if (userMission.claimed) {
+                if (userMission.claimed || isOnCooldown) {
                     missionIcon.textContent = '✅';
                 } else if (isCompleted) {
                     missionIcon.textContent = '🎯';
@@ -1118,7 +1124,7 @@
                 missionContent.appendChild(missionReward);
                 
                 // Tiempo restante si está en cooldown
-                if (userMission.cooldown && new Date() < new Date(userMission.cooldown)) {
+                if (isOnCooldown) {
                     const cooldownText = document.createElement('div');
                     cooldownText.style.cssText = 'font-size: 12px; color: #e74c3c; margin-top: 5px;';
                     cooldownText.textContent = `Disponible en: ${formatCooldown(userMission.cooldown)}`;
@@ -1128,7 +1134,7 @@
                 missionItem.appendChild(missionContent);
                 
                 // Botón de reclamar
-                if (isCompleted && !userMission.claimed) {
+                if (isCompleted && !userMission.claimed && !isOnCooldown) {
                     const claimBtn = document.createElement('button');
                     claimBtn.className = 'claim-mission-btn';
                     claimBtn.textContent = 'Reclamar';
@@ -1140,14 +1146,14 @@
                     });
                     
                     missionItem.appendChild(claimBtn);
-                } else if (userMission.claimed) {
+                } else if (userMission.claimed || isOnCooldown) {
                     const claimedText = document.createElement('div');
                     claimedText.className = 'mission-claimed';
-                    claimedText.textContent = 'Reclamado Hoy';
+                    claimedText.textContent = isOnCooldown ? 'En Cooldown' : 'Reclamado';
                     missionItem.appendChild(claimedText);
                     
                     // Mostrar tiempo hasta siguiente disponibilidad
-                    if (userMission.cooldown) {
+                    if (isOnCooldown) {
                         const nextAvailable = document.createElement('div');
                         nextAvailable.style.cssText = 'font-size: 12px; color: #aaa; margin-top: 5px;';
                         nextAvailable.textContent = `Próxima disponibilidad: ${formatCooldown(userMission.cooldown)}`;
