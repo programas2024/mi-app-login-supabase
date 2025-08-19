@@ -993,173 +993,49 @@
             to { transform: rotate(360deg); }
         }
 
-        .btn {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.6);
-        }
-        
-        .badge {
-            background-color: #e74c3c;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .missions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .mission-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .mission-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        .mission-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .mission-icon {
-            font-size: 24px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-        
-        .mission-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-        }
-        
-        .mission-description {
-            color: var(--text-gray);
-            margin: 10px 0;
-            flex-grow: 1;
-        }
-        
-        .mission-reward {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-            color: var(--warning);
-            margin: 10px 0;
-        }
-        
-        .mission-status {
-            margin-top: 15px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .status-available {
-            background-color: rgba(0, 184, 148, 0.2);
-            color: var(--success);
-        }
-        
-        .status-completed {
-            background-color: rgba(253, 203, 110, 0.2);
-            color: var(--warning);
-            cursor: pointer;
-        }
-        
-        .status-claimed {
-            background-color: rgba(99, 110, 114, 0.2);
-            color: var(--disabled);
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress {
-            height: 100%;
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        .reset-info {
-            text-align: center;
-            margin-top: 30px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            font-size: 16px;
-            color: var(--text-gray);
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .mission-card {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .claimed-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--success);
-        }
+        /* Botón de Misiones VIP */
+.vip-mission-btn {
+  position: fixed;
+  margin-top: -200px;
+  right: 20px;
+  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 25px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.vip-mission-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mission-icon {
+  font-size: 24px;
+}
+
+.mission-badge {
+  background-color: #ff4757;
+  border-radius: 50%;
+  padding: 5px 10px;
+  font-size: 14px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
     </style>
 </head>
 <body>
@@ -1167,15 +1043,12 @@
         <div class="vip-header">
             <h1 class="vip-title">DIAMOND VIP CLUB</h1>
             <p class="vip-subtitle">Desbloquea recompensas exclusivas en cada nivel</p>
-
-       <button id="missionsBtn" class="btn">
-                Misiones VIP
-                <span id="missionsBadge" class="badge">0</span>
-            </button>
-        </div>
-        
-        <div class="reset-info">
-            Las misiones VIP se renuevan cada 24 horas. ¡Vuelve mañana para obtener más recompensas!
+            
+        <button id="missionsBtn" class="vip-mission-btn">
+        <span class="mission-icon">🎯</span>
+        <span class="mission-text">Misiones VIP</span>
+        <span class="mission-badge" id="missionsBadge">0</span>
+        </button>
         
         </div>
         
@@ -1273,7 +1146,7 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-    // Configuración de misiones VIP
+     // Configuración de misiones VIP
         let vipMissions = {};
         let userId = null;
         let userProfile = null;
@@ -1285,13 +1158,7 @@
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
                 
                 if (authError) throw authError;
-                if (!user) {
-                    console.log("Usuario no autenticado, ocultando misiones VIP");
-                    document.getElementById('missionsBtn').classList.add('hidden');
-                    document.getElementById('missionsContainer').innerHTML = 
-                        '<p class="reset-info">Inicia sesión para acceder a las misiones VIP</p>';
-                    return;
-                }
+                if (!user) throw new Error('Usuario no autenticado');
                 
                 userId = user.id;
                 console.log('Usuario ID:', userId);
@@ -1307,7 +1174,6 @@
                 
                 // Crear perfil si no existe
                 if (!profile) {
-                    console.log("Creando nuevo perfil para usuario:", userId);
                     const { data: newProfile, error: createError } = await supabase
                         .from('profiles')
                         .insert([{ 
@@ -1318,8 +1184,7 @@
                             vip_points: 0,
                             vip_missions: {},
                             last_mission_reset: new Date().toISOString(),
-                            updated_at: new Date().toISOString(),
-                            claimed_levels: { free: [], premium: [] }
+                            updated_at: new Date().toISOString()
                         }])
                         .select()
                         .single();
@@ -1332,7 +1197,7 @@
                 } else {
                     userProfile = profile;
                     // Verificar si necesitamos reiniciar las misiones (cada 24 horas)
-                    const lastReset = new Date(profile.last_mission_reset || new Date());
+                    const lastReset = new Date(profile.last_mission_reset);
                     const now = new Date();
                     const hoursDiff = (now - lastReset) / (1000 * 60 * 60);
                     
@@ -1354,8 +1219,11 @@
                 
             } catch (error) {
                 console.error('Error inicializando misiones:', error);
-                document.getElementById('missionsContainer').innerHTML = 
-                    '<p class="reset-info">Error al cargar las misiones. Por favor, recarga la página.</p>';
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudieron cargar las misiones. Por favor, recarga la página.',
+                    icon: 'error'
+                });
             }
         }
         
@@ -1366,7 +1234,7 @@
                     title: "Iniciar Sesión",
                     description: "Inicia sesión en el juego para reclamar esta misión",
                     reward: 5,
-                    completed: true,
+                    completed: true, // Se marca como completada automáticamente al iniciar sesión
                     claimed: false,
                     type: "login"
                 },
@@ -1504,18 +1372,7 @@
         // Renderizar misiones en la interfaz
         function renderMissions() {
             const container = document.getElementById('missionsContainer');
-            if (!container) {
-                console.error('No se encontró el contenedor de misiones');
-                return;
-            }
-            
             container.innerHTML = '';
-            
-            // Verificar si hay misiones para mostrar
-            if (Object.keys(vipMissions).length === 0) {
-                container.innerHTML = '<p class="reset-info">No hay misiones disponibles</p>';
-                return;
-            }
             
             Object.entries(vipMissions).forEach(([key, mission]) => {
                 const card = document.createElement('div');
@@ -1543,13 +1400,13 @@
                 
                 if (mission.type === 'diamonds') {
                     progress = Math.min(100, (userProfile.diamonds / mission.target) * 100);
-                    progressText = `${userProfile.diamonds || 0}/${mission.target} diamantes`;
+                    progressText = `${userProfile.diamonds}/${mission.target} diamantes`;
                 } else if (mission.type === 'pearls') {
                     progress = Math.min(100, (userProfile.perla / mission.target) * 100);
-                    progressText = `${userProfile.perla || 0}/${mission.target} perlas`;
+                    progressText = `${userProfile.perla}/${mission.target} perlas`;
                 } else if (mission.type === 'gold') {
                     progress = Math.min(100, (userProfile.gold / mission.target) * 100);
-                    progressText = `${userProfile.gold || 0}/${mission.target} oro`;
+                    progressText = `${userProfile.gold}/${mission.target} oro`;
                 } else if (mission.type === 'login') {
                     progress = mission.completed ? 100 : 0;
                     progressText = mission.completed ? 'Sesión iniciada' : 'Inicia sesión';
@@ -1657,24 +1514,6 @@
                 
                 // Revertir cambios
                 mission.claimed = false;
-            }
-        }
-        
-        // Función para verificar si un nivel ha sido reclamado (para evitar el error)
-        function isLevelClaimed(levelId, isPremium = false) {
-            try {
-                // Verificar si claimedLevels existe y tiene la estructura esperada
-                if (!userProfile || !userProfile.claimed_levels) {
-                    return false;
-                }
-                
-                const claimedLevels = userProfile.claimed_levels;
-                const levelsArray = isPremium ? claimedLevels.premium : claimedLevels.free;
-                
-                return Array.isArray(levelsArray) && levelsArray.includes(levelId);
-            } catch (error) {
-                console.error('Error en isLevelClaimed:', error);
-                return false;
             }
         }
         
