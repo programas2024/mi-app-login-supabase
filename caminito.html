@@ -493,23 +493,26 @@
     let userId = null;
     let userVipPoints = 0;
     let userVipLevel = 1;
-    let userProfile = {}; // Perfil completo del usuario
-    let claimedLevels = []; // Niveles ya reclamados
+    let userProfile = {};
+    let claimedLevels = [];
 
-    // Configuración de misiones VIP (solo las 3 que solicitaste)
+    // Configuración de misiones VIP (diarias + semanales)
     const vipMissionsConfig = {
+        // MISIONES DIARIAS (24 horas)
         login: {
             title: "Iniciar Sesión Diario",
             description: "Inicia sesión en el juego para reclamar esta misión",
-            reward: 10, // Puntos VIP
+            reward: 10,
             cooldownHours: 24,
-            check: async () => true // Siempre disponible al iniciar sesión
+            type: "daily",
+            check: async () => true
         },
         diamonds: {
             title: "Tener 300+ Diamantes",
             description: "Acumula más de 300 diamantes en tu inventario",
             reward: 5,
             cooldownHours: 24,
+            type: "daily",
             check: async () => {
                 const { data: profile } = await supabase
                     .from('profiles')
@@ -524,6 +527,7 @@
             description: "Consigue al menos 10 perlas mágicas",
             reward: 5,
             cooldownHours: 24,
+            type: "daily",
             check: async () => {
                 const { data: profile } = await supabase
                     .from('profiles')
@@ -532,10 +536,151 @@
                     .single();
                 return profile && profile.perla >= 10;
             }
+        },
+
+        // MISIONES SEMANALES DE ORO (168 horas = 7 días)
+        gold_1000: {
+            title: "Acumular 1000+ Oro",
+            description: "Consigue más de 1000 monedas de oro",
+            reward: 15,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('gold')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.gold >= 1000;
+            }
+        },
+        gold_2000: {
+            title: "Acumular 2000+ Oro",
+            description: "Consigue más de 2000 monedas de oro",
+            reward: 20,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('gold')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.gold >= 2000;
+            }
+        },
+        gold_5000: {
+            title: "Acumular 5000+ Oro",
+            description: "Consigue más de 5000 monedas de oro",
+            reward: 30,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('gold')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.gold >= 5000;
+            }
+        },
+
+        // MISIONES SEMANALES DE DIAMANTES
+        diamonds_500: {
+            title: "Acumular 500+ Diamantes",
+            description: "Consigue más de 500 diamantes brillantes",
+            reward: 15,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('diamonds')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.diamonds >= 500;
+            }
+        },
+        diamonds_1000: {
+            title: "Acumular 1000+ Diamantes",
+            description: "Consigue más de 1000 diamantes brillantes",
+            reward: 25,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('diamonds')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.diamonds >= 1000;
+            }
+        },
+        diamonds_2000: {
+            title: "Acumular 2000+ Diamantes",
+            description: "Consigue más de 2000 diamantes brillantes",
+            reward: 40,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('diamonds')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.diamonds >= 2000;
+            }
+        },
+
+        // MISIONES SEMANALES DE PERLAS
+        pearls_100: {
+            title: "Acumular 100+ Perlas",
+            description: "Consigue más de 100 perlas mágicas",
+            reward: 15,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.perla >= 100;
+            }
+        },
+        pearls_200: {
+            title: "Acumular 200+ Perlas",
+            description: "Consigue más de 200 perlas mágicas",
+            reward: 25,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.perla >= 200;
+            }
+        },
+        pearls_500: {
+            title: "Acumular 500+ Perlas",
+            description: "Consigue más de 500 perlas mágicas",
+            reward: 40,
+            cooldownHours: 168,
+            type: "weekly",
+            check: async () => {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('perla')
+                    .eq('id', userId)
+                    .single();
+                return profile && profile.perla >= 500;
+            }
         }
     };
 
-    // Configuración de niveles VIP con recompensas actualizadas
+    // Configuración de niveles VIP (actualizada con más niveles)
     const vipLevelsConfig = [
         { 
             level: 1, 
@@ -581,7 +726,6 @@
             pointsRequired: 1000, 
             rewards: ["Recompensa Aleatoria"],
             claim: async () => {
-                // Recompensa aleatoria
                 const randomRewards = [
                     { gold: 300, message: "¡Has recibido 300 Gold!" },
                     { diamonds: 150, message: "¡Has recibido 150 Diamantes!" },
@@ -599,6 +743,42 @@
                 
                 await updateProfileResources(updates);
                 return randomReward.message;
+            }
+        },
+        { 
+            level: 6, 
+            pointsRequired: 2000, 
+            rewards: ["500 Gold", "200 Diamantes"],
+            claim: async () => {
+                await updateProfileResources({ 
+                    gold: (userProfile.gold || 0) + 500,
+                    diamonds: (userProfile.diamonds || 0) + 200
+                });
+                return "¡Has recibido 500 Gold y 200 Diamantes!";
+            }
+        },
+        { 
+            level: 7, 
+            pointsRequired: 3500, 
+            rewards: ["300 Perlas", "Cofre Misterioso"],
+            claim: async () => {
+                await updateProfileResources({ 
+                    perla: (userProfile.perla || 0) + 300
+                });
+                return "¡Has recibido 300 Perlas y un Cofre Misterioso!";
+            }
+        },
+        { 
+            level: 8, 
+            pointsRequired: 5000, 
+            rewards: ["1000 Gold", "500 Diamantes", "200 Perlas"],
+            claim: async () => {
+                await updateProfileResources({ 
+                    gold: (userProfile.gold || 0) + 1000,
+                    diamonds: (userProfile.diamonds || 0) + 500,
+                    perla: (userProfile.perla || 0) + 200
+                });
+                return "¡Has recibido 1000 Gold, 500 Diamantes y 200 Perlas!";
             }
         }
     ];
@@ -622,7 +802,6 @@
             
             if (!user) {
                 console.error('[ERROR] No hay usuario autenticado');
-                // Para propósitos de demostración, usar un usuario simulado
                 userId = 'demo-user-id';
                 console.log('[DEBUG] Usando usuario de demostración');
             } else {
@@ -647,7 +826,6 @@
             
         } catch (error) {
             console.error('[ERROR CRÍTICO] Error en inicialización:', error);
-            // Para propósitos de demostración, continuar con datos de ejemplo
             userVipPoints = 75;
             userVipLevel = calculateVipLevel(userVipPoints);
             document.getElementById('userPoints').textContent = userVipPoints;
@@ -661,21 +839,19 @@
     async function loadUserProfile() {
         try {
             if (!userId) {
-                // Datos de demostración
                 userProfile = {
-                    gold: 100,
-                    diamonds: 350, // Más de 300 para cumplir la misión
-                    perla: 15,    // Más de 10 para cumplir la misión
+                    gold: 2500,
+                    diamonds: 750,
+                    perla: 150,
                     vip_points: 75,
                     vip_level: 1,
-                    claimed_levels: [], // Inicialmente ningún nivel reclamado
-                    last_mission_claim: {} // Nuevo campo para controlar reclamaciones
+                    claimed_levels: [],
+                    last_mission_claim: {}
                 };
                 userVipPoints = userProfile.vip_points;
                 userVipLevel = userProfile.vip_level;
                 claimedLevels = Array.isArray(userProfile.claimed_levels) ? userProfile.claimed_levels : [];
                 
-                // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
                 document.getElementById('userLevel').textContent = userVipLevel;
                 return;
@@ -689,7 +865,6 @@
             
             if (error) {
                 console.error('[ERROR] Error al cargar perfil:', error);
-                // Crear perfil si no existe
                 await createUserProfile();
                 return;
             }
@@ -699,16 +874,13 @@
                 userVipPoints = profile.vip_points || 0;
                 userVipLevel = calculateVipLevel(userVipPoints);
                 
-                // Asegurarse de que claimedLevels sea un array
                 claimedLevels = Array.isArray(profile.claimed_levels) ? profile.claimed_levels : [];
                 
-                // Inicializar last_mission_claim si no existe
                 if (!userProfile.last_mission_claim) {
                     userProfile.last_mission_claim = {};
                     await updateProfileResources({ last_mission_claim: {} });
                 }
                 
-                // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
                 document.getElementById('userLevel').textContent = userVipLevel;
             }
@@ -733,7 +905,7 @@
                     vip_points: 0,
                     vip_level: 1,
                     claimed_levels: [],
-                    last_mission_claim: {}, // Nuevo campo para controlar reclamaciones
+                    last_mission_claim: {},
                     updated_at: new Date().toISOString()
                 }])
                 .select()
@@ -754,7 +926,6 @@
     async function updateProfileResources(updates) {
         try {
             if (!userId || userId === 'demo-user-id') {
-                // Simular actualización para demostración
                 Object.keys(updates).forEach(key => {
                     userProfile[key] = updates[key];
                 });
@@ -768,7 +939,6 @@
             
             if (error) throw error;
             
-            // Actualizar perfil local
             Object.keys(updates).forEach(key => {
                 userProfile[key] = updates[key];
             });
@@ -781,7 +951,6 @@
 
     // Calcular nivel VIP basado en puntos
     function calculateVipLevel(points) {
-        // Encontrar el nivel máximo que el usuario ha alcanzado
         for (let i = vipLevelsConfig.length - 1; i >= 0; i--) {
             if (points >= vipLevelsConfig[i].pointsRequired) {
                 return vipLevelsConfig[i].level;
@@ -800,8 +969,6 @@
         vipLevelsConfig.forEach(levelConfig => {
             const isCurrentLevel = levelConfig.level === userVipLevel;
             const isUnlocked = userVipPoints >= levelConfig.pointsRequired;
-            
-            // Asegurarse de que claimedLevels sea un array antes de usar includes
             const isClaimed = Array.isArray(claimedLevels) && claimedLevels.includes(levelConfig.level);
             
             const levelCard = document.createElement('div');
@@ -830,7 +997,6 @@
                 }
             `;
             
-            // Añadir botón para reclamar recompensa si está desbloqueado y no reclamado
             if (isUnlocked && !isClaimed) {
                 const claimBtn = document.createElement('button');
                 claimBtn.className = 'btn';
@@ -847,7 +1013,6 @@
     // Reclamar recompensa de nivel
     async function claimLevelReward(levelConfig) {
         try {
-            // Mostrar carga
             Swal.fire({
                 title: 'Reclamando recompensa...',
                 allowOutsideClick: false,
@@ -856,14 +1021,11 @@
                 }
             });
             
-            // Reclamar la recompensa
             const message = await levelConfig.claim();
             
-            // Marcar nivel como reclamado
             if (Array.isArray(claimedLevels) && !claimedLevels.includes(levelConfig.level)) {
                 claimedLevels.push(levelConfig.level);
                 
-                // Actualizar en base de datos
                 if (userId && userId !== 'demo-user-id') {
                     const { error } = await supabase
                         .from('profiles')
@@ -876,10 +1038,8 @@
                 }
             }
             
-            // Actualizar UI
             renderVipLevels();
             
-            // Mostrar confirmación
             Swal.fire({
                 title: '¡Recompensa reclamada!',
                 html: message,
@@ -906,7 +1066,7 @@
         }
     }
 
-    // Verificar si una misión puede ser reclamada (cooldown de 24 horas)
+    // Verificar si una misión puede ser reclamada
     function canClaimMission(missionId) {
         if (!userProfile.last_mission_claim) return true;
         
@@ -915,9 +1075,10 @@
         
         const now = new Date();
         const lastClaimDate = new Date(lastClaim);
+        const missionConfig = vipMissionsConfig[missionId];
         const hoursDiff = (now - lastClaimDate) / (1000 * 60 * 60);
         
-        return hoursDiff >= 24;
+        return hoursDiff >= missionConfig.cooldownHours;
     }
 
     // Verificar el estado de las misiones
@@ -926,27 +1087,23 @@
             let availableMissions = 0;
             
             for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
-                // Verificar si la misión puede ser reclamada (cooldown de 24 horas)
                 const canClaim = canClaimMission(missionId);
                 
                 if (!canClaim) {
                     continue;
                 }
                 
-                // Verificar si la misión está completada
                 let isCompleted = false;
                 
                 if (missionConfig.check) {
                     isCompleted = await missionConfig.check();
                 }
                 
-                // Si la misión está completada y puede ser reclamada, contar como disponible
                 if (isCompleted && canClaim) {
                     availableMissions++;
                 }
             }
             
-            // Actualizar badge
             document.getElementById('missionsBadge').textContent = availableMissions;
             
         } catch (error) {
@@ -957,26 +1114,30 @@
     // Mostrar modal de misiones
     async function showMissionsModal() {
         try {
-            // Verificar misiones antes de mostrar
             await checkMissions();
             
-            // Crear contenido del modal
             const missionsContent = document.createElement('div');
             missionsContent.className = 'missions-container';
             
-            // Título
+            // Crear pestañas para misiones diarias y semanales
+            const tabs = document.createElement('div');
+            tabs.className = 'missions-tabs';
+            tabs.innerHTML = `
+                <button class="tab-btn active" data-tab="daily">Misiones Diarias</button>
+                <button class="tab-btn" data-tab="weekly">Misiones Semanales</button>
+            `;
+            missionsContent.appendChild(tabs);
+            
             const title = document.createElement('h2');
-            title.textContent = 'Misiones VIP Diarias';
+            title.textContent = 'Sistema de Misiones VIP';
             title.className = 'missions-title';
             missionsContent.appendChild(title);
             
-            // Descripción
             const desc = document.createElement('p');
-            desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel. Cada misión se puede reclamar una vez cada 24 horas.';
+            desc.textContent = 'Completa misiones para ganar puntos VIP y subir de nivel.';
             desc.className = 'missions-desc';
             missionsContent.appendChild(desc);
             
-            // Información de nivel VIP
             const vipInfo = document.createElement('div');
             vipInfo.style.cssText = 'background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px;';
             vipInfo.innerHTML = `
@@ -990,112 +1151,50 @@
             `;
             missionsContent.appendChild(vipInfo);
             
-            // Lista de misiones
-            const missionsList = document.createElement('div');
-            missionsList.className = 'missions-list';
+            // Contenedores para pestañas
+            const dailyMissions = document.createElement('div');
+            dailyMissions.className = 'tab-content active';
+            dailyMissions.id = 'daily-missions';
             
-            for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
-                // Verificar si la misión puede ser reclamada
-                const canClaim = canClaimMission(missionId);
-                
-                // Verificar si la misión está completada
-                let isCompleted = false;
-                if (missionConfig.check && canClaim) {
-                    isCompleted = await missionConfig.check();
-                }
-                
-                const missionItem = document.createElement('div');
-                missionItem.className = `mission-item ${isCompleted ? 'completed' : ''} ${!canClaim ? 'claimed' : ''}`;
-                
-                // Icono - mostrar ✅ si está en cooldown, 🎯 si está completada, 🔒 si no está completada
-                const missionIcon = document.createElement('div');
-                missionIcon.className = 'mission-icon';
-                
-                if (!canClaim) {
-                    missionIcon.textContent = '✅';
-                } else if (isCompleted) {
-                    missionIcon.textContent = '🎯';
-                } else {
-                    missionIcon.textContent = '🔒';
-                }
-                
-                missionItem.appendChild(missionIcon);
-                
-                // Contenido
-                const missionContent = document.createElement('div');
-                missionContent.className = 'mission-content';
-                
-                const missionTitle = document.createElement('h3');
-                missionTitle.textContent = missionConfig.title;
-                missionContent.appendChild(missionTitle);
-                
-                const missionDesc = document.createElement('p');
-                missionDesc.textContent = missionConfig.description;
-                missionContent.appendChild(missionDesc);
-                
-                // Recompensa
-                const missionReward = document.createElement('div');
-                missionReward.className = 'mission-reward';
-                missionReward.textContent = `+${missionConfig.reward} Puntos VIP`;
-                missionContent.appendChild(missionReward);
-                
-                // Tiempo restante si está en cooldown
-                if (!canClaim) {
-                    const lastClaim = userProfile.last_mission_claim[missionId];
-                    const nextAvailable = new Date(new Date(lastClaim).getTime() + (24 * 60 * 60 * 1000));
-                    
-                    const cooldownText = document.createElement('div');
-                    cooldownText.style.cssText = 'font-size: 12px; color: #e74c3c; margin-top: 5px;';
-                    cooldownText.textContent = `Disponible en: ${formatCooldown(nextAvailable)}`;
-                    missionContent.appendChild(cooldownText);
-                }
-                
-                missionItem.appendChild(missionContent);
-                
-                // Botón de reclamar
-                if (isCompleted && canClaim) {
-                    const claimBtn = document.createElement('button');
-                    claimBtn.className = 'claim-mission-btn';
-                    claimBtn.textContent = 'Reclamar';
-                    
-                    claimBtn.addEventListener('click', async () => {
-                        await claimMission(missionId, missionConfig);
-                        Swal.close();
-                        await showMissionsModal(); // Recargar modal
-                    });
-                    
-                    missionItem.appendChild(claimBtn);
-                } else if (!canClaim) {
-                    const claimedText = document.createElement('div');
-                    claimedText.className = 'mission-claimed';
-                    claimedText.textContent = 'En Cooldown';
-                    missionItem.appendChild(claimedText);
-                    
-                    // Mostrar tiempo hasta siguiente disponibilidad
-                    const lastClaim = userProfile.last_mission_claim[missionId];
-                    const nextAvailable = new Date(new Date(lastClaim).getTime() + (24 * 60 * 60 * 1000));
-                    
-                    const nextAvailableText = document.createElement('div');
-                    nextAvailableText.style.cssText = 'font-size: 12px; color: #aaa; margin-top: 5px;';
-                    nextAvailableText.textContent = `Próxima disponibilidad: ${formatCooldown(nextAvailable)}`;
-                    missionItem.appendChild(nextAvailableText);
-                }
-                
-                missionsList.appendChild(missionItem);
-            }
+            const weeklyMissions = document.createElement('div');
+            weeklyMissions.className = 'tab-content';
+            weeklyMissions.id = 'weekly-missions';
             
-            missionsContent.appendChild(missionsList);
+            missionsContent.appendChild(dailyMissions);
+            missionsContent.appendChild(weeklyMissions);
+            
+            // Llenar misiones
+            await fillMissionsTab('daily', dailyMissions);
+            await fillMissionsTab('weekly', weeklyMissions);
             
             // Mostrar con SweetAlert
             Swal.fire({
                 html: missionsContent,
-                width: '800px',
+                width: '900px',
                 background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
                 color: 'white',
                 showConfirmButton: false,
                 showCloseButton: true,
                 customClass: {
                     popup: 'mission-popup'
+                },
+                didOpen: () => {
+                    // Configurar event listeners para pestañas
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const tabName = e.target.dataset.tab;
+                            
+                            // Activar pestaña
+                            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                            e.target.classList.add('active');
+                            
+                            // Mostrar contenido correspondiente
+                            document.querySelectorAll('.tab-content').forEach(content => {
+                                content.classList.remove('active');
+                            });
+                            document.getElementById(`${tabName}-missions`).classList.add('active');
+                        });
+                    });
                 }
             });
             
@@ -1103,6 +1202,90 @@
             console.error('[ERROR] Error al mostrar modal de misiones:', error);
             Swal.fire('Error', 'No se pudieron cargar las misiones', 'error');
         }
+    }
+
+    // Llenar pestaña de misiones
+    async function fillMissionsTab(type, container) {
+        const missionsList = document.createElement('div');
+        missionsList.className = 'missions-list';
+        
+        for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
+            if (missionConfig.type !== type) continue;
+            
+            const canClaim = canClaimMission(missionId);
+            let isCompleted = false;
+            
+            if (missionConfig.check && canClaim) {
+                isCompleted = await missionConfig.check();
+            }
+            
+            const missionItem = document.createElement('div');
+            missionItem.className = `mission-item ${isCompleted ? 'completed' : ''} ${!canClaim ? 'claimed' : ''}`;
+            
+            const missionIcon = document.createElement('div');
+            missionIcon.className = 'mission-icon';
+            
+            if (!canClaim) {
+                missionIcon.textContent = '✅';
+            } else if (isCompleted) {
+                missionIcon.textContent = '🎯';
+            } else {
+                missionIcon.textContent = '🔒';
+            }
+            
+            missionItem.appendChild(missionIcon);
+            
+            const missionContent = document.createElement('div');
+            missionContent.className = 'mission-content';
+            
+            const missionTitle = document.createElement('h3');
+            missionTitle.textContent = missionConfig.title;
+            missionContent.appendChild(missionTitle);
+            
+            const missionDesc = document.createElement('p');
+            missionDesc.textContent = missionConfig.description;
+            missionContent.appendChild(missionDesc);
+            
+            const missionReward = document.createElement('div');
+            missionReward.className = 'mission-reward';
+            missionReward.innerHTML = `<span class="vip-badge">+${missionConfig.reward} Puntos VIP</span> <span class="cooldown-badge">${missionConfig.cooldownHours / 24 === 1 ? 'Diaria' : 'Semanal'}</span>`;
+            missionContent.appendChild(missionReward);
+            
+            if (!canClaim) {
+                const lastClaim = userProfile.last_mission_claim[missionId];
+                const nextAvailable = new Date(new Date(lastClaim).getTime() + (missionConfig.cooldownHours * 60 * 60 * 1000));
+                
+                const cooldownText = document.createElement('div');
+                cooldownText.style.cssText = 'font-size: 12px; color: #e74c3c; margin-top: 5px;';
+                cooldownText.textContent = `Disponible en: ${formatCooldown(nextAvailable)}`;
+                missionContent.appendChild(cooldownText);
+            }
+            
+            missionItem.appendChild(missionContent);
+            
+            if (isCompleted && canClaim) {
+                const claimBtn = document.createElement('button');
+                claimBtn.className = 'claim-mission-btn';
+                claimBtn.textContent = 'Reclamar';
+                
+                claimBtn.addEventListener('click', async () => {
+                    await claimMission(missionId, missionConfig);
+                    Swal.close();
+                    await showMissionsModal();
+                });
+                
+                missionItem.appendChild(claimBtn);
+            } else if (!canClaim) {
+                const claimedText = document.createElement('div');
+                claimedText.className = 'mission-claimed';
+                claimedText.textContent = 'En Cooldown';
+                missionItem.appendChild(claimedText);
+            }
+            
+            missionsList.appendChild(missionItem);
+        }
+        
+        container.appendChild(missionsList);
     }
 
     // Formatear tiempo de cooldown
@@ -1113,16 +1296,17 @@
         
         if (diff <= 0) return 'Ahora';
         
-        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         
+        if (days > 0) return `${days}d ${hours}h`;
         return `${hours}h ${minutes}m`;
     }
 
     // Reclamar misión
     async function claimMission(missionId, missionConfig) {
         try {
-            // Mostrar carga
             Swal.fire({
                 title: 'Reclamando misión...',
                 allowOutsideClick: false,
@@ -1131,18 +1315,15 @@
                 }
             });
             
-            // Actualizar last_mission_claim para esta misión
             const now = new Date().toISOString();
             const updatedClaims = {
                 ...userProfile.last_mission_claim,
                 [missionId]: now
             };
             
-            // Actualizar puntos VIP
             const newVipPoints = userVipPoints + missionConfig.reward;
             const newVipLevel = calculateVipLevel(newVipPoints);
             
-            // Actualizar en base de datos (si estamos usando Supabase)
             if (userId && userId !== 'demo-user-id') {
                 const { error } = await supabase
                     .from('profiles')
@@ -1156,17 +1337,14 @@
                 if (error) throw error;
             }
             
-            // Actualizar variables locales
             userVipPoints = newVipPoints;
             userVipLevel = newVipLevel;
             userProfile.last_mission_claim = updatedClaims;
             
-            // Actualizar UI
             document.getElementById('userPoints').textContent = userVipPoints;
             document.getElementById('userLevel').textContent = userVipLevel;
             renderVipLevels();
             
-            // Mostrar confirmación con efecto
             Swal.fire({
                 title: '¡Misión completada!',
                 html: `Has ganado <strong>${missionConfig.reward} puntos VIP</strong><br>Nivel VIP: <strong>${userVipLevel}</strong>`,
@@ -1175,7 +1353,6 @@
                 background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
                 color: 'white',
                 willOpen: () => {
-                    // Lanzar confeti
                     confetti({
                         particleCount: 100,
                         spread: 70,
@@ -1196,25 +1373,100 @@
 
     // Configurar event listeners
     function setupEventListeners() {
-        // Evento del botón de misiones
         document.getElementById('missionsBtn').addEventListener('click', showMissionsModal);
-        
-        // Evento del botón de volver
         document.getElementById('backBtn').addEventListener('click', () => {
             console.log('[DEBUG] Redirigiendo al dashboard');
             window.location.href = 'dashboard.html';
         });
-        
-        // Evento del botón de información
         document.getElementById('closeModal').addEventListener('click', () => {
             document.getElementById('infoModal').style.display = 'none';
         });
-        
-        // Evento del botón de cerrar recompensa
         document.getElementById('rewardClose').addEventListener('click', () => {
             document.getElementById('rewardModal').style.display = 'none';
         });
     }
 </script>
+
+<style>
+    /* Estilos para las pestañas */
+    .missions-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #3498db;
+    }
+    
+    .tab-btn {
+        padding: 10px 20px;
+        background: transparent;
+        border: none;
+        color: #ecf0f1;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .tab-btn.active {
+        background: #3498db;
+        border-radius: 5px 5px 0 0;
+    }
+    
+    .tab-btn:hover {
+        background: #2980b9;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    /* Badges para tipos de misiones */
+    .vip-badge {
+        background: linear-gradient(135deg, #f1c40f, #f39c12);
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    
+    .cooldown-badge {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    /* Mejoras visuales para las misiones */
+    .mission-item {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
+        border: 1px solid #3498db;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .mission-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .mission-item.completed {
+        border-color: #2ecc71;
+        background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+    }
+    
+    .mission-item.claimed {
+        border-color: #95a5a6;
+        background: linear-gradient(135deg, rgba(149, 165, 166, 0.1), rgba(127, 140, 141, 0.1));
+        opacity: 0.7;
+    }
+</style>
 </body>
 </html>
