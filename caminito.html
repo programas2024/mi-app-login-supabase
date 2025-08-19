@@ -15,203 +15,206 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
 
-/* Estilos mejorados para el modal de misiones */
+        /* Estilos mejorados para el modal de misiones */
 .mission-popup {
   border-radius: 24px !important;
-  overflow: hidden;
-  border: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
   background: linear-gradient(145deg, #1e1e3a 0%, #141432 100%) !important;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px) !important;
+  color: white !important;
 }
 
 .missions-container {
-  padding: 25px;
-  color: #ffffff;
-  max-width: 100%;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  padding: 25px !important;
+  color: white !important;
+  max-width: 100% !important;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
+  background: transparent !important;
 }
 
 .missions-title {
-  text-align: center;
-  color: #88d3ce;
-  margin-bottom: 15px;
-  font-size: 32px;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
+  text-align: center !important;
+  color: #88d3ce !important;
+  margin-bottom: 15px !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  letter-spacing: 0.5px !important;
 }
 
 .missions-desc {
-  text-align: center;
-  margin-bottom: 25px;
-  opacity: 0.9;
-  font-size: 16px;
-  line-height: 1.5;
-  color: #d1d1ff;
-  max-width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: center !important;
+  margin-bottom: 25px !important;
+  opacity: 0.9 !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  color: #d1d1ff !important;
+  max-width: 80% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .missions-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-  margin-top: 25px;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 18px !important;
+  margin-top: 25px !important;
 }
 
 .mission-item {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  border-left: 4px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  padding: 18px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  border-left: 4px solid transparent !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  color: white !important;
 }
 
 .mission-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
 }
 
 .mission-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-3px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .mission-item.completed {
-  border-left-color: #8a63f2;
-  background: linear-gradient(90deg, rgba(110, 69, 226, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
-  animation: pulse-glow 3s infinite;
+  border-left-color: #8a63f2 !important;
+  background: linear-gradient(90deg, rgba(110, 69, 226, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+  animation: pulse-glow 3s infinite !important;
 }
 
 .mission-item.claimed {
-  opacity: 0.8;
-  border-left-color: #00b894;
-  background: rgba(0, 184, 148, 0.05);
+  opacity: 0.8 !important;
+  border-left-color: #00b894 !important;
+  background: rgba(0, 184, 148, 0.08) !important;
 }
 
 .mission-icon {
-  font-size: 28px;
-  min-width: 48px;
-  text-align: center;
-  flex-shrink: 0;
-  color: #88d3ce;
-  text-shadow: 0 0 10px rgba(136, 211, 206, 0.3);
+  font-size: 28px !important;
+  min-width: 48px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  color: #88d3ce !important;
+  text-shadow: 0 0 10px rgba(136, 211, 206, 0.3) !important;
 }
 
 .mission-content {
-  flex: 1;
-  min-width: 0; /* Evita que el contenido desborde */
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
 .mission-content h3 {
-  margin: 0 0 8px 0;
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  margin: 0 0 8px 0 !important;
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
 }
 
 .mission-content p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 15px;
-  color: #d1d1ff;
-  line-height: 1.4;
+  margin: 0 !important;
+  opacity: 0.9 !important;
+  font-size: 15px !important;
+  color: #d1d1ff !important;
+  line-height: 1.4 !important;
 }
 
 .mission-reward {
-  margin-top: 8px;
-  color: #fdcb6e;
-  font-weight: 700;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  margin-top: 8px !important;
+  color: #fdcb6e !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
 
 .mission-reward::before {
-  content: '★';
-  font-size: 14px;
+  content: '★' !important;
+  font-size: 14px !important;
 }
 
 .claim-mission-btn {
-  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 10px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3);
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
+  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 10px 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  z-index: 1 !important;
 }
 
 .claim-mission-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #88d3ce 0%, #6e45e2 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(135deg, #88d3ce 0%, #6e45e2 100%) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+  z-index: -1 !important;
 }
 
 .claim-mission-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(110, 69, 226, 0.4);
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(110, 69, 226, 0.4) !important;
 }
 
 .claim-mission-btn:hover::after {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 .mission-claimed {
-  color: #00b894;
-  font-weight: 700;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  color: #00b894 !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
 
 .mission-claimed::before {
-  content: '✓';
-  font-weight: bold;
+  content: '✓' !important;
+  font-weight: bold !important;
 }
 
 .mission-cooldown {
-  color: #ff7675;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  color: #ff7675 !important;
+  font-size: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
 
 .mission-cooldown::before {
-  content: '⏱';
-  font-size: 14px;
+  content: '⏱' !important;
+  font-size: 14px !important;
 }
 
 /* Animaciones */
@@ -223,7 +226,7 @@
 
 /* Efecto de brillo al pasar el ratón */
 .mission-item.completed:hover {
-  animation: pulse-glow 1.5s infinite;
+  animation: pulse-glow 1.5s infinite !important;
 }
 
 /* Responsive */
@@ -233,17 +236,43 @@
     max-width: 95% !important;
   }
   
+  .missions-title {
+    font-size: 24px !important;
+  }
+  
+  .missions-desc {
+    font-size: 14px !important;
+    max-width: 90% !important;
+  }
+  
   .mission-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 15px;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 15px !important;
   }
   
   .claim-mission-btn {
-    width: 100%;
-    margin-top: 10px;
+    width: 100% !important;
+    margin-top: 10px !important;
   }
+}
+
+/* Forzar visibilidad de todos los elementos */
+.swal2-popup .missions-container,
+.swal2-popup .missions-container * {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* Reset de estilos conflictivos */
+.swal2-popup * {
+  all: unset;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
 }
         :root {
             --gold: linear-gradient(135deg, #FFD700, #D4AF37);
