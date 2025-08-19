@@ -1229,146 +1229,113 @@ function loadMissions() {
   }
 }
 
+// Mostrar modal de misiones
 async function showMissionsModal() {
-  try {
-    console.log("[DEBUG] Iniciando showMissionsModal");
-    
-    // 1. Mostrar loader inicial
-    const loader = await Swal.fire({
-      title: 'Cargando misiones...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-        console.log("[DEBUG] Loader mostrado");
-      }
-    });
-    
-    // 2. Verificar autenticación
-    console.log("[DEBUG] Verificando autenticación");
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      console.error("[ERROR] Error de autenticación:", authError);
-      throw new Error('Debes iniciar sesión para ver las misiones');
-    }
-    
-    userId = user.id;
-    console.log("[DEBUG] Usuario autenticado:", userId);
-
-    // 3. Verificar misiones
-    console.log("[DEBUG] Verificando estado de misiones");
-    await checkMissions();
-    
-    // 4. Crear contenido del modal
-    console.log("[DEBUG] Creando contenido del modal");
-    const missionsContent = document.createElement('div');
-    missionsContent.className = 'missions-container';
-    
-    // Botón de cerrar
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'mission-close-btn';
-    closeBtn.innerHTML = '&times;';
-    closeBtn.addEventListener('click', () => Swal.close());
-    missionsContent.appendChild(closeBtn);
-
-    // ... (resto del código de creación de contenido)
-
-    // 5. Ocultar loader y mostrar contenido
-    console.log("[DEBUG] Preparándose para mostrar contenido");
-    Swal.close();
-    
-    await Swal.fire({
-      html: missionsContent,
-      width: '800px',
-      background: 'linear-gradient(145deg, #1e1e3a 0%, #141432 100%)',
-      color: 'white',
-      showConfirmButton: false,
-      customClass: {
-        popup: 'mission-popup'
-      },
-      didOpen: () => {
-        console.log("[DEBUG] Modal abierto, iniciando animaciones");
-        // Animación de entrada
-        if (typeof gsap !== 'undefined') {
-          gsap.from('.mission-item', {
-            opacity: 0,
-            y: 20,
-            duration: 0.5,
-            stagger: 0.1
-          });
-        }
-      }
-    });
-    
-    console.log("[DEBUG] Modal mostrado correctamente");
-    
-  } catch (error) {
-    console.error("[ERROR] En showMissionsModal:", {
-      message: error.message,
-      stack: error.stack
-    });
-    
-    Swal.fire({
-      title: 'Error',
-      text: error.message || 'Error al cargar las misiones',
-      icon: 'error',
-      confirmButtonText: 'Entendido'
-    });
-  }
-}
-
-// Función mejorada checkMissions
-async function checkMissions() {
-  console.log("[DEBUG] Iniciando checkMissions");
+  // Verificar misiones antes de mostrar
+  await checkMissions();
   
-  try {
-    if (!userId) {
-      console.error("[ERROR] userId no definido");
-      throw new Error('Usuario no identificado');
-    }
-
-    let availableMissions = 0;
+  // Crear contenido del modal
+  const missionsContent = document.createElement('div');
+  missionsContent.className = 'missions-container';
+  
+  // Título
+  const title = document.createElement('h2');
+  title.textContent = 'Misiones VIP';
+  title.className = 'missions-title';
+  missionsContent.appendChild(title);
+  
+  // Descripción
+  const desc = document.createElement('p');
+  desc.textContent = 'Completa misiones para ganar puntos VIP y avanzar de nivel.';
+  desc.className = 'missions-desc';
+  missionsContent.appendChild(desc);
+  
+  // Lista de misiones
+  const missionsList = document.createElement('div');
+  missionsList.className = 'missions-list';
+  
+  for (const [key, mission] of Object.entries(vipMissions)) {
+    const missionItem = document.createElement('div');
+    missionItem.className = `mission-item ${mission.completed ? 'completed' : ''} ${mission.claimed ? 'claimed' : ''}`;
     
-    for (const [key, mission] of Object.entries(vipMissions)) {
-      console.log(`[DEBUG] Verificando misión: ${key}`);
+    // Icono
+    const missionIcon = document.createElement('div');
+    missionIcon.className = 'mission-icon';
+    missionIcon.textContent = mission.claimed ? '✅' : mission.completed ? '🎯' : '🔒';
+    missionItem.appendChild(missionIcon);
+    
+    // Contenido
+    const missionContent = document.createElement('div');
+    missionContent.className = 'mission-content';
+    
+    const missionTitle = document.createElement('h3');
+    missionTitle.textContent = mission.title;
+    missionContent.appendChild(missionTitle);
+    
+    const missionDesc = document.createElement('p');
+    missionDesc.textContent = mission.description;
+    missionContent.appendChild(missionDesc);
+    
+    // Recompensa
+    const missionReward = document.createElement('div');
+    missionReward.className = 'mission-reward';
+    missionReward.textContent = `+${mission.reward} Puntos VIP`;
+    missionContent.appendChild(missionReward);
+    
+    missionItem.appendChild(missionContent);
+    
+    // Botón de reclamar
+    if (mission.completed && !mission.claimed) {
+      const claimBtn = document.createElement('button');
+      claimBtn.className = 'claim-mission-btn';
+      claimBtn.textContent = 'Reclamar';
       
-      if (mission.claimed) continue;
+      claimBtn.addEventListener('click', async () => {
+        await claimMission(key);
+        Swal.close();
+        await showMissionsModal(); // Recargar modal
+      });
       
-      if (mission.cooldown && new Date() < new Date(mission.cooldown)) {
-        continue;
-      }
-      
-      try {
-        if (mission.check) {
-          mission.completed = await mission.check();
-          console.log(`[DEBUG] Misión ${key} completada: ${mission.completed}`);
-        } else {
-          mission.completed = key === 'login' && !mission.claimed;
-        }
-        
-        if (mission.completed && !mission.claimed) {
-          availableMissions++;
-        }
-      } catch (error) {
-        console.error(`[ERROR] Al verificar misión ${key}:`, error);
-        mission.completed = false;
-      }
+      missionItem.appendChild(claimBtn);
+    } else if (mission.claimed) {
+      const claimedText = document.createElement('div');
+      claimedText.className = 'mission-claimed';
+      claimedText.textContent = 'Reclamado';
+      missionItem.appendChild(claimedText);
+    } else if (mission.cooldown) {
+      const cooldownText = document.createElement('div');
+      cooldownText.className = 'mission-cooldown';
+      cooldownText.textContent = `Disponible en ${formatCooldown(mission.cooldown)}`;
+      missionItem.appendChild(cooldownText);
     }
     
-    const badge = document.getElementById('missionsBadge');
-    if (badge) {
-      badge.textContent = availableMissions;
-      badge.style.display = availableMissions > 0 ? 'block' : 'none';
-      console.log(`[DEBUG] Badge actualizado: ${availableMissions} misiones disponibles`);
-    }
-    
-    localStorage.setItem('vipMissions', JSON.stringify(vipMissions));
-    
-  } catch (error) {
-    console.error("[ERROR] En checkMissions:", error);
-    throw error; // Re-lanzamos el error para manejarlo en showMissionsModal
+    missionsList.appendChild(missionItem);
   }
+  
+  missionsContent.appendChild(missionsList);
+  
+  // Mostrar con SweetAlert
+  Swal.fire({
+    html: missionsContent,
+    width: '800px',
+    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    color: 'white',
+    showConfirmButton: false,
+    customClass: {
+      popup: 'mission-popup'
+    },
+    willOpen: () => {
+      // Animación de entrada
+      gsap.from('.mission-item', {
+        opacity: 0,
+        y: 20,
+        duration: 0.5,
+        stagger: 0.1
+      });
+    }
+  });
 }
+
 // Formatear tiempo de cooldown
 function formatCooldown(cooldownDate) {
   const now = new Date();
