@@ -14,6 +14,115 @@
   <!-- Font Awesome para iconos (opcional) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+
+        /* Estilos para el modal de misiones */
+.mission-popup {
+  border-radius: 20px !important;
+  overflow: hidden;
+  border: 2px solid #6e45e2;
+}
+
+.missions-container {
+  padding: 20px;
+  color: white;
+  max-width: 100%;
+}
+
+.missions-title {
+  text-align: center;
+  color: #88d3ce;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.missions-desc {
+  text-align: center;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.missions-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.mission-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.mission-item.completed {
+  border-left-color: #6e45e2;
+  background: rgba(110, 69, 226, 0.1);
+}
+
+.mission-item.claimed {
+  opacity: 0.7;
+  border-left-color: #00b894;
+}
+
+.mission-icon {
+  font-size: 24px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.mission-content {
+  flex: 1;
+}
+
+.mission-content h3 {
+  margin: 0 0 5px 0;
+  color: #88d3ce;
+}
+
+.mission-content p {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.mission-reward {
+  margin-top: 5px;
+  color: #fdcb6e;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.claim-mission-btn {
+  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.claim-mission-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.mission-claimed {
+  color: #00b894;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.mission-cooldown {
+  color: #ff7675;
+  font-size: 14px;
+}
         :root {
             --gold: linear-gradient(135deg, #FFD700, #D4AF37);
             --diamond: linear-gradient(135deg, #00FFFF, #008B8B);
