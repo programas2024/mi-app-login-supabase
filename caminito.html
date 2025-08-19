@@ -672,7 +672,7 @@
                 };
                 userVipPoints = userProfile.vip_points;
                 userVipLevel = userProfile.vip_level;
-                claimedLevels = userProfile.claimed_levels || [];
+                claimedLevels = Array.isArray(userProfile.claimed_levels) ? userProfile.claimed_levels : [];
                 
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
@@ -697,7 +697,9 @@
                 userProfile = profile;
                 userVipPoints = profile.vip_points || 0;
                 userVipLevel = calculateVipLevel(userVipPoints);
-                claimedLevels = profile.claimed_levels || [];
+                
+                // Asegurarse de que claimedLevels sea un array
+                claimedLevels = Array.isArray(profile.claimed_levels) ? profile.claimed_levels : [];
                 
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
@@ -790,7 +792,9 @@
         vipLevelsConfig.forEach(levelConfig => {
             const isCurrentLevel = levelConfig.level === userVipLevel;
             const isUnlocked = userVipPoints >= levelConfig.pointsRequired;
-            const isClaimed = claimedLevels.includes(levelConfig.level);
+            
+            // Asegurarse de que claimedLevels sea un array antes de usar includes
+            const isClaimed = Array.isArray(claimedLevels) && claimedLevels.includes(levelConfig.level);
             
             const levelCard = document.createElement('div');
             levelCard.className = `level-card ${isCurrentLevel ? 'current' : ''}`;
@@ -848,7 +852,7 @@
             const message = await levelConfig.claim();
             
             // Marcar nivel como reclamado
-            if (!claimedLevels.includes(levelConfig.level)) {
+            if (Array.isArray(claimedLevels) && !claimedLevels.includes(levelConfig.level)) {
                 claimedLevels.push(levelConfig.level);
                 
                 // Actualizar en base de datos
