@@ -3,1899 +3,1012 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Diamond Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Sistema de Misiones VIP</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <!-- GSAP para animaciones -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-  
-  <!-- Font Awesome para iconos (opcional) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-
-        /* Estilos mejorados para el modal de misiones */
-.mission-popup {
-  border-radius: 24px !important;
-  overflow: hidden !important;
-  border: none !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-  background: linear-gradient(145deg, #1e1e3a 0%, #141432 100%) !important;
-  backdrop-filter: blur(10px) !important;
-  color: white !important;
-  max-height: 90vh !important; /* Limitar altura máxima */
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-.missions-container {
-  padding: 25px !important;
-  color: white !important;
-  max-width: 100% !important;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
-  background: transparent !important;
-  overflow-y: auto !important; /* Permitir scroll si contenido es largo */
-  flex-grow: 1 !important; /* Ocupar espacio disponible */
-}
-
-/* Botón de cerrar */
-.mission-close-btn {
-  position: absolute !important;
-  top: 15px !important;
-  right: 15px !important;
-  width: 32px !important;
-  height: 32px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: none !important;
-  border-radius: 50% !important;
-  color: white !important;
-  font-size: 18px !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.3s ease !important;
-  z-index: 10 !important;
-}
-
-.mission-close-btn:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  transform: rotate(90deg) !important;
-}
-
-.missions-title {
-  text-align: center !important;
-  color: #88d3ce !important;
-  margin-bottom: 15px !important;
-  font-size: 32px !important;
-  font-weight: 700 !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  letter-spacing: 0.5px !important;
-  padding-right: 30px !important; /* Espacio para el botón cerrar */
-}
-
-.missions-desc {
-  text-align: center !important;
-  margin-bottom: 25px !important;
-  opacity: 0.9 !important;
-  font-size: 16px !important;
-  line-height: 1.5 !important;
-  color: #d1d1ff !important;
-  max-width: 80% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-}
-
-.missions-list {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 22px !important; /* Más espacio entre misiones */
-  margin-top: 25px !important;
-  padding-bottom: 15px !important;
-}
-
-.mission-item {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-radius: 16px !important;
-  padding: 20px !important; /* Más padding */
-  display: flex !important;
-  align-items: center !important;
-  gap: 18px !important;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-  border-left: 4px solid transparent !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  color: white !important;
-  min-height: auto !important; /* Altura automática */
-}
-
-.mission-item::before {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  height: 2px !important;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
-}
-
-.mission-item:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
-  background: rgba(255, 255, 255, 0.15) !important;
-}
-
-.mission-item.completed {
-  border-left-color: #8a63f2 !important;
-  background: linear-gradient(90deg, rgba(110, 69, 226, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
-  animation: pulse-glow 3s infinite !important;
-}
-
-.mission-item.claimed {
-  opacity: 0.8 !important;
-  border-left-color: #00b894 !important;
-  background: rgba(0, 184, 148, 0.08) !important;
-}
-
-.mission-icon {
-  font-size: 28px !important;
-  min-width: 48px !important;
-  text-align: center !important;
-  flex-shrink: 0 !important;
-  color: #88d3ce !important;
-  text-shadow: 0 0 10px rgba(136, 211, 206, 0.3) !important;
-}
-
-.mission-content {
-  flex: 1 !important;
-  min-width: 0 !important;
-}
-
-.mission-content h3 {
-  margin: 0 0 8px 0 !important;
-  color: white !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.3px !important;
-}
-
-.mission-content p {
-  margin: 0 !important;
-  opacity: 0.9 !important;
-  font-size: 15px !important;
-  color: #d1d1ff !important;
-  line-height: 1.4 !important;
-}
-
-.mission-reward {
-  margin-top: 8px !important;
-  color: #fdcb6e !important;
-  font-weight: 700 !important;
-  font-size: 15px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-}
-
-.mission-reward::before {
-  content: '★' !important;
-  font-size: 14px !important;
-}
-
-.claim-mission-btn {
-  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%) !important;
-  color: white !important;
-  border: none !important;
-  border-radius: 50px !important;
-  padding: 10px 24px !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  white-space: nowrap !important;
-  box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  z-index: 1 !important;
-  margin-left: auto !important; /* Mover botón a la derecha */
-  min-width: 120px !important; /* Ancho mínimo para consistencia */
-}
-
-.claim-mission-btn::after {
-  content: '' !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  background: linear-gradient(135deg, #88d3ce 0%, #6e45e2 100%) !important;
-  opacity: 0 !important;
-  transition: opacity 0.3s ease !important;
-  z-index: -1 !important;
-}
-
-.claim-mission-btn:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 8px 25px rgba(110, 69, 226, 0.4) !important;
-}
-
-.claim-mission-btn:hover::after {
-  opacity: 1 !important;
-}
-
-.mission-claimed {
-  color: #00b894 !important;
-  font-weight: 700 !important;
-  font-size: 15px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  margin-left: auto !important; /* Alinear a la derecha */
-  padding-right: 10px !important;
-}
-
-.mission-claimed::before {
-  content: '✓' !important;
-  font-weight: bold !important;
-}
-
-.mission-cooldown {
-  color: #ff7675 !important;
-  font-size: 15px !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  margin-left: auto !important; /* Alinear a la derecha */
-}
-
-.mission-cooldown::before {
-  content: '⏱' !important;
-  font-size: 14px !important;
-}
-
-/* Animaciones */
-@keyframes pulse-glow {
-  0% { box-shadow: 0 0 0 0 rgba(138, 99, 242, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(138, 99, 242, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(138, 99, 242, 0); }
-}
-
-/* Efecto de brillo al pasar el ratón */
-.mission-item.completed:hover {
-  animation: pulse-glow 1.5s infinite !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .mission-popup {
-    width: 90% !important;
-    max-width: 95% !important;
-  }
-  
-  .missions-title {
-    font-size: 24px !important;
-  }
-  
-  .missions-desc {
-    font-size: 14px !important;
-    max-width: 90% !important;
-  }
-  
-  .mission-item {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-    padding: 15px !important;
-  }
-  
-  .claim-mission-btn,
-  .mission-claimed,
-  .mission-cooldown {
-    width: 100% !important;
-    margin-top: 10px !important;
-    margin-left: 0 !important;
-    justify-content: center !important;
-  }
-}
-
-/* Forzar visibilidad de todos los elementos */
-.swal2-popup .missions-container,
-.swal2-popup .missions-container * {
-  opacity: 1 !important;
-  visibility: visible !important;
-  display: block !important;
-  color: inherit !important;
-  background-color: transparent !important;
-}
-
-/* Reset de estilos conflictivos */
-.swal2-popup * {
-  all: unset;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
-}
         :root {
-            --gold: linear-gradient(135deg, #FFD700, #D4AF37);
-            --diamond: linear-gradient(135deg, #00FFFF, #008B8B);
-            --pearl: linear-gradient(135deg, #F0F0F0, #D3D3D3);
-            --vip-purple: linear-gradient(135deg, #8A2BE2, #4B0082);
-            --vip-red: linear-gradient(135deg, #FF2400, #E0115F);
-            --dark-bg: #121212;
-            --light-bg: #1E1E1E;
-            --text-light: #FFFFFF;
-            --text-gold: #FFD700;
-            --text-diamond: #00FFFF;
+            --primary: #4a00e0;
+            --secondary: #8e2de2;
+            --accent: #00c6ff;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
         }
         
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-light);
-            margin: 0;
-            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
             min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .vip-container {
-            width: 95%;
-            max-width: 1400px;
-            background: var(--light-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden;
-            margin: 90px 0;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .vip-header {
-            background: var(--vip-purple);
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .vip-header::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: shine 8s infinite linear;
-        }
-        
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .vip-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            margin: 0;
-            color: var(--text-light);
-            position: relative;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            background: linear-gradient(to right, #FFD700, #FFFFFF, #00FFFF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .vip-subtitle {
-            font-size: clamp(0.9rem, 2vw, 1.2rem);
-            opacity: 0.9;
-            margin-top: 0.5rem;
-            position: relative;
-        }
-        
-        .levels-container {
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem;
-            gap: 2rem;
-        }
-        
-        @media (min-width: 768px) {
-            .levels-container {
-                flex-direction: row;
-                padding: 2rem;
-                gap: 2rem;
-            }
-        }
-        
-        .level-section {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .section-title {
-            font-size: clamp(1.2rem, 3vw, 1.5rem);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .free-title {
-            color: var(--text-light);
-        }
-        
-        .premium-title {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .levels-scroll {
-            display: flex;
-            gap: 1rem;
-            padding: 0.5rem;
-            overflow-x: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #8A2BE2 #1E1E1E;
-        }
-        
-        .levels-scroll::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .levels-scroll::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
-        }
-        
-        .levels-scroll::-webkit-scrollbar-thumb {
-            background: var(--vip-purple);
-            border-radius: 3px;
-        }
-        
-        .level {
-            min-width: 110px;
-            width: 110px;
-            height: 160px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.05);
-            overflow: hidden;
-        }
-        
-        @media (min-width: 480px) {
-            .level {
-                min-width: 120px;
-                width: 120px;
-                height: 180px;
-            }
-        }
-        
-        @media (min-width: 1024px) {
-            .level {
-                min-width: 140px;
-                width: 140px;
-                height: 200px;
-            }
-        }
-        
-        .level::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gold);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .level:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            background: rgba(255,255,255,0.08);
-        }
-        
-        .level:hover::before {
-            opacity: 1;
-        }
-        
-        .level.premium {
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .level.premium::after {
-            content: "VIP";
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--gold);
-            color: #000;
-            font-size: 0.7rem;
+        .logo {
+            font-size: 24px;
             font-weight: bold;
-            padding: 2px 6px;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .vip-level {
+            background: linear-gradient(to right, #f5af19, #f12711);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .vip-points {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .missions-btn {
+            position: relative;
+            background: linear-gradient(to right, #f5af19, #f12711);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .missions-container {
+            padding: 20px;
+        }
+        
+        .missions-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .missions-desc {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+        
+        .missions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mission-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .mission-item.completed {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .mission-item.claimed {
+            background: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .mission-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
         }
         
-        .level-number {
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            position: relative;
+        .mission-content {
+            flex: 1;
         }
         
-        .free-level .level-number {
-            color: var(--text-light);
+        .mission-content h3 {
+            margin-bottom: 5px;
+            font-size: 16px;
         }
         
-        .premium-level .level-number {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .mission-content p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
         
-        .level-status {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.8rem;
-            opacity: 0.7;
+        .mission-reward {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 14px;
         }
         
-        .reward-container {
+        .claim-mission-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .mission-claimed {
+            color: #f1c40f;
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+        
+        .mission-cooldown {
+            color: #e74c3c;
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+        
+        .confetti {
             position: absolute;
-            bottom: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
         
-        .reward {
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            margin-bottom: 0.3rem;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
         }
         
-        .reward.gold {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
-        .reward.diamond {
-            background: var(--diamond);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .reward-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
         }
         
-        .reward.pearl {
-            background: var(--pearl);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .reward-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 198, 255, 0.5);
+        }
+        
+        .reward-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .reward-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .reward-message {
+            margin-bottom: 15px;
+            color: #aaa;
         }
         
         .reward-amount {
-            font-size: clamp(0.8rem, 2vw, 0.9rem);
-            font-weight: 600;
-        }
-        
-        .gold-amount {
-            color: var(--text-gold);
-        }
-        
-        .diamond-amount {
-            color: var(--text-diamond);
-        }
-        
-        .pearl-amount {
-            color: var(--text-light);
-        }
-        
-        .claim-btn {
-            background: var(--vip-purple);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        .claim-btn::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--vip-red);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
-        }
-        
-        .claim-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
-        }
-        
-        .claim-btn:hover::before {
-            opacity: 1;
-        }
-        
-        .claim-btn.premium {
-            background: var(--gold);
-            color: #000;
-            font-weight: 700;
-        }
-        
-        .claim-btn.premium::before {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-        }
-        
-        .special-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--vip-red);
-            color: white;
-            font-size: 0.7rem;
+            font-size: 28px;
             font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 10px;
-            transform: rotate(15deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            z-index: 2;
+            margin-bottom: 20px;
+            color: #f1c40f;
         }
         
-        .vip-footer {
-            padding: 1.5rem;
-            background: rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        @media (min-width: 480px) {
-            .vip-footer {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .info-btn {
-            background: transparent;
-            color: var(--text-light);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            max-width: 250px;
-        }
-        
-        @media (min-width: 480px) {
-            .info-btn {
-                width: auto;
-            }
-        }
-        
-        .info-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--text-diamond);
-        }
-        
-        .back-btn {
-            background: var(--vip-purple);
+        .reward-close {
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            max-width: 250px;
+            font-weight: bold;
         }
         
-        @media (min-width: 480px) {
-            .back-btn {
-                width: auto;
-            }
-        }
-        
-        .back-btn:hover {
-            background: var(--vip-red);
-            transform: translateY(-2px);
-        }
-        
-        /* Modal de información */
-        .modal {
-            display: none;
+        .info-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background: var(--light-bg);
-            border-radius: 20px;
-            width: 95%;
-            max-width: 600px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            margin: 1rem;
-        }
-        
-        .modal-header {
-            background: var(--vip-purple);
-            padding: 1.5rem;
-            text-align: center;
-        }
-        
-        .modal-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.5rem, 3vw, 1.8rem);
-            margin: 0;
-            color: white;
-        }
-        
-        .modal-body {
-            padding: 1.5rem;
-        }
-        
-        @media (min-width: 480px) {
-            .modal-body {
-                padding: 2rem;
-            }
-        }
-        
-        .benefit-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-        }
-        
-        .benefit-icon {
-            font-size: 1.5rem;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-        
-        .benefit-text h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-        
-        @media (min-width: 480px) {
-            .benefit-text h3 {
-                font-size: 1.2rem;
-            }
-        }
-        
-        .benefit-text p {
-            margin: 0;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: white;
-        }
-        
-        /* Modal de recompensa */
-        .reward-modal {
+            background: rgba(0, 0, 0, 0.8);
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            z-index: 1000;
         }
         
-        .reward-modal-content {
-            background: var(--light-bg);
-            border-radius: 20px;
-            width: 95%;
-            max-width: 400px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            text-align: center;
-            padding: 2rem;
-            animation: scaleIn 0.3s ease-out;
-            margin: 1rem;
+        .info-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
         }
         
-        .reward-modal.free .reward-modal-content {
-            border-top: 5px solid #00FFFF;
+        .info-content h2 {
+            margin-bottom: 15px;
+            color: var(--accent);
         }
         
-        .reward-modal.premium .reward-modal-content {
-            border-top: 5px solid #FFD700;
+        .info-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
         }
         
-        @keyframes scaleIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .reward-modal-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.5rem, 3vw, 1.8rem);
-            margin: 0 0 1rem;
-        }
-        
-        .free .reward-modal-title {
-            color: #00FFFF;
-        }
-        
-        .premium .reward-modal-title {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .reward-modal-icon {
-            font-size: clamp(3rem, 8vw, 4rem);
-            margin: 1.5rem 0;
-            display: inline-block;
-            animation: bounce 0.5s ease infinite alternate;
-        }
-        
-        @keyframes bounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-10px); }
-        }
-        
-        .reward-modal-message {
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-        
-        .reward-modal-amount {
-            font-size: clamp(1.5rem, 4vw, 1.8rem);
-            font-weight: 700;
-            margin: 1rem 0;
-        }
-        
-        .free .reward-modal-amount {
-            color: #00FFFF;
-        }
-        
-        .premium .reward-modal-amount {
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .reward-modal-close {
-            background: var(--vip-purple);
+        .info-close {
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-            width: 100%;
-            max-width: 200px;
+            font-weight: bold;
+            margin-top: 15px;
         }
         
-        .reward-modal-close:hover {
-            background: var(--vip-red);
-            transform: translateY(-2px);
-        }
-        
-        .premium .reward-modal-close {
-            background: var(--gold);
-            color: #000;
-            font-weight: 700;
-        }
-        
-        /* Animaciones */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .mission-popup .swal2-popup {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 0;
+            overflow: hidden;
         }
         
         .pulse {
             animation: pulse 2s infinite;
         }
         
-        /* Efecto de confeti */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #f00;
-            opacity: 0;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: var(--text-diamond);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Botón de Misiones VIP */
-.vip-mission-btn {
-  position: fixed;
-  margin-top: -200px;
-  right: 20px;
-  background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 15px 25px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.vip-mission-btn:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-}
-
-.mission-icon {
-  font-size: 24px;
-}
-
-.mission-badge {
-  background-color: #ff4757;
-  border-radius: 50%;
-  padding: 5px 10px;
-  font-size: 14px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
     </style>
 </head>
 <body>
-    <div class="vip-container">
-        <div class="vip-header">
-            <h1 class="vip-title">DIAMOND VIP CLUB</h1>
-            <p class="vip-subtitle">Desbloquea recompensas exclusivas en cada nivel</p>
-        <button id="missionsBtn" class="vip-mission-btn">
-  <span class="mission-icon">🎯</span>
-  <span class="mission-text">Misiones VIP</span>
-  <span class="mission-badge" id="missionsBadge">0</span>
-</button>
-        
-        </div>
-        
-        <div class="levels-container">
-            <div class="level-section">
-                <h2 class="section-title free-title">Niveles Básicos</h2>
-                <div class="levels-scroll" id="freeLevels">
-                    <!-- Niveles gratis se generarán con JS -->
-                </div>
+    <div class="container">
+        <header>
+            <div class="logo">JUEGO VIP</div>
+            <div class="user-info">
+                <div class="vip-level">⭐ Nivel <span id="userLevel">1</span></div>
+                <div class="vip-points">💎 <span id="userPoints">0</span> Puntos VIP</div>
+                <button class="btn missions-btn" id="missionsBtn">
+                    Misiones VIP
+                    <span class="badge" id="missionsBadge">0</span>
+                </button>
+                <button class="btn" id="backBtn">Volver</button>
             </div>
+        </header>
+        
+        <main>
+            <h1>Sistema de Recompensas VIP</h1>
+            <p>Completa misiones para ganar puntos VIP y subir de nivel.</p>
             
-            <div class="level-section">
-                <h2 class="section-title premium-title">Niveles VIP Premium</h2>
-                <div class="levels-scroll" id="premiumLevels">
-                    <!-- Niveles premium se generarán con JS -->
-                </div>
+            <div class="levels-container">
+                <!-- Aquí irían los niveles de recompensas -->
             </div>
-        </div>
-        
-        <div class="vip-footer">
-            <button class="info-btn" id="infoBtn">Más Información</button>
-            <button class="back-btn" id="backBtn">Volver al Dashboard</button>
-        </div>
+        </main>
     </div>
     
-    <!-- Modal de información -->
-    <div class="modal" id="infoModal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <div class="modal-header">
-                <h2 class="modal-title">Beneficios VIP</h2>
-            </div>
-            <div class="modal-body">
-                <div class="benefit-item">
-                    <div class="benefit-icon">💎</div>
-                    <div class="benefit-text">
-                        <h3>Recompensas Exclusivas</h3>
-                        <p>Desbloquea diamantes, oro y perlas exclusivas en cada nivel VIP. Las recompensas premium son 3x mejores que las básicas.</p>
-                    </div>
-                </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">🚀</div>
-                    <div class="benefit-text">
-                        <h3>Acceso Prioritario</h3>
-                        <p>Acceso anticipado a nuevas características, eventos exclusivos y contenido premium antes que nadie.</p>
-                    </div>
-                </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">🎁</div>
-                    <div class="benefit-text">
-                        <h3>Regalos Diarios</h3>
-                        <p>Los miembros VIP reciben regalos especiales cada día, incluyendo bonificaciones exclusivas.</p>
-                    </div>
-                </div>
-                
-                <div class="benefit-item">
-                    <div class="benefit-icon">👑</div>
-                    <div class="benefit-text">
-                        <h3>Estatus VIP</h3>
-                        <p>Badge exclusivo, marco dorado en tu perfil y reconocimiento especial en la comunidad.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-    
-    <!-- Modal de recompensa -->
-    <div class="reward-modal" id="rewardModal">
-        <div class="reward-modal-content">
-            <div class="reward-modal-icon" id="rewardIcon">💎</div>
-            <h2 class="reward-modal-title" id="rewardTitle">¡Felicidades!</h2>
-            <p class="reward-modal-message" id="rewardMessage">Has reclamado tu recompensa</p>
-            <div class="reward-modal-amount" id="rewardAmount">100 Diamantes</div>
-            <button class="reward-modal-close" id="rewardClose">Cerrar</button>
-        </div>
-    </div>
-
-    <!-- Loading spinner -->
-    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+    <div class="loading" id="loadingSpinner" style="display: none;">
         <div class="spinner"></div>
     </div>
     
+    <div class="reward-modal" id="rewardModal">
+        <div class="reward-content">
+            <div class="reward-icon" id="rewardIcon">💎</div>
+            <h2 class="reward-title" id="rewardTitle">¡Felicidades!</h2>
+            <p class="reward-message" id="rewardMessage">Has reclamado tu recompensa</p>
+            <div class="reward-amount" id="rewardAmount">+10 Puntos VIP</div>
+            <button class="reward-close" id="rewardClose">Cerrar</button>
+        </div>
+    </div>
+    
+    <div class="info-modal" id="infoModal">
+        <div class="info-content">
+            <h2>Información del Sistema VIP</h2>
+            <p>El sistema de misiones VIP te permite ganar puntos completando diferentes desafíos diarios.</p>
+            <p>Cada misión tiene una recompensa en puntos VIP que se pueden canjear por beneficios exclusivos.</p>
+            <p>Las misiones se renuevan cada 24 horas, así que asegúrate de reclamarlas todos los días.</p>
+            <button class="info-close" id="closeModal">Entendido</button>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', async function() {
-    console.log('[DEBUG] DOM completamente cargado');
+        // Configuración de Supabase
     
-    // Configuración de Supabase
-    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-    
-    console.log('[DEBUG] Inicializando cliente Supabase');
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-
-    // Configuración de misiones VIP
-const vipMissions = {
-  login: {
-    title: "Iniciar Sesión",
-    description: "Inicia sesión en el juego para reclamar esta misión",
-    reward: 5, // Puntos VIP
-    completed: false,
-    claimed: false,
-    cooldown: null
-  },
-  diamonds: {
-    title: "Tener 300+ Diamantes",
-    description: "Acumula más de 300 diamantes en tu inventario",
-    reward: 10,
-    completed: false,
-    claimed: false,
-    cooldown: null,
-    check: async () => {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('diamonds')
-        .eq('id', userId)
-        .single();
-      return profile.diamonds >= 300;
-    }
-  },
-  pearls: {
-    title: "Tener 10+ Perlas",
-    description: "Consigue al menos 10 perlas mágicas",
-    reward: 8,
-    completed: false,
-    claimed: false,
-    cooldown: null,
-    check: async () => {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('perla')
-        .eq('id', userId)
-        .single();
-      return profile.perla >= 10;
-    }
-  }
-};
-
-// Función para verificar el estado de las misiones
-async function checkMissions() {
-  let availableMissions = 0;
-  
-  for (const [key, mission] of Object.entries(vipMissions)) {
-    if (mission.claimed) continue;
-    
-    // Verificar si está en cooldown
-    if (mission.cooldown && new Date() < new Date(mission.cooldown)) {
-      continue;
-    }
-    
-    // Verificar si la misión está completada
-    if (mission.check) {
-      mission.completed = await mission.check();
-    } else {
-      // Misión de login siempre está disponible si no está reclamada
-      mission.completed = key === 'login' && !mission.claimed;
-    }
-    
-    if (mission.completed && !mission.claimed) {
-      availableMissions++;
-    }
-  }
-  
-  // Actualizar badge
-  document.getElementById('missionsBadge').textContent = availableMissions;
-  
-  // Guardar estado en localStorage
-  localStorage.setItem('vipMissions', JSON.stringify(vipMissions));
-}
-
-// Cargar misiones desde localStorage al iniciar
-function loadMissions() {
-  const savedMissions = localStorage.getItem('vipMissions');
-  if (savedMissions) {
-    Object.assign(vipMissions, JSON.parse(savedMissions));
-  }
-}
-
-// Mostrar modal de misiones
-async function showMissionsModal() {
-  // Verificar misiones antes de mostrar
-  await checkMissions();
-  
-  // Crear contenido del modal
-  const missionsContent = document.createElement('div');
-  missionsContent.className = 'missions-container';
-  
-  // Título
-  const title = document.createElement('h2');
-  title.textContent = 'Misiones VIP';
-  title.className = 'missions-title';
-  missionsContent.appendChild(title);
-  
-  // Descripción
-  const desc = document.createElement('p');
-  desc.textContent = 'Completa misiones para ganar puntos VIP y avanzar de nivel.';
-  desc.className = 'missions-desc';
-  missionsContent.appendChild(desc);
-  
-  // Lista de misiones
-  const missionsList = document.createElement('div');
-  missionsList.className = 'missions-list';
-  
-  for (const [key, mission] of Object.entries(vipMissions)) {
-    const missionItem = document.createElement('div');
-    missionItem.className = `mission-item ${mission.completed ? 'completed' : ''} ${mission.claimed ? 'claimed' : ''}`;
-    
-    // Icono
-    const missionIcon = document.createElement('div');
-    missionIcon.className = 'mission-icon';
-    missionIcon.textContent = mission.claimed ? '✅' : mission.completed ? '🎯' : '🔒';
-    missionItem.appendChild(missionIcon);
-    
-    // Contenido
-    const missionContent = document.createElement('div');
-    missionContent.className = 'mission-content';
-    
-    const missionTitle = document.createElement('h3');
-    missionTitle.textContent = mission.title;
-    missionContent.appendChild(missionTitle);
-    
-    const missionDesc = document.createElement('p');
-    missionDesc.textContent = mission.description;
-    missionContent.appendChild(missionDesc);
-    
-    // Recompensa
-    const missionReward = document.createElement('div');
-    missionReward.className = 'mission-reward';
-    missionReward.textContent = `+${mission.reward} Puntos VIP`;
-    missionContent.appendChild(missionReward);
-    
-    missionItem.appendChild(missionContent);
-    
-    // Botón de reclamar
-    if (mission.completed && !mission.claimed) {
-      const claimBtn = document.createElement('button');
-      claimBtn.className = 'claim-mission-btn';
-      claimBtn.textContent = 'Reclamar';
-      
-      claimBtn.addEventListener('click', async () => {
-        await claimMission(key);
-        Swal.close();
-        await showMissionsModal(); // Recargar modal
-      });
-      
-      missionItem.appendChild(claimBtn);
-    } else if (mission.claimed) {
-      const claimedText = document.createElement('div');
-      claimedText.className = 'mission-claimed';
-      claimedText.textContent = 'Reclamado';
-      missionItem.appendChild(claimedText);
-    } else if (mission.cooldown) {
-      const cooldownText = document.createElement('div');
-      cooldownText.className = 'mission-cooldown';
-      cooldownText.textContent = `Disponible en ${formatCooldown(mission.cooldown)}`;
-      missionItem.appendChild(cooldownText);
-    }
-    
-    missionsList.appendChild(missionItem);
-  }
-  
-  missionsContent.appendChild(missionsList);
-  
-  // Mostrar con SweetAlert
-  Swal.fire({
-    html: missionsContent,
-    width: '800px',
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    color: 'white',
-    showConfirmButton: false,
-    customClass: {
-      popup: 'mission-popup'
-    },
-    willOpen: () => {
-      // Animación de entrada
-      gsap.from('.mission-item', {
-        opacity: 0,
-        y: 20,
-        duration: 0.5,
-        stagger: 0.1
-      });
-    }
-  });
-}
-
-// Formatear tiempo de cooldown
-function formatCooldown(cooldownDate) {
-  const now = new Date();
-  const cooldown = new Date(cooldownDate);
-  const diff = cooldown - now;
-  
-  if (diff <= 0) return 'Ahora';
-  
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
-  return `${hours}h ${minutes}m`;
-}
-
-// Reclamar misión
-async function claimMission(missionKey) {
-  const mission = vipMissions[missionKey];
-  
-  if (!mission || mission.claimed || !mission.completed) {
-    return;
-  }
-  
-  try {
-    // Mostrar carga
-    Swal.fire({
-      title: 'Reclamando misión...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-    
-    // Actualizar misión como reclamada
-    mission.claimed = true;
-    mission.cooldown = null;
-    
-    // Añadir puntos VIP al perfil
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('vip_points')
-      .eq('id', userId)
-      .single();
-    
-    if (error) throw error;
-    
-    const currentVipPoints = profile.vip_points || 0;
-    const newVipPoints = currentVipPoints + mission.reward;
-    
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ vip_points: newVipPoints })
-      .eq('id', userId);
-    
-    if (updateError) throw updateError;
-    
-    // Guardar estado
-    localStorage.setItem('vipMissions', JSON.stringify(vipMissions));
-    
-    // Mostrar confirmación con efecto
-    Swal.fire({
-      title: '¡Misión completada!',
-      text: `Has ganado ${mission.reward} puntos VIP`,
-      icon: 'success',
-      confirmButtonText: '¡Genial!',
-      background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-      color: 'white',
-      willOpen: () => {
-        createConfetti(document.querySelector('.swal2-popup'));
-      }
-    });
-    
-    // Verificar si se deben reactivar misiones
-    checkMissionReset();
-    
-  } catch (error) {
-    console.error('Error al reclamar misión:', error);
-    Swal.fire({
-      title: 'Error',
-      text: 'No se pudo reclamar la misión',
-      icon: 'error'
-    });
-    
-    // Revertir cambios
-    mission.claimed = false;
-  }
-}
-
-// Verificar si se deben reactivar misiones (cada 2 horas)
-function checkMissionReset() {
-  const now = new Date();
-  const lastReset = localStorage.getItem('lastMissionReset');
-  
-  if (!lastReset || (now - new Date(lastReset)) > 2 * 60 * 60 * 1000) {
-    // Reactivar misiones reclamadas
-    for (const mission of Object.values(vipMissions)) {
-      if (mission.claimed) {
-        mission.claimed = false;
-        mission.completed = false;
-        mission.cooldown = new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString();
-      }
-    }
-    
-    localStorage.setItem('lastMissionReset', now.toISOString());
-    localStorage.setItem('vipMissions', JSON.stringify(vipMissions));
-  }
-}
-
-// Evento del botón de misiones
-document.getElementById('missionsBtn').addEventListener('click', showMissionsModal);
-
-// Inicializar misiones al cargar
-document.addEventListener('DOMContentLoaded', () => {
-  loadMissions();
-  
-  // Verificar misiones cada minuto
-  setInterval(checkMissions, 60000);
-  
-  // Verificar misiones inicialmente
-  checkMissions();
-});
-    // Variables para control de reclamaciones
-    const claimedLevels = {
-        free: [],
-        premium: []
-    };
-
-    // Obtener el ID del usuario autenticado
-    let userId = null;
-    
-    try {
-        console.log('[DEBUG] Verificando sesión de usuario');
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        
-        if (authError) {
-            console.error('[ERROR] Error en auth.getUser():', authError);
-            throw authError;
-        }
-        
-        if (!user) {
-            console.error('[ERROR] No hay usuario autenticado');
-            throw new Error('Usuario no autenticado');
-        }
-        
-        userId = user.id;
-        console.log('[DEBUG] ID de usuario obtenido:', userId);
-        
-        // Verificar si existe el perfil y cargar niveles reclamados
-        console.log('[DEBUG] Verificando perfil existente para userId:', userId);
-        const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, gold, diamonds, perla, claimed_levels')
-            .eq('id', userId)
-            .single();
-        
-        if (profileError) {
-            console.error('[ERROR] Error al buscar perfil:', profileError);
-            throw profileError;
-        }
-        
-        if (!profile) {
-            console.log('[DEBUG] Perfil no encontrado, creando nuevo perfil');
-            const { data: newProfile, error: createError } = await supabase
-                .from('profiles')
-                .insert([{ 
-                    id: userId,
-                    gold: 0,
-                    diamonds: 0,
-                    perla: 0,
-                    claimed_levels: { free: [], premium: [] },
-                    updated_at: new Date().toISOString()
-                }])
-                .select()
-                .single();
+            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
-            if (createError) {
-                console.error('[ERROR] Error al crear perfil:', createError);
-                throw createError;
-            }
-            
-            console.log('[DEBUG] Nuevo perfil creado:', newProfile);
-        } else {
-            console.log('[DEBUG] Perfil encontrado:', profile);
-            // Cargar niveles ya reclamados
-            if (profile.claimed_levels) {
-                claimedLevels.free = profile.claimed_levels.free || [];
-                claimedLevels.premium = profile.claimed_levels.premium || [];
-            }
-        }
+          
+
+        console.log('[DEBUG] Inicializando cliente Supabase');
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-    } catch (error) {
-        console.error('[ERROR CRÍTICO] Error en inicialización:', {
-            message: error.message,
-            name: error.name,
-            stack: error.stack,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
+        // Variables globales
+        let userId = null;
+        let userVipPoints = 0;
+        let userVipLevel = 1;
+        
+        // Configuración de misiones VIP
+        const vipMissionsConfig = {
+            login: {
+                title: "Iniciar Sesión",
+                description: "Inicia sesión en el juego para reclamar esta misión",
+                reward: 5, // Puntos VIP
+                cooldownHours: 24
+            },
+            diamonds: {
+                title: "Tener 300+ Diamantes",
+                description: "Acumula más de 300 diamantes en tu inventario",
+                reward: 10,
+                cooldownHours: 24,
+                check: async () => {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('diamonds')
+                        .eq('id', userId)
+                        .single();
+                    return profile.diamonds >= 300;
+                }
+            },
+            pearls: {
+                title: "Tener 10+ Perlas",
+                description: "Consigue al menos 10 perlas mágicas",
+                reward: 8,
+                cooldownHours: 24,
+                check: async () => {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('perla')
+                        .eq('id', userId)
+                        .single();
+                    return profile.perla >= 10;
+                }
+            }
+        };
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeApp();
+            setupEventListeners();
+            
+            // Verificar misiones cada minuto
+            setInterval(checkMissions, 60000);
         });
-        alert('Error al verificar la sesión. Por favor inicia sesión nuevamente.');
-        return;
-    }
 
-    // Configuración de niveles y recompensas
-    console.log('[DEBUG] Configurando niveles y recompensas');
-    const currentLevel = 15;
-    const freeLevels = 30;
-    const premiumLevels = 30;
-    
-    const freeRewards = {
-        5: { type: 'gold', amount: 100, special: false },
-        10: { type: 'pearl', amount: 3, special: true },
-        15: { type: 'gold', amount: 250, special: false },
-        20: { type: 'pearl', amount: 5, special: true },
-        25: { type: 'gold', amount: 500, special: false },
-        30: { type: 'pearl', amount: 10, special: true }
-    };
-    
-    const premiumRewards = {
-        5: { type: 'diamond', amount: 5, special: true },
-        10: { type: 'gold', amount: 1000, special: false },
-        15: { type: 'diamond', amount: 10, special: true },
-        20: { type: 'pearl', amount: 15, special: false },
-        25: { type: 'diamond', amount: 20, special: true },
-        30: { type: 'gold', amount: 2000, special: true }
-    };
-    
-    // Generar niveles
-    console.log('[DEBUG] Generando niveles de recompensas');
-    const freeLevelsContainer = document.getElementById('freeLevels');
-    const premiumLevelsContainer = document.getElementById('premiumLevels');
-    
-    for (let i = 1; i <= freeLevels; i++) {
-        createLevel(i, 'free', freeRewards, freeLevelsContainer, i <= currentLevel);
-    }
-    
-    for (let i = 1; i <= premiumLevels; i++) {
-        createLevel(i, 'premium', premiumRewards, premiumLevelsContainer, i <= currentLevel);
-    }
-    
-    // Función para verificar si un nivel ya fue reclamado
-    function isLevelClaimed(levelNumber, levelType) {
-        const typeKey = levelType === 'free' ? 'free' : 'premium';
-        return claimedLevels[typeKey].includes(levelNumber);
-    }
-
-    // Función para marcar un nivel como reclamado
-    async function markLevelAsClaimed(levelNumber, levelType) {
-        const typeKey = levelType === 'free' ? 'free' : 'premium';
-        
-        // Agregar a memoria local
-        claimedLevels[typeKey].push(levelNumber);
-        
-        // Actualizar en Supabase
-        try {
-            const { error } = await supabase
-                .from('profiles')
-                .update({ 
-                    claimed_levels: claimedLevels,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', userId);
-            
-            if (error) throw error;
-            
-            console.log(`[DEBUG] Nivel ${levelNumber} (${typeKey}) marcado como reclamado`);
-        } catch (error) {
-            console.error('[ERROR] Error al marcar nivel como reclamado:', error);
-            // Revertir en memoria si falla
-            claimedLevels[typeKey] = claimedLevels[typeKey].filter(n => n !== levelNumber);
-            throw error;
-        }
-    }
-
-    // Función para crear niveles
-    function createLevel(number, type, rewards, container, isUnlocked) {
-        const level = document.createElement('div');
-        level.className = `level ${type}-level ${isUnlocked ? '' : 'locked'}`;
-        
-        const levelNumber = document.createElement('div');
-        levelNumber.className = 'level-number';
-        levelNumber.textContent = number;
-        level.appendChild(levelNumber);
-        
-        const levelStatus = document.createElement('div');
-        levelStatus.className = 'level-status';
-        levelStatus.textContent = isUnlocked ? 
-            (isLevelClaimed(number, type) ? 'RECLAMADO' : (number === currentLevel ? 'ACTUAL' : 'COMPLETADO')) : 
-            'BLOQUEADO';
-        level.appendChild(levelStatus);
-        
-        if (rewards[number]) {
-            const rewardContainer = document.createElement('div');
-            rewardContainer.className = 'reward-container';
-            
-            const rewardIcon = document.createElement('div');
-            rewardIcon.className = `reward ${rewards[number].type} ${rewards[number].special ? 'pulse' : ''}`;
-            rewardIcon.textContent = 
-                rewards[number].type === 'gold' ? '💰' : 
-                rewards[number].type === 'pearl' ? '🔘' : '💎';
-            rewardContainer.appendChild(rewardIcon);
-            
-            const rewardAmount = document.createElement('div');
-            rewardAmount.className = `reward-amount ${rewards[number].type}-amount`;
-            rewardAmount.textContent = rewards[number].amount;
-            rewardContainer.appendChild(rewardAmount);
-            
-            if (isUnlocked) {
-                const claimBtn = document.createElement('button');
-                claimBtn.className = `claim-btn ${type === 'premium' ? 'premium' : ''}`;
+        // Inicializar la aplicación
+        async function initializeApp() {
+            try {
+                // Obtener usuario autenticado
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
                 
-                if (isLevelClaimed(number, type)) {
-                    claimBtn.textContent = '¡Reclamado!';
-                    claimBtn.style.background = '#00B894';
-                    claimBtn.disabled = true;
-                } else {
-                    claimBtn.textContent = rewards[number].special ? '¡RECLAMAR!' : 'Reclamar';
-                    
-                    claimBtn.addEventListener('click', async function() {
-                        await handleRewardClaim(number, type, rewards[number], this);
-                    });
+                if (authError) {
+                    console.error('[ERROR] Error en auth.getUser():', authError);
+                    throw authError;
                 }
                 
-                rewardContainer.appendChild(claimBtn);
+                if (!user) {
+                    console.error('[ERROR] No hay usuario autenticado');
+                    throw new Error('Usuario no autenticado');
+                }
+                
+                userId = user.id;
+                console.log('[DEBUG] ID de usuario obtenido:', userId);
+                
+                // Cargar perfil de usuario
+                await loadUserProfile();
+                
+                // Cargar y verificar misiones
+                await checkMissions();
+                
+            } catch (error) {
+                console.error('[ERROR CRÍTICO] Error en inicialización:', error);
+                alert('Error al inicializar la aplicación. Por favor recarga la página.');
             }
-            
-            if (rewards[number].special) {
-                const specialBadge = document.createElement('div');
-                specialBadge.className = 'special-badge';
-                specialBadge.textContent = 'ESPECIAL';
-                level.appendChild(specialBadge);
-            }
-            
-            level.appendChild(rewardContainer);
         }
-        
-        container.appendChild(level);
-    }
-    
-    // Función para manejar el reclamo de recompensas
-    async function handleRewardClaim(level, type, reward, buttonElement) {
-        console.log(`[DEBUG] Intentando reclamar recompensa: Nivel ${level} ${type}`, reward);
-        
-        if (!userId) {
-            console.error('[ERROR] userId no definido al intentar reclamar');
-            alert('No se pudo identificar tu usuario. Por favor inicia sesión nuevamente.');
-            return;
-        }
-        
-        // Verificar si ya fue reclamado (doble verificación)
-        if (isLevelClaimed(level, type)) {
-            console.log(`[DEBUG] Nivel ${level} (${type}) ya fue reclamado anteriormente`);
-            return;
-        }
-        
-        document.getElementById('loadingSpinner').style.display = 'flex';
-        
-        try {
-            // Efecto visual
-            createConfetti(buttonElement);
-            
-            // Obtener valores actuales primero
-            console.log('[DEBUG] Obteniendo perfil actual para userId:', userId);
-            const { data: currentProfile, error: fetchError } = await supabase
-                .from('profiles')
-                .select('gold, diamonds, perla')
-                .eq('id', userId)
-                .single();
-            
-            if (fetchError) {
-                console.error('[ERROR] Error al obtener perfil:', fetchError);
-                throw fetchError;
+
+        // Cargar perfil de usuario
+        async function loadUserProfile() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('vip_points, vip_level')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) {
+                    console.error('[ERROR] Error al cargar perfil:', error);
+                    // Crear perfil si no existe
+                    await createUserProfile();
+                    return;
+                }
+                
+                if (profile) {
+                    userVipPoints = profile.vip_points || 0;
+                    userVipLevel = calculateVipLevel(userVipPoints);
+                    
+                    // Actualizar UI
+                    document.getElementById('userPoints').textContent = userVipPoints;
+                    document.getElementById('userLevel').textContent = userVipLevel;
+                }
+                
+            } catch (error) {
+                console.error('[ERROR] Error al cargar perfil de usuario:', error);
             }
-            
-            console.log('[DEBUG] Perfil actual:', currentProfile);
-            
-            // Determinar campo a actualizar
-            const fieldMap = {
-                gold: 'gold',
-                pearl: 'perla',
-                diamond: 'diamonds'
-            };
-            
-            const updateField = fieldMap[reward.type];
-            
-            if (!updateField) {
-                const errorMsg = `Tipo de recompensa no válido: ${reward.type}`;
-                console.error('[ERROR]', errorMsg);
-                throw new Error(errorMsg);
+        }
+
+        // Crear perfil de usuario si no existe
+        async function createUserProfile() {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert([{ 
+                        id: userId,
+                        gold: 0,
+                        diamonds: 0,
+                        perla: 0,
+                        vip_points: 0,
+                        vip_level: 1,
+                        claimed_levels: { free: [], premium: [] },
+                        updated_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                
+                console.log('[DEBUG] Nuevo perfil creado:', data);
+                
+            } catch (error) {
+                console.error('[ERROR] Error al crear perfil:', error);
             }
-            
-            // Calcular nuevo valor
-            const currentValue = currentProfile[updateField] || 0;
-            const newValue = currentValue + reward.amount;
-            
-            console.log(`[DEBUG] Actualizando ${updateField} de ${currentValue} a ${newValue}`);
-            
-            // Actualizar en Supabase (usando transacción para mayor seguridad)
-            const updates = {
-                [updateField]: newValue,
-                claimed_levels: {
-                    ...claimedLevels,
-                    [type === 'free' ? 'free' : 'premium']: [
-                        ...claimedLevels[type === 'free' ? 'free' : 'premium'],
-                        level
-                    ]
-                },
-                updated_at: new Date().toISOString()
-            };
-            
-            const { data: updatedProfile, error: updateError } = await supabase
-                .from('profiles')
-                .update(updates)
-                .eq('id', userId)
-                .select();
-            
-            if (updateError) {
-                console.error('[ERROR] Error en la actualización:', {
-                    error: updateError,
-                    query: {
-                        table: 'profiles',
-                        updates: updates,
-                        userId: userId
+        }
+
+        // Calcular nivel VIP basado en puntos
+        function calculateVipLevel(points) {
+            // Fórmula: nivel = floor(puntos / 100) + 1
+            return Math.floor(points / 100) + 1;
+        }
+
+        // Cargar misiones desde la base de datos
+        async function loadMissions() {
+            try {
+                const { data: missions, error } = await supabase
+                    .from('user_missions')
+                    .select('*')
+                    .eq('user_id', userId);
+                
+                if (error) {
+                    console.error('[ERROR] Error al cargar misiones:', error);
+                    // Si no hay misiones, inicializarlas
+                    await initializeMissions();
+                    return {};
+                }
+                
+                // Convertir a formato usable
+                const missionsMap = {};
+                missions.forEach(mission => {
+                    missionsMap[mission.mission_id] = {
+                        completed: mission.completed,
+                        claimed: mission.claimed,
+                        cooldown: mission.cooldown_until,
+                        last_claimed: mission.last_claimed
+                    };
+                });
+                
+                return missionsMap;
+                
+            } catch (error) {
+                console.error('[ERROR] Error al cargar misiones:', error);
+                return {};
+            }
+        }
+
+        // Inicializar misiones para un usuario nuevo
+        async function initializeMissions() {
+            try {
+                const missionsToInsert = Object.keys(vipMissionsConfig).map(missionId => ({
+                    user_id: userId,
+                    mission_id: missionId,
+                    completed: false,
+                    claimed: false,
+                    cooldown_until: null,
+                    last_claimed: null
+                }));
+                
+                const { error } = await supabase
+                    .from('user_missions')
+                    .insert(missionsToInsert);
+                
+                if (error) throw error;
+                
+                console.log('[DEBUG] Misiones inicializadas para usuario:', userId);
+                
+            } catch (error) {
+                console.error('[ERROR] Error al inicializar misiones:', error);
+            }
+        }
+
+        // Verificar el estado de las misiones
+        async function checkMissions() {
+            try {
+                // Cargar misiones desde la base de datos
+                const userMissions = await loadMissions();
+                let availableMissions = 0;
+                
+                for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
+                    const userMission = userMissions[missionId] || {
+                        completed: false,
+                        claimed: false,
+                        cooldown: null,
+                        last_claimed: null
+                    };
+                    
+                    // Verificar si está en cooldown
+                    if (userMission.cooldown && new Date() < new Date(userMission.cooldown)) {
+                        continue;
+                    }
+                    
+                    // Verificar si la misión está completada
+                    let isCompleted = false;
+                    
+                    if (missionConfig.check) {
+                        isCompleted = await missionConfig.check();
+                    } else {
+                        // Misión de login siempre está disponible si no está reclamada
+                        isCompleted = missionId === 'login' && !userMission.claimed;
+                    }
+                    
+                    // Actualizar estado en base de datos si cambió
+                    if (isCompleted !== userMission.completed) {
+                        await updateMissionStatus(missionId, {
+                            completed: isCompleted,
+                            claimed: userMission.claimed,
+                            cooldown_until: userMission.cooldown,
+                            last_claimed: userMission.last_claimed
+                        });
+                    }
+                    
+                    if (isCompleted && !userMission.claimed) {
+                        availableMissions++;
+                    }
+                }
+                
+                // Actualizar badge
+                document.getElementById('missionsBadge').textContent = availableMissions;
+                
+            } catch (error) {
+                console.error('[ERROR] Error al verificar misiones:', error);
+            }
+        }
+
+        // Actualizar estado de misión en base de datos
+        async function updateMissionStatus(missionId, status) {
+            try {
+                const { error } = await supabase
+                    .from('user_missions')
+                    .upsert({
+                        user_id: userId,
+                        mission_id: missionId,
+                        completed: status.completed,
+                        claimed: status.claimed,
+                        cooldown_until: status.cooldown_until,
+                        last_claimed: status.last_claimed
+                    })
+                    .eq('user_id', userId)
+                    .eq('mission_id', missionId);
+                
+                if (error) throw error;
+                
+            } catch (error) {
+                console.error('[ERROR] Error al actualizar misión:', error);
+            }
+        }
+
+        // Mostrar modal de misiones
+        async function showMissionsModal() {
+            try {
+                // Verificar misiones antes de mostrar
+                await checkMissions();
+                
+                // Cargar misiones actualizadas
+                const userMissions = await loadMissions();
+                
+                // Crear contenido del modal
+                const missionsContent = document.createElement('div');
+                missionsContent.className = 'missions-container';
+                
+                // Título
+                const title = document.createElement('h2');
+                title.textContent = 'Misiones VIP';
+                title.className = 'missions-title';
+                missionsContent.appendChild(title);
+                
+                // Descripción
+                const desc = document.createElement('p');
+                desc.textContent = 'Completa misiones diarias para ganar puntos VIP y subir de nivel.';
+                desc.className = 'missions-desc';
+                missionsContent.appendChild(desc);
+                
+                // Información de nivel VIP
+                const vipInfo = document.createElement('div');
+                vipInfo.style.cssText = 'background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px;';
+                vipInfo.innerHTML = `
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Nivel VIP: <strong>${userVipLevel}</strong></span>
+                        <span>Puntos: <strong>${userVipPoints}/100</strong></span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px; margin-top: 5px;">
+                        <div style="background: linear-gradient(to right, #4a00e0, #8e2de2); height: 100%; width: ${userVipPoints % 100}%; border-radius: 5px;"></div>
+                    </div>
+                `;
+                missionsContent.appendChild(vipInfo);
+                
+                // Lista de misiones
+                const missionsList = document.createElement('div');
+                missionsList.className = 'missions-list';
+                
+                for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
+                    const userMission = userMissions[missionId] || {
+                        completed: false,
+                        claimed: false,
+                        cooldown: null,
+                        last_claimed: null
+                    };
+                    
+                    const missionItem = document.createElement('div');
+                    missionItem.className = `mission-item ${userMission.completed ? 'completed' : ''} ${userMission.claimed ? 'claimed' : ''}`;
+                    
+                    // Icono
+                    const missionIcon = document.createElement('div');
+                    missionIcon.className = 'mission-icon';
+                    missionIcon.textContent = userMission.claimed ? '✅' : userMission.completed ? '🎯' : '🔒';
+                    missionItem.appendChild(missionIcon);
+                    
+                    // Contenido
+                    const missionContent = document.createElement('div');
+                    missionContent.className = 'mission-content';
+                    
+                    const missionTitle = document.createElement('h3');
+                    missionTitle.textContent = missionConfig.title;
+                    missionContent.appendChild(missionTitle);
+                    
+                    const missionDesc = document.createElement('p');
+                    missionDesc.textContent = missionConfig.description;
+                    missionContent.appendChild(missionDesc);
+                    
+                    // Recompensa
+                    const missionReward = document.createElement('div');
+                    missionReward.className = 'mission-reward';
+                    missionReward.textContent = `+${missionConfig.reward} Puntos VIP`;
+                    missionContent.appendChild(missionReward);
+                    
+                    // Tiempo restante si está en cooldown
+                    if (userMission.cooldown && new Date() < new Date(userMission.cooldown)) {
+                        const cooldownText = document.createElement('div');
+                        cooldownText.style.cssText = 'font-size: 12px; color: #e74c3c; margin-top: 5px;';
+                        cooldownText.textContent = `Disponible en: ${formatCooldown(userMission.cooldown)}`;
+                        missionContent.appendChild(cooldownText);
+                    }
+                    
+                    missionItem.appendChild(missionContent);
+                    
+                    // Botón de reclamar
+                    if (userMission.completed && !userMission.claimed) {
+                        const claimBtn = document.createElement('button');
+                        claimBtn.className = 'claim-mission-btn';
+                        claimBtn.textContent = 'Reclamar';
+                        
+                        claimBtn.addEventListener('click', async () => {
+                            await claimMission(missionId, missionConfig);
+                            Swal.close();
+                            await showMissionsModal(); // Recargar modal
+                        });
+                        
+                        missionItem.appendChild(claimBtn);
+                    } else if (userMission.claimed) {
+                        const claimedText = document.createElement('div');
+                        claimedText.className = 'mission-claimed';
+                        claimedText.textContent = 'Reclamado';
+                        missionItem.appendChild(claimedText);
+                        
+                        // Mostrar tiempo hasta siguiente disponibilidad
+                        if (userMission.cooldown) {
+                            const nextAvailable = document.createElement('div');
+                            nextAvailable.style.cssText = 'font-size: 12px; color: #aaa; margin-top: 5px;';
+                            nextAvailable.textContent = `Próxima disponibilidad: ${formatCooldown(userMission.cooldown)}`;
+                            missionItem.appendChild(nextAvailable);
+                        }
+                    }
+                    
+                    missionsList.appendChild(missionItem);
+                }
+                
+                missionsContent.appendChild(missionsList);
+                
+                // Mostrar con SweetAlert
+                Swal.fire({
+                    html: missionsContent,
+                    width: '800px',
+                    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                    color: 'white',
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'mission-popup'
+                    },
+                    willOpen: () => {
+                        // Animación de entrada
+                        gsap.from('.mission-item', {
+                            opacity: 0,
+                            y: 20,
+                            duration: 0.5,
+                            stagger: 0.1
+                        });
                     }
                 });
-                throw updateError;
+                
+            } catch (error) {
+                console.error('[ERROR] Error al mostrar modal de misiones:', error);
+                Swal.fire('Error', 'No se pudieron cargar las misiones', 'error');
             }
+        }
+
+        // Formatear tiempo de cooldown
+        function formatCooldown(cooldownDate) {
+            const now = new Date();
+            const cooldown = new Date(cooldownDate);
+            const diff = cooldown - now;
             
-            console.log('[DEBUG] Perfil actualizado con éxito:', updatedProfile);
+            if (diff <= 0) return 'Ahora';
             
-            // Actualizar en memoria local
-            claimedLevels[type === 'free' ? 'free' : 'premium'].push(level);
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             
-            // Mostrar feedback al usuario
-            showReward(level, type, reward);
+            return `${hours}h ${minutes}m`;
+        }
+
+        // Reclamar misión
+        async function claimMission(missionId, missionConfig) {
+            try {
+                // Mostrar carga
+                Swal.fire({
+                    title: 'Reclamando misión...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Calcular fecha de próximo cooldown (24 horas)
+                const now = new Date();
+                const cooldownUntil = new Date(now.getTime() + missionConfig.cooldownHours * 60 * 60 * 1000);
+                
+                // Actualizar misión en base de datos
+                const { error: missionError } = await supabase
+                    .from('user_missions')
+                    .update({
+                        claimed: true,
+                        cooldown_until: cooldownUntil.toISOString(),
+                        last_claimed: now.toISOString()
+                    })
+                    .eq('user_id', userId)
+                    .eq('mission_id', missionId);
+                
+                if (missionError) throw missionError;
+                
+                // Actualizar puntos VIP en perfil
+                const newVipPoints = userVipPoints + missionConfig.reward;
+                const newVipLevel = calculateVipLevel(newVipPoints);
+                
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        vip_points: newVipPoints,
+                        vip_level: newVipLevel
+                    })
+                    .eq('id', userId);
+                
+                if (profileError) throw profileError;
+                
+                // Actualizar variables locales
+                userVipPoints = newVipPoints;
+                userVipLevel = newVipLevel;
+                
+                // Actualizar UI
+                document.getElementById('userPoints').textContent = userVipPoints;
+                document.getElementById('userLevel').textContent = userVipLevel;
+                
+                // Mostrar confirmación con efecto
+                Swal.fire({
+                    title: '¡Misión completada!',
+                    html: `Has ganado <strong>${missionConfig.reward} puntos VIP</strong><br>Nivel VIP: <strong>${userVipLevel}</strong>`,
+                    icon: 'success',
+                    confirmButtonText: '¡Genial!',
+                    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                    color: 'white',
+                    willOpen: () => {
+                        createConfetti(document.querySelector('.swal2-popup'));
+                    }
+                });
+                
+            } catch (error) {
+                console.error('[ERROR] Error al reclamar misión:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo reclamar la misión',
+                    icon: 'error'
+                });
+            }
+        }
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Evento del botón de misiones
+            document.getElementById('missionsBtn').addEventListener('click', showMissionsModal);
             
-            buttonElement.textContent = '¡Reclamado!';
-            buttonElement.style.background = '#00B894';
-            buttonElement.disabled = true;
-            
-        } catch (error) {
-            console.error('[ERROR DETALLADO] Error al procesar recompensa:', {
-                message: error.message,
-                name: error.name,
-                stack: error.stack,
-                details: error.details,
-                hint: error.hint,
-                code: error.code,
-                level: level,
-                type: type,
-                reward: reward,
-                userId: userId
+            // Evento del botón de volver
+            document.getElementById('backBtn').addEventListener('click', () => {
+                console.log('[DEBUG] Redirigiendo al dashboard');
+                window.location.href = 'dashboard.html';
             });
             
-            alert(`Error al reclamar la recompensa: ${error.message}`);
-        } finally {
-            document.getElementById('loadingSpinner').style.display = 'none';
+            // Evento del botón de información
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('infoModal').style.display = 'none';
+            });
         }
-    }
-    
-    // Modal de recompensa
-    const rewardModal = document.getElementById('rewardModal');
-    const rewardIcon = document.getElementById('rewardIcon');
-    const rewardTitle = document.getElementById('rewardTitle');
-    const rewardMessage = document.getElementById('rewardMessage');
-    const rewardAmount = document.getElementById('rewardAmount');
-    const rewardClose = document.getElementById('rewardClose');
-    
-    function showReward(level, type, reward) {
-        rewardModal.className = `reward-modal ${type}`;
-        rewardIcon.textContent = reward.type === 'gold' ? '💰' : reward.type === 'pearl' ? '🔘' : '💎';
-        rewardTitle.textContent = reward.special ? '¡RECOMPENSA ESPECIAL!' : '¡Felicidades!';
-        
-        let rewardText = '';
-        if (reward.type === 'gold') rewardText = `${reward.amount} de Oro`;
-        else if (reward.type === 'pearl') rewardText = `${reward.amount} Perlas`;
-        else rewardText = `${reward.amount} Diamantes`;
-        
-        rewardMessage.textContent = `Has alcanzado el Nivel ${level} ${type === 'premium' ? 'VIP' : ''}`;
-        rewardAmount.textContent = rewardText;
-        rewardModal.style.display = 'flex';
-        createConfetti(rewardModal);
-    }
-    
-    rewardClose.addEventListener('click', () => {
-        rewardModal.style.display = 'none';
-    });
-    
-    function createConfetti(element) {
-        const rect = element.getBoundingClientRect();
-        const colors = ['#FFD700', '#00FFFF', '#FF1493', '#7CFC00', '#FF4500'];
-        
-        for (let i = 0; i < 20; i++) {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.left = `${rect.left + rect.width/2}px`;
-            confetti.style.top = `${rect.top}px`;
-            confetti.style.opacity = '1';
-            document.body.appendChild(confetti);
+
+        // Efecto de confeti
+        function createConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const colors = ['#FFD700', '#00FFFF', '#FF1493', '#7CFC00', '#FF4500'];
             
-            const angle = Math.random() * Math.PI * 2;
-            const velocity = 5 + Math.random() * 5;
-            const x = Math.cos(angle) * velocity;
-            const y = Math.sin(angle) * velocity;
-            
-            let posX = rect.left + rect.width/2;
-            let posY = rect.top;
-            let opacity = 1;
-            let scale = 0.5 + Math.random();
-            
-            const animate = () => {
-                posX += x;
-                posY += y + 0.5;
-                opacity -= 0.02;
-                scale -= 0.01;
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${rect.left + rect.width/2}px`;
+                confetti.style.top = `${rect.top}px`;
+                confetti.style.opacity = '1';
+                document.body.appendChild(confetti);
                 
-                confetti.style.left = `${posX}px`;
-                confetti.style.top = `${posY}px`;
-                confetti.style.opacity = opacity;
-                confetti.style.transform = `scale(${scale}) rotate(${posX}deg)`;
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 5 + Math.random() * 5;
+                const x = Math.cos(angle) * velocity;
+                const y = Math.sin(angle) * velocity;
                 
-                if (opacity > 0) {
-                    requestAnimationFrame(animate);
-                } else {
-                    confetti.remove();
-                }
-            };
-            
-            requestAnimationFrame(animate);
+                let posX = rect.left + rect.width/2;
+                let posY = rect.top;
+                let opacity = 1;
+                let scale = 0.5 + Math.random();
+                
+                const animate = () => {
+                    posX += x;
+                    posY += y + 0.5;
+                    opacity -= 0.02;
+                    scale -= 0.01;
+                    
+                    confetti.style.left = `${posX}px`;
+                    confetti.style.top = `${posY}px`;
+                    confetti.style.opacity = opacity;
+                    confetti.style.transform = `scale(${scale}) rotate(${posX}deg)`;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        confetti.remove();
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
         }
-    }
-    
-    // Modal de información
-    const infoModal = document.getElementById('infoModal');
-    const infoBtn = document.getElementById('infoBtn');
-    const closeModal = document.getElementById('closeModal');
-    
-    infoBtn.addEventListener('click', () => {
-        infoModal.style.display = 'flex';
-    });
-    
-    closeModal.addEventListener('click', () => {
-        infoModal.style.display = 'none';
-    });
-    
-    window.addEventListener('click', (e) => {
-        if (e.target === infoModal) {
-            infoModal.style.display = 'none';
-        }
-    });
-    
-    // Botón de volver
-    document.getElementById('backBtn').addEventListener('click', () => {
-        console.log('[DEBUG] Redirigiendo al dashboard');
-        window.location.href = 'dashboard.html';
-    });
-});
-
-
-
     </script>
 </body>
 </html>
