@@ -668,7 +668,8 @@
                     perla: 15,    // Más de 10 para cumplir la misión
                     vip_points: 75,
                     vip_level: 1,
-                    claimed_levels: [] // Inicialmente ningún nivel reclamado
+                    claimed_levels: [], // Inicialmente ningún nivel reclamado
+                    last_mission_claim: {} // Nuevo campo para controlar reclamaciones
                 };
                 userVipPoints = userProfile.vip_points;
                 userVipLevel = userProfile.vip_level;
@@ -701,6 +702,12 @@
                 // Asegurarse de que claimedLevels sea un array
                 claimedLevels = Array.isArray(profile.claimed_levels) ? profile.claimed_levels : [];
                 
+                // Inicializar last_mission_claim si no existe
+                if (!userProfile.last_mission_claim) {
+                    userProfile.last_mission_claim = {};
+                    await updateProfileResources({ last_mission_claim: {} });
+                }
+                
                 // Actualizar UI
                 document.getElementById('userPoints').textContent = userVipPoints;
                 document.getElementById('userLevel').textContent = userVipLevel;
@@ -726,6 +733,7 @@
                     vip_points: 0,
                     vip_level: 1,
                     claimed_levels: [],
+                    last_mission_claim: {}, // Nuevo campo para controlar reclamaciones
                     updated_at: new Date().toISOString()
                 }])
                 .select()
@@ -748,7 +756,7 @@
             if (!userId || userId === 'demo-user-id') {
                 // Simular actualización para demostración
                 Object.keys(updates).forEach(key => {
-                    userProfile[key] = (userProfile[key] || 0) + updates[key];
+                    userProfile[key] = updates[key];
                 });
                 return;
             }
@@ -898,124 +906,42 @@
         }
     }
 
-    // Cargar misiones desde la base de datos
-    async function loadMissions() {
-        try {
-            if (!userId || userId === 'demo-user-id') {
-                // Para demostración, devolver misiones de ejemplo
-                return {
-                    login: { completed: true, claimed: false, cooldown: null, last_claimed: null },
-                    diamonds: { completed: true, claimed: false, cooldown: null, last_claimed: null },
-                    pearls: { completed: true, claimed: false, cooldown: null, last_claimed: null }
-                };
-            }
-            
-            const { data: missions, error } = await supabase
-                .from('user_missions')
-                .select('*')
-                .eq('user_id', userId);
-            
-            if (error) {
-                console.error('[ERROR] Error al cargar misiones:', error);
-                // Si no hay misiones, inicializarlas
-                await initializeMissions();
-                return {};
-            }
-            
-            // Convertir a formato usable
-            const missionsMap = {};
-            missions.forEach(mission => {
-                missionsMap[mission.mission_id] = {
-                    completed: mission.completed,
-                    claimed: mission.claimed,
-                    cooldown: mission.cooldown_until,
-                    last_claimed: mission.last_claimed
-                };
-            });
-            
-            return missionsMap;
-            
-        } catch (error) {
-            console.error('[ERROR] Error al cargar misiones:', error);
-            return {};
-        }
-    }
-
-    // Inicializar misiones para un usuario nuevo
-    async function initializeMissions() {
-        try {
-            if (!userId) return;
-            
-            const missionsToInsert = Object.keys(vipMissionsConfig).map(missionId => ({
-                user_id: userId,
-                mission_id: missionId,
-                completed: false,
-                claimed: false,
-                cooldown_until: null,
-                last_claimed: null
-            }));
-            
-            const { error } = await supabase
-                .from('user_missions')
-                .insert(missionsToInsert);
-            
-            if (error) throw error;
-            
-            console.log('[DEBUG] Misiones inicializadas para usuario:', userId);
-            
-        } catch (error) {
-            console.error('[ERROR] Error al inicializar misiones:', error);
-        }
+    // Verificar si una misión puede ser reclamada (cooldown de 24 horas)
+    function canClaimMission(missionId) {
+        if (!userProfile.last_mission_claim) return true;
+        
+        const lastClaim = userProfile.last_mission_claim[missionId];
+        if (!lastClaim) return true;
+        
+        const now = new Date();
+        const lastClaimDate = new Date(lastClaim);
+        const hoursDiff = (now - lastClaimDate) / (1000 * 60 * 60);
+        
+        return hoursDiff >= 24;
     }
 
     // Verificar el estado de las misiones
     async function checkMissions() {
         try {
-            // Cargar misiones desde la base de datos
-            const userMissions = await loadMissions();
             let availableMissions = 0;
             
             for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
-                const userMission = userMissions[missionId] || {
-                    completed: false,
-                    claimed: false,
-                    cooldown: null,
-                    last_claimed: null
-                };
+                // Verificar si la misión puede ser reclamada (cooldown de 24 horas)
+                const canClaim = canClaimMission(missionId);
                 
-                // Verificar si está en cooldown
-                const now = new Date();
-                const isOnCooldown = userMission.cooldown && new Date(userMission.cooldown) > now;
-                
-                if (isOnCooldown) {
+                if (!canClaim) {
                     continue;
                 }
                 
                 // Verificar si la misión está completada
-                let isCompleted = userMission.completed;
+                let isCompleted = false;
                 
-                // Si no está completada o reclamada, verificar condición
-                if (!userMission.completed && !userMission.claimed) {
-                    if (missionConfig.check) {
-                        isCompleted = await missionConfig.check();
-                        
-                        // Si la misión se completó, actualizar en la base de datos
-                        if (isCompleted && userId && userId !== 'demo-user-id') {
-                            const { error } = await supabase
-                                .from('user_missions')
-                                .update({
-                                    completed: true
-                                })
-                                .eq('user_id', userId)
-                                .eq('mission_id', missionId);
-                            
-                            if (error) console.error('[ERROR] Error al actualizar misión:', error);
-                        }
-                    }
+                if (missionConfig.check) {
+                    isCompleted = await missionConfig.check();
                 }
                 
-                // Si la misión está completada pero no reclamada, contar como disponible
-                if (isCompleted && !userMission.claimed) {
+                // Si la misión está completada y puede ser reclamada, contar como disponible
+                if (isCompleted && canClaim) {
                     availableMissions++;
                 }
             }
@@ -1033,9 +959,6 @@
         try {
             // Verificar misiones antes de mostrar
             await checkMissions();
-            
-            // Cargar misiones actualizadas
-            const userMissions = await loadMissions();
             
             // Crear contenido del modal
             const missionsContent = document.createElement('div');
@@ -1072,30 +995,23 @@
             missionsList.className = 'missions-list';
             
             for (const [missionId, missionConfig] of Object.entries(vipMissionsConfig)) {
-                const userMission = userMissions[missionId] || {
-                    completed: false,
-                    claimed: false,
-                    cooldown: null,
-                    last_claimed: null
-                };
+                // Verificar si la misión puede ser reclamada
+                const canClaim = canClaimMission(missionId);
                 
-                const now = new Date();
-                const isOnCooldown = userMission.cooldown && new Date(userMission.cooldown) > now;
-                
-                // Verificar si la misión está completada (especialmente para la misión de login)
-                let isCompleted = userMission.completed;
-                if (!isCompleted && missionConfig.check && !isOnCooldown) {
+                // Verificar si la misión está completada
+                let isCompleted = false;
+                if (missionConfig.check && canClaim) {
                     isCompleted = await missionConfig.check();
                 }
                 
                 const missionItem = document.createElement('div');
-                missionItem.className = `mission-item ${isCompleted && !isOnCooldown ? 'completed' : ''} ${userMission.claimed || isOnCooldown ? 'claimed' : ''}`;
+                missionItem.className = `mission-item ${isCompleted ? 'completed' : ''} ${!canClaim ? 'claimed' : ''}`;
                 
-                // Icono - mostrar ✅ si está reclamada o en cooldown, 🎯 si está completada pero no reclamada, 🔒 si no está completada
+                // Icono - mostrar ✅ si está en cooldown, 🎯 si está completada, 🔒 si no está completada
                 const missionIcon = document.createElement('div');
                 missionIcon.className = 'mission-icon';
                 
-                if (userMission.claimed || isOnCooldown) {
+                if (!canClaim) {
                     missionIcon.textContent = '✅';
                 } else if (isCompleted) {
                     missionIcon.textContent = '🎯';
@@ -1124,17 +1040,20 @@
                 missionContent.appendChild(missionReward);
                 
                 // Tiempo restante si está en cooldown
-                if (isOnCooldown) {
+                if (!canClaim) {
+                    const lastClaim = userProfile.last_mission_claim[missionId];
+                    const nextAvailable = new Date(new Date(lastClaim).getTime() + (24 * 60 * 60 * 1000));
+                    
                     const cooldownText = document.createElement('div');
                     cooldownText.style.cssText = 'font-size: 12px; color: #e74c3c; margin-top: 5px;';
-                    cooldownText.textContent = `Disponible en: ${formatCooldown(userMission.cooldown)}`;
+                    cooldownText.textContent = `Disponible en: ${formatCooldown(nextAvailable)}`;
                     missionContent.appendChild(cooldownText);
                 }
                 
                 missionItem.appendChild(missionContent);
                 
                 // Botón de reclamar
-                if (isCompleted && !userMission.claimed && !isOnCooldown) {
+                if (isCompleted && canClaim) {
                     const claimBtn = document.createElement('button');
                     claimBtn.className = 'claim-mission-btn';
                     claimBtn.textContent = 'Reclamar';
@@ -1146,19 +1065,20 @@
                     });
                     
                     missionItem.appendChild(claimBtn);
-                } else if (userMission.claimed || isOnCooldown) {
+                } else if (!canClaim) {
                     const claimedText = document.createElement('div');
                     claimedText.className = 'mission-claimed';
-                    claimedText.textContent = isOnCooldown ? 'En Cooldown' : 'Reclamado';
+                    claimedText.textContent = 'En Cooldown';
                     missionItem.appendChild(claimedText);
                     
                     // Mostrar tiempo hasta siguiente disponibilidad
-                    if (isOnCooldown) {
-                        const nextAvailable = document.createElement('div');
-                        nextAvailable.style.cssText = 'font-size: 12px; color: #aaa; margin-top: 5px;';
-                        nextAvailable.textContent = `Próxima disponibilidad: ${formatCooldown(userMission.cooldown)}`;
-                        missionItem.appendChild(nextAvailable);
-                    }
+                    const lastClaim = userProfile.last_mission_claim[missionId];
+                    const nextAvailable = new Date(new Date(lastClaim).getTime() + (24 * 60 * 60 * 1000));
+                    
+                    const nextAvailableText = document.createElement('div');
+                    nextAvailableText.style.cssText = 'font-size: 12px; color: #aaa; margin-top: 5px;';
+                    nextAvailableText.textContent = `Próxima disponibilidad: ${formatCooldown(nextAvailable)}`;
+                    missionItem.appendChild(nextAvailableText);
                 }
                 
                 missionsList.appendChild(missionItem);
@@ -1211,25 +1131,12 @@
                 }
             });
             
-            // Calcular fecha de próximo cooldown (24 horas)
-            const now = new Date();
-            const cooldownUntil = new Date(now.getTime() + missionConfig.cooldownHours * 60 * 60 * 1000);
-            
-            // Actualizar misión en base de datos (si estamos usando Supabase)
-            if (userId && userId !== 'demo-user-id') {
-                const { error: missionError } = await supabase
-                    .from('user_missions')
-                    .update({
-                        completed: true,
-                        claimed: true,
-                        cooldown_until: cooldownUntil.toISOString(),
-                        last_claimed: now.toISOString()
-                    })
-                    .eq('user_id', userId)
-                    .eq('mission_id', missionId);
-                
-                if (missionError) throw missionError;
-            }
+            // Actualizar last_mission_claim para esta misión
+            const now = new Date().toISOString();
+            const updatedClaims = {
+                ...userProfile.last_mission_claim,
+                [missionId]: now
+            };
             
             // Actualizar puntos VIP
             const newVipPoints = userVipPoints + missionConfig.reward;
@@ -1237,20 +1144,22 @@
             
             // Actualizar en base de datos (si estamos usando Supabase)
             if (userId && userId !== 'demo-user-id') {
-                const { error: profileError } = await supabase
+                const { error } = await supabase
                     .from('profiles')
                     .update({
                         vip_points: newVipPoints,
-                        vip_level: newVipLevel
+                        vip_level: newVipLevel,
+                        last_mission_claim: updatedClaims
                     })
                     .eq('id', userId);
                 
-                if (profileError) throw profileError;
+                if (error) throw error;
             }
             
             // Actualizar variables locales
             userVipPoints = newVipPoints;
             userVipLevel = newVipLevel;
+            userProfile.last_mission_claim = updatedClaims;
             
             // Actualizar UI
             document.getElementById('userPoints').textContent = userVipPoints;
@@ -1306,7 +1215,6 @@
             document.getElementById('rewardModal').style.display = 'none';
         });
     }
-    
 </script>
 </body>
 </html>
