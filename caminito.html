@@ -12,467 +12,426 @@
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-  :root {
-    --primary: #4a00e0;
-    --secondary: #8e2de2;
-    --accent: #00c6ff;
-    --dark: #1a1a2e;
-    --light: #f8f9fa;
-  }
-  
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .logo {
-    font-size: 24px;
-    font-weight: bold;
-    background: linear-gradient(to right, #00c6ff, #0072ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .vip-level {
-    background: linear-gradient(to right, #f5af19, #f12711);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .vip-points {
-    background: linear-gradient(to right, #4a00e0, #8e2de2);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .btn {
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-  }
-  
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  .missions-btn {
-    position: relative;
-    background: linear-gradient(to right, #f5af19, #f12711);
-  }
-  
-  .badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-  }
-  
-  .missions-container {
-    padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-  
-  .missions-container::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  .missions-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-  
-  .missions-container::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-  }
-  
-  .missions-title {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 24px;
-    background: linear-gradient(to right, #00c6ff, #0072ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  
-  .missions-desc {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #aaa;
-  }
-  
-  .missions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .mission-item {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: all 0.3s ease;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .mission-item.completed {
-    background: rgba(46, 204, 113, 0.1);
-    border-left: 4px solid #2ecc71;
-  }
-  
-  .mission-item.claimed {
-    background: rgba(241, 196, 15, 0.1);
-    border-left: 4px solid #f1c40f;
-  }
-  
-  .mission-icon {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    flex-shrink: 0;
-  }
-  
-  .mission-content {
-    flex: 1;
-    min-width: 0;
-  }
-  
-  .mission-content h3 {
-    margin-bottom: 5px;
-    font-size: 16px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .mission-content p {
-    color: #aaa;
-    font-size: 14px;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .mission-reward {
-    color: #f1c40f;
-    font-weight: bold;
-    font-size: 14px;
-  }
-  
-  .claim-mission-btn {
-    background: linear-gradient(to right, #2ecc71, #27ae60);
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    flex-shrink: 0;
-  }
-  
-  .claim-mission-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.3);
-  }
-  
-  .mission-claimed {
-    color: #f1c40f;
-    font-weight: bold;
-    padding: 8px 15px;
-    flex-shrink: 0;
-  }
-  
-  .mission-cooldown {
-    color: #e74c3c;
-    font-weight: bold;
-    padding: 8px 15px;
-    flex-shrink: 0;
-  }
-  
-  .confetti {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    z-index: 1000;
-    pointer-events: none;
-  }
-  
-  .loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-  
-  .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--accent);
-    animation: spin 1s ease-in-out infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  .reward-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .reward-content {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    max-width: 400px;
-    width: 90%;
-    border: 2px solid var(--accent);
-    box-shadow: 0 0 30px rgba(0, 198, 255, 0.5);
-  }
-  
-  .reward-icon {
-    font-size: 60px;
-    margin-bottom: 15px;
-  }
-  
-  .reward-title {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: var(--accent);
-  }
-  
-  .reward-message {
-    margin-bottom: 15px;
-    color: #aaa;
-  }
-  
-  .reward-amount {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #f1c40f;
-  }
-  
-  .reward-close {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .info-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .info-content {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 30px;
-    border-radius: 15px;
-    max-width: 500px;
-    width: 90%;
-  }
-  
-  .info-content h2 {
-    margin-bottom: 15px;
-    color: var(--accent);
-  }
-  
-  .info-content p {
-    margin-bottom: 15px;
-    line-height: 1.6;
-  }
-  
-  .info-close {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-top: 15px;
-  }
-  
-  .mission-popup .swal2-popup {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 0;
-    overflow: hidden;
-    max-width: 800px;
-    width: 90%;
-  }
-  
-  .mission-popup .swal2-close {
-    color: white;
-  }
-  
-  .pulse {
-    animation: pulse 2s infinite;
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-  
-  .levels-container {
-    margin-top: 30px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-  }
-  
-  .level-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .level-card.current {
-    background: rgba(74, 0, 224, 0.2);
-    border: 2px solid var(--primary);
-    transform: scale(1.05);
-  }
-  
-  .level-card h3 {
-    margin-bottom: 10px;
-    color: var(--accent);
-  }
-  
-  .level-card p {
-    margin-bottom: 15px;
-    color: #aaa;
-  }
-  
-  .level-rewards {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .level-rewards ul {
-    text-align: left;
-    padding-left: 20px;
-  }
-  
-  .level-rewards li {
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-  
-  .level-progress {
-    height: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    margin-top: 10px;
-    overflow: hidden;
-  }
-  
-  .level-progress-bar {
-    height: 100%;
-    background: linear-gradient(to right, var(--primary), var(--secondary));
-    border-radius: 5px;
-    transition: width 0.5s ease;
-  }
-</style>
+        :root {
+            --primary: #4a00e0;
+            --secondary: #8e2de2;
+            --accent: #00c6ff;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .vip-level {
+            background: linear-gradient(to right, #f5af19, #f12711);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .vip-points {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .missions-btn {
+            position: relative;
+            background: linear-gradient(to right, #f5af19, #f12711);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .missions-container {
+            padding: 20px;
+        }
+        
+        .missions-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .missions-desc {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+        
+        .missions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mission-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .mission-item.completed {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .mission-item.claimed {
+            background: rgba(241, 196, 15, 0.1);
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .mission-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .mission-content {
+            flex: 1;
+        }
+        
+        .mission-content h3 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .mission-content p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .mission-reward {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .claim-mission-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .mission-claimed {
+            color: #f1c40f;
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+        
+        .mission-cooldown {
+            color: #e74c3c;
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .reward-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .reward-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 198, 255, 0.5);
+        }
+        
+        .reward-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .reward-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .reward-message {
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        
+        .reward-amount {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #f1c40f;
+        }
+        
+        .reward-close {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .info-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .info-content h2 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+        
+        .info-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .info-close {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
+        .mission-popup .swal2-popup {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .levels-container {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .level-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .level-card.current {
+            background: rgba(74, 0, 224, 0.2);
+            border: 2px solid var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .level-card h3 {
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .level-card p {
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        
+        .level-rewards {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .level-rewards ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .level-rewards li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .level-progress {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .level-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
