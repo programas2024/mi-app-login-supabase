@@ -15,85 +15,136 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
 
-        /* Estilos para el modal de misiones */
+/* Estilos mejorados para el modal de misiones */
 .mission-popup {
-  border-radius: 20px !important;
+  border-radius: 24px !important;
   overflow: hidden;
-  border: 2px solid #6e45e2;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(145deg, #1e1e3a 0%, #141432 100%) !important;
+  backdrop-filter: blur(10px);
 }
 
 .missions-container {
-  padding: 20px;
-  color: white;
+  padding: 25px;
+  color: #ffffff;
   max-width: 100%;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .missions-title {
   text-align: center;
   color: #88d3ce;
-  margin-bottom: 10px;
-  font-size: 28px;
+  margin-bottom: 15px;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
 .missions-desc {
   text-align: center;
-  margin-bottom: 20px;
-  opacity: 0.8;
+  margin-bottom: 25px;
+  opacity: 0.9;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #d1d1ff;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .missions-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 18px;
+  margin-top: 25px;
 }
 
 .mission-item {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px 20px;
   display: flex;
   align-items: center;
-  gap: 15px;
-  transition: all 0.3s ease;
+  gap: 18px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-left: 4px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.mission-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .mission-item.completed {
-  border-left-color: #6e45e2;
-  background: rgba(110, 69, 226, 0.1);
+  border-left-color: #8a63f2;
+  background: linear-gradient(90deg, rgba(110, 69, 226, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%);
+  animation: pulse-glow 3s infinite;
 }
 
 .mission-item.claimed {
-  opacity: 0.7;
+  opacity: 0.8;
   border-left-color: #00b894;
+  background: rgba(0, 184, 148, 0.05);
 }
 
 .mission-icon {
-  font-size: 24px;
-  min-width: 40px;
+  font-size: 28px;
+  min-width: 48px;
   text-align: center;
+  flex-shrink: 0;
+  color: #88d3ce;
+  text-shadow: 0 0 10px rgba(136, 211, 206, 0.3);
 }
 
 .mission-content {
   flex: 1;
+  min-width: 0; /* Evita que el contenido desborde */
 }
 
 .mission-content h3 {
-  margin: 0 0 5px 0;
-  color: #88d3ce;
+  margin: 0 0 8px 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .mission-content p {
   margin: 0;
-  opacity: 0.8;
-  font-size: 14px;
+  opacity: 0.9;
+  font-size: 15px;
+  color: #d1d1ff;
+  line-height: 1.4;
 }
 
 .mission-reward {
-  margin-top: 5px;
+  margin-top: 8px;
   color: #fdcb6e;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mission-reward::before {
+  content: '★';
   font-size: 14px;
 }
 
@@ -102,26 +153,97 @@
   color: white;
   border: none;
   border-radius: 50px;
-  padding: 8px 20px;
-  font-size: 14px;
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.claim-mission-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #88d3ce 0%, #6e45e2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .claim-mission-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(110, 69, 226, 0.4);
+}
+
+.claim-mission-btn:hover::after {
+  opacity: 1;
 }
 
 .mission-claimed {
   color: #00b894;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mission-claimed::before {
+  content: '✓';
   font-weight: bold;
-  font-size: 14px;
 }
 
 .mission-cooldown {
   color: #ff7675;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mission-cooldown::before {
+  content: '⏱';
   font-size: 14px;
+}
+
+/* Animaciones */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(138, 99, 242, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(138, 99, 242, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(138, 99, 242, 0); }
+}
+
+/* Efecto de brillo al pasar el ratón */
+.mission-item.completed:hover {
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mission-popup {
+    width: 90% !important;
+    max-width: 95% !important;
+  }
+  
+  .mission-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+  }
+  
+  .claim-mission-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
         :root {
             --gold: linear-gradient(135deg, #FFD700, #D4AF37);
