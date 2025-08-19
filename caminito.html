@@ -787,6 +787,12 @@
     console.log('[DEBUG] Inicializando cliente Supabase');
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Variables para control de reclamaciones
+    const claimedLevels = {
+        free: [],
+        premium: []
+    };
+
     // Obtener el ID del usuario autenticado
     let userId = null;
     
@@ -807,11 +813,11 @@
         userId = user.id;
         console.log('[DEBUG] ID de usuario obtenido:', userId);
         
-        // Verificar si existe el perfil
+        // Verificar si existe el perfil y cargar niveles reclamados
         console.log('[DEBUG] Verificando perfil existente para userId:', userId);
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('id, gold, diamonds, perla')
+            .select('id, gold, diamonds, perla, claimed_levels')
             .eq('id', userId)
             .single();
         
@@ -829,6 +835,7 @@
                     gold: 0,
                     diamonds: 0,
                     perla: 0,
+                    claimed_levels: { free: [], premium: [] },
                     updated_at: new Date().toISOString()
                 }])
                 .select()
@@ -842,6 +849,11 @@
             console.log('[DEBUG] Nuevo perfil creado:', newProfile);
         } else {
             console.log('[DEBUG] Perfil encontrado:', profile);
+            // Cargar niveles ya reclamados
+            if (profile.claimed_levels) {
+                claimedLevels.free = profile.claimed_levels.free || [];
+                claimedLevels.premium = profile.claimed_levels.premium || [];
+            }
         }
         
     } catch (error) {
@@ -894,6 +906,40 @@
         createLevel(i, 'premium', premiumRewards, premiumLevelsContainer, i <= currentLevel);
     }
     
+    // Función para verificar si un nivel ya fue reclamado
+    function isLevelClaimed(levelNumber, levelType) {
+        const typeKey = levelType === 'free' ? 'free' : 'premium';
+        return claimedLevels[typeKey].includes(levelNumber);
+    }
+
+    // Función para marcar un nivel como reclamado
+    async function markLevelAsClaimed(levelNumber, levelType) {
+        const typeKey = levelType === 'free' ? 'free' : 'premium';
+        
+        // Agregar a memoria local
+        claimedLevels[typeKey].push(levelNumber);
+        
+        // Actualizar en Supabase
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ 
+                    claimed_levels: claimedLevels,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', userId);
+            
+            if (error) throw error;
+            
+            console.log(`[DEBUG] Nivel ${levelNumber} (${typeKey}) marcado como reclamado`);
+        } catch (error) {
+            console.error('[ERROR] Error al marcar nivel como reclamado:', error);
+            // Revertir en memoria si falla
+            claimedLevels[typeKey] = claimedLevels[typeKey].filter(n => n !== levelNumber);
+            throw error;
+        }
+    }
+
     // Función para crear niveles
     function createLevel(number, type, rewards, container, isUnlocked) {
         const level = document.createElement('div');
@@ -906,7 +952,9 @@
         
         const levelStatus = document.createElement('div');
         levelStatus.className = 'level-status';
-        levelStatus.textContent = isUnlocked ? (number === currentLevel ? 'ACTUAL' : 'COMPLETADO') : 'BLOQUEADO';
+        levelStatus.textContent = isUnlocked ? 
+            (isLevelClaimed(number, type) ? 'RECLAMADO' : (number === currentLevel ? 'ACTUAL' : 'COMPLETADO')) : 
+            'BLOQUEADO';
         level.appendChild(levelStatus);
         
         if (rewards[number]) {
@@ -928,11 +976,18 @@
             if (isUnlocked) {
                 const claimBtn = document.createElement('button');
                 claimBtn.className = `claim-btn ${type === 'premium' ? 'premium' : ''}`;
-                claimBtn.textContent = rewards[number].special ? '¡RECLAMAR!' : 'Reclamar';
                 
-                claimBtn.addEventListener('click', async function() {
-                    await handleRewardClaim(number, type, rewards[number], this);
-                });
+                if (isLevelClaimed(number, type)) {
+                    claimBtn.textContent = '¡Reclamado!';
+                    claimBtn.style.background = '#00B894';
+                    claimBtn.disabled = true;
+                } else {
+                    claimBtn.textContent = rewards[number].special ? '¡RECLAMAR!' : 'Reclamar';
+                    
+                    claimBtn.addEventListener('click', async function() {
+                        await handleRewardClaim(number, type, rewards[number], this);
+                    });
+                }
                 
                 rewardContainer.appendChild(claimBtn);
             }
@@ -957,6 +1012,12 @@
         if (!userId) {
             console.error('[ERROR] userId no definido al intentar reclamar');
             alert('No se pudo identificar tu usuario. Por favor inicia sesión nuevamente.');
+            return;
+        }
+        
+        // Verificar si ya fue reclamado (doble verificación)
+        if (isLevelClaimed(level, type)) {
+            console.log(`[DEBUG] Nivel ${level} (${type}) ya fue reclamado anteriormente`);
             return;
         }
         
@@ -1002,13 +1063,22 @@
             
             console.log(`[DEBUG] Actualizando ${updateField} de ${currentValue} a ${newValue}`);
             
-            // Actualizar en Supabase
+            // Actualizar en Supabase (usando transacción para mayor seguridad)
+            const updates = {
+                [updateField]: newValue,
+                claimed_levels: {
+                    ...claimedLevels,
+                    [type === 'free' ? 'free' : 'premium']: [
+                        ...claimedLevels[type === 'free' ? 'free' : 'premium'],
+                        level
+                    ]
+                },
+                updated_at: new Date().toISOString()
+            };
+            
             const { data: updatedProfile, error: updateError } = await supabase
                 .from('profiles')
-                .update({ 
-                    [updateField]: newValue,
-                    updated_at: new Date().toISOString()
-                })
+                .update(updates)
                 .eq('id', userId)
                 .select();
             
@@ -1017,10 +1087,7 @@
                     error: updateError,
                     query: {
                         table: 'profiles',
-                        updates: {
-                            [updateField]: newValue,
-                            updated_at: new Date().toISOString()
-                        },
+                        updates: updates,
                         userId: userId
                     }
                 });
@@ -1028,6 +1095,9 @@
             }
             
             console.log('[DEBUG] Perfil actualizado con éxito:', updatedProfile);
+            
+            // Actualizar en memoria local
+            claimedLevels[type === 'free' ? 'free' : 'premium'].push(level);
             
             // Mostrar feedback al usuario
             showReward(level, type, reward);
@@ -1055,8 +1125,6 @@
             document.getElementById('loadingSpinner').style.display = 'none';
         }
     }
-    
-    // [Resto de las funciones (showReward, createConfetti, etc.) permanecen igual]
     
     // Modal de recompensa
     const rewardModal = document.getElementById('rewardModal');
