@@ -886,7 +886,7 @@
     // Cargar misiones desde la base de datos
     async function loadMissions() {
         try {
-            if (!userId) {
+            if (!userId || userId === 'demo-user-id') {
                 // Para demostración, devolver misiones de ejemplo
                 return {
                     login: { completed: true, claimed: false, cooldown: null, last_claimed: null },
@@ -1130,15 +1130,6 @@
                 showCloseButton: true,
                 customClass: {
                     popup: 'mission-popup'
-                },
-                willOpen: () => {
-                    // Animación de entrada
-                    gsap.from('.mission-item', {
-                        opacity: 0,
-                        y: 20,
-                        duration: 0.5,
-                        stagger: 0.1
-                    });
                 }
             });
             
