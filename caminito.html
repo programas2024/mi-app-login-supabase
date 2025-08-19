@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Misiones VIP</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <title>VIP Diamond Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <!-- GSAP para animaciones -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  
+  <!-- Font Awesome para iconos (opcional) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
+
+  :root {
             --primary: #4a00e0;
             --secondary: #8e2de2;
             --accent: #00c6ff;
@@ -368,7 +375,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+  <div class="container">
         <header>
             <div class="logo">JUEGO VIP</div>
             <div class="user-info">
@@ -415,22 +422,20 @@
             <button class="info-close" id="closeModal">Entendido</button>
         </div>
     </div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Configuración de Supabase
     
-            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-            
-          
+    <script>
+      document.addEventListener('DOMContentLoaded', async function() {
+    console.log('[DEBUG] DOM completamente cargado');
+    
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    console.log('[DEBUG] Inicializando cliente Supabase');
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        console.log('[DEBUG] Inicializando cliente Supabase');
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Variables globales
+
+     // Variables globales
         let userId = null;
         let userVipPoints = 0;
         let userVipLevel = 1;
@@ -1009,6 +1014,10 @@
                 requestAnimationFrame(animate);
             }
         }
+    })();
+
+
+
     </script>
 </body>
 </html>
