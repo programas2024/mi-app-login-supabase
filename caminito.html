@@ -24,6 +24,9 @@
   background: linear-gradient(145deg, #1e1e3a 0%, #141432 100%) !important;
   backdrop-filter: blur(10px) !important;
   color: white !important;
+  max-height: 90vh !important; /* Limitar altura máxima */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .missions-container {
@@ -32,6 +35,33 @@
   max-width: 100% !important;
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif !important;
   background: transparent !important;
+  overflow-y: auto !important; /* Permitir scroll si contenido es largo */
+  flex-grow: 1 !important; /* Ocupar espacio disponible */
+}
+
+/* Botón de cerrar */
+.mission-close-btn {
+  position: absolute !important;
+  top: 15px !important;
+  right: 15px !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: white !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  z-index: 10 !important;
+}
+
+.mission-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: rotate(90deg) !important;
 }
 
 .missions-title {
@@ -42,6 +72,7 @@
   font-weight: 700 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   letter-spacing: 0.5px !important;
+  padding-right: 30px !important; /* Espacio para el botón cerrar */
 }
 
 .missions-desc {
@@ -59,14 +90,15 @@
 .missions-list {
   display: grid !important;
   grid-template-columns: 1fr !important;
-  gap: 18px !important;
+  gap: 22px !important; /* Más espacio entre misiones */
   margin-top: 25px !important;
+  padding-bottom: 15px !important;
 }
 
 .mission-item {
   background: rgba(255, 255, 255, 0.12) !important;
   border-radius: 16px !important;
-  padding: 18px 20px !important;
+  padding: 20px !important; /* Más padding */
   display: flex !important;
   align-items: center !important;
   gap: 18px !important;
@@ -76,6 +108,7 @@
   position: relative !important;
   overflow: hidden !important;
   color: white !important;
+  min-height: auto !important; /* Altura automática */
 }
 
 .mission-item::before {
@@ -166,6 +199,8 @@
   position: relative !important;
   overflow: hidden !important;
   z-index: 1 !important;
+  margin-left: auto !important; /* Mover botón a la derecha */
+  min-width: 120px !important; /* Ancho mínimo para consistencia */
 }
 
 .claim-mission-btn::after {
@@ -197,6 +232,8 @@
   display: flex !important;
   align-items: center !important;
   gap: 5px !important;
+  margin-left: auto !important; /* Alinear a la derecha */
+  padding-right: 10px !important;
 }
 
 .mission-claimed::before {
@@ -210,6 +247,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 5px !important;
+  margin-left: auto !important; /* Alinear a la derecha */
 }
 
 .mission-cooldown::before {
@@ -252,9 +290,13 @@
     padding: 15px !important;
   }
   
-  .claim-mission-btn {
+  .claim-mission-btn,
+  .mission-claimed,
+  .mission-cooldown {
     width: 100% !important;
     margin-top: 10px !important;
+    margin-left: 0 !important;
+    justify-content: center !important;
   }
 }
 
@@ -1851,6 +1893,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // window.location.href = '/dashboard';
     });
 });
+
+
+// Crear botón de cerrar
+const closeBtn = document.createElement('button');
+closeBtn.className = 'mission-close-btn';
+closeBtn.innerHTML = '&times;';
+closeBtn.addEventListener('click', () => Swal.close());
+missionsContent.appendChild(closeBtn);
     </script>
 </body>
 </html>
