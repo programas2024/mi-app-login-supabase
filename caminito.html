@@ -995,6 +995,19 @@
                 if (!userMission.completed && !userMission.claimed) {
                     if (missionConfig.check) {
                         isCompleted = await missionConfig.check();
+                        
+                        // Si la misión se completó, actualizar en la base de datos
+                        if (isCompleted && userId && userId !== 'demo-user-id') {
+                            const { error } = await supabase
+                                .from('user_missions')
+                                .update({
+                                    completed: true
+                                })
+                                .eq('user_id', userId)
+                                .eq('mission_id', missionId);
+                            
+                            if (error) console.error('[ERROR] Error al actualizar misión:', error);
+                        }
                     }
                 }
                 
@@ -1063,13 +1076,27 @@
                     last_claimed: null
                 };
                 
-                const missionItem = document.createElement('div');
-                missionItem.className = `mission-item ${userMission.completed ? 'completed' : ''} ${userMission.claimed ? 'claimed' : ''}`;
+                // Verificar si la misión está completada (especialmente para la misión de login)
+                let isCompleted = userMission.completed;
+                if (!isCompleted && missionConfig.check) {
+                    isCompleted = await missionConfig.check();
+                }
                 
-                // Icono
+                const missionItem = document.createElement('div');
+                missionItem.className = `mission-item ${isCompleted ? 'completed' : ''} ${userMission.claimed ? 'claimed' : ''}`;
+                
+                // Icono - mostrar ✅ si está reclamada, 🎯 si está completada pero no reclamada, 🔒 si no está completada
                 const missionIcon = document.createElement('div');
                 missionIcon.className = 'mission-icon';
-                missionIcon.textContent = userMission.claimed ? '✅' : userMission.completed ? '🎯' : '🔒';
+                
+                if (userMission.claimed) {
+                    missionIcon.textContent = '✅';
+                } else if (isCompleted) {
+                    missionIcon.textContent = '🎯';
+                } else {
+                    missionIcon.textContent = '🔒';
+                }
+                
                 missionItem.appendChild(missionIcon);
                 
                 // Contenido
@@ -1101,7 +1128,7 @@
                 missionItem.appendChild(missionContent);
                 
                 // Botón de reclamar
-                if (userMission.completed && !userMission.claimed) {
+                if (isCompleted && !userMission.claimed) {
                     const claimBtn = document.createElement('button');
                     claimBtn.className = 'claim-mission-btn';
                     claimBtn.textContent = 'Reclamar';
@@ -1187,6 +1214,7 @@
                 const { error: missionError } = await supabase
                     .from('user_missions')
                     .update({
+                        completed: true,
                         claimed: true,
                         cooldown_until: cooldownUntil.toISOString(),
                         last_claimed: now.toISOString()
