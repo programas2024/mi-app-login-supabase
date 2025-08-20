@@ -549,7 +549,7 @@
             <div class="shop-item">
                 <div class="item-icon">🎉</div>
                 <h3 class="item-name">Caja Sorpresa</h3>
-                <p class="item-description">Entre 100 y 900 unidades de un recurso aleatorio</p>
+                <p class="item-description">Entre 100 and 900 unidades de un recurso aleatorio</p>
                 <div class="item-price">
                     <i class="fas fa-star"></i> 100 Estrellas
                 </div>
@@ -593,7 +593,7 @@
             <div class="shop-item">
                 <div class="item-icon">👑</div>
                 <h3 class="item-name">Paquete VIP</h3>
-                <p class="item-description">Entre 60 y 190 puntos VIP para ascender de nivel</p>
+                <p class="item-description">Entre 60 and 190 puntos VIP para ascender de nivel</p>
                 <div class="item-price">
                     <i class="fas fa-star"></i> 80 Estrellas
                 </div>
@@ -617,7 +617,7 @@
                 <div class="offer-badge">OFERTA</div>
                 <div class="item-icon">🔥</div>
                 <h3 class="item-name">Oferta Especial</h3>
-                <p class="item-description">¡Recursos duplicados! 400 oro, 200 diamantes, 40 VIP, 20 perlas y 10 estrellas</p>
+                <p class="item-description" id="offerDescription">¡Recursos duplicados! 400 oro, 200 diamantes, 40 VIP, 20 perlas y 10 estrellas</p>
                 <div class="item-price">
                     <i class="fas fa-star"></i> <span id="offerPrice">150</span> Estrellas
                 </div>
@@ -657,9 +657,11 @@
     let userVip = 0;
     let userProfile = {};
     let lastDailyClaim = null;
+    let lastOfferClaim = null;
     let currentOfferPrice = 150;
     let offerEndTime = null;
     let isDemoMode = false;
+    let currentOfferRewards = {};
     
     // Precios de los artículos en estrellas
     const itemPrices = {
@@ -737,7 +739,8 @@
                     vip_points: userVip,
                     gold: 100,
                     diamonds: 50,
-                    perla: 30
+                    perla: 30,
+                    last_offer_claim: null
                 };
                 
                 document.getElementById('userStars').textContent = userStars;
@@ -792,7 +795,8 @@
                 vip_points: userVip,
                 gold: 100,
                 diamonds: 50,
-                perla: 30
+                perla: 30,
+                last_offer_claim: null
             };
             
             document.getElementById('userStars').textContent = userStars;
@@ -845,7 +849,8 @@
                         vip_points: userVip,
                         gold: 100,
                         diamonds: 50,
-                        perla: 30
+                        perla: 30,
+                        last_offer_claim: null
                     };
                 } else {
                     throw error;
@@ -855,6 +860,20 @@
                 userStars = profile.stars || 0;
                 userVip = profile.vip_points || 0;
                 lastDailyClaim = profile.last_daily_claim || null;
+                lastOfferClaim = profile.last_offer_claim || null;
+                
+                // Si no existe el campo last_offer_claim, inicializarlo
+                if (profile.last_offer_claim === undefined) {
+                    // Actualizar la base de datos para añadir el campo
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ last_offer_claim: null })
+                        .eq('id', userId);
+                    
+                    if (!updateError) {
+                        lastOfferClaim = null;
+                    }
+                }
             }
             
             document.getElementById('userStars').textContent = userStars;
@@ -868,9 +887,18 @@
     
     // Inicializar el sistema de ofertas
     function initOfferSystem() {
-        // Establecer tiempo de finalización de la oferta (24 horas desde ahora)
-        offerEndTime = new Date();
-        offerEndTime.setHours(offerEndTime.getHours() + 24);
+        // Si ya se reclamó una oferta, establecer el tiempo de finalización
+        if (lastOfferClaim) {
+            const lastClaim = new Date(lastOfferClaim);
+            offerEndTime = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);
+        } else {
+            // Establecer tiempo de finalización de la oferta (24 horas desde ahora)
+            offerEndTime = new Date();
+            offerEndTime.setHours(offerEndTime.getHours() + 24);
+        }
+        
+        // Generar recompensas aleatorias para la oferta
+        generateRandomOffer();
         
         // Iniciar el contador de la oferta
         updateOfferTimer();
@@ -879,10 +907,30 @@
         setInterval(updateOfferPrice, 3600000);
     }
     
+    // Generar oferta aleatoria
+    function generateRandomOffer() {
+        // Multiplicador base (entre 1.5 y 3)
+        const multiplier = (Math.random() * 1.5) + 1.5;
+        
+        // Generar recompensas aleatorias
+        currentOfferRewards = {
+            gold: Math.floor(200 * multiplier),
+            diamonds: Math.floor(100 * multiplier),
+            vip_points: Math.floor(20 * multiplier),
+            perla: Math.floor(10 * multiplier),
+            stars: Math.floor(5 * multiplier)
+        };
+        
+        // Actualizar la descripción de la oferta
+        const offerDescription = document.getElementById('offerDescription');
+        offerDescription.textContent = 
+            `¡Oferta Especial! ${currentOfferRewards.gold} oro, ${currentOfferRewards.diamonds} diamantes, ${currentOfferRewards.vip_points} VIP, ${currentOfferRewards.perla} perlas y ${currentOfferRewards.stars} estrellas`;
+    }
+    
     // Actualizar el temporizador de la oferta
     function updateOfferTimer() {
         const offerTimerElement = document.getElementById('offerTimer');
-        const offerPriceElement = document.getElementById('offerPrice');
+        const offerButton = document.getElementById('specialOfferButton');
         
         if (!offerEndTime) return;
         
@@ -895,8 +943,30 @@
                 offerEndTime = new Date();
                 offerEndTime.setHours(offerEndTime.getHours() + 24);
                 currentOfferPrice = 150;
-                offerPriceElement.textContent = currentOfferPrice;
+                document.getElementById('offerPrice').textContent = currentOfferPrice;
                 offerTimerElement.textContent = '';
+                
+                // Generar nuevas recompensas aleatorias
+                generateRandomOffer();
+                
+                // Habilitar el botón
+                offerButton.disabled = false;
+                offerButton.textContent = '¡Oferta Especial!';
+                
+                // Limpiar el último reclamo
+                lastOfferClaim = null;
+                
+                // Actualizar en la base de datos si no estamos en modo demo
+                if (!isDemoMode && supabase) {
+                    supabase
+                        .from('profiles')
+                        .update({ last_offer_claim: null })
+                        .eq('id', userId)
+                        .then(({ error }) => {
+                            if (error) console.error('Error al actualizar last_offer_claim:', error);
+                        });
+                }
+                
                 return;
             }
             
@@ -904,7 +974,13 @@
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
             
-            offerTimerElement.textContent = `Finaliza en: ${hours}h ${minutes}m ${seconds}s`;
+            offerTimerElement.textContent = `Disponible en: ${hours}h ${minutes}m ${seconds}s`;
+            
+            // Deshabilitar el botón si la oferta está en cooldown
+            if (lastOfferClaim) {
+                offerButton.disabled = true;
+                offerButton.textContent = 'En espera';
+            }
             
             setTimeout(updateTimer, 1000);
         };
@@ -914,19 +990,33 @@
     
     // Actualizar el precio de la oferta (cada hora)
     function updateOfferPrice() {
-        const now = new Date();
-        const timeLeft = offerEndTime - now;
-        const hoursLeft = timeLeft / (1000 * 60 * 60);
-        
-        // Reducir el precio gradualmente (más barato cuanto menos tiempo queda)
-        if (hoursLeft < 24) {
-            currentOfferPrice = Math.max(50, Math.floor(150 * (hoursLeft / 24)));
-            document.getElementById('offerPrice').textContent = currentOfferPrice;
-            itemPrices.special_offer = currentOfferPrice;
+        // Solo actualizar el precio si la oferta no está en cooldown
+        if (!lastOfferClaim) {
+            const now = new Date();
+            const timeLeft = offerEndTime - now;
+            const hoursLeft = timeLeft / (1000 * 60 * 60);
             
-            // Actualizar estado del botón
-            updateButtonsState();
+            // Reducir el precio gradualmente (más barato cuanto menos tiempo queda)
+            if (hoursLeft < 24) {
+                currentOfferPrice = Math.max(50, Math.floor(150 * (hoursLeft / 24)));
+                document.getElementById('offerPrice').textContent = currentOfferPrice;
+                itemPrices.special_offer = currentOfferPrice;
+                
+                // Actualizar estado del botón
+                updateButtonsState();
+            }
         }
+    }
+    
+    // Verificar si la oferta especial está en cooldown
+    function isOfferOnCooldown() {
+        if (!lastOfferClaim) return false;
+        
+        const now = new Date();
+        const lastClaim = new Date(lastOfferClaim);
+        const diffHours = (now - lastClaim) / (1000 * 60 * 60);
+        
+        return diffHours < 24;
     }
     
     // Mostrar información sobre la tienda
@@ -939,7 +1029,7 @@
                     <p><strong>🌟 Estrellas:</strong> Obtén estrellas completando misiones VIP.</p>
                     <p><strong>👑 Puntos VIP:</strong> Aumenta tu nivel VIP para desbloquear beneficios exclusivos.</p>
                     <p><strong>🔄 Tirada Diaria:</strong> Reclama tu recompensa gratuita cada 24 horas.</p>
-                    <p><strong>🔥 Oferta Especial:</strong> Esta oferta se vuelve más barata con el tiempo. ¡No esperes demasiado!</p>
+                    <p><strong>🔥 Oferta Especial:</strong> Esta oferta se vuelve más barata con el tiempo y se renueva cada 24 horas con recompensas aleatorias.</p>
                 </div>
             `,
             icon: 'info',
@@ -1064,16 +1154,19 @@
                     break;
                 case 'special_offer':
                     isDoubleReward = true;
-                    const doubleMultiplier = 2;
                     
-                    updates.gold = (userProfile.gold || 0) + (200 * doubleMultiplier);
-                    updates.diamonds = (userProfile.diamonds || 0) + (100 * doubleMultiplier);
-                    updates.vip_points = (userProfile.vip_points || 0) + (20 * doubleMultiplier);
-                    updates.perla = (userProfile.perla || 0) + (10 * doubleMultiplier);
-                    updates.stars = newStars + (5 * doubleMultiplier);
+                    updates.gold = (userProfile.gold || 0) + currentOfferRewards.gold;
+                    updates.diamonds = (userProfile.diamonds || 0) + currentOfferRewards.diamonds;
+                    updates.vip_points = (userProfile.vip_points || 0) + currentOfferRewards.vip_points;
+                    updates.perla = (userProfile.perla || 0) + currentOfferRewards.perla;
+                    updates.stars = newStars + currentOfferRewards.stars;
                     
-                    rewardMessage = '¡Oferta Especial con Recursos Duplicados!';
-                    rewardAmount = `+${400} Oro, +${200} Diamantes, +${40} VIP, +${20} Perlas, +${10} Estrellas`;
+                    // Guardar el momento de la compra para el cooldown de 24 horas
+                    updates.last_offer_claim = new Date().toISOString();
+                    lastOfferClaim = updates.last_offer_claim;
+                    
+                    rewardMessage = '¡Oferta Especial Adquirida!';
+                    rewardAmount = `+${currentOfferRewards.gold} Oro, +${currentOfferRewards.diamonds} Diamantes, +${currentOfferRewards.vip_points} VIP, +${currentOfferRewards.perla} Perlas, +${currentOfferRewards.stars} Estrellas`;
                     rewardIcon = '🔥';
                     break;
             }
@@ -1114,6 +1207,11 @@
             document.getElementById('userVip').textContent = userVip;
             updateButtonsState();
             startDailyCooldownTimer();
+            
+            // Si es una oferta especial, reiniciar el temporizador
+            if (itemType === 'special_offer') {
+                initOfferSystem();
+            }
             
             // Efectos de confeti
             confetti({
@@ -1166,13 +1264,23 @@
                     button.disabled = false;
                     button.textContent = 'Reclamar Ahora';
                 }
+            } else if (itemType === 'special_offer') {
+                if (isOfferOnCooldown()) {
+                    button.disabled = true;
+                    button.textContent = 'En espera';
+                } else if (userStars < itemPrices[itemType]) {
+                    button.disabled = true;
+                    button.textContent = 'Estrellas insuficientes';
+                } else {
+                    button.disabled = false;
+                    button.textContent = '¡Oferta Especial!';
+                }
             } else if (userStars < itemPrices[itemType]) {
                 button.disabled = true;
                 button.textContent = 'Estrellas insuficientes';
             } else {
                 button.disabled = false;
-                const itemText = itemType === 'daily' ? 'Reclamar Ahora' : (itemType === 'special_offer' ? '¡Oferta Especial!' : 'Canjear Ahora');
-                button.textContent = itemText;
+                button.textContent = 'Canjear Ahora';
             }
         });
     }
@@ -1238,6 +1346,21 @@
             Swal.fire({
                 title: 'Estrellas insuficientes',
                 text: 'Necesitas más estrellas para realizar esta compra. Completa misiones VIP para obtener más estrellas.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                background: 'var(--gradient-bg)',
+                customClass: {
+                    popup: 'swal2-popup-custom'
+                }
+            });
+            return;
+        }
+        
+        // Verificar si la oferta especial está en cooldown
+        if (itemType === 'special_offer' && isOfferOnCooldown()) {
+            Swal.fire({
+                title: 'Oferta en espera',
+                text: 'Ya has reclamado la oferta especial. Vuelve en 24 horas para una nueva oferta.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido',
                 background: 'var(--gradient-bg)',
