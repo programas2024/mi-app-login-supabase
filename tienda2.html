@@ -23,7 +23,6 @@
             --gradient-success: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
             --gradient-warning: linear-gradient(135deg, #ff0008 0%, #ff3801 100%);
             --offer-gradient: linear-gradient(135deg, #000000 0%, #881905 100%);
-            --offer2-gradient: linear-gradient(135deg, #000000 0%, #053988 100%);
         }
 
         * {
@@ -231,15 +230,7 @@
             overflow: hidden;
         }
 
-        .special-offer2 {
-            border: 2px solid #4f92e3;
-            background: var(--offer2-gradient);
-            animation: pulse2 2s infinite;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .special-offer::before, .special-offer2::before {
+        .special-offer::before {
             content: "";
             position: absolute;
             top: -50%;
@@ -266,31 +257,11 @@
             100% { box-shadow: 0 0 0 rgba(255, 142, 83, 0.4); }
         }
 
-        @keyframes pulse2 {
-            0% { box-shadow: 0 0 0 rgba(79, 146, 227, 0.4); }
-            70% { box-shadow: 0 0 20px rgba(79, 146, 227, 0.8); }
-            100% { box-shadow: 0 0 0 rgba(79, 146, 227, 0.4); }
-        }
-
         .offer-badge {
             position: absolute;
             top: -10px;
             right: -10px;
             background: #ff6b6b;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transform: rotate(5deg);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .offer-badge2 {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #4f92e3;
             color: white;
             padding: 5px 10px;
             border-radius: 15px;
@@ -641,7 +612,7 @@
                 <div class="cooldown" id="dailyCooldown"></div>
             </div>
             
-            <!-- Artículo 11: Oferta Especial 1 -->
+            <!-- Artículo 11: Oferta Especial -->
             <div class="shop-item special-offer">
                 <div class="offer-badge">OFERTA</div>
                 <div class="item-icon">🔥</div>
@@ -652,19 +623,6 @@
                 </div>
                 <button class="item-button" id="specialOfferButton" onclick="buyItem('special_offer')">¡Oferta Especial!</button>
                 <div class="cooldown" id="offerTimer"></div>
-            </div>
-            
-            <!-- Artículo 12: Oferta Especial 2 -->
-            <div class="shop-item special-offer2">
-                <div class="offer-badge2">TRIPLE</div>
-                <div class="item-icon">⚡</div>
-                <h3 class="item-name">Oferta Triple</h3>
-                <p class="item-description" id="offer2Description">¡Recursos triples! 700 oro, 700 diamantes, 500 perlas, 100 VIP</p>
-                <div class="item-price">
-                    <i class="fas fa-star"></i> <span id="offer2Price">500</span> Estrellas
-                </div>
-                <button class="item-button" id="specialOffer2Button" onclick="buyItem('special_offer2')">¡Oferta Triple!</button>
-                <div class="cooldown" id="offer2Timer"></div>
             </div>
         </div>
         
@@ -690,7 +648,7 @@
 <script>
    // Configuración de Supabase - REVISAR ESTOS VALORES
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3RwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
     
     // Variables globales
     let supabase = null;
@@ -700,14 +658,10 @@
     let userProfile = {};
     let lastDailyClaim = null;
     let lastOfferClaim = null;
-    let lastOffer2Claim = null;
     let currentOfferPrice = 150;
-    let currentOffer2Price = 500;
     let offerEndTime = null;
-    let offer2EndTime = null;
     let isDemoMode = false;
     let currentOfferRewards = {};
-    let currentOffer2Rewards = {};
     
     // Precios de los artículos en estrellas
     const itemPrices = {
@@ -721,8 +675,7 @@
         diamantes_especiales: 300,
         vip: 80,
         daily: 0,
-        special_offer: 150,
-        special_offer2: 500
+        special_offer: 150
     };
     
     // Nombres y emojis de los artículos
@@ -737,8 +690,7 @@
         diamantes_especiales: { name: "Diamantes Puros", icon: "💠" },
         vip: { name: "Paquete VIP", icon: "👑" },
         daily: { name: "Tirada Diaria Gratuita", icon: "🔄" },
-        special_offer: { name: "Oferta Especial", icon: "🔥" },
-        special_offer2: { name: "Oferta Triple", icon: "⚡" }
+        special_offer: { name: "Oferta Especial", icon: "🔥" }
     };
     
     // Configurar la tienda al cargar la página - CON MEJOR MANEJO DE ERRORES
@@ -788,8 +740,7 @@
                     gold: 100,
                     diamonds: 50,
                     perla: 30,
-                    last_offer_claim: null,
-                    last_offer2_claim: null
+                    last_offer_claim: null
                 };
                 
                 document.getElementById('userStars').textContent = userStars;
@@ -818,7 +769,6 @@
             updateButtonsState();
             startDailyCooldownTimer();
             initOfferSystem();
-            initOffer2System();
             
             // Configurar event listeners
             document.getElementById('backBtn').addEventListener('click', function() {
@@ -846,8 +796,7 @@
                 gold: 100,
                 diamonds: 50,
                 perla: 30,
-                last_offer_claim: null,
-                last_offer2_claim: null
+                last_offer_claim: null
             };
             
             document.getElementById('userStars').textContent = userStars;
@@ -855,7 +804,6 @@
             updateButtonsState();
             startDailyCooldownTimer();
             initOfferSystem();
-            initOffer2System();
             
             // Mostrar advertencia solo si es un error grave (no de autenticación)
             if (!error.message.includes('Auth') && !error.message.includes('authenticat')) {
@@ -902,8 +850,7 @@
                         gold: 100,
                         diamonds: 50,
                         perla: 30,
-                        last_offer_claim: null,
-                        last_offer2_claim: null
+                        last_offer_claim: null
                     };
                 } else {
                     throw error;
@@ -914,10 +861,10 @@
                 userVip = profile.vip_points || 0;
                 lastDailyClaim = profile.last_daily_claim || null;
                 lastOfferClaim = profile.last_offer_claim || null;
-                lastOffer2Claim = profile.last_offer2_claim || null;
                 
-                // Si no existen los campos de ofertas, inicializarlos
+                // Si no existe el campo last_offer_claim, inicializarlo
                 if (profile.last_offer_claim === undefined) {
+                    // Actualizar la base de datos para añadir el campo
                     const { error: updateError } = await supabase
                         .from('profiles')
                         .update({ last_offer_claim: null })
@@ -925,17 +872,6 @@
                     
                     if (!updateError) {
                         lastOfferClaim = null;
-                    }
-                }
-                
-                if (profile.last_offer2_claim === undefined) {
-                    const { error: updateError } = await supabase
-                        .from('profiles')
-                        .update({ last_offer2_claim: null })
-                        .eq('id', userId);
-                    
-                    if (!updateError) {
-                        lastOffer2Claim = null;
                     }
                 }
             }
@@ -949,7 +885,7 @@
         }
     }
     
-    // Inicializar el sistema de ofertas 1
+    // Inicializar el sistema de ofertas
     function initOfferSystem() {
         // Si ya se reclamó una oferta, establecer el tiempo de finalización
         if (lastOfferClaim) {
@@ -971,29 +907,7 @@
         setInterval(updateOfferPrice, 3600000);
     }
     
-    // Inicializar el sistema de ofertas 2
-    function initOffer2System() {
-        // Si ya se reclamó una oferta 2, establecer el tiempo de finalización
-        if (lastOffer2Claim) {
-            const lastClaim = new Date(lastOffer2Claim);
-            offer2EndTime = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);
-        } else {
-            // Establecer tiempo de finalización de la oferta (24 horas desde ahora)
-            offer2EndTime = new Date();
-            offer2EndTime.setHours(offer2EndTime.getHours() + 24);
-        }
-        
-        // Generar recompensas para la oferta 2 (triple)
-        generateOffer2Rewards();
-        
-        // Iniciar el contador de la oferta 2
-        updateOffer2Timer();
-        
-        // Actualizar precio de la oferta 2 cada hora
-        setInterval(updateOffer2Price, 3600000);
-    }
-    
-    // Generar oferta aleatoria 1
+    // Generar oferta aleatoria
     function generateRandomOffer() {
         // Multiplicador base (entre 1.5 y 3)
         const multiplier = (Math.random() * 1.5) + 1.5;
@@ -1013,24 +927,7 @@
             `¡Oferta Especial! ${currentOfferRewards.gold} oro, ${currentOfferRewards.diamonds} diamantes, ${currentOfferRewards.vip_points} VIP, ${currentOfferRewards.perla} perlas y ${currentOfferRewards.stars} estrellas`;
     }
     
-    // Generar recompensas para oferta 2 (triple)
-    function generateOffer2Rewards() {
-        // Recompensas triples fijas
-        currentOffer2Rewards = {
-            gold: 700,
-            diamonds: 700,
-            perla: 500,
-            vip_points: 100,
-            stars: 0  // Esta oferta no da estrellas extra
-        };
-        
-        // Actualizar la descripción de la oferta 2
-        const offer2Description = document.getElementById('offer2Description');
-        offer2Description.textContent = 
-            `¡Recursos triples! ${currentOffer2Rewards.gold} oro, ${currentOffer2Rewards.diamonds} diamantes, ${currentOffer2Rewards.perla} perlas, ${currentOffer2Rewards.vip_points} VIP`;
-    }
-    
-    // Actualizar el temporizador de la oferta 1
+    // Actualizar el temporizador de la oferta
     function updateOfferTimer() {
         const offerTimerElement = document.getElementById('offerTimer');
         const offerButton = document.getElementById('specialOfferButton');
@@ -1091,68 +988,7 @@
         updateTimer();
     }
     
-    // Actualizar el temporizador de la oferta 2
-    function updateOffer2Timer() {
-        const offer2TimerElement = document.getElementById('offer2Timer');
-        const offer2Button = document.getElementById('specialOffer2Button');
-        
-        if (!offer2EndTime) return;
-        
-        const updateTimer = () => {
-            const now = new Date();
-            const timeLeft = offer2EndTime - now;
-            
-            if (timeLeft <= 0) {
-                // Reiniciar la oferta
-                offer2EndTime = new Date();
-                offer2EndTime.setHours(offer2EndTime.getHours() + 24);
-                currentOffer2Price = 500;
-                document.getElementById('offer2Price').textContent = currentOffer2Price;
-                offer2TimerElement.textContent = '';
-                
-                // Generar recompensas para la oferta 2
-                generateOffer2Rewards();
-                
-                // Habilitar el botón
-                offer2Button.disabled = false;
-                offer2Button.textContent = '¡Oferta Triple!';
-                
-                // Limpiar el último reclamo
-                lastOffer2Claim = null;
-                
-                // Actualizar en la base de datos si no estamos en modo demo
-                if (!isDemoMode && supabase) {
-                    supabase
-                        .from('profiles')
-                        .update({ last_offer2_claim: null })
-                        .eq('id', userId)
-                        .then(({ error }) => {
-                            if (error) console.error('Error al actualizar last_offer2_claim:', error);
-                        });
-                }
-                
-                return;
-            }
-            
-            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
-            offer2TimerElement.textContent = `Disponible en: ${hours}h ${minutes}m ${seconds}s`;
-            
-            // Deshabilitar el botón si la oferta está en cooldown
-            if (lastOffer2Claim) {
-                offer2Button.disabled = true;
-                offer2Button.textContent = 'En espera';
-            }
-            
-            setTimeout(updateTimer, 1000);
-        };
-        
-        updateTimer();
-    }
-    
-    // Actualizar el precio de la oferta 1 (cada hora)
+    // Actualizar el precio de la oferta (cada hora)
     function updateOfferPrice() {
         // Solo actualizar el precio si la oferta no está en cooldown
         if (!lastOfferClaim) {
@@ -1172,43 +1008,12 @@
         }
     }
     
-    // Actualizar el precio de la oferta 2 (cada hora)
-    function updateOffer2Price() {
-        // Solo actualizar el precio si la oferta no está en cooldown
-        if (!lastOffer2Claim) {
-            const now = new Date();
-            const timeLeft = offer2EndTime - now;
-            const hoursLeft = timeLeft / (1000 * 60 * 60);
-            
-            // Reducir el precio gradualmente (más barato cuanto menos tiempo queda)
-            if (hoursLeft < 24) {
-                currentOffer2Price = Math.max(200, Math.floor(500 * (hoursLeft / 24)));
-                document.getElementById('offer2Price').textContent = currentOffer2Price;
-                itemPrices.special_offer2 = currentOffer2Price;
-                
-                // Actualizar estado del botón
-                updateButtonsState();
-            }
-        }
-    }
-    
-    // Verificar si la oferta especial 1 está en cooldown
+    // Verificar si la oferta especial está en cooldown
     function isOfferOnCooldown() {
         if (!lastOfferClaim) return false;
         
         const now = new Date();
         const lastClaim = new Date(lastOfferClaim);
-        const diffHours = (now - lastClaim) / (1000 * 60 * 60);
-        
-        return diffHours < 24;
-    }
-    
-    // Verificar si la oferta especial 2 está en cooldown
-    function isOffer2OnCooldown() {
-        if (!lastOffer2Claim) return false;
-        
-        const now = new Date();
-        const lastClaim = new Date(lastOffer2Claim);
         const diffHours = (now - lastClaim) / (1000 * 60 * 60);
         
         return diffHours < 24;
@@ -1225,7 +1030,6 @@
                     <p><strong>👑 Puntos VIP:</strong> Aumenta tu nivel VIP para desbloquear beneficios exclusivos.</p>
                     <p><strong>🔄 Tirada Diaria:</strong> Reclama tu recompensa gratuita cada 24 horas.</p>
                     <p><strong>🔥 Oferta Especial:</strong> Esta oferta se vuelve más barata con el tiempo y se renueva cada 24 horas con recompensas aleatorias.</p>
-                    <p><strong>⚡ Oferta Triple:</strong> Oferta con recursos triples que se renueva cada 24 horas.</p>
                 </div>
             `,
             icon: 'info',
@@ -1365,23 +1169,6 @@
                     rewardAmount = `+${currentOfferRewards.gold} Oro, +${currentOfferRewards.diamonds} Diamantes, +${currentOfferRewards.vip_points} VIP, +${currentOfferRewards.perla} Perlas, +${currentOfferRewards.stars} Estrellas`;
                     rewardIcon = '🔥';
                     break;
-                case 'special_offer2':
-                    isDoubleReward = true;
-                    
-                    updates.gold = (userProfile.gold || 0) + currentOffer2Rewards.gold;
-                    updates.diamonds = (userProfile.diamonds || 0) + currentOffer2Rewards.diamonds;
-                    updates.vip_points = (userProfile.vip_points || 0) + currentOffer2Rewards.vip_points;
-                    updates.perla = (userProfile.perla || 0) + currentOffer2Rewards.perla;
-                    updates.stars = newStars + currentOffer2Rewards.stars;
-                    
-                    // Guardar el momento de la compra para el cooldown de 24 horas
-                    updates.last_offer2_claim = new Date().toISOString();
-                    lastOffer2Claim = updates.last_offer2_claim;
-                    
-                    rewardMessage = '¡Oferta Triple Adquirida!';
-                    rewardAmount = `+${currentOffer2Rewards.gold} Oro, +${currentOffer2Rewards.diamonds} Diamantes, +${currentOffer2Rewards.vip_points} VIP, +${currentOffer2Rewards.perla} Perlas`;
-                    rewardIcon = '⚡';
-                    break;
             }
             
             // Si no estamos en modo demo, actualizar en la base de datos
@@ -1424,8 +1211,6 @@
             // Si es una oferta especial, reiniciar el temporizador
             if (itemType === 'special_offer') {
                 initOfferSystem();
-            } else if (itemType === 'special_offer2') {
-                initOffer2System();
             }
             
             // Efectos de confeti
@@ -1489,17 +1274,6 @@
                 } else {
                     button.disabled = false;
                     button.textContent = '¡Oferta Especial!';
-                }
-            } else if (itemType === 'special_offer2') {
-                if (isOffer2OnCooldown()) {
-                    button.disabled = true;
-                    button.textContent = 'En espera';
-                } else if (userStars < itemPrices[itemType]) {
-                    button.disabled = true;
-                    button.textContent = 'Estrellas insuficientes';
-                } else {
-                    button.disabled = false;
-                    button.textContent = '¡Oferta Triple!';
                 }
             } else if (userStars < itemPrices[itemType]) {
                 button.disabled = true;
@@ -1587,21 +1361,6 @@
             Swal.fire({
                 title: 'Oferta en espera',
                 text: 'Ya has reclamado la oferta especial. Vuelve en 24 horas para una nueva oferta.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
-                background: 'var(--gradient-bg)',
-                customClass: {
-                    popup: 'swal2-popup-custom'
-                }
-            });
-            return;
-        }
-        
-        // Verificar si la oferta especial 2 está en cooldown
-        if (itemType === 'special_offer2' && isOffer2OnCooldown()) {
-            Swal.fire({
-                title: 'Oferta en espera',
-                text: 'Ya has reclamado la oferta triple. Vuelve en 24 horas para una nueva oferta.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido',
                 background: 'var(--gradient-bg)',
