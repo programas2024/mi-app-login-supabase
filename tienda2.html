@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda VIP - Canje de Estrellas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a00e0;
+            --secondary: #8e2de2;
+            --accent: #00c6ff;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+            --diamond: #b9f2ff;
+            --pearl: #e6e6fa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stars-count {
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-back {
+            background: linear-gradient(to right, #6c757d, #495057);
+        }
+        
+        .shop-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .shop-subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .shop-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .shop-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .shop-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            opacity: 0.7;
+        }
+        
+        .shop-item.gold::before {
+            background: linear-gradient(to right, var(--gold), #ffaa00);
+        }
+        
+        .shop-item.diamond::before {
+            background: linear-gradient(to right, var(--diamond), #00c6ff);
+        }
+        
+        .shop-item.pearl::before {
+            background: linear-gradient(to right, var(--pearl), #9370db);
+        }
+        
+        .shop-item.mystery::before {
+            background: linear-gradient(to right, #ff00ff, #8a2be2);
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .item-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .gold .item-icon {
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .diamond .item-icon {
+            color: var(--diamond);
+            text-shadow: 0 0 15px rgba(185, 242, 255, 0.4);
+        }
+        
+        .pearl .item-icon {
+            color: var(--pearl);
+            text-shadow: 0 0 15px rgba(230, 230, 250, 0.4);
+        }
+        
+        .mystery .item-icon {
+            color: #ff00ff;
+            text-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+        }
+        
+        .item-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .item-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .item-button {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .item-button:hover {
+            background: linear-gradient(to right, #27ae60, #219653);
+            transform: scale(1.05);
+        }
+        
+        .item-button:disabled {
+            background: linear-gradient(to right, #7f8c8d, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stars-animation {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .reward-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .reward-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 198, 255, 0.5);
+        }
+        
+        .reward-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .reward-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .reward-message {
+            margin-bottom: 15px;
+            color: #aaa;
+        }
+        
+        .reward-amount {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #f1c40f;
+        }
+        
+        .reward-close {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">TIENDA VIP</div>
+            <div class="user-info">
+                <div class="stars-count">🌟 <span id="userStars">0</span> Estrellas</div>
+                <button class="btn btn-back" id="backBtn">Volver</button>
+            </div>
+        </header>
+        
+        <main>
+            <h1 class="shop-title">Tienda de Estrellas</h1>
+            <p class="shop-subtitle">Canjea tus estrellas por recursos exclusivos</p>
+            
+            <div class="shop-container">
+                <!-- Oro -->
+                <div class="shop-item gold">
+                    <div class="item-icon">🪙</div>
+                    <h3 class="item-title">Paquete de Oro</h3>
+                    <p class="item-description">Obtén 50 monedas de oro para tus compras en el juego</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>5 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('gold')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Diamantes -->
+                <div class="shop-item diamond">
+                    <div class="item-icon">💎</div>
+                    <h3 class="item-title">Lote de Diamantes</h3>
+                    <p class="item-description">Consigue 100 diamantes para mejorar tu equipo</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>60 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('diamond')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Perlas -->
+                <div class="shop-item pearl">
+                    <div class="item-icon">🔮</div>
+                    <h3 class="item-title">Bolsa de Perlas</h3>
+                    <p class="item-description">Adquiere 50 perlas mágicas para potenciar tus habilidades</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>100 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('pearl')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Bolsa Múltiple -->
+                <div class="shop-item mystery">
+                    <div class="item-icon">🎁</div>
+                    <h3 class="item-title">Cofre Misterioso</h3>
+                    <p class="item-description">Un cofre sorpresa que puede contener entre 5 y 15 estrellas extra</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>80 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('mystery')">Canjear Ahora</button>
+                </div>
+            </div>
+        </main>
+        
+        <div class="footer">
+            <p>© 2023 Juego VIP - Todos los derechos reservados</p>
+        </div>
+    </div>
+    
+    <div class="loading" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+    
+    <div class="reward-modal" id="rewardModal">
+        <div class="reward-content">
+            <div class="reward-icon" id="rewardIcon">🎉</div>
+            <h2 class="reward-title" id="rewardTitle">¡Compra Exitosa!</h2>
+            <p class="reward-message" id="rewardMessage">Has canjeado tus estrellas correctamente</p>
+            <div class="reward-amount" id="rewardAmount">+50 Oro</div>
+            <button class="reward-close" id="rewardClose">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+    // Simulación de datos de usuario (en un caso real, estos vendrían de tu base de datos)
+    let userStars = 200;
+    
+    // Precios de los artículos en estrellas
+    const itemPrices = {
+        gold: 5,
+        diamond: 60,
+        pearl: 100,
+        mystery: 80
+    };
+    
+    // Configurar la tienda al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cargar estrellas del usuario
+        loadUserStars();
+        
+        // Configurar event listeners
+        document.getElementById('backBtn').addEventListener('click', function() {
+            window.location.href = 'caminito.html';
+        });
+        
+        document.getElementById('rewardClose').addEventListener('click', function() {
+            document.getElementById('rewardModal').style.display = 'none';
+        });
+    });
+    
+    // Cargar estrellas del usuario
+    function loadUserStars() {
+        // En una implementación real, esto vendría de tu base de datos
+        document.getElementById('userStars').textContent = userStars;
+        
+        // Actualizar estado de los botones según las estrellas disponibles
+        updateButtonsState();
+    }
+    
+    // Actualizar estado de los botones de compra
+    function updateButtonsState() {
+        const buttons = document.querySelectorAll('.item-button');
+        buttons.forEach(button => {
+            const itemType = button.getAttribute('onclick').replace("buyItem('", "").replace("')", "");
+            if (userStars < itemPrices[itemType]) {
+                button.disabled = true;
+                button.textContent = 'Estrellas insuficientes';
+            } else {
+                button.disabled = false;
+                button.textContent = 'Canjear Ahora';
+            }
+        });
+    }
+    
+    // Comprar un artículo
+    function buyItem(itemType) {
+        const price = itemPrices[itemType];
+        
+        // Verificar si tiene estrellas suficientes
+        if (userStars < price) {
+            Swal.fire({
+                title: 'Estrellas insuficientes',
+                text: 'Necesitas más estrellas para realizar esta compra. Completa misiones VIP para obtener más estrellas.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                color: 'white'
+            });
+            return;
+        }
+        
+        // Mostrar confirmación de compra
+        Swal.fire({
+            title: 'Confirmar compra',
+            html: `¿Estás seguro de que quieres canjear <strong>${price} estrellas</strong> por este artículo?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, canjear',
+            cancelButtonText: 'Cancelar',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            color: 'white',
+            confirmButtonColor: '#2ecc71',
+            cancelButtonColor: '#e74c3c'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                processPurchase(itemType, price);
+            }
+        });
+    }
+    
+    // Procesar la compra
+    function processPurchase(itemType, price) {
+        // Mostrar carga
+        document.getElementById('loadingSpinner').style.display = 'flex';
+        
+        // Simular proceso de compra (en un caso real, aquí se conectaría con tu backend)
+        setTimeout(() => {
+            // Restar estrellas
+            userStars -= price;
+            
+            // Obtener recompensa
+            let rewardMessage = '';
+            let rewardAmount = '';
+            let rewardIcon = '';
+            
+            switch(itemType) {
+                case 'gold':
+                    rewardMessage = 'Has canjeado estrellas por oro';
+                    rewardAmount = '+50 Oro';
+                    rewardIcon = '🪙';
+                    break;
+                case 'diamond':
+                    rewardMessage = 'Has canjeado estrellas por diamantes';
+                    rewardAmount = '+100 Diamantes';
+                    rewardIcon = '💎';
+                    break;
+                case 'pearl':
+                    rewardMessage = 'Has canjeado estrellas por perlas';
+                    rewardAmount = '+50 Perlas';
+                    rewardIcon = '🔮';
+                    break;
+                case 'mystery':
+                    const extraStars = Math.floor(Math.random() * 11) + 5; // 5-15 estrellas
+                    userStars += extraStars;
+                    rewardMessage = '¡Cofre misterioso abierto!';
+                    rewardAmount = `+${extraStars} Estrellas Extra`;
+                    rewardIcon = '🎁';
+                    break;
+            }
+            
+            // Ocultar carga
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
+            // Mostrar modal de éxito
+            document.getElementById('rewardIcon').textContent = rewardIcon;
+            document.getElementById('rewardTitle').textContent = '¡Compra Exitosa!';
+            document.getElementById('rewardMessage').textContent = rewardMessage;
+            document.getElementById('rewardAmount').textContent = rewardAmount;
+            document.getElementById('rewardModal').style.display = 'flex';
+            
+            // Actualizar UI
+            document.getElementById('userStars').textContent = userStars;
+            updateButtonsState();
+            
+            // Efectos de confeti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            // Efecto de estrellas
+            createStarsAnimation(10);
+            
+        }, 1500); // Simular delay de procesamiento
+    }
+    
+    // Crear animación de estrellas
+    function createStarsAnimation(count) {
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.innerHTML = '🌟';
+            star.classList.add('stars-animation');
+            star.style.position = 'fixed';
+            star.style.left = Math.random() * window.innerWidth + 'px';
+            star.style.top = window.innerHeight + 'px';
+            star.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            star.style.animation = `float ${Math.random() * 2 + 3}s linear forwards`;
+            document.body.appendChild(star);
+            
+            // Eliminar después de la animación
+            setTimeout(() => {
+                star.remove();
+            }, 5000);
+        }
+    }
+    </script>
+</body>
+</html>
