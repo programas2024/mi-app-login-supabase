@@ -10,16 +10,19 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         :root {
-            --primary-bg: #1a1a2e;
-            --secondary-bg: #16213e;
+            --primary-blue: #1a3c6e;
+            --secondary-blue: #2a5a9b;
+            --light-blue: #4f92e3;
+            --sky-blue: #87ceeb;
             --accent-color: #e94560;
             --text-color: #f0f0f0;
             --card-bg: rgba(255, 255, 255, 0.1);
-            --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-            --gradient-accent: linear-gradient(135deg, #e94560 0%, #ff6b81 100%);
+            --gradient-bg: linear-gradient(135deg, #1a3c6e 0%, #2a5a9b 50%, #4f92e3 100%);
+            --gradient-card: linear-gradient(135deg, rgba(26, 60, 110, 0.8) 0%, rgba(42, 90, 155, 0.8) 100%);
+            --gradient-accent: linear-gradient(135deg, #4f92e3 0%, #87ceeb 100%);
             --gradient-success: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
             --gradient-warning: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            --offer-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
         }
 
         * {
@@ -82,12 +85,22 @@
             font-weight: bold;
         }
 
-        .stat i {
+        .stars-stat {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stars-stat i {
             color: gold;
         }
 
+        .vip-stat {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.1) 100%);
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+
         .vip-stat i {
-            color: #ffd700;
+            color: silver;
         }
 
         .controls {
@@ -111,7 +124,7 @@
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 5px 15px rgba(79, 146, 227, 0.4);
         }
 
         .btn-secondary {
@@ -142,11 +155,13 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(79, 146, 227, 0.3);
         }
 
         .shop-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border-color: var(--light-blue);
         }
 
         .item-icon {
@@ -163,6 +178,7 @@
             font-size: 1.3rem;
             font-weight: bold;
             margin-bottom: 10px;
+            color: var(--sky-blue);
         }
 
         .item-description {
@@ -197,7 +213,7 @@
 
         .item-button:hover:not(:disabled) {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 5px 15px rgba(79, 146, 227, 0.4);
         }
 
         .item-button:disabled {
@@ -207,14 +223,52 @@
         }
 
         .special-offer {
-            border: 2px solid gold;
+            border: 2px solid #ff8e53;
+            background: var(--offer-gradient);
             animation: pulse 2s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .special-offer::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); }
-            70% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-            100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); }
+            0% { box-shadow: 0 0 0 rgba(255, 142, 83, 0.4); }
+            70% { box-shadow: 0 0 20px rgba(255, 142, 83, 0.8); }
+            100% { box-shadow: 0 0 0 rgba(255, 142, 83, 0.4); }
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transform: rotate(5deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         .cooldown {
@@ -242,7 +296,7 @@
             height: 60px;
             border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--accent-color);
+            border-top-color: var(--light-blue);
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -426,7 +480,7 @@
             </div>
             
             <div class="user-stats">
-                <div class="stat">
+                <div class="stat stars-stat">
                     <i class="fas fa-star"></i>
                     <span id="userStars">0</span> Estrellas
                 </div>
@@ -560,6 +614,7 @@
             
             <!-- Artículo 11: Oferta Especial -->
             <div class="shop-item special-offer">
+                <div class="offer-badge">OFERTA</div>
                 <div class="item-icon">🔥</div>
                 <h3 class="item-name">Oferta Especial</h3>
                 <p class="item-description">¡Recursos duplicados! 400 oro, 200 diamantes, 40 VIP, 20 perlas y 10 estrellas</p>
