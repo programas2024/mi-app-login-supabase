@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos base (se mantienen igual) */
         :root {
             --primary: #4a00e0;
             --secondary: #8e2de2;
@@ -26,6 +25,8 @@
             --error: #e74c3c;
             --warning: #f39c12;
             --info: #3498db;
+            --copper: #b87333;
+            --vip: #ff00ff;
             
             --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -37,6 +38,9 @@
             --gradient-diamond: linear-gradient(135deg, var(--diamond) 0%, #00c6ff 100%);
             --gradient-pearl: linear-gradient(135deg, var(--pearl) 0%, #9370db 100%);
             --gradient-mystery: linear-gradient(135deg, #ff00ff 0%, #8a2be2 100%);
+            --gradient-copper: linear-gradient(135deg, var(--copper) 0%, #da8a67 100%);
+            --gradient-vip: linear-gradient(135deg, var(--vip) 0%, #9370db 100%);
+            --gradient-sorpresa: linear-gradient(135deg, #ff9a00 0%, #f5f5dc 100%);
         }
         
         * {
@@ -104,7 +108,21 @@
             border: 1px solid rgba(255, 215, 0, 0.3);
         }
         
-        .stars-count:hover {
+        .vip-count {
+            background: var(--gradient-vip);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+        
+        .stars-count:hover, .vip-count:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(255, 215, 0, 0.2);
         }
@@ -134,6 +152,10 @@
         
         .btn-back {
             background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--info) 0%, #2980b9 100%);
         }
         
         /* Main Content Styles */
@@ -230,6 +252,18 @@
             background: var(--gradient-mystery);
         }
         
+        .shop-item.copper::before {
+            background: var(--gradient-copper);
+        }
+        
+        .shop-item.vip::before {
+            background: var(--gradient-vip);
+        }
+        
+        .shop-item.sorpresa::before {
+            background: var(--gradient-sorpresa);
+        }
+        
         .shop-item:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: var(--shadow-hover);
@@ -266,6 +300,21 @@
         .mystery .item-icon {
             color: #ff00ff;
             text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .copper .item-icon {
+            color: var(--copper);
+            text-shadow: 0 0 20px rgba(184, 115, 51, 0.5);
+        }
+        
+        .vip .item-icon {
+            color: var(--vip);
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .sorpresa .item-icon {
+            color: #ff9a00;
+            text-shadow: 0 0 20px rgba(255, 154, 0, 0.5);
         }
         
         .item-title {
@@ -348,6 +397,12 @@
         
         .item-button:disabled:hover::before {
             left: -100%;
+        }
+        
+        .cooldown-timer {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
         /* Animations */
@@ -667,7 +722,7 @@
                 gap: 20px;
             }
             
-            .stars-count {
+            .stars-count, .vip-count {
                 font-size: 16px;
                 padding: 8px 16px;
             }
@@ -721,13 +776,15 @@
             <div class="logo">TIENDA VIP</div>
             <div class="user-info">
                 <div class="stars-count">🌟 <span id="userStars">0</span> Estrellas</div>
+                <div class="vip-count">👑 <span id="userVip">0</span> Puntos VIP</div>
+                <button class="btn btn-info" id="infoBtn">¿Cómo funciona?</button>
                 <button class="btn btn-back" id="backBtn">Volver</button>
             </div>
         </header>
         
         <main>
             <h1 class="shop-title">Tienda de Estrellas</h1>
-            <p class="shop-subtitle">Canjea tus estrellas por recursos exclusivos</p>
+            <p class="shop-subtitle">Canjea tus estrellas por recursos exclusivos y beneficios VIP</p>
             
             <div class="shop-container">
                 <!-- Oro -->
@@ -766,7 +823,7 @@
                     <button class="item-button" onclick="buyItem('pearl')">Canjear Ahora</button>
                 </div>
                 
-                <!-- Bolsa Múltiple -->
+                <!-- Cofre Misterioso -->
                 <div class="shop-item mystery">
                     <div class="item-icon">🎁</div>
                     <h3 class="item-title">Cofre Misterioso</h3>
@@ -776,6 +833,79 @@
                         <span>80 Estrellas</span>
                     </div>
                     <button class="item-button" onclick="buyItem('mystery')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Sorpresa -->
+                <div class="shop-item sorpresa">
+                    <div class="item-icon">🎉</div>
+                    <h3 class="item-title">Caja Sorpresa</h3>
+                    <p class="item-description">Recibe entre 100-900 de oro, diamantes o perlas al azar</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>100 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('sorpresa')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Oro Grande -->
+                <div class="shop-item gold">
+                    <div class="item-icon">💰</div>
+                    <h3 class="item-title">Fortuna Dorada</h3>
+                    <p class="item-description">Consigue 2000 monedas de oro para tus compras</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>100 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('oro_grande')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Perlas Especiales -->
+                <div class="shop-item pearl">
+                    <div class="item-icon">🌊</div>
+                    <h3 class="item-title">Perlas del Abismo</h3>
+                    <p class="item-description">Obtén 120 perlas mágicas para habilidades especiales</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>90 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('perlas_especiales')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Diamantes Especiales -->
+                <div class="shop-item diamond">
+                    <div class="item-icon">💠</div>
+                    <h3 class="item-title">Diamantes Puros</h3>
+                    <p class="item-description">Consigue 1000 diamantes para mejoras premium</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>300 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('diamantes_especiales')">Canjear Ahora</button>
+                </div>
+                
+                <!-- Tirada Diaria -->
+                <div class="shop-item copper">
+                    <div class="item-icon">🔄</div>
+                    <h3 class="item-title">Tirada Diaria Gratuita</h3>
+                    <p class="item-description">Recibe 5 diamantes u oro gratis cada 24 horas</p>
+                    <div class="item-price">
+                        <span>🆓</span>
+                        <span>Gratis</span>
+                    </div>
+                    <button class="item-button" id="dailyButton" onclick="claimDaily()">Reclamar Ahora</button>
+                    <div class="cooldown-timer" id="dailyCooldown"></div>
+                </div>
+                
+                <!-- Puntos VIP -->
+                <div class="shop-item vip">
+                    <div class="item-icon">👑</div>
+                    <h3 class="item-title">Paquete VIP</h3>
+                    <p class="item-description">Obtén entre 60-190 puntos VIP para beneficios exclusivos</p>
+                    <div class="item-price">
+                        <span>🌟</span>
+                        <span>80 Estrellas</span>
+                    </div>
+                    <button class="item-button" onclick="buyItem('vip')">Canjear Ahora</button>
                 </div>
             </div>
         </main>
@@ -808,14 +938,22 @@
     let supabase = null;
     let userId = null;
     let userStars = 0;
+    let userVip = 0;
     let userProfile = {};
+    let lastDailyClaim = null;
     
     // Precios de los artículos en estrellas
     const itemPrices = {
         gold: 5,
         diamond: 60,
         pearl: 100,
-        mystery: 80
+        mystery: 80,
+        sorpresa: 100,
+        oro_grande: 100,
+        perlas_especiales: 90,
+        diamantes_especiales: 300,
+        vip: 80,
+        daily: 0
     };
     
     // Nombres y emojis de los artículos
@@ -823,7 +961,13 @@
         gold: { name: "Paquete de Oro", icon: "🪙" },
         diamond: { name: "Lote de Diamantes", icon: "💎" },
         pearl: { name: "Bolsa de Perlas", icon: "🔮" },
-        mystery: { name: "Cofre Misterioso", icon: "🎁" }
+        mystery: { name: "Cofre Misterioso", icon: "🎁" },
+        sorpresa: { name: "Caja Sorpresa", icon: "🎉" },
+        oro_grande: { name: "Fortuna Dorada", icon: "💰" },
+        perlas_especiales: { name: "Perlas del Abismo", icon: "🌊" },
+        diamantes_especiales: { name: "Diamantes Puros", icon: "💠" },
+        vip: { name: "Paquete VIP", icon: "👑" },
+        daily: { name: "Tirada Diaria Gratuita", icon: "🔄" }
     };
     
     // Configurar la tienda al cargar la página
@@ -843,9 +987,12 @@
             if (!user) {
                 console.error('No hay usuario autenticado');
                 userId = 'demo-user-id';
-                userStars = 50; // Valor de demostración
+                userStars = 150; // Valor de demostración
+                userVip = 50; // Valor de demostración
                 document.getElementById('userStars').textContent = userStars;
+                document.getElementById('userVip').textContent = userVip;
                 updateButtonsState();
+                startDailyCooldownTimer();
             } else {
                 userId = user.id;
                 // Cargar perfil de usuario
@@ -857,17 +1004,47 @@
                 window.location.href = 'caminito.html';
             });
             
+            document.getElementById('infoBtn').addEventListener('click', showInfo);
+            
             document.getElementById('rewardClose').addEventListener('click', function() {
                 document.getElementById('rewardModal').style.display = 'none';
             });
             
         } catch (error) {
             console.error('Error en inicialización:', error);
-            userStars = 50; // Valor de demostración en caso de error
+            userStars = 150; // Valor de demostración en caso de error
+            userVip = 50; // Valor de demostración
             document.getElementById('userStars').textContent = userStars;
+            document.getElementById('userVip').textContent = userVip;
             updateButtonsState();
+            startDailyCooldownTimer();
         }
     });
+    
+    // Mostrar información de la tienda
+    function showInfo() {
+        Swal.fire({
+            title: '¿Cómo funciona la Tienda VIP?',
+            html: `
+                <div style="text-align: left;">
+                    <p>Bienvenido a la Tienda VIP, donde puedes canjear tus estrellas por recursos exclusivos:</p>
+                    <ul>
+                        <li>🌟 <strong>Estrellas</strong>: Se obtienen completando misiones VIP</li>
+                        <li>👑 <strong>Puntos VIP</strong>: Desbloquean beneficios exclusivos</li>
+                        <li>🪙 <strong>Oro</strong>: Para compras en el juego</li>
+                        <li>💎 <strong>Diamantes</strong>: Para mejorar tu equipo</li>
+                        <li>🔮 <strong>Perlas</strong>: Para potenciar habilidades</li>
+                    </ul>
+                    <p>¡Reclama tu <strong>Tirada Diaria Gratuita</strong> cada 24 horas!</p>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: '¡Entendido!',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            color: 'white',
+            width: '600px'
+        });
+    }
     
     // Cargar perfil de usuario desde la base de datos
     async function loadUserProfile() {
@@ -886,8 +1063,13 @@
             if (profile) {
                 userProfile = profile;
                 userStars = profile.stars || 0;
+                userVip = profile.vip_points || 0;
+                lastDailyClaim = profile.last_daily_claim || null;
+                
                 document.getElementById('userStars').textContent = userStars;
+                document.getElementById('userVip').textContent = userVip;
                 updateButtonsState();
+                startDailyCooldownTimer();
             }
             
         } catch (error) {
@@ -905,15 +1087,80 @@
     function updateButtonsState() {
         const buttons = document.querySelectorAll('.item-button');
         buttons.forEach(button => {
-            const itemType = button.getAttribute('onclick').replace("buyItem('", "").replace("')", "");
-            if (userStars < itemPrices[itemType]) {
+            const onclick = button.getAttribute('onclick');
+            if (!onclick) return;
+            
+            const itemType = onclick.replace("buyItem('", "").replace("')", "").replace("claimDaily()", "daily");
+            
+            if (itemType === 'daily') {
+                // Para la tirada diaria, verificar el cooldown
+                if (isDailyOnCooldown()) {
+                    button.disabled = true;
+                    button.textContent = 'En espera';
+                } else {
+                    button.disabled = false;
+                    button.textContent = 'Reclamar Ahora';
+                }
+            } else if (userStars < itemPrices[itemType]) {
                 button.disabled = true;
                 button.textContent = 'Estrellas insuficientes';
             } else {
                 button.disabled = false;
-                button.textContent = 'Canjear Ahora';
+                const itemText = itemType === 'daily' ? 'Reclamar Ahora' : 'Canjear Ahora';
+                button.textContent = itemText;
             }
         });
+    }
+    
+    // Verificar si la tirada diaria está en cooldown
+    function isDailyOnCooldown() {
+        if (!lastDailyClaim) return false;
+        
+        const now = new Date();
+        const lastClaim = new Date(lastDailyClaim);
+        const diffHours = (now - lastClaim) / (1000 * 60 * 60);
+        
+        return diffHours < 24;
+    }
+    
+    // Iniciar el temporizador de cooldown para la tirada diaria
+    function startDailyCooldownTimer() {
+        const cooldownElement = document.getElementById('dailyCooldown');
+        const buttonElement = document.getElementById('dailyButton');
+        
+        if (!lastDailyClaim || !isDailyOnCooldown()) {
+            cooldownElement.textContent = '';
+            buttonElement.disabled = false;
+            buttonElement.textContent = 'Reclamar Ahora';
+            return;
+        }
+        
+        buttonElement.disabled = true;
+        buttonElement.textContent = 'En espera';
+        
+        const updateCooldown = () => {
+            const now = new Date();
+            const lastClaim = new Date(lastDailyClaim);
+            const nextClaim = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);
+            const timeLeft = nextClaim - now;
+            
+            if (timeLeft <= 0) {
+                cooldownElement.textContent = '';
+                buttonElement.disabled = false;
+                buttonElement.textContent = 'Reclamar Ahora';
+                return;
+            }
+            
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            cooldownElement.textContent = `Disponible en: ${hours}h ${minutes}m ${seconds}s`;
+            
+            setTimeout(updateCooldown, 1000);
+        };
+        
+        updateCooldown();
     }
     
     // Comprar un artículo
@@ -968,6 +1215,21 @@
         }
     }
     
+    // Reclamar tirada diaria
+    async function claimDaily() {
+        if (isDailyOnCooldown()) {
+            Swal.fire({
+                title: 'En espera',
+                text: 'Ya has reclamado tu tirada diaria. Vuelve en 24 horas.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+        
+        await processPurchase('daily', 0);
+    }
+    
     // Procesar la compra
     async function processPurchase(itemType, price) {
         // Mostrar carga
@@ -1009,6 +1271,72 @@
                     rewardAmount = `+${extraStars} Estrellas Extra`;
                     rewardIcon = '🎁';
                     break;
+                case 'sorpresa':
+                    const randomResource = Math.floor(Math.random() * 3); // 0: oro, 1: diamantes, 2: perlas
+                    const randomAmount = Math.floor(Math.random() * 801) + 100; // 100-900
+                    
+                    if (randomResource === 0) {
+                        updates.gold = (userProfile.gold || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Oro!';
+                        rewardAmount = `+${randomAmount} Oro`;
+                        rewardIcon = '🪙';
+                    } else if (randomResource === 1) {
+                        updates.diamonds = (userProfile.diamonds || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Diamantes!';
+                        rewardAmount = `+${randomAmount} Diamantes`;
+                        rewardIcon = '💎';
+                    } else {
+                        updates.perla = (userProfile.perla || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Perlas!';
+                        rewardAmount = `+${randomAmount} Perlas`;
+                        rewardIcon = '🔮';
+                    }
+                    break;
+                case 'oro_grande':
+                    updates.gold = (userProfile.gold || 0) + 2000;
+                    rewardMessage = '¡Fortuna Dorada adquirida!';
+                    rewardAmount = '+2000 Oro';
+                    rewardIcon = '💰';
+                    break;
+                case 'perlas_especiales':
+                    updates.perla = (userProfile.perla || 0) + 120;
+                    rewardMessage = '¡Perlas del Abismo obtenidas!';
+                    rewardAmount = '+120 Perlas';
+                    rewardIcon = '🌊';
+                    break;
+                case 'diamantes_especiales':
+                    updates.diamonds = (userProfile.diamonds || 0) + 1000;
+                    rewardMessage = '¡Diamantes Puros adquiridos!';
+                    rewardAmount = '+1000 Diamantes';
+                    rewardIcon = '💠';
+                    break;
+                case 'vip':
+                    const vipPoints = Math.floor(Math.random() * 131) + 60; // 60-190
+                    updates.vip_points = (userProfile.vip_points || 0) + vipPoints;
+                    rewardMessage = '¡Paquete VIP canjeado!';
+                    rewardAmount = `+${vipPoints} Puntos VIP`;
+                    rewardIcon = '👑';
+                    break;
+                case 'daily':
+                    const dailyResource = Math.floor(Math.random() * 2); // 0: oro, 1: diamantes
+                    const dailyAmount = 5;
+                    
+                    if (dailyResource === 0) {
+                        updates.gold = (userProfile.gold || 0) + dailyAmount;
+                        rewardMessage = '¡Tirada Diaria Reclamada!';
+                        rewardAmount = `+${dailyAmount} Oro`;
+                        rewardIcon = '🪙';
+                    } else {
+                        updates.diamonds = (userProfile.diamonds || 0) + dailyAmount;
+                        rewardMessage = '¡Tirada Diaria Reclamada!';
+                        rewardAmount = `+${dailyAmount} Diamantes`;
+                        rewardIcon = '💎';
+                    }
+                    
+                    // Actualizar última reclamación
+                    updates.last_daily_claim = new Date().toISOString();
+                    lastDailyClaim = updates.last_daily_claim;
+                    break;
             }
             
             // Actualizar en la base de datos
@@ -1022,6 +1350,7 @@
             // Actualizar perfil local
             userProfile = { ...userProfile, ...updates };
             userStars = updates.stars;
+            userVip = updates.vip_points || userVip;
             
             // Ocultar carga
             document.getElementById('loadingSpinner').style.display = 'none';
@@ -1035,7 +1364,9 @@
             
             // Actualizar UI
             document.getElementById('userStars').textContent = userStars;
+            document.getElementById('userVip').textContent = userVip;
             updateButtonsState();
+            startDailyCooldownTimer();
             
             // Efectos de confeti
             confetti({
