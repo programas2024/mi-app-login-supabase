@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda VIP - Canje de Estrellas</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -431,8 +432,15 @@
     </div>
 
     <script>
-    // Simulación de datos de usuario (en un caso real, estos vendrían de tu base de datos)
-    let userStars = 200;
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    // Variables globales
+    let supabase = null;
+    let userId = null;
+    let userStars = 0;
+    let userProfile = {};
     
     // Precios de los artículos en estrellas
     const itemPrices = {
@@ -443,27 +451,78 @@
     };
     
     // Configurar la tienda al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-        // Cargar estrellas del usuario
-        loadUserStars();
-        
-        // Configurar event listeners
-        document.getElementById('backBtn').addEventListener('click', function() {
-            window.location.href = 'caminito.html';
-        });
-        
-        document.getElementById('rewardClose').addEventListener('click', function() {
-            document.getElementById('rewardModal').style.display = 'none';
-        });
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            // Inicializar Supabase
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            // Obtener usuario autenticado
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            
+            if (authError) {
+                console.error('Error en auth.getUser():', authError);
+                throw authError;
+            }
+            
+            if (!user) {
+                console.error('No hay usuario autenticado');
+                userId = 'demo-user-id';
+                userStars = 50; // Valor de demostración
+                document.getElementById('userStars').textContent = userStars;
+                updateButtonsState();
+            } else {
+                userId = user.id;
+                // Cargar perfil de usuario
+                await loadUserProfile();
+            }
+            
+            // Configurar event listeners
+            document.getElementById('backBtn').addEventListener('click', function() {
+                window.location.href = 'dashboard.html';
+            });
+            
+            document.getElementById('rewardClose').addEventListener('click', function() {
+                document.getElementById('rewardModal').style.display = 'none';
+            });
+            
+        } catch (error) {
+            console.error('Error en inicialización:', error);
+            userStars = 50; // Valor de demostración en caso de error
+            document.getElementById('userStars').textContent = userStars;
+            updateButtonsState();
+        }
     });
     
-    // Cargar estrellas del usuario
-    function loadUserStars() {
-        // En una implementación real, esto vendría de tu base de datos
-        document.getElementById('userStars').textContent = userStars;
-        
-        // Actualizar estado de los botones según las estrellas disponibles
-        updateButtonsState();
+    // Cargar perfil de usuario desde la base de datos
+    async function loadUserProfile() {
+        try {
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+            
+            if (error) {
+                console.error('Error al cargar perfil:', error);
+                throw error;
+            }
+            
+            if (profile) {
+                userProfile = profile;
+                userStars = profile.stars || 0;
+                document.getElementById('userStars').textContent = userStars;
+                updateButtonsState();
+            }
+            
+        } catch (error) {
+            console.error('Error al cargar perfil de usuario:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo cargar la información de tu perfil',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+        }
     }
     
     // Actualizar estado de los botones de compra
@@ -482,7 +541,7 @@
     }
     
     // Comprar un artículo
-    function buyItem(itemType) {
+    async function buyItem(itemType) {
         const price = itemPrices[itemType];
         
         // Verificar si tiene estrellas suficientes
@@ -510,52 +569,67 @@
             color: 'white',
             confirmButtonColor: '#2ecc71',
             cancelButtonColor: '#e74c3c'
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                processPurchase(itemType, price);
+                await processPurchase(itemType, price);
             }
         });
     }
     
     // Procesar la compra
-    function processPurchase(itemType, price) {
+    async function processPurchase(itemType, price) {
         // Mostrar carga
         document.getElementById('loadingSpinner').style.display = 'flex';
         
-        // Simular proceso de compra (en un caso real, aquí se conectaría con tu backend)
-        setTimeout(() => {
-            // Restar estrellas
-            userStars -= price;
+        try {
+            // Calcular nuevas estrellas
+            const newStars = userStars - price;
             
-            // Obtener recompensa
+            // Obtener recompensa y actualizar recursos
             let rewardMessage = '';
             let rewardAmount = '';
             let rewardIcon = '';
+            let updates = { stars: newStars };
             
             switch(itemType) {
                 case 'gold':
+                    updates.gold = (userProfile.gold || 0) + 50;
                     rewardMessage = 'Has canjeado estrellas por oro';
                     rewardAmount = '+50 Oro';
                     rewardIcon = '🪙';
                     break;
                 case 'diamond':
+                    updates.diamonds = (userProfile.diamonds || 0) + 100;
                     rewardMessage = 'Has canjeado estrellas por diamantes';
                     rewardAmount = '+100 Diamantes';
                     rewardIcon = '💎';
                     break;
                 case 'pearl':
+                    updates.perla = (userProfile.perla || 0) + 50;
                     rewardMessage = 'Has canjeado estrellas por perlas';
                     rewardAmount = '+50 Perlas';
                     rewardIcon = '🔮';
                     break;
                 case 'mystery':
                     const extraStars = Math.floor(Math.random() * 11) + 5; // 5-15 estrellas
-                    userStars += extraStars;
+                    updates.stars = newStars + extraStars;
                     rewardMessage = '¡Cofre misterioso abierto!';
                     rewardAmount = `+${extraStars} Estrellas Extra`;
                     rewardIcon = '🎁';
                     break;
             }
+            
+            // Actualizar en la base de datos
+            const { error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', userId);
+            
+            if (error) throw error;
+            
+            // Actualizar perfil local
+            userProfile = { ...userProfile, ...updates };
+            userStars = updates.stars;
             
             // Ocultar carga
             document.getElementById('loadingSpinner').style.display = 'none';
@@ -581,7 +655,17 @@
             // Efecto de estrellas
             createStarsAnimation(10);
             
-        }, 1500); // Simular delay de procesamiento
+        } catch (error) {
+            console.error('Error al procesar compra:', error);
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo procesar la compra. Inténtalo de nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+        }
     }
     
     // Crear animación de estrellas
