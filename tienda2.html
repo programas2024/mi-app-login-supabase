@@ -3,504 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda VIP - Canje de Estrellas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <title>Tienda de Estrellas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         :root {
-            --primary: #4a00e0;
-            --secondary: #8e2de2;
-            --accent: #00c6ff;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
-            --diamond: #b9f2ff;
-            --pearl: #e6e6fa;
-            --success: #2ecc71;
-            --error: #e74c3c;
-            --warning: #f39c12;
-            --info: #3498db;
-            --copper: #b87333;
-            --vip: #ff00ff;
-            --offer: #ff6b6b;
-            
-            --border-radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-            --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            --gradient-gold: linear-gradient(135deg, var(--gold) 0%, #ffaa00 100%);
-            --gradient-diamond: linear-gradient(135deg, var(--diamond) 0%, #00c6ff 100%);
-            --gradient-pearl: linear-gradient(135deg, var(--pearl) 0%, #9370db 100%);
-            --gradient-mystery: linear-gradient(135deg, #ff00ff 0%, #8a2be2 100%);
-            --gradient-copper: linear-gradient(135deg, var(--copper) 0%, #da8a67 100%);
-            --gradient-vip: linear-gradient(135deg, var(--vip) 0%, #9370db 100%);
-            --gradient-sorpresa: linear-gradient(135deg, #ff9a00 0%, #f5f5dc 100%);
-            --gradient-offer: linear-gradient(135deg, var(--offer) 0%, #ff8e8e 100%);
+            --primary-bg: #1a1a2e;
+            --secondary-bg: #16213e;
+            --accent-color: #e94560;
+            --text-color: #f0f0f0;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            --gradient-accent: linear-gradient(135deg, #e94560 0%, #ff6b81 100%);
+            --gradient-success: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            --gradient-warning: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background: var(--gradient-bg);
-            color: white;
+            color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
-            font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 15px;
         }
-        
-        /* Header Styles */
-        header {
+
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            flex-wrap: wrap;
-            gap: 15px;
+            padding: 15px 20px;
+            background: var(--gradient-card);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
-        
+
         .logo {
-            font-size: 28px;
-            font-weight: 700;
-            font-family: 'Playfair Display', serif;
-            background: linear-gradient(to right, #00c6ff, #0072ff);
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: var(--gradient-accent);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            letter-spacing: 0.5px;
-        }
-        
-        .user-info {
+            background-clip: text;
+            color: transparent;
             display: flex;
             align-items: center;
+            gap: 10px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: var(--gradient-card);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .stat i {
+            color: gold;
+        }
+
+        .vip-stat i {
+            color: #ffd700;
+        }
+
+        .controls {
+            display: flex;
             gap: 15px;
-            flex-wrap: wrap;
         }
-        
-        .stars-count {
-            background: var(--gradient-gold);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .vip-count {
-            background: var(--gradient-vip);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 1px solid rgba(255, 0, 255, 0.3);
-        }
-        
-        .stars-count:hover, .vip-count:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.2);
-        }
-        
+
         .btn {
-            background: var(--gradient-primary);
-            color: white;
+            padding: 10px 20px;
             border: none;
-            padding: 12px 24px;
-            border-radius: var(--border-radius);
+            border-radius: 10px;
+            background: var(--gradient-accent);
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-            font-size: 16px;
-            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
         }
-        
-        .btn:active {
-            transform: translateY(1px);
+
+        .btn-secondary {
+            background: var(--gradient-card);
         }
-        
-        .btn-back {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
         }
-        
-        .btn-info {
-            background: linear-gradient(135deg, var(--info) 0%, #2980b9 100%);
-        }
-        
-        /* Main Content Styles */
-        main {
-            padding: 20px 0;
-        }
-        
-        .shop-title {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 2.8rem;
-            font-family: 'Playfair Display', serif;
-            background: linear-gradient(to right, #ffd700, #ff8c00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-            letter-spacing: 1px;
-        }
-        
-        .shop-subtitle {
-            text-align: center;
-            margin-bottom: 50px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            font-weight: 300;
-        }
-        
-        /* Special Offer Banner */
-        .offer-banner {
-            background: var(--gradient-offer);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        
-        .offer-banner h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .offer-banner p {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .offer-timer {
-            font-size: 18px;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.3);
-            display: inline-block;
-            padding: 8px 15px;
-            border-radius: 30px;
-        }
-        
-        /* Shop Items Grid */
-        .shop-container {
+
+        .shop-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
-        
+
         .shop-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 30px 25px;
-            text-align: center;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: var(--shadow);
+            background: var(--gradient-card);
+            border-radius: 15px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .shop-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            opacity: 0.8;
-        }
-        
-        .shop-item::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
-            opacity: 0;
-            transition: var(--transition);
-            z-index: 0;
-        }
-        
-        .shop-item:hover::after {
-            opacity: 1;
-        }
-        
-        .shop-item.gold::before {
-            background: var(--gradient-gold);
-        }
-        
-        .shop-item.diamond::before {
-            background: var(--gradient-diamond);
-        }
-        
-        .shop-item.pearl::before {
-            background: var(--gradient-pearl);
-        }
-        
-        .shop-item.mystery::before {
-            background: var(--gradient-mystery);
-        }
-        
-        .shop-item.copper::before {
-            background: var(--gradient-copper);
-        }
-        
-        .shop-item.vip::before {
-            background: var(--gradient-vip);
-        }
-        
-        .shop-item.sorpresa::before {
-            background: var(--gradient-sorpresa);
-        }
-        
-        .shop-item.offer::before {
-            background: var(--gradient-offer);
-        }
-        
+
         .shop-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: var(--shadow-hover);
-            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
-        
-        .offer-badge {
-            position: absolute;
-            top: 15px;
-            right: -30px;
-            background: var(--gradient-offer);
-            color: white;
-            padding: 5px 40px;
-            font-size: 14px;
-            font-weight: bold;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            z-index: 2;
-        }
-        
+
         .item-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .shop-item:hover .item-icon {
-            transform: scale(1.1) rotate(5deg);
-        }
-        
-        .gold .item-icon {
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-        
-        .diamond .item-icon {
-            color: var(--diamond);
-            text-shadow: 0 0 20px rgba(185, 242, 255, 0.5);
-        }
-        
-        .pearl .item-icon {
-            color: var(--pearl);
-            text-shadow: 0 0 20px rgba(230, 230, 250, 0.5);
-        }
-        
-        .mystery .item-icon {
-            color: #ff00ff;
-            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-        }
-        
-        .copper .item-icon {
-            color: var(--copper);
-            text-shadow: 0 0 20px rgba(184, 115, 51, 0.5);
-        }
-        
-        .vip .item-icon {
-            color: var(--vip);
-            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-        }
-        
-        .sorpresa .item-icon {
-            color: #ff9a00;
-            text-shadow: 0 0 20px rgba(255, 154, 0, 0.5);
-        }
-        
-        .offer .item-icon {
-            color: var(--offer);
-            text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-            animation: spin 3s infinite linear;
-        }
-        
-        .item-title {
-            font-size: 1.6rem;
+            font-size: 3.5rem;
             margin-bottom: 15px;
-            color: white;
-            font-weight: 700;
-            position: relative;
-            z-index: 1;
+            transition: all 0.3s ease;
         }
-        
+
+        .shop-item:hover .item-icon {
+            transform: scale(1.1);
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
         .item-description {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 25px;
-            font-size: 1rem;
-            flex-grow: 1;
-            position: relative;
-            z-index: 1;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            min-height: 60px;
         }
-        
+
         .item-price {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--gold);
-            position: relative;
-            z-index: 1;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: gold;
         }
-        
+
         .item-button {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 14px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
+            padding: 12px 25px;
             width: 100%;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-accent);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        
-        .item-button::before {
-            content: '';
-            position: absolute;
+
+        .item-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .item-button:disabled {
+            background: var(--gradient-card);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .special-offer {
+            border: 2px solid gold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); }
+            70% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+            100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.4); }
+        }
+
+        .cooldown {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            color: #ff6b6b;
+        }
+
+        .loading {
+            position: fixed;
             top: 0;
-            left: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
         }
-        
-        .item-button:hover::before {
-            left: 100%;
-        }
-        
-        .item-button:hover {
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3);
-        }
-        
-        .item-button:disabled {
-            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .item-button:disabled:hover::before {
-            left: -100%;
-        }
-        
-        .cooldown-timer {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        /* Animations */
-        .stars-animation {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1000;
-            font-size: 24px;
-            animation: float 3s ease-in-out forwards;
-        }
-        
-        @keyframes float {
-            0% { 
-                transform: translateY(0) rotate(0deg) scale(1); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translateY(-100px) rotate(360deg) scale(0); 
-                opacity: 0; 
-            }
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            z-index: 1000;
-            pointer-events: none;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
         }
-        
-        /* Loading Spinner */
-        .loading {
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .reward-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -508,514 +258,340 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(5px);
-        }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Reward Modal */
-        .reward-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
             display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
         }
-        
+
         .reward-content {
             background: var(--gradient-bg);
-            padding: 40px 30px;
-            border-radius: var(--border-radius);
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
-            max-width: 450px;
+            max-width: 500px;
             width: 90%;
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 40px rgba(0, 198, 255, 0.6);
-            position: relative;
-            overflow: hidden;
-            animation: modalAppear 0.5s ease-out;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
         }
-        
-        @keyframes modalAppear {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .reward-content::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(255,255,255,0.05);
-            transform: rotate(45deg);
-            z-index: 0;
-        }
-        
+
         .reward-icon {
-            font-size: 70px;
+            font-size: 5rem;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-            animation: bounce 1s ease;
+            animation: bounce 1s infinite alternate;
         }
-        
+
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-20px);}
-            60% {transform: translateY(-10px);}
+            from { transform: translateY(0px); }
+            to { transform: translateY(-20px); }
         }
-        
+
         .reward-title {
-            font-size: 28px;
+            font-size: 2rem;
             margin-bottom: 15px;
-            color: var(--accent);
-            position: relative;
-            z-index: 1;
-            font-weight: 700;
+            color: gold;
         }
-        
+
         .reward-message {
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.8);
-            position: relative;
-            z-index: 1;
-            font-size: 18px;
-            line-height: 1.5;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
         }
-        
+
         .reward-amount {
-            font-size: 32px;
+            font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 30px;
-            color: var(--gold);
-            position: relative;
-            z-index: 1;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            color: #00b09b;
         }
-        
-        .reward-close {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            position: relative;
-            z-index: 1;
-            font-size: 16px;
-            box-shadow: var(--shadow);
+
+        .stars-animation {
+            position: fixed;
+            z-index: 9998;
+            pointer-events: none;
+            animation: float 5s linear forwards;
         }
-        
-        .reward-close:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3);
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
         }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            margin-top: 70px;
-            padding: 25px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Custom SweetAlert Styles */
-        .swal2-popup {
-            background: var(--gradient-bg) !important;
-            border-radius: var(--border-radius) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-            padding: 2.5rem !important;
-            color: white !important;
-        }
-        
-        .swal2-title {
-            font-size: 28px !important;
-            font-weight: 700 !important;
-            color: var(--accent) !important;
-            font-family: 'Playfair Display', serif !important;
-            margin-bottom: 1.5rem !important;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .swal2-html-container {
-            color: rgba(255, 255, 255, 0.9) !important;
-            font-size: 18px !important;
-            margin: 0 0 2rem 0 !important;
-            line-height: 1.5 !important;
-        }
-        
-        .swal2-confirm, .swal2-cancel {
-            border-radius: 50px !important;
-            padding: 12px 30px !important;
-            font-weight: 600 !important;
-            font-size: 16px !important;
-            transition: var(--transition) !important;
-            box-shadow: var(--shadow) !important;
-        }
-        
-        .swal2-confirm {
-            background: var(--gradient-primary) !important;
-            border: none !important;
-        }
-        
-        .swal2-confirm:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .swal2-cancel {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
-            border: none !important;
-        }
-        
-        .swal2-cancel:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .swal2-actions {
-            margin: 1.5rem auto 0 auto !important;
-        }
-        
-        .swal2-icon {
-            margin: 0 auto 1.5rem auto !important;
-            transform: scale(1.2);
-        }
-        
-        .swal2-icon-content {
-            font-size: 3.5rem !important;
-        }
-        
+
         .purchase-confirmation {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 1.5rem 0;
+            text-align: center;
+            margin: 20px 0;
         }
-        
+
         .purchase-item {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 15px;
-            margin-bottom: 1rem;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            width: 100%;
+            background: var(--gradient-card);
+            border-radius: 15px;
+            margin-bottom: 20px;
         }
-        
+
         .purchase-item-icon {
-            font-size: 2.5rem;
+            font-size: 3rem;
         }
-        
+
         .purchase-item-details {
             text-align: left;
         }
-        
+
         .purchase-item-name {
-            font-weight: 600;
-            color: white;
-            margin-bottom: 0.25rem;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
-        
+
         .purchase-item-price {
-            color: var(--gold);
-            font-weight: 600;
+            color: gold;
+            font-weight: bold;
         }
-        
+
         .stars-cost {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-top: 1rem;
-            padding: 10px 20px;
-            background: rgba(255, 215, 0, 0.1);
-            border-radius: 30px;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: gold;
         }
-        
-        /* Responsive Design */
+
+        .reward-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .reward-item-icon {
+            font-size: 1.5rem;
+        }
+
+        .reward-item-amount {
+            font-weight: bold;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        .swal2-popup-custom {
+            background: var(--gradient-bg) !important;
+            color: var(--text-color) !important;
+            border-radius: 20px !important;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
         @media (max-width: 768px) {
-            header {
+            .header {
                 flex-direction: column;
-                text-align: center;
+                gap: 15px;
             }
             
-            .user-info {
+            .user-stats {
+                width: 100%;
                 justify-content: center;
             }
             
-            .shop-title {
-                font-size: 2.2rem;
-            }
-            
-            .shop-subtitle {
-                font-size: 1.1rem;
-                margin-bottom: 30px;
-            }
-            
-            .shop-container {
+            .shop-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .stars-count, .vip-count {
-                font-size: 16px;
-                padding: 8px 16px;
-            }
-            
-            .swal2-popup {
-                padding: 1.5rem !important;
-                width: 90% !important;
-            }
-            
-            .swal2-title {
-                font-size: 24px !important;
-            }
-            
-            .swal2-html-container {
-                font-size: 16px !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-            }
-            
-            .shop-title {
-                font-size: 1.8rem;
-            }
-            
-            .item-title {
-                font-size: 1.4rem;
-            }
-            
-            .item-icon {
-                font-size: 50px;
-            }
-            
-            .btn {
-                padding: 10px 18px;
-                font-size: 14px;
-            }
-            
-            .swal2-confirm, .swal2-cancel {
-                padding: 10px 20px !important;
-                font-size: 14px !important;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">TIENDA VIP</div>
-            <div class="user-info">
-                <div class="stars-count">🌟 <span id="userStars">0</span> Estrellas</div>
-                <div class="vip-count">👑 <span id="userVip">0</span> Puntos VIP</div>
-                <button class="btn btn-info" id="infoBtn">¿Cómo funciona?</button>
-                <button class="btn btn-back" id="backBtn">Volver</button>
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-store"></i> Tienda de Estrellas
             </div>
-        </header>
+            
+            <div class="user-stats">
+                <div class="stat">
+                    <i class="fas fa-star"></i>
+                    <span id="userStars">0</span> Estrellas
+                </div>
+                <div class="stat vip-stat">
+                    <i class="fas fa-crown"></i>
+                    <span id="userVip">0</span> Puntos VIP
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-secondary" id="backBtn">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <button class="btn" id="infoBtn">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+        </div>
         
-        <main>
-            <h1 class="shop-title">Tienda de Estrellas</h1>
-            <p class="shop-subtitle">Canjea tus estrellas por recursos exclusivos y beneficios VIP</p>
-            
-            <!-- Banner de Oferta Especial -->
-            <div class="offer-banner">
-                <h2>🔥 OFERTA ESPECIAL 🔥</h2>
-                <p>¡Recursos duplicados por tiempo limitado! Esta oferta cambia cada 12 horas</p>
-                <div class="offer-timer">Tiempo restante: <span id="offerTimer">12:00:00</span></div>
+        <div class="shop-grid">
+            <!-- Artículo 1: Oro -->
+            <div class="shop-item">
+                <div class="item-icon">🪙</div>
+                <h3 class="item-name">Paquete de Oro</h3>
+                <p class="item-description">Obtén 50 unidades de oro para tus compras</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 5 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('gold')">Canjear Ahora</button>
             </div>
             
-            <div class="shop-container">
-                <!-- Oferta Especial -->
-                <div class="shop-item offer">
-                    <div class="offer-badge">OFERTA</div>
-                    <div class="item-icon">🔥</div>
-                    <h3 class="item-title">Oferta Especial</h3>
-                    <p class="item-description">¡Recibe el DOBLE de recursos! Incluye: Oro, Diamantes, Puntos VIP, Perlas y Estrellas</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span id="offerPrice">150 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('special_offer')">¡Oferta Especial!</button>
+            <!-- Artículo 2: Diamantes -->
+            <div class="shop-item">
+                <div class="item-icon">💎</div>
+                <h3 class="item-name">Lote de Diamantes</h3>
+                <p class="item-description">Consigue 100 diamantes para mejoras especiales</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 60 Estrellas
                 </div>
-                
-                <!-- Oro -->
-                <div class="shop-item gold">
-                    <div class="item-icon">🪙</div>
-                    <h3 class="item-title">Paquete de Oro</h3>
-                    <p class="item-description">Obtén 50 monedas de oro para tus compras en el juego</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>5 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('gold')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Diamantes -->
-                <div class="shop-item diamond">
-                    <div class="item-icon">💎</div>
-                    <h3 class="item-title">Lote de Diamantes</h3>
-                    <p class="item-description">Consigue 100 diamantes para mejorar tu equipo</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>60 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('diamond')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Perlas -->
-                <div class="shop-item pearl">
-                    <div class="item-icon">🔮</div>
-                    <h3 class="item-title">Bolsa de Perlas</h3>
-                    <p class="item-description">Adquiere 50 perlas mágicas para potenciar tus habilidades</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>100 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('pearl')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Cofre Misterioso -->
-                <div class="shop-item mystery">
-                    <div class="item-icon">🎁</div>
-                    <h3 class="item-title">Cofre Misterioso</h3>
-                    <p class="item-description">Un cofre sorpresa que puede contener entre 5 y 15 estrellas extra</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>80 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('mystery')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Sorpresa -->
-                <div class="shop-item sorpresa">
-                    <div class="item-icon">🎉</div>
-                    <h3 class="item-title">Caja Sorpresa</h3>
-                    <p class="item-description">Recibe entre 100-900 de oro, diamantes o perlas al azar</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>100 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('sorpresa')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Oro Grande -->
-                <div class="shop-item gold">
-                    <div class="item-icon">💰</div>
-                    <h3 class="item-title">Fortuna Dorada</h3>
-                    <p class="item-description">Consigue 2000 monedas de oro para tus compras</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>100 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('oro_grande')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Perlas Especiales -->
-                <div class="shop-item pearl">
-                    <div class="item-icon">🌊</div>
-                    <h3 class="item-title">Perlas del Abismo</h3>
-                    <p class="item-description">Obtén 120 perlas mágicas para habilidades especiales</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>90 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('perlas_especiales')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Diamantes Especiales -->
-                <div class="shop-item diamond">
-                    <div class="item-icon">💠</div>
-                    <h3 class="item-title">Diamantes Puros</h3>
-                    <p class="item-description">Consigue 1000 diamantes para mejoras premium</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>300 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('diamantes_especiales')">Canjear Ahora</button>
-                </div>
-                
-                <!-- Tirada Diaria -->
-                <div class="shop-item copper">
-                    <div class="item-icon">🔄</div>
-                    <h3 class="item-title">Tirada Diaria Gratuita</h3>
-                    <p class="item-description">Recibe 5 diamantes u oro gratis cada 24 horas</p>
-                    <div class="item-price">
-                        <span>🆓</span>
-                        <span>Gratis</span>
-                    </div>
-                    <button class="item-button" id="dailyButton" onclick="claimDaily()">Reclamar Ahora</button>
-                    <div class="cooldown-timer" id="dailyCooldown"></div>
-                </div>
-                
-                <!-- Puntos VIP -->
-                <div class="shop-item vip">
-                    <div class="item-icon">👑</div>
-                    <h3 class="item-title">Paquete VIP</h3>
-                    <p class="item-description">Obtén entre 60-190 puntos VIP para beneficios exclusivos</p>
-                    <div class="item-price">
-                        <span>🌟</span>
-                        <span>80 Estrellas</span>
-                    </div>
-                    <button class="item-button" onclick="buyItem('vip')">Canjear Ahora</button>
-                </div>
+                <button class="item-button" onclick="buyItem('diamond')">Canjear Ahora</button>
             </div>
-        </main>
+            
+            <!-- Artículo 3: Perlas -->
+            <div class="shop-item">
+                <div class="item-icon">🔮</div>
+                <h3 class="item-name">Bolsa de Perlas</h3>
+                <p class="item-description">50 perlas místicas para desbloquear secretos</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 100 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('pearl')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 4: Cofre Misterioso -->
+            <div class="shop-item">
+                <div class="item-icon">🎁</div>
+                <h3 class="item-name">Cofre Misterioso</h3>
+                <p class="item-description">Contiene entre 5 y 15 estrellas extra (¡sorpresa!)</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 80 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('mystery')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 5: Caja Sorpresa -->
+            <div class="shop-item">
+                <div class="item-icon">🎉</div>
+                <h3 class="item-name">Caja Sorpresa</h3>
+                <p class="item-description">Entre 100 y 900 unidades de un recurso aleatorio</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 100 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('sorpresa')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 6: Oro Grande -->
+            <div class="shop-item">
+                <div class="item-icon">💰</div>
+                <h3 class="item-name">Fortuna Dorada</h3>
+                <p class="item-description">¡2000 unidades de oro para gastar sin límites!</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 100 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('oro_grande')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 7: Perlas Especiales -->
+            <div class="shop-item">
+                <div class="item-icon">🌊</div>
+                <h3 class="item-name">Perlas del Abismo</h3>
+                <p class="item-description">120 perlas especiales de las profundidades</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 90 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('perlas_especiales')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 8: Diamantes Especiales -->
+            <div class="shop-item">
+                <div class="item-icon">💠</div>
+                <h3 class="item-name">Diamantes Puros</h3>
+                <p class="item-description">1000 diamantes de la más alta calidad</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 300 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('diamantes_especiales')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 9: VIP -->
+            <div class="shop-item">
+                <div class="item-icon">👑</div>
+                <h3 class="item-name">Paquete VIP</h3>
+                <p class="item-description">Entre 60 y 190 puntos VIP para ascender de nivel</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> 80 Estrellas
+                </div>
+                <button class="item-button" onclick="buyItem('vip')">Canjear Ahora</button>
+            </div>
+            
+            <!-- Artículo 10: Tirada Diaria -->
+            <div class="shop-item">
+                <div class="item-icon">🔄</div>
+                <h3 class="item-name">Tirada Diaria Gratuita</h3>
+                <p class="item-description">Reclama 5 unidades de oro o diamantes cada 24h</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> Gratis
+                </div>
+                <button class="item-button" id="dailyButton" onclick="claimDaily()">Reclamar Ahora</button>
+                <div class="cooldown" id="dailyCooldown"></div>
+            </div>
+            
+            <!-- Artículo 11: Oferta Especial -->
+            <div class="shop-item special-offer">
+                <div class="item-icon">🔥</div>
+                <h3 class="item-name">Oferta Especial</h3>
+                <p class="item-description">¡Recursos duplicados! 400 oro, 200 diamantes, 40 VIP, 20 perlas y 10 estrellas</p>
+                <div class="item-price">
+                    <i class="fas fa-star"></i> <span id="offerPrice">150</span> Estrellas
+                </div>
+                <button class="item-button" id="specialOfferButton" onclick="buyItem('special_offer')">¡Oferta Especial!</button>
+                <div class="cooldown" id="offerTimer"></div>
+            </div>
+        </div>
         
         <div class="footer">
-            <p>© 2023 Juego VIP - Todos los derechos reservados</p>
+            <p>© 2025 Tienda de Estrellas - Todos los derechos reservados</p>
         </div>
     </div>
     
-    <div class="loading" id="loadingSpinner" style="display: none;">
+    <div class="loading" id="loadingSpinner">
         <div class="spinner"></div>
     </div>
     
     <div class="reward-modal" id="rewardModal">
         <div class="reward-content">
-            <div class="reward-icon" id="rewardIcon">🎉</div>
+            <div class="reward-icon" id="rewardIcon">🎁</div>
             <h2 class="reward-title" id="rewardTitle">¡Compra Exitosa!</h2>
-            <p class="reward-message" id="rewardMessage">Has canjeado tus estrellas correctamente</p>
-            <div class="reward-amount" id="rewardAmount">+50 Oro</div>
-            <button class="reward-close" id="rewardClose">Cerrar</button>
+            <p class="reward-message" id="rewardMessage">Has canjeado estrellas por recursos</p>
+            <p class="reward-amount" id="rewardAmount">+50 Oro</p>
+            <button class="btn" id="rewardClose">Continuar</button>
         </div>
     </div>
 
-    <script>
-    // Configuración de Supabase
+<script>
+   // Configuración de Supabase - REVISAR ESTOS VALORES
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
     
@@ -1026,8 +602,9 @@
     let userVip = 0;
     let userProfile = {};
     let lastDailyClaim = null;
-    let currentOfferPrice = 150; // Precio base de la oferta
+    let currentOfferPrice = 150;
     let offerEndTime = null;
+    let isDemoMode = false;
     
     // Precios de los artículos en estrellas
     const itemPrices = {
@@ -1041,7 +618,7 @@
         diamantes_especiales: 300,
         vip: 80,
         daily: 0,
-        special_offer: 150 // Precio base, se actualizará dinámicamente
+        special_offer: 150
     };
     
     // Nombres y emojis de los artículos
@@ -1059,36 +636,81 @@
         special_offer: { name: "Oferta Especial", icon: "🔥" }
     };
     
-    // Configurar la tienda al cargar la página
+    // Configurar la tienda al cargar la página - CON MEJOR MANEJO DE ERRORES
     document.addEventListener('DOMContentLoaded', async function() {
         try {
+            // Verificar que las credenciales de Supabase estén presentes
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                throw new Error('Configuración de Supabase incompleta');
+            }
+            
             // Inicializar Supabase
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            // Obtener usuario autenticado
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            // Verificar que Supabase se inicializó correctamente
+            if (!supabase) {
+                throw new Error('Error al inicializar Supabase');
+            }
             
-            if (authError) {
-                console.error('Error en auth.getUser():', authError);
-                throw authError;
+            // Obtener usuario autenticado con manejo de errores mejorado
+            let user = null;
+            try {
+                const { data: userData, error: authError } = await supabase.auth.getUser();
+                
+                if (authError) {
+                    console.warn('Error en auth.getUser():', authError);
+                    // No lanzar error aquí, continuar en modo demo
+                    throw authError;
+                }
+                
+                user = userData.user;
+            } catch (authError) {
+                console.warn('Authentication error, entering demo mode:', authError);
+                // Continuar en modo demo si hay error de autenticación
             }
             
             if (!user) {
-                console.error('No hay usuario autenticado');
-                userId = 'demo-user-id';
-                userStars = 300; // Valor de demostración
-                userVip = 50; // Valor de demostración
+                console.log('Modo demo activado - No hay usuario autenticado');
+                isDemoMode = true;
+                userId = 'demo-user-' + Math.random().toString(36).substr(2, 9);
+                userStars = 300;
+                userVip = 50;
+                
+                // Inicializar perfil de demo
+                userProfile = {
+                    stars: userStars,
+                    vip_points: userVip,
+                    gold: 100,
+                    diamonds: 50,
+                    perla: 30
+                };
+                
                 document.getElementById('userStars').textContent = userStars;
                 document.getElementById('userVip').textContent = userVip;
-                updateButtonsState();
-                startDailyCooldownTimer();
-                initOfferSystem();
+                
+                // Mostrar indicador de modo demo
+                const demoIndicator = document.createElement('div');
+                demoIndicator.style.position = 'fixed';
+                demoIndicator.style.top = '10px';
+                demoIndicator.style.right = '10px';
+                demoIndicator.style.background = 'var(--gradient-warning)';
+                demoIndicator.style.color = 'white';
+                demoIndicator.style.padding = '5px 10px';
+                demoIndicator.style.borderRadius = '15px';
+                demoIndicator.style.fontSize = '12px';
+                demoIndicator.style.zIndex = '1000';
+                demoIndicator.textContent = 'Modo Demo';
+                document.body.appendChild(demoIndicator);
             } else {
                 userId = user.id;
-                // Cargar perfil de usuario
+                // Cargar perfil de usuario desde la base de datos
                 await loadUserProfile();
-                initOfferSystem();
             }
+            
+            // Inicializar sistemas
+            updateButtonsState();
+            startDailyCooldownTimer();
+            initOfferSystem();
             
             // Configurar event listeners
             document.getElementById('backBtn').addEventListener('click', function() {
@@ -1103,91 +725,50 @@
             
         } catch (error) {
             console.error('Error en inicialización:', error);
-            userStars = 300; // Valor de demostración en caso de error
-            userVip = 50; // Valor de demostración
+            
+            // Modo de fallback seguro
+            isDemoMode = true;
+            userId = 'demo-user-' + Math.random().toString(36).substr(2, 9);
+            userStars = 300;
+            userVip = 50;
+            
+            userProfile = {
+                stars: userStars,
+                vip_points: userVip,
+                gold: 100,
+                diamonds: 50,
+                perla: 30
+            };
+            
             document.getElementById('userStars').textContent = userStars;
             document.getElementById('userVip').textContent = userVip;
             updateButtonsState();
             startDailyCooldownTimer();
             initOfferSystem();
+            
+            // Mostrar advertencia solo si es un error grave (no de autenticación)
+            if (!error.message.includes('Auth') && !error.message.includes('authenticat')) {
+                Swal.fire({
+                    title: 'Modo Demo Activado',
+                    text: 'La tienda funciona en modo demo. Algunas funciones pueden estar limitadas.',
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    background: 'var(--gradient-bg)',
+                    customClass: {
+                        popup: 'swal2-popup-custom'
+                    }
+                });
+            }
         }
     });
     
-    // Inicializar el sistema de ofertas
-    function initOfferSystem() {
-        // Establecer el tiempo de finalización de la oferta (12 horas desde ahora)
-        const now = new Date();
-        offerEndTime = new Date(now.getTime() + 12 * 60 * 60 * 1000);
-        
-        // Iniciar el contador de la oferta
-        startOfferCountdown();
-        
-        // Actualizar precio de la oferta (puede ser aleatorio entre 100-200 estrellas)
-        updateOfferPrice();
-    }
-    
-    // Actualizar el precio de la oferta (aleatorio entre 100-200 estrellas)
-    function updateOfferPrice() {
-        currentOfferPrice = Math.floor(Math.random() * 101) + 100; // 100-200
-        itemPrices.special_offer = currentOfferPrice;
-        document.getElementById('offerPrice').textContent = currentOfferPrice + ' Estrellas';
-        updateButtonsState();
-    }
-    
-    // Iniciar el contador de la oferta
-    function startOfferCountdown() {
-        const timerElement = document.getElementById('offerTimer');
-        
-        const updateCountdown = () => {
-            const now = new Date();
-            const timeLeft = offerEndTime - now;
-            
-            if (timeLeft <= 0) {
-                // La oferta ha expirado, generar una nueva
-                initOfferSystem();
-                return;
-            }
-            
-            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
-            timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            setTimeout(updateCountdown, 1000);
-        };
-        
-        updateCountdown();
-    }
-    
-    // Mostrar información de la tienda
-    function showInfo() {
-        Swal.fire({
-            title: '¿Cómo funciona la Tienda VIP?',
-            html: `
-                <div style="text-align: left;">
-                    <p>Bienvenido a la Tienda VIP, donde puedes canjear tus estrellas por recursos exclusivos:</p>
-                    <ul>
-                        <li>🌟 <strong>Estrellas</strong>: Se obtienen completando misiones VIP</li>
-                        <li>👑 <strong>Puntos VIP</strong>: Desbloquean beneficios exclusivos</li>
-                        <li>🪙 <strong>Oro</strong>: Para compras en el juego</li>
-                        <li>💎 <strong>Diamantes</strong>: Para mejorar tu equipo</li>
-                        <li>🔮 <strong>Perlas</strong>: Para potenciar habilidades</li>
-                    </ul>
-                    <p>¡No te pierdas nuestra <strong>Oferta Especial</strong> que cambia cada 12 horas y duplica los recursos!</p>
-                    <p>¡Reclama tu <strong>Tirada Diaria Gratuita</strong> cada 24 horas!</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: '¡Entendido!',
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-            color: 'white',
-            width: '600px'
-        });
-    }
-    
-    // Cargar perfil de usuario desde la base de datos
+    // Cargar perfil de usuario desde la base de datos - CON MEJOR MANEJO DE ERRORES
     async function loadUserProfile() {
+        // Si estamos en modo demo, no intentar cargar desde Supabase
+        if (isDemoMode) {
+            return;
+        }
+        
         try {
             const { data: profile, error } = await supabase
                 .from('profiles')
@@ -1197,28 +778,311 @@
             
             if (error) {
                 console.error('Error al cargar perfil:', error);
-                throw error;
-            }
-            
-            if (profile) {
+                
+                // Si hay error de permisos o tabla no existe, activar modo demo
+                if (error.code === 'PGRST301' || error.message.includes('permission') || error.message.includes('exist')) {
+                    console.warn('Error de permisos o tabla no existe, activando modo demo');
+                    isDemoMode = true;
+                    userStars = 300;
+                    userVip = 50;
+                    userProfile = {
+                        stars: userStars,
+                        vip_points: userVip,
+                        gold: 100,
+                        diamonds: 50,
+                        perla: 30
+                    };
+                } else {
+                    throw error;
+                }
+            } else if (profile) {
                 userProfile = profile;
                 userStars = profile.stars || 0;
                 userVip = profile.vip_points || 0;
                 lastDailyClaim = profile.last_daily_claim || null;
-                
-                document.getElementById('userStars').textContent = userStars;
-                document.getElementById('userVip').textContent = userVip;
-                updateButtonsState();
-                startDailyCooldownTimer();
             }
+            
+            document.getElementById('userStars').textContent = userStars;
+            document.getElementById('userVip').textContent = userVip;
             
         } catch (error) {
             console.error('Error al cargar perfil de usuario:', error);
+            // No mostrar error al usuario para no interrumpir la experiencia
+        }
+    }
+    
+    // Inicializar el sistema de ofertas
+    function initOfferSystem() {
+        // Establecer tiempo de finalización de la oferta (24 horas desde ahora)
+        offerEndTime = new Date();
+        offerEndTime.setHours(offerEndTime.getHours() + 24);
+        
+        // Iniciar el contador de la oferta
+        updateOfferTimer();
+        
+        // Actualizar precio de la oferta cada hora
+        setInterval(updateOfferPrice, 3600000);
+    }
+    
+    // Actualizar el temporizador de la oferta
+    function updateOfferTimer() {
+        const offerTimerElement = document.getElementById('offerTimer');
+        const offerPriceElement = document.getElementById('offerPrice');
+        
+        if (!offerEndTime) return;
+        
+        const updateTimer = () => {
+            const now = new Date();
+            const timeLeft = offerEndTime - now;
+            
+            if (timeLeft <= 0) {
+                // Reiniciar la oferta
+                offerEndTime = new Date();
+                offerEndTime.setHours(offerEndTime.getHours() + 24);
+                currentOfferPrice = 150;
+                offerPriceElement.textContent = currentOfferPrice;
+                offerTimerElement.textContent = '';
+                return;
+            }
+            
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            offerTimerElement.textContent = `Finaliza en: ${hours}h ${minutes}m ${seconds}s`;
+            
+            setTimeout(updateTimer, 1000);
+        };
+        
+        updateTimer();
+    }
+    
+    // Actualizar el precio de la oferta (cada hora)
+    function updateOfferPrice() {
+        const now = new Date();
+        const timeLeft = offerEndTime - now;
+        const hoursLeft = timeLeft / (1000 * 60 * 60);
+        
+        // Reducir el precio gradualmente (más barato cuanto menos tiempo queda)
+        if (hoursLeft < 24) {
+            currentOfferPrice = Math.max(50, Math.floor(150 * (hoursLeft / 24)));
+            document.getElementById('offerPrice').textContent = currentOfferPrice;
+            itemPrices.special_offer = currentOfferPrice;
+            
+            // Actualizar estado del botón
+            updateButtonsState();
+        }
+    }
+    
+    // Mostrar información sobre la tienda
+    function showInfo() {
+        Swal.fire({
+            title: 'Información de la Tienda',
+            html: `
+                <div style="text-align: left;">
+                    <p>Bienvenido a la Tienda de Estrellas. Aquí puedes canjear tus estrellas por recursos especiales.</p>
+                    <p><strong>🌟 Estrellas:</strong> Obtén estrellas completando misiones VIP.</p>
+                    <p><strong>👑 Puntos VIP:</strong> Aumenta tu nivel VIP para desbloquear beneficios exclusivos.</p>
+                    <p><strong>🔄 Tirada Diaria:</strong> Reclama tu recompensa gratuita cada 24 horas.</p>
+                    <p><strong>🔥 Oferta Especial:</strong> Esta oferta se vuelve más barata con el tiempo. ¡No esperes demasiado!</p>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Entendido',
+            background: 'var(--gradient-bg)',
+            customClass: {
+                popup: 'swal2-popup-custom'
+            }
+        });
+    }
+    
+    // Procesar la compra - CON MODO DEMO
+    async function processPurchase(itemType, price) {
+        // Mostrar carga
+        document.getElementById('loadingSpinner').style.display = 'flex';
+        
+        // Pequeña pausa para mejor UX
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        try {
+            // Calcular nuevas estrellas
+            const newStars = userStars - price;
+            
+            // Obtener recompensa y actualizar recursos
+            let rewardMessage = '';
+            let rewardAmount = '';
+            let rewardIcon = '';
+            let updates = { stars: newStars };
+            let isDoubleReward = false;
+            
+            // Lógica de recompensas
+            switch(itemType) {
+                case 'gold':
+                    updates.gold = (userProfile.gold || 0) + 50;
+                    rewardMessage = 'Has canjeado estrellas por oro';
+                    rewardAmount = '+50 Oro';
+                    rewardIcon = '🪙';
+                    break;
+                case 'diamond':
+                    updates.diamonds = (userProfile.diamonds || 0) + 100;
+                    rewardMessage = 'Has canjeado estrellas por diamantes';
+                    rewardAmount = '+100 Diamantes';
+                    rewardIcon = '💎';
+                    break;
+                case 'pearl':
+                    updates.perla = (userProfile.perla || 0) + 50;
+                    rewardMessage = 'Has canjeado estrellas por perlas';
+                    rewardAmount = '+50 Perlas';
+                    rewardIcon = '🔮';
+                    break;
+                case 'mystery':
+                    const extraStars = Math.floor(Math.random() * 11) + 5;
+                    updates.stars = newStars + extraStars;
+                    rewardMessage = '¡Cofre misterioso abierto!';
+                    rewardAmount = `+${extraStars} Estrellas Extra`;
+                    rewardIcon = '🎁';
+                    break;
+                case 'sorpresa':
+                    const randomResource = Math.floor(Math.random() * 3);
+                    const randomAmount = Math.floor(Math.random() * 801) + 100;
+                    
+                    if (randomResource === 0) {
+                        updates.gold = (userProfile.gold || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Oro!';
+                        rewardAmount = `+${randomAmount} Oro`;
+                        rewardIcon = '🪙';
+                    } else if (randomResource === 1) {
+                        updates.diamonds = (userProfile.diamonds || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Diamantes!';
+                        rewardAmount = `+${randomAmount} Diamantes`;
+                        rewardIcon = '💎';
+                    } else {
+                        updates.perla = (userProfile.perla || 0) + randomAmount;
+                        rewardMessage = '¡Caja Sorpresa de Perlas!';
+                        rewardAmount = `+${randomAmount} Perlas`;
+                        rewardIcon = '🔮';
+                    }
+                    break;
+                case 'oro_grande':
+                    updates.gold = (userProfile.gold || 0) + 2000;
+                    rewardMessage = '¡Fortuna Dorada adquirida!';
+                    rewardAmount = '+2000 Oro';
+                    rewardIcon = '💰';
+                    break;
+                case 'perlas_especiales':
+                    updates.perla = (userProfile.perla || 0) + 120;
+                    rewardMessage = '¡Perlas del Abismo obtenidas!';
+                    rewardAmount = '+120 Perlas';
+                    rewardIcon = '🌊';
+                    break;
+                case 'diamantes_especiales':
+                    updates.diamonds = (userProfile.diamonds || 0) + 1000;
+                    rewardMessage = '¡Diamantes Puros adquiridos!';
+                    rewardAmount = '+1000 Diamantes';
+                    rewardIcon = '💠';
+                    break;
+                case 'vip':
+                    const vipPoints = Math.floor(Math.random() * 131) + 60;
+                    updates.vip_points = (userProfile.vip_points || 0) + vipPoints;
+                    rewardMessage = '¡Paquete VIP canjeado!';
+                    rewardAmount = `+${vipPoints} Puntos VIP`;
+                    rewardIcon = '👑';
+                    break;
+                case 'daily':
+                    const dailyResource = Math.floor(Math.random() * 2);
+                    const dailyAmount = 5;
+                    
+                    if (dailyResource === 0) {
+                        updates.gold = (userProfile.gold || 0) + dailyAmount;
+                        rewardMessage = '¡Tirada Diaria Reclamada!';
+                        rewardAmount = `+${dailyAmount} Oro`;
+                        rewardIcon = '🪙';
+                    } else {
+                        updates.diamonds = (userProfile.diamonds || 0) + dailyAmount;
+                        rewardMessage = '¡Tirada Diaria Reclamada!';
+                        rewardAmount = `+${dailyAmount} Diamantes`;
+                        rewardIcon = '💎';
+                    }
+                    
+                    updates.last_daily_claim = new Date().toISOString();
+                    lastDailyClaim = updates.last_daily_claim;
+                    break;
+                case 'special_offer':
+                    isDoubleReward = true;
+                    const doubleMultiplier = 2;
+                    
+                    updates.gold = (userProfile.gold || 0) + (200 * doubleMultiplier);
+                    updates.diamonds = (userProfile.diamonds || 0) + (100 * doubleMultiplier);
+                    updates.vip_points = (userProfile.vip_points || 0) + (20 * doubleMultiplier);
+                    updates.perla = (userProfile.perla || 0) + (10 * doubleMultiplier);
+                    updates.stars = newStars + (5 * doubleMultiplier);
+                    
+                    rewardMessage = '¡Oferta Especial con Recursos Duplicados!';
+                    rewardAmount = `+${400} Oro, +${200} Diamantes, +${40} VIP, +${20} Perlas, +${10} Estrellas`;
+                    rewardIcon = '🔥';
+                    break;
+            }
+            
+            // Si no estamos en modo demo, actualizar en la base de datos
+            if (!isDemoMode && supabase) {
+                try {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update(updates)
+                        .eq('id', userId);
+                    
+                    if (error) throw error;
+                } catch (dbError) {
+                    console.error('Error al actualizar base de datos:', dbError);
+                    // Continuar en modo demo si hay error de base de datos
+                    isDemoMode = true;
+                }
+            }
+            
+            // Actualizar perfil local
+            userProfile = { ...userProfile, ...updates };
+            userStars = updates.stars;
+            userVip = updates.vip_points || userVip;
+            
+            // Ocultar carga
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
+            // Mostrar modal de éxito
+            document.getElementById('rewardIcon').textContent = rewardIcon;
+            document.getElementById('rewardTitle').textContent = '¡Compra Exitosa!';
+            document.getElementById('rewardMessage').textContent = rewardMessage;
+            document.getElementById('rewardAmount').textContent = rewardAmount;
+            document.getElementById('rewardModal').style.display = 'flex';
+            
+            // Actualizar UI
+            document.getElementById('userStars').textContent = userStars;
+            document.getElementById('userVip').textContent = userVip;
+            updateButtonsState();
+            startDailyCooldownTimer();
+            
+            // Efectos de confeti
+            confetti({
+                particleCount: isDoubleReward ? 200 : 100,
+                spread: isDoubleReward ? 100 : 70,
+                origin: { y: 0.6 }
+            });
+            
+            // Efecto de estrellas
+            createStarsAnimation(isDoubleReward ? 20 : 10);
+            
+        } catch (error) {
+            console.error('Error al procesar compra:', error);
+            document.getElementById('loadingSpinner').style.display = 'none';
+            
             Swal.fire({
                 title: 'Error',
-                text: 'No se pudo cargar la información de tu perfil',
+                text: 'No se pudo procesar la compra. Inténtalo de nuevo.',
                 icon: 'error',
-                confirmButtonText: 'Entendido'
+                confirmButtonText: 'Entendido',
+                background: 'var(--gradient-bg)',
+                customClass: {
+                    popup: 'swal2-popup-custom'
+                }
             });
         }
     }
@@ -1230,10 +1094,16 @@
             const onclick = button.getAttribute('onclick');
             if (!onclick) return;
             
-            const itemType = onclick.replace("buyItem('", "").replace("')", "").replace("claimDaily()", "daily");
+            let itemType;
+            if (onclick.includes("buyItem('")) {
+                itemType = onclick.replace("buyItem('", "").replace("')", "");
+            } else if (onclick.includes("claimDaily()")) {
+                itemType = 'daily';
+            } else {
+                return;
+            }
             
             if (itemType === 'daily') {
-                // Para la tirada diaria, verificar el cooldown
                 if (isDailyOnCooldown()) {
                     button.disabled = true;
                     button.textContent = 'En espera';
@@ -1303,7 +1173,7 @@
         updateCooldown();
     }
     
-    // Comprar un artículo
+    // Comprar un artículo - MEJORADO
     async function buyItem(itemType) {
         const price = itemPrices[itemType];
         const item = itemNames[itemType];
@@ -1315,8 +1185,10 @@
                 text: 'Necesitas más estrellas para realizar esta compra. Completa misiones VIP para obtener más estrellas.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido',
-                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                color: 'white'
+                background: 'var(--gradient-bg)',
+                customClass: {
+                    popup: 'swal2-popup-custom'
+                }
             });
             return;
         }
@@ -1326,7 +1198,7 @@
             title: 'Confirmar compra',
             html: `
                 <div class="purchase-confirmation">
-                    <div class="purchase-item">
+                    <div class="purchase-item pulse-animation">
                         <div class="purchase-item-icon">${item.icon}</div>
                         <div class="purchase-item-details">
                             <div class="purchase-item-name">${item.name}</div>
@@ -1342,9 +1214,10 @@
             `,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Sí, canjear',
+            confirmButtonText: '¡Sí, Comprar!',
             cancelButtonText: 'Cancelar',
             focusConfirm: false,
+            background: 'var(--gradient-bg)',
             customClass: {
                 popup: 'swal2-popup-custom'
             }
@@ -1355,196 +1228,23 @@
         }
     }
     
-    // Reclamar tirada diaria
+    // Reclamar tirada diaria - MEJORADO
     async function claimDaily() {
         if (isDailyOnCooldown()) {
             Swal.fire({
                 title: 'En espera',
                 text: 'Ya has reclamado tu tirada diaria. Vuelve en 24 horas.',
                 icon: 'warning',
-                confirmButtonText: 'Entendido'
+                confirmButtonText: 'Entendido',
+                background: 'var(--gradient-bg)',
+                customClass: {
+                    popup: 'swal2-popup-custom'
+                }
             });
             return;
         }
         
         await processPurchase('daily', 0);
-    }
-    
-    // Procesar la compra
-    async function processPurchase(itemType, price) {
-        // Mostrar carga
-        document.getElementById('loadingSpinner').style.display = 'flex';
-        
-        try {
-            // Calcular nuevas estrellas
-            const newStars = userStars - price;
-            
-            // Obtener recompensa y actualizar recursos
-            let rewardMessage = '';
-            let rewardAmount = '';
-            let rewardIcon = '';
-            let updates = { stars: newStars };
-            let isDoubleReward = false;
-            
-            switch(itemType) {
-                case 'gold':
-                    updates.gold = (userProfile.gold || 0) + 50;
-                    rewardMessage = 'Has canjeado estrellas por oro';
-                    rewardAmount = '+50 Oro';
-                    rewardIcon = '🪙';
-                    break;
-                case 'diamond':
-                    updates.diamonds = (userProfile.diamonds || 0) + 100;
-                    rewardMessage = 'Has canjeado estrellas por diamantes';
-                    rewardAmount = '+100 Diamantes';
-                    rewardIcon = '💎';
-                    break;
-                case 'pearl':
-                    updates.perla = (userProfile.perla || 0) + 50;
-                    rewardMessage = 'Has canjeado estrellas por perlas';
-                    rewardAmount = '+50 Perlas';
-                    rewardIcon = '🔮';
-                    break;
-                case 'mystery':
-                    const extraStars = Math.floor(Math.random() * 11) + 5; // 5-15 estrellas
-                    updates.stars = newStars + extraStars;
-                    rewardMessage = '¡Cofre misterioso abierto!';
-                    rewardAmount = `+${extraStars} Estrellas Extra`;
-                    rewardIcon = '🎁';
-                    break;
-                case 'sorpresa':
-                    const randomResource = Math.floor(Math.random() * 3); // 0: oro, 1: diamantes, 2: perlas
-                    const randomAmount = Math.floor(Math.random() * 801) + 100; // 100-900
-                    
-                    if (randomResource === 0) {
-                        updates.gold = (userProfile.gold || 0) + randomAmount;
-                        rewardMessage = '¡Caja Sorpresa de Oro!';
-                        rewardAmount = `+${randomAmount} Oro`;
-                        rewardIcon = '🪙';
-                    } else if (randomResource === 1) {
-                        updates.diamonds = (userProfile.diamonds || 0) + randomAmount;
-                        rewardMessage = '¡Caja Sorpresa de Diamantes!';
-                        rewardAmount = `+${randomAmount} Diamantes`;
-                        rewardIcon = '💎';
-                    } else {
-                        updates.perla = (userProfile.perla || 0) + randomAmount;
-                        rewardMessage = '¡Caja Sorpresa de Perlas!';
-                        rewardAmount = `+${randomAmount} Perlas`;
-                        rewardIcon = '🔮';
-                    }
-                    break;
-                case 'oro_grande':
-                    updates.gold = (userProfile.gold || 0) + 2000;
-                    rewardMessage = '¡Fortuna Dorada adquirida!';
-                    rewardAmount = '+2000 Oro';
-                    rewardIcon = '💰';
-                    break;
-                case 'perlas_especiales':
-                    updates.perla = (userProfile.perla || 0) + 120;
-                    rewardMessage = '¡Perlas del Abismo obtenidas!';
-                    rewardAmount = '+120 Perlas';
-                    rewardIcon = '🌊';
-                    break;
-                case 'diamantes_especiales':
-                    updates.diamonds = (userProfile.diamonds || 0) + 1000;
-                    rewardMessage = '¡Diamantes Puros adquiridos!';
-                    rewardAmount = '+1000 Diamantes';
-                    rewardIcon = '💠';
-                    break;
-                case 'vip':
-                    const vipPoints = Math.floor(Math.random() * 131) + 60; // 60-190
-                    updates.vip_points = (userProfile.vip_points || 0) + vipPoints;
-                    rewardMessage = '¡Paquete VIP canjeado!';
-                    rewardAmount = `+${vipPoints} Puntos VIP`;
-                    rewardIcon = '👑';
-                    break;
-                case 'daily':
-                    const dailyResource = Math.floor(Math.random() * 2); // 0: oro, 1: diamantes
-                    const dailyAmount = 5;
-                    
-                    if (dailyResource === 0) {
-                        updates.gold = (userProfile.gold || 0) + dailyAmount;
-                        rewardMessage = '¡Tirada Diaria Reclamada!';
-                        rewardAmount = `+${dailyAmount} Oro`;
-                        rewardIcon = '🪙';
-                    } else {
-                        updates.diamonds = (userProfile.diamonds || 0) + dailyAmount;
-                        rewardMessage = '¡Tirada Diaria Reclamada!';
-                        rewardAmount = `+${dailyAmount} Diamantes`;
-                        rewardIcon = '💎';
-                    }
-                    
-                    // Actualizar última reclamación
-                    updates.last_daily_claim = new Date().toISOString();
-                    lastDailyClaim = updates.last_daily_claim;
-                    break;
-                case 'special_offer':
-                    // Oferta especial: 200 oro, 100 diamantes, 20 VIP, 10 perlas, 5 estrellas - PERO DUPLICADO!
-                    isDoubleReward = true;
-                    const doubleMultiplier = 2; // Duplicar los recursos
-                    
-                    updates.gold = (userProfile.gold || 0) + (200 * doubleMultiplier);
-                    updates.diamonds = (userProfile.diamonds || 0) + (100 * doubleMultiplier);
-                    updates.vip_points = (userProfile.vip_points || 0) + (20 * doubleMultiplier);
-                    updates.perla = (userProfile.perla || 0) + (10 * doubleMultiplier);
-                    updates.stars = newStars + (5 * doubleMultiplier); // Agregar estrellas en lugar de restar
-                    
-                    rewardMessage = '¡Oferta Especial con Recursos Duplicados!';
-                    rewardAmount = `+${400} Oro, +${200} Diamantes, +${40} VIP, +${20} Perlas, +${10} Estrellas`;
-                    rewardIcon = '🔥';
-                    break;
-            }
-            
-            // Actualizar en la base de datos
-            const { error } = await supabase
-                .from('profiles')
-                .update(updates)
-                .eq('id', userId);
-            
-            if (error) throw error;
-            
-            // Actualizar perfil local
-            userProfile = { ...userProfile, ...updates };
-            userStars = updates.stars;
-            userVip = updates.vip_points || userVip;
-            
-            // Ocultar carga
-            document.getElementById('loadingSpinner').style.display = 'none';
-            
-            // Mostrar modal de éxito
-            document.getElementById('rewardIcon').textContent = rewardIcon;
-            document.getElementById('rewardTitle').textContent = '¡Compra Exitosa!';
-            document.getElementById('rewardMessage').textContent = rewardMessage;
-            document.getElementById('rewardAmount').textContent = rewardAmount;
-            document.getElementById('rewardModal').style.display = 'flex';
-            
-            // Actualizar UI
-            document.getElementById('userStars').textContent = userStars;
-            document.getElementById('userVip').textContent = userVip;
-            updateButtonsState();
-            startDailyCooldownTimer();
-            
-            // Efectos de confeti
-            confetti({
-                particleCount: isDoubleReward ? 200 : 100,
-                spread: isDoubleReward ? 100 : 70,
-                origin: { y: 0.6 }
-            });
-            
-            // Efecto de estrellas
-            createStarsAnimation(isDoubleReward ? 20 : 10);
-            
-        } catch (error) {
-            console.error('Error al procesar compra:', error);
-            document.getElementById('loadingSpinner').style.display = 'none';
-            
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo procesar la compra. Inténtalo de nuevo.',
-                icon: 'error',
-                confirmButtonText: 'Entendido'
-            });
-        }
     }
     
     // Crear animación de estrellas
@@ -1560,12 +1260,11 @@
             star.style.animation = `float ${Math.random() * 2 + 3}s linear forwards`;
             document.body.appendChild(star);
             
-            // Eliminar después de la animación
             setTimeout(() => {
                 star.remove();
             }, 5000);
         }
     }
-    </script>
+</script>
 </body>
 </html>
