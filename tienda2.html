@@ -29,10 +29,10 @@
             --vip: #ff00ff;
             --offer: #ff6b6b;
             
-            --border-radius: 16px;
+            --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.4);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
             --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             --gradient-gold: linear-gradient(135deg, var(--gold) 0%, #ffaa00 100%);
@@ -43,10 +43,6 @@
             --gradient-vip: linear-gradient(135deg, var(--vip) 0%, #9370db 100%);
             --gradient-sorpresa: linear-gradient(135deg, #ff9a00 0%, #f5f5dc 100%);
             --gradient-offer: linear-gradient(135deg, var(--offer) 0%, #ff8e8e 100%);
-            --gradient-success: linear-gradient(135deg, var(--success) 0%, #27ae60 100%);
-            --gradient-error: linear-gradient(135deg, var(--error) 0%, #c0392b 100%);
-            --gradient-warning: linear-gradient(135deg, var(--warning) 0%, #e67e22 100%);
-            --gradient-info: linear-gradient(135deg, var(--info) 0%, #2980b9 100%);
         }
         
         * {
@@ -572,7 +568,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.1), rgba(255,255,255,0.05);
             transform: rotate(45deg);
             z-index: 0;
         }
@@ -649,161 +645,109 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* Custom SweetAlert Styles - MEJORADOS */
+        /* Custom SweetAlert Styles */
         .swal2-popup {
             background: var(--gradient-bg) !important;
             border-radius: var(--border-radius) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
             padding: 2.5rem !important;
             color: white !important;
-            backdrop-filter: blur(10px) !important;
-            font-family: 'Montserrat', sans-serif !important;
-            width: auto !important;
-            max-width: 550px !important;
         }
         
         .swal2-title {
-            font-size: 32px !important;
+            font-size: 28px !important;
             font-weight: 700 !important;
             color: var(--accent) !important;
             font-family: 'Playfair Display', serif !important;
             margin-bottom: 1.5rem !important;
-            text-shadow: 0 2px 8px rgba(0, 198, 255, 0.4) !important;
-            letter-spacing: 0.5px !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
         }
         
         .swal2-html-container {
             color: rgba(255, 255, 255, 0.9) !important;
             font-size: 18px !important;
             margin: 0 0 2rem 0 !important;
-            line-height: 1.6 !important;
-            font-weight: 400 !important;
+            line-height: 1.5 !important;
         }
         
         .swal2-confirm, .swal2-cancel {
             border-radius: 50px !important;
-            padding: 14px 32px !important;
+            padding: 12px 30px !important;
             font-weight: 600 !important;
             font-size: 16px !important;
             transition: var(--transition) !important;
             box-shadow: var(--shadow) !important;
-            border: none !important;
-            letter-spacing: 0.5px !important;
         }
         
         .swal2-confirm {
             background: var(--gradient-primary) !important;
+            border: none !important;
         }
         
         .swal2-confirm:hover {
             transform: translateY(-3px) !important;
-            box-shadow: 0 10px 25px rgba(74, 0, 224, 0.5) !important;
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3) !important;
         }
         
         .swal2-cancel {
-            background: rgba(255, 255, 255, 0.12) !important;
-            color: white !important;
-        }
-        
-        .swal2-cancel:hover {
-            background: rgba(255, 255, 255, 0.18) !important;
-            transform: translateY(-3px) !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        .swal2-actions {
-            margin: 2rem auto 0 auto !important;
-            gap: 15px !important;
-        }
-        
-        .swal2-icon {
-            margin: 0 auto 1.8rem auto !important;
-            transform: scale(1.3);
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
             border: none !important;
         }
         
+        .swal2-cancel:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .swal2-actions {
+            margin: 1.5rem auto 0 auto !important;
+        }
+        
+        .swal2-icon {
+            margin: 0 auto 1.5rem auto !important;
+            transform: scale(1.2);
+        }
+        
         .swal2-icon-content {
-            font-size: 4rem !important;
+            font-size: 3.5rem !important;
         }
         
-        .swal2-success-ring {
-            border: 4px solid rgba(46, 204, 113, 0.3) !important;
-        }
-        
-        .swal2-success-line-tip, .swal2-success-line-long {
-            background-color: var(--success) !important;
-        }
-        
-        .swal2-question {
-            border-color: var(--accent) !important;
-            color: var(--accent) !important;
-        }
-        
-        .swal2-warning {
-            border-color: var(--warning) !important;
-            color: var(--warning) !important;
-        }
-        
-        .swal2-error {
-            border-color: var(--error) !important;
-            color: var(--error) !important;
-        }
-        
-        .swal2-info {
-            border-color: var(--info) !important;
-            color: var(--info) !important;
-        }
-        
-        /* Estilos personalizados para el contenido de la confirmación */
         .purchase-confirmation {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 1.8rem 0;
+            margin: 1.5rem 0;
         }
         
         .purchase-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 1.2rem;
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
+            margin-bottom: 1rem;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
             width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-        
-        .purchase-item:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
         }
         
         .purchase-item-icon {
-            font-size: 2.8rem;
-            color: #ff9a00;
-            text-shadow: 0 0 15px rgba(255, 154, 0, 0.5);
+            font-size: 2.5rem;
         }
         
         .purchase-item-details {
             text-align: left;
-            flex-grow: 1;
         }
         
         .purchase-item-name {
             font-weight: 600;
             color: white;
-            margin-bottom: 0.3rem;
-            font-size: 18px;
+            margin-bottom: 0.25rem;
         }
         
         .purchase-item-price {
             color: var(--gold);
-            font-weight: 700;
-            font-size: 20px;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            font-weight: 600;
         }
         
         .stars-cost {
@@ -811,52 +755,11 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-top: 1.2rem;
-            padding: 12px 24px;
-            background: rgba(255, 215, 0, 0.12);
+            margin-top: 1rem;
+            padding: 10px 20px;
+            background: rgba(255, 215, 0, 0.1);
             border-radius: 30px;
-            font-weight: 700;
-            font-size: 18px;
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
-        
-        .reward-items {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 1.5rem 0;
-            width: 100%;
-        }
-        
-        .reward-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .reward-item-icon {
-            font-size: 1.5rem;
-        }
-        
-        .reward-item-amount {
             font-weight: 600;
-            color: var(--gold);
-        }
-        
-        /* Animaciones */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .pulse-animation {
-            animation: pulse 2s infinite;
         }
         
         /* Responsive Design */
@@ -890,33 +793,16 @@
             }
             
             .swal2-popup {
-                padding: 1.8rem !important;
+                padding: 1.5rem !important;
                 width: 90% !important;
             }
             
             .swal2-title {
-                font-size: 26px !important;
+                font-size: 24px !important;
             }
             
             .swal2-html-container {
                 font-size: 16px !important;
-            }
-            
-            .swal2-confirm, .swal2-cancel {
-                padding: 12px 24px !important;
-                font-size: 14px !important;
-            }
-            
-            .purchase-item {
-                padding: 14px;
-            }
-            
-            .purchase-item-icon {
-                font-size: 2.2rem;
-            }
-            
-            .reward-items {
-                grid-template-columns: 1fr;
             }
         }
         
@@ -1131,7 +1017,7 @@
     <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3RydXB0YWJqb2h4Y2tsYm9zaCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzUzMDI0NDgwLCJleHAiOjIwNjg2MDA0ODB9.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
     
     // Variables globales
     let supabase = null;
@@ -1140,7 +1026,7 @@
     let userVip = 0;
     let userProfile = {};
     let lastDailyClaim = null;
-    let currentOfferPrice = 150;
+    let currentOfferPrice = 150; // Precio base de la oferta
     let offerEndTime = null;
     
     // Precios de los artículos en estrellas
@@ -1155,7 +1041,7 @@
         diamantes_especiales: 300,
         vip: 80,
         daily: 0,
-        special_offer: 150
+        special_offer: 150 // Precio base, se actualizará dinámicamente
     };
     
     // Nombres y emojis de los artículos
@@ -1190,8 +1076,8 @@
             if (!user) {
                 console.error('No hay usuario autenticado');
                 userId = 'demo-user-id';
-                userStars = 300;
-                userVip = 50;
+                userStars = 300; // Valor de demostración
+                userVip = 50; // Valor de demostración
                 document.getElementById('userStars').textContent = userStars;
                 document.getElementById('userVip').textContent = userVip;
                 updateButtonsState();
@@ -1217,8 +1103,8 @@
             
         } catch (error) {
             console.error('Error en inicialización:', error);
-            userStars = 300;
-            userVip = 50;
+            userStars = 300; // Valor de demostración en caso de error
+            userVip = 50; // Valor de demostración
             document.getElementById('userStars').textContent = userStars;
             document.getElementById('userVip').textContent = userVip;
             updateButtonsState();
@@ -1229,15 +1115,20 @@
     
     // Inicializar el sistema de ofertas
     function initOfferSystem() {
+        // Establecer el tiempo de finalización de la oferta (12 horas desde ahora)
         const now = new Date();
         offerEndTime = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+        
+        // Iniciar el contador de la oferta
         startOfferCountdown();
+        
+        // Actualizar precio de la oferta (puede ser aleatorio entre 100-200 estrellas)
         updateOfferPrice();
     }
     
-    // Actualizar el precio de la oferta
+    // Actualizar el precio de la oferta (aleatorio entre 100-200 estrellas)
     function updateOfferPrice() {
-        currentOfferPrice = Math.floor(Math.random() * 101) + 100;
+        currentOfferPrice = Math.floor(Math.random() * 101) + 100; // 100-200
         itemPrices.special_offer = currentOfferPrice;
         document.getElementById('offerPrice').textContent = currentOfferPrice + ' Estrellas';
         updateButtonsState();
@@ -1252,6 +1143,7 @@
             const timeLeft = offerEndTime - now;
             
             if (timeLeft <= 0) {
+                // La oferta ha expirado, generar una nueva
                 initOfferSystem();
                 return;
             }
@@ -1268,19 +1160,19 @@
         updateCountdown();
     }
     
-    // Mostrar información de la tienda - MEJORADO
+    // Mostrar información de la tienda
     function showInfo() {
         Swal.fire({
             title: '¿Cómo funciona la Tienda VIP?',
             html: `
-                <div style="text-align: left; line-height: 1.6;">
+                <div style="text-align: left;">
                     <p>Bienvenido a la Tienda VIP, donde puedes canjear tus estrellas por recursos exclusivos:</p>
-                    <ul style="margin: 15px 0; padding-left: 20px;">
-                        <li style="margin-bottom: 10px;">🌟 <strong>Estrellas</strong>: Se obtienen completando misiones VIP</li>
-                        <li style="margin-bottom: 10px;">👑 <strong>Puntos VIP</strong>: Desbloquean beneficios exclusivos</li>
-                        <li style="margin-bottom: 10px;">🪙 <strong>Oro</strong>: Para compras en el juego</li>
-                        <li style="margin-bottom: 10px;">💎 <strong>Diamantes</strong>: Para mejorar tu equipo</li>
-                        <li style="margin-bottom: 10px;">🔮 <strong>Perlas</strong>: Para potenciar habilidades</li>
+                    <ul>
+                        <li>🌟 <strong>Estrellas</strong>: Se obtienen completando misiones VIP</li>
+                        <li>👑 <strong>Puntos VIP</strong>: Desbloquean beneficios exclusivos</li>
+                        <li>🪙 <strong>Oro</strong>: Para compras en el juego</li>
+                        <li>💎 <strong>Diamantes</strong>: Para mejorar tu equipo</li>
+                        <li>🔮 <strong>Perlas</strong>: Para potenciar habilidades</li>
                     </ul>
                     <p>¡No te pierdas nuestra <strong>Oferta Especial</strong> que cambia cada 12 horas y duplica los recursos!</p>
                     <p>¡Reclama tu <strong>Tirada Diaria Gratuita</strong> cada 24 horas!</p>
@@ -1288,11 +1180,9 @@
             `,
             icon: 'info',
             confirmButtonText: '¡Entendido!',
-            width: '600px',
-            background: 'var(--gradient-bg)',
-            customClass: {
-                popup: 'swal2-popup-custom'
-            }
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            color: 'white',
+            width: '600px'
         });
     }
     
@@ -1324,22 +1214,13 @@
             
         } catch (error) {
             console.error('Error al cargar perfil de usuario:', error);
-            showErrorAlert('Error', 'No se pudo cargar la información de tu perfil');
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo cargar la información de tu perfil',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
         }
-    }
-    
-    // Mostrar alerta de error - MEJORADO
-    function showErrorAlert(title, text) {
-        Swal.fire({
-            title: title,
-            text: text,
-            icon: 'error',
-            confirmButtonText: 'Entendido',
-            background: 'var(--gradient-bg)',
-            customClass: {
-                popup: 'swal2-popup-custom'
-            }
-        });
     }
     
     // Actualizar estado de los botones de compra
@@ -1352,6 +1233,7 @@
             const itemType = onclick.replace("buyItem('", "").replace("')", "").replace("claimDaily()", "daily");
             
             if (itemType === 'daily') {
+                // Para la tirada diaria, verificar el cooldown
                 if (isDailyOnCooldown()) {
                     button.disabled = true;
                     button.textContent = 'En espera';
@@ -1421,7 +1303,7 @@
         updateCooldown();
     }
     
-    // Comprar un artículo - MEJORADO
+    // Comprar un artículo
     async function buyItem(itemType) {
         const price = itemPrices[itemType];
         const item = itemNames[itemType];
@@ -1433,10 +1315,8 @@
                 text: 'Necesitas más estrellas para realizar esta compra. Completa misiones VIP para obtener más estrellas.',
                 icon: 'warning',
                 confirmButtonText: 'Entendido',
-                background: 'var(--gradient-bg)',
-                customClass: {
-                    popup: 'swal2-popup-custom'
-                }
+                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                color: 'white'
             });
             return;
         }
@@ -1446,7 +1326,7 @@
             title: 'Confirmar compra',
             html: `
                 <div class="purchase-confirmation">
-                    <div class="purchase-item pulse-animation">
+                    <div class="purchase-item">
                         <div class="purchase-item-icon">${item.icon}</div>
                         <div class="purchase-item-details">
                             <div class="purchase-item-name">${item.name}</div>
@@ -1462,10 +1342,9 @@
             `,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: '¡Sí, Comprar!',
+            confirmButtonText: 'Sí, canjear',
             cancelButtonText: 'Cancelar',
             focusConfirm: false,
-            background: 'var(--gradient-bg)',
             customClass: {
                 popup: 'swal2-popup-custom'
             }
@@ -1476,18 +1355,14 @@
         }
     }
     
-    // Reclamar tirada diaria - MEJORADO
+    // Reclamar tirada diaria
     async function claimDaily() {
         if (isDailyOnCooldown()) {
             Swal.fire({
                 title: 'En espera',
                 text: 'Ya has reclamado tu tirada diaria. Vuelve en 24 horas.',
                 icon: 'warning',
-                confirmButtonText: 'Entendido',
-                background: 'var(--gradient-bg)',
-                customClass: {
-                    popup: 'swal2-popup-custom'
-                }
+                confirmButtonText: 'Entendido'
             });
             return;
         }
@@ -1497,10 +1372,14 @@
     
     // Procesar la compra
     async function processPurchase(itemType, price) {
+        // Mostrar carga
         document.getElementById('loadingSpinner').style.display = 'flex';
         
         try {
+            // Calcular nuevas estrellas
             const newStars = userStars - price;
+            
+            // Obtener recompensa y actualizar recursos
             let rewardMessage = '';
             let rewardAmount = '';
             let rewardIcon = '';
@@ -1527,15 +1406,15 @@
                     rewardIcon = '🔮';
                     break;
                 case 'mystery':
-                    const extraStars = Math.floor(Math.random() * 11) + 5;
+                    const extraStars = Math.floor(Math.random() * 11) + 5; // 5-15 estrellas
                     updates.stars = newStars + extraStars;
                     rewardMessage = '¡Cofre misterioso abierto!';
                     rewardAmount = `+${extraStars} Estrellas Extra`;
                     rewardIcon = '🎁';
                     break;
                 case 'sorpresa':
-                    const randomResource = Math.floor(Math.random() * 3);
-                    const randomAmount = Math.floor(Math.random() * 801) + 100;
+                    const randomResource = Math.floor(Math.random() * 3); // 0: oro, 1: diamantes, 2: perlas
+                    const randomAmount = Math.floor(Math.random() * 801) + 100; // 100-900
                     
                     if (randomResource === 0) {
                         updates.gold = (userProfile.gold || 0) + randomAmount;
@@ -1573,14 +1452,14 @@
                     rewardIcon = '💠';
                     break;
                 case 'vip':
-                    const vipPoints = Math.floor(Math.random() * 131) + 60;
+                    const vipPoints = Math.floor(Math.random() * 131) + 60; // 60-190
                     updates.vip_points = (userProfile.vip_points || 0) + vipPoints;
                     rewardMessage = '¡Paquete VIP canjeado!';
                     rewardAmount = `+${vipPoints} Puntos VIP`;
                     rewardIcon = '👑';
                     break;
                 case 'daily':
-                    const dailyResource = Math.floor(Math.random() * 2);
+                    const dailyResource = Math.floor(Math.random() * 2); // 0: oro, 1: diamantes
                     const dailyAmount = 5;
                     
                     if (dailyResource === 0) {
@@ -1595,18 +1474,20 @@
                         rewardIcon = '💎';
                     }
                     
+                    // Actualizar última reclamación
                     updates.last_daily_claim = new Date().toISOString();
                     lastDailyClaim = updates.last_daily_claim;
                     break;
                 case 'special_offer':
+                    // Oferta especial: 200 oro, 100 diamantes, 20 VIP, 10 perlas, 5 estrellas - PERO DUPLICADO!
                     isDoubleReward = true;
-                    const doubleMultiplier = 2;
+                    const doubleMultiplier = 2; // Duplicar los recursos
                     
                     updates.gold = (userProfile.gold || 0) + (200 * doubleMultiplier);
                     updates.diamonds = (userProfile.diamonds || 0) + (100 * doubleMultiplier);
                     updates.vip_points = (userProfile.vip_points || 0) + (20 * doubleMultiplier);
                     updates.perla = (userProfile.perla || 0) + (10 * doubleMultiplier);
-                    updates.stars = newStars + (5 * doubleMultiplier);
+                    updates.stars = newStars + (5 * doubleMultiplier); // Agregar estrellas en lugar de restar
                     
                     rewardMessage = '¡Oferta Especial con Recursos Duplicados!';
                     rewardAmount = `+${400} Oro, +${200} Diamantes, +${40} VIP, +${20} Perlas, +${10} Estrellas`;
@@ -1630,8 +1511,12 @@
             // Ocultar carga
             document.getElementById('loadingSpinner').style.display = 'none';
             
-            // Mostrar modal de éxito MEJORADO
-            showSuccessAlert(rewardMessage, rewardAmount, rewardIcon, isDoubleReward);
+            // Mostrar modal de éxito
+            document.getElementById('rewardIcon').textContent = rewardIcon;
+            document.getElementById('rewardTitle').textContent = '¡Compra Exitosa!';
+            document.getElementById('rewardMessage').textContent = rewardMessage;
+            document.getElementById('rewardAmount').textContent = rewardAmount;
+            document.getElementById('rewardModal').style.display = 'flex';
             
             // Actualizar UI
             document.getElementById('userStars').textContent = userStars;
@@ -1646,61 +1531,20 @@
                 origin: { y: 0.6 }
             });
             
+            // Efecto de estrellas
             createStarsAnimation(isDoubleReward ? 20 : 10);
             
         } catch (error) {
             console.error('Error al procesar compra:', error);
             document.getElementById('loadingSpinner').style.display = 'none';
-            showErrorAlert('Error', 'No se pudo procesar la compra. Inténtalo de nuevo.');
+            
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo procesar la compra. Inténtalo de nuevo.',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
         }
-    }
-    
-    // Mostrar alerta de éxito - MEJORADO
-    function showSuccessAlert(message, amount, icon, isDoubleReward = false) {
-        Swal.fire({
-            title: '¡Compra Exitosa!',
-            html: `
-                <div class="purchase-confirmation">
-                    <div class="purchase-item" style="background: rgba(255,255,255,0.1);">
-                        <div class="purchase-item-icon" style="font-size: 3.5rem;">${icon}</div>
-                        <div class="purchase-item-details">
-                            <div class="purchase-item-name">${message}</div>
-                            <div class="purchase-item-price">${amount}</div>
-                        </div>
-                    </div>
-                    ${isDoubleReward ? `
-                    <div class="reward-items">
-                        <div class="reward-item">
-                            <span class="reward-item-icon">🪙</span>
-                            <span class="reward-item-amount">+400 Oro</span>
-                        </div>
-                        <div class="reward-item">
-                            <span class="reward-item-icon">💎</span>
-                            <span class="reward-item-amount">+200 Diamantes</span>
-                        </div>
-                        <div class="reward-item">
-                            <span class="reward-item-icon">👑</span>
-                            <span class="reward-item-amount">+40 Puntos VIP</span>
-                        </div>
-                        <div class="reward-item">
-                            <span class="reward-item-icon">🔮</span>
-                            <span class="reward-item-amount">+20 Perlas</span>
-                        </div>
-                        <div class="reward-item">
-                            <span class="reward-item-icon">🌟</span>
-                            <span class="reward-item-amount">+10 Estrellas</span>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-            `,
-            icon: 'success',
-            confirmButtonText: '¡Excelente!',
-            background: 'var(--gradient-bg)',
-            customClass: {
-                popup: 'swal2-popup-custom'
-            }
-        });
     }
     
     // Crear animación de estrellas
@@ -1716,6 +1560,7 @@
             star.style.animation = `float ${Math.random() * 2 + 3}s linear forwards`;
             document.body.appendChild(star);
             
+            // Eliminar después de la animación
             setTimeout(() => {
                 star.remove();
             }, 5000);
