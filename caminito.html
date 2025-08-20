@@ -12,7 +12,7 @@
     <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-       :root {
+        :root {
             --primary: #4a00e0;
             --secondary: #8e2de2;
             --accent: #00c6ff;
@@ -113,6 +113,10 @@
         
         .btn-store {
             background: linear-gradient(to right, #ff8c00, #ff5500);
+        }
+        
+        .btn-ranking {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
         }
         
         .missions-btn {
@@ -741,6 +745,9 @@
                     <span class="badge" id="missionsBadge">0</span>
                 </button>
                 <button class="btn btn-store" id="storeBtn">Tienda VIP</button>
+                <button class="btn btn-ranking" id="rankingBtn" onclick="window.location.href='viptabla.html'">
+                    <i class="fas fa-trophy"></i> Ranking
+                </button>
                 <button class="btn" id="backBtn">Volver</button>
             </div>
         </header>
@@ -774,11 +781,10 @@
             <h2>Información del Sistema VIP</h2>
             <p>El sistema de misiones VIP te permite ganar puntos completando diferentes desafíos diarios.</p>
             <p>Cada misión tiene una recompensa en puntos VIP que se pueden canjear por beneficios exclusivos.</p>
-            <p>Las misiones se renuevan cada 24 horas, así que asegúrate de reclamarlas todos los días.</p>
+            <p>Las misiones se renovan cada 24 horas, así que asegúrate de reclamarlas todos los días.</p>
             <button class="info-close" id="closeModal">Entendido</button>
         </div>
     </div>
-    
     <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -1713,6 +1719,10 @@
         document.getElementById('backBtn').addEventListener('click', () => {
             console.log('[DEBUG] Redirigiendo al dashboard');
             window.location.href = 'dashboard.html';
+
+         document.getElementById('rankingBtn').addEventListener('click', function() {
+                window.location.href = 'viptabla.html';
+            });
         });
         document.getElementById('closeModal').addEventListener('click', () => {
             document.getElementById('infoModal').style.display = 'none';
