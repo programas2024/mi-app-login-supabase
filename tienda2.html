@@ -537,7 +537,7 @@
         <header>
             <div class="logo">TIENDA VIP ELITE</div>
             <div class="user-info">
-                <div class="stars-count">🌟 <span id="userStars">0</span> Estrellas</div>
+                <div class="stars-count">🌟 <span id="userStars">Cargando...</span> Estrellas</div>
                 <button class="btn btn-back" id="backBtn">Volver al Juego</button>
             </div>
         </header>
@@ -629,7 +629,6 @@
     // Variables globales
     let supabase = null;
     let userId = null;
-    let userStars = 0;
     let userProfile = {};
     
     // Precios de los artículos en estrellas
@@ -669,20 +668,22 @@
             
             if (authError) {
                 console.error('Error en auth.getUser():', authError);
-                throw authError;
+                showError('No se pudo verificar tu sesión. Por favor, inicia sesión nuevamente.');
+                return;
             }
             
             if (!user) {
-                console.error('No hay usuario autenticado');
-                userId = 'demo-user-id';
-                userStars = 50; // Valor de demostración
-                document.getElementById('userStars').textContent = userStars;
-                updateButtonsState();
-            } else {
-                userId = user.id;
-                // Cargar perfil de usuario
-                await loadUserProfile();
+                showError('No hay usuario autenticado. Serás redirigido al login.');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+                return;
             }
+            
+            userId = user.id;
+            
+            // Cargar perfil de usuario
+            await loadUserProfile();
             
             // Configurar event listeners
             document.getElementById('backBtn').addEventListener('click', function() {
@@ -691,19 +692,34 @@
             
             document.getElementById('rewardClose').addEventListener('click', function() {
                 document.getElementById('rewardModal').style.display = 'none';
+                // Recargar datos actualizados después de una compra
+                loadUserProfile();
             });
             
         } catch (error) {
             console.error('Error en inicialización:', error);
-            userStars = 50; // Valor de demostración en caso de error
-            document.getElementById('userStars').textContent = userStars;
-            updateButtonsState();
+            showError('Error al inicializar la tienda. Por favor, recarga la página.');
         }
     });
+    
+    // Función para mostrar errores
+    function showError(message) {
+        Swal.fire({
+            title: 'Error',
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'Entendido',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            color: 'white',
+            confirmButtonColor: '#8A2BE2'
+        });
+    }
     
     // Cargar perfil de usuario desde la base de datos
     async function loadUserProfile() {
         try {
+            document.getElementById('userStars').textContent = 'Cargando...';
+            
             const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('*')
@@ -717,97 +733,115 @@
             
             if (profile) {
                 userProfile = profile;
-                userStars = profile.stars || 0;
-                document.getElementById('userStars').textContent = userStars;
+                // Mostrar estrellas REALES de la base de datos
+                document.getElementById('userStars').textContent = profile.stars || 0;
                 updateButtonsState();
             }
             
         } catch (error) {
             console.error('Error al cargar perfil de usuario:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo cargar la información de tu perfil',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                color: 'white',
-                confirmButtonColor: '#8A2BE2'
-            });
+            showError('No se pudo cargar la información de tu perfil');
+        }
+    }
+    
+    // Obtener estrellas actuales desde la base de datos (siempre consulta el valor real)
+    async function getCurrentStars() {
+        try {
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('stars')
+                .eq('id', userId)
+                .single();
+            
+            if (error) throw error;
+            
+            return profile.stars || 0;
+        } catch (error) {
+            console.error('Error al obtener estrellas:', error);
+            return 0;
         }
     }
     
     // Actualizar estado de los botones de compra
-    function updateButtonsState() {
-        const buttons = document.querySelectorAll('.item-button');
-        buttons.forEach(button => {
-            const itemType = button.getAttribute('onclick').replace("buyItem('", "").replace("')", "");
-            if (userStars < itemPrices[itemType]) {
-                button.disabled = true;
-                button.textContent = 'Estrellas insuficientes';
-            } else {
-                button.disabled = false;
-                
-                // Texto personalizado para cada botón
-                if (itemType === 'mystery') {
-                    button.textContent = 'Abrir Cofre';
+    async function updateButtonsState() {
+        try {
+            // Siempre obtener el valor REAL de la base de datos
+            const currentStars = await getCurrentStars();
+            
+            const buttons = document.querySelectorAll('.item-button');
+            buttons.forEach(button => {
+                const itemType = button.getAttribute('onclick').replace("buyItem('", "").replace("')", "");
+                if (currentStars < itemPrices[itemType]) {
+                    button.disabled = true;
+                    button.textContent = 'Estrellas insuficientes';
                 } else {
-                    button.textContent = 'Canjear Ahora';
+                    button.disabled = false;
+                    
+                    // Texto personalizado para cada botón
+                    if (itemType === 'mystery') {
+                        button.textContent = 'Abrir Cofre';
+                    } else {
+                        button.textContent = 'Canjear Ahora';
+                    }
                 }
-            }
-        });
+            });
+        } catch (error) {
+            console.error('Error al actualizar botones:', error);
+        }
     }
     
     // Comprar un artículo
     async function buyItem(itemType) {
-        const price = itemPrices[itemType];
-        
-        // Verificar si tiene estrellas suficientes
-        if (userStars < price) {
+        try {
+            // Siempre verificar con el valor REAL de la base de datos
+            const currentStars = await getCurrentStars();
+            const price = itemPrices[itemType];
+            
+            // Verificar si tiene estrellas suficientes
+            if (currentStars < price) {
+                Swal.fire({
+                    title: 'Estrellas insuficientes',
+                    html: `Necesitas ${price} estrellas pero solo tienes ${currentStars}.<br>Completa misiones VIP para obtener más estrellas.`,
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido',
+                    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                    color: 'white',
+                    confirmButtonColor: '#8A2BE2'
+                });
+                return;
+            }
+            
+            // Mostrar confirmación de compra con estilo mejorado
             Swal.fire({
-                title: 'Estrellas insuficientes',
-                html: 'Necesitas más estrellas para realizar esta compra.<br>Completa misiones VIP para obtener más estrellas.',
-                icon: 'warning',
-                confirmButtonText: 'Entendido',
+                title: 'Confirmar compra',
+                html: `¿Estás seguro de que quieres canjear <strong style="color: #FFD700">${price} estrellas</strong> por este artículo?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, canjear',
+                cancelButtonText: 'Cancelar',
                 background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
                 color: 'white',
-                confirmButtonColor: '#8A2BE2',
-                customClass: {
-                    popup: 'sweetalert-popup'
+                confirmButtonColor: '#2ecc71',
+                cancelButtonColor: '#e74c3c'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await processPurchase(itemType, price, currentStars);
                 }
             });
-            return;
+        } catch (error) {
+            console.error('Error en buyItem:', error);
+            showError('Error al procesar la compra. Inténtalo de nuevo.');
         }
-        
-        // Mostrar confirmación de compra con estilo mejorado
-        Swal.fire({
-            title: 'Confirmar compra',
-            html: `¿Estás seguro de que quieres canjear <strong style="color: #FFD700">${price} estrellas</strong> por este artículo?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, canjear',
-            cancelButtonText: 'Cancelar',
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-            color: 'white',
-            confirmButtonColor: '#2ecc71',
-            cancelButtonColor: '#e74c3c',
-            customClass: {
-                popup: 'sweetalert-popup'
-            }
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await processPurchase(itemType, price);
-            }
-        });
     }
     
     // Procesar la compra
-    async function processPurchase(itemType, price) {
+    async function processPurchase(itemType, price, currentStars) {
         // Mostrar carga
         document.getElementById('loadingSpinner').style.display = 'flex';
         
         try {
             // Calcular nuevas estrellas
-            const newStars = userStars - price;
+            const newStars = currentStars - price;
             
             // Obtener recompensa y actualizar recursos
             let rewardMessage = '';
@@ -851,10 +885,6 @@
             
             if (error) throw error;
             
-            // Actualizar perfil local
-            userProfile = { ...userProfile, ...updates };
-            userStars = updates.stars;
-            
             // Ocultar carga
             document.getElementById('loadingSpinner').style.display = 'none';
             
@@ -864,10 +894,6 @@
             document.getElementById('rewardMessage').textContent = rewardMessage;
             document.getElementById('rewardAmount').textContent = rewardAmount;
             document.getElementById('rewardModal').style.display = 'flex';
-            
-            // Actualizar UI
-            document.getElementById('userStars').textContent = userStars;
-            updateButtonsState();
             
             // Efectos de confeti mejorados
             confetti({
@@ -883,16 +909,7 @@
         } catch (error) {
             console.error('Error al procesar compra:', error);
             document.getElementById('loadingSpinner').style.display = 'none';
-            
-            Swal.fire({
-                title: 'Error',
-                text: 'No se pudo procesar la compra. Inténtalo de nuevo.',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                color: 'white',
-                confirmButtonColor: '#8A2BE2'
-            });
+            showError('No se pudo procesar la compra. Inténtalo de nuevo.');
         }
     }
     
