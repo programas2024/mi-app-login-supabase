@@ -23,6 +23,7 @@
             --gradient-gold: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
             --gradient-silver: linear-gradient(135deg, #808080 0%, #E6E6E6 50%, #808080 100%);
             --gradient-bronze: linear-gradient(135deg, #804A00 0%, #CD7F32 50%, #804A00 100%);
+            --gradient-diamond: linear-gradient(135deg, #4f92e3 0%, #87ceeb 50%, #b9f2ff 100%);
         }
 
         * {
@@ -68,39 +69,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .user-stats {
-            display: flex;
-            gap: 20px;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 15px;
-            background: var(--gradient-card);
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        .stars-stat {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .stars-stat i {
-            color: gold;
-        }
-
-        .vip-stat {
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.1) 100%);
-            border: 1px solid rgba(192, 192, 192, 0.3);
-        }
-
-        .vip-stat i {
-            color: silver;
         }
 
         .controls {
@@ -160,17 +128,18 @@
 
         .ranking-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             font-size: 2.5rem;
             background: var(--gradient-accent);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .ranking-subtitle {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             font-size: 1.2rem;
             opacity: 0.8;
         }
@@ -271,17 +240,23 @@
         }
 
         .vip-diamond {
-            background: linear-gradient(135deg, #4f92e3 0%, #87ceeb 100%);
+            background: var(--gradient-diamond);
+            color: #000;
         }
 
         .vip-gold {
-            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
+            background: var(--gradient-gold);
             color: #000;
         }
 
         .vip-silver {
-            background: linear-gradient(135deg, #808080 0%, #E6E6E6 50%, #808080 100%);
+            background: var(--gradient-silver);
             color: #000;
+        }
+
+        .vip-bronze {
+            background: var(--gradient-bronze);
+            color: white;
         }
 
         .stats {
@@ -305,49 +280,63 @@
             justify-content: center;
             gap: 30px;
             margin-bottom: 50px;
+            perspective: 1000px;
         }
 
         .podium-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: var(--gradient-card);
             border-radius: 15px;
             padding: 25px;
-            width: 250px;
+            width: 280px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
         }
 
         .podium-item:nth-child(1) {
-            height: 280px;
+            height: 320px;
             order: 2;
-            background: linear-gradient(135deg, rgba(191, 149, 63, 0.2) 0%, rgba(179, 135, 40, 0.2) 100%);
-            border: 2px solid rgba(191, 149, 63, 0.5);
+            background: linear-gradient(135deg, rgba(191, 149, 63, 0.3) 0%, rgba(179, 135, 40, 0.3) 100%);
+            border: 2px solid rgba(191, 149, 63, 0.7);
+            transform: translateZ(20px);
+            z-index: 3;
         }
 
         .podium-item:nth-child(2) {
-            height: 250px;
+            height: 280px;
             order: 1;
-            margin-top: 30px;
-            background: linear-gradient(135deg, rgba(128, 128, 128, 0.2) 0%, rgba(102, 102, 102, 0.2) 100%);
-            border: 2px solid rgba(128, 128, 128, 0.5);
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(128, 128, 128, 0.3) 0%, rgba(102, 102, 102, 0.3) 100%);
+            border: 2px solid rgba(128, 128, 128, 0.7);
+            transform: translateZ(10px);
+            z-index: 2;
         }
 
         .podium-item:nth-child(3) {
-            height: 220px;
+            height: 250px;
             order: 3;
-            margin-top: 60px;
-            background: linear-gradient(135deg, rgba(128, 74, 0, 0.2) 0%, rgba(205, 127, 50, 0.2) 100%);
-            border: 2px solid rgba(128, 74, 0, 0.5);
+            margin-top: 70px;
+            background: linear-gradient(135deg, rgba(128, 74, 0, 0.3) 0%, rgba(205, 127, 50, 0.3) 100%);
+            border: 2px solid rgba(128, 74, 0, 0.7);
+            transform: translateZ(5px);
+            z-index: 1;
+        }
+
+        .podium-item:hover {
+            transform: translateY(-10px) translateZ(30px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
         }
 
         .podium-rank {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: bold;
             margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .podium-item:nth-child(1) .podium-rank {
@@ -372,42 +361,48 @@
         }
 
         .podium-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border: 3px solid;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .podium-item:nth-child(1) .podium-avatar {
             background: var(--gradient-gold);
             color: #000;
+            border-color: #ffd700;
         }
 
         .podium-item:nth-child(2) .podium-avatar {
             background: var(--gradient-silver);
             color: #000;
+            border-color: #c0c0c0;
         }
 
         .podium-item:nth-child(3) .podium-avatar {
             background: var(--gradient-bronze);
-            color: #000;
+            color: #fff;
+            border-color: #cd7f32;
         }
 
         .podium-name {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
         .podium-stats {
             display: flex;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .podium-stat {
@@ -416,12 +411,26 @@
 
         .podium-stat-value {
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
         }
 
         .podium-stat-label {
-            font-size: 0.8rem;
-            opacity: 0.7;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .podium-crown {
+            position: absolute;
+            top: -20px;
+            font-size: 2.5rem;
+            color: #ffd700;
+            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .loading-container {
@@ -474,27 +483,31 @@
             opacity: 0.7;
         }
 
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .user-stats {
-                width: 100%;
-                justify-content: center;
-            }
-            
+        @media (max-width: 900px) {
             .podium {
                 flex-direction: column;
                 align-items: center;
+                gap: 20px;
             }
             
             .podium-item {
                 width: 100%;
-                max-width: 300px;
+                max-width: 350px;
                 margin-top: 0 !important;
-                margin-bottom: 20px;
+                height: auto !important;
+                order: unset !important;
+                transform: none !important;
+            }
+            
+            .podium-item:hover {
+                transform: translateY(-5px) !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
             }
             
             .ranking-table {
@@ -521,23 +534,9 @@
                 <i class="fas fa-trophy"></i> Ranking VIP
             </div>
             
-            <div class="user-stats">
-                <div class="stat stars-stat">
-                    <i class="fas fa-star"></i>
-                    <span id="userStars">0</span> Estrellas
-                </div>
-                <div class="stat vip-stat">
-                    <i class="fas fa-crown"></i>
-                    <span id="userVip">0</span> Puntos VIP
-                </div>
-            </div>
-            
             <div class="controls">
                 <button class="btn btn-secondary" onclick="window.history.back()">
                     <i class="fas fa-arrow-left"></i> Volver
-                </button>
-                <button class="btn" onclick="window.location.href='tienda2.html'">
-                    <i class="fas fa-store"></i> Tienda
                 </button>
                 <button class="btn" id="refreshBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
@@ -576,14 +575,6 @@
         const podiumContainer = document.getElementById('podiumContainer');
         const rankingContainer = document.getElementById('rankingContainer');
         const refreshBtn = document.getElementById('refreshBtn');
-        const userStarsElement = document.getElementById('userStars');
-        const userVipElement = document.getElementById('userVip');
-        
-        // Estado de la aplicación
-        let userData = {
-            stars: 0,
-            vipPoints: 0
-        };
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -628,9 +619,6 @@
                 // Actualizar la interfaz con los datos obtenidos
                 renderPodium(profiles.slice(0, 3));
                 renderRankingTable(profiles);
-                
-                // Simular datos del usuario actual (en una app real, esto vendría de la autenticación)
-                updateUserStats();
                 
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -694,6 +682,7 @@
             
             podiumContainer.innerHTML = `
                 <div class="podium-item">
+                    ${paddedUsers[1].vip_level >= 80 ? '<div class="podium-crown"><i class="fas fa-crown"></i></div>' : ''}
                     <div class="podium-rank">2°</div>
                     <div class="podium-avatar">${getInitials(paddedUsers[1].username)}</div>
                     <div class="podium-name">${paddedUsers[1].username || 'Jugador'}</div>
@@ -701,7 +690,7 @@
                     <div class="podium-stats">
                         <div class="podium-stat">
                             <div class="podium-stat-value">${formatNumber(paddedUsers[1].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos</div>
+                            <div class="podium-stat-label">Puntos VIP</div>
                         </div>
                         <div class="podium-stat">
                             <div class="podium-stat-value">${paddedUsers[1].vip_level}</div>
@@ -711,6 +700,7 @@
                 </div>
                 
                 <div class="podium-item">
+                    ${paddedUsers[0].vip_level >= 80 ? '<div class="podium-crown"><i class="fas fa-crown"></i></div>' : ''}
                     <div class="podium-rank">1°</div>
                     <div class="podium-avatar">${getInitials(paddedUsers[0].username)}</div>
                     <div class="podium-name">${paddedUsers[0].username || 'Jugador'}</div>
@@ -718,7 +708,7 @@
                     <div class="podium-stats">
                         <div class="podium-stat">
                             <div class="podium-stat-value">${formatNumber(paddedUsers[0].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos</div>
+                            <div class="podium-stat-label">Puntos VIP</div>
                         </div>
                         <div class="podium-stat">
                             <div class="podium-stat-value">${paddedUsers[0].vip_level}</div>
@@ -728,6 +718,7 @@
                 </div>
                 
                 <div class="podium-item">
+                    ${paddedUsers[2].vip_level >= 80 ? '<div class="podium-crown"><i class="fas fa-crown"></i></div>' : ''}
                     <div class="podium-rank">3°</div>
                     <div class="podium-avatar">${getInitials(paddedUsers[2].username)}</div>
                     <div class="podium-name">${paddedUsers[2].username || 'Jugador'}</div>
@@ -735,7 +726,7 @@
                     <div class="podium-stats">
                         <div class="podium-stat">
                             <div class="podium-stat-value">${formatNumber(paddedUsers[2].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos</div>
+                            <div class="podium-stat-label">Puntos VIP</div>
                         </div>
                         <div class="podium-stat">
                             <div class="podium-stat-value">${paddedUsers[2].vip_level}</div>
@@ -762,7 +753,7 @@
                         <tr>
                             <th class="rank-number">#</th>
                             <th>Jugador</th>
-                            <th>Nivel</th>
+                            <th>Nivel VIP</th>
                             <th>Puntos VIP</th>
                         </tr>
                     </thead>
@@ -780,7 +771,7 @@
                                 <div class="avatar">${getInitials(user.username)}</div>
                                 <div>
                                     <div class="username">${user.username || 'Usuario'}</div>
-                                    <div class="user-level">ID: ${user.id.substring(0, 8)}...</div>
+                                    <div class="user-level">${getVipLevelName(user.vip_level)}</div>
                                 </div>
                             </div>
                         </td>
@@ -820,19 +811,20 @@
             if (level >= 80) return 'vip-diamond';
             if (level >= 50) return 'vip-gold';
             if (level >= 30) return 'vip-silver';
-            return '';
+            return 'vip-bronze';
         }
         
         // Función para obtener el nombre del nivel VIP
         function getVipLevelName(level) {
             if (level >= 80) return 'Diamante';
-            if (level >= 60) return 'Oro IV';
-            if (level >= 50) return 'Oro III';
-            if (level >= 40) return 'Plata II';
-            if (level >= 30) return 'Plata I';
-            if (level >= 20) return 'Bronce III';
-            if (level >= 10) return 'Bronce II';
-            return 'Bronce I';
+            if (level >= 70) return 'Oro IV';
+            if (level >= 60) return 'Oro III';
+            if (level >= 50) return 'Oro II';
+            if (level >= 40) return 'Oro I';
+            if (level >= 30) return 'Plata III';
+            if (level >= 20) return 'Plata II';
+            if (level >= 10) return 'Plata I';
+            return 'Bronce';
         }
         
         // Función para formatear números
@@ -840,28 +832,17 @@
             return new Intl.NumberFormat('es-ES').format(num);
         }
         
-        // Función para actualizar estadísticas del usuario
-        function updateUserStats() {
-            // En una aplicación real, estos datos vendrían de la autenticación
-            // Por ahora, usamos valores aleatorios para demostración
-            userData.stars = Math.floor(Math.random() * 5000);
-            userData.vipPoints = Math.floor(Math.random() * 500);
-            
-            userStarsElement.textContent = formatNumber(userData.stars);
-            userVipElement.textContent = formatNumber(userData.vipPoints);
-        }
-        
         // Función para animar el podio
         function animatePodium() {
             const podiumItems = document.querySelectorAll('.podium-item');
             podiumItems.forEach((item, index) => {
                 item.style.opacity = '0';
-                item.style.transform = 'translateY(50px)';
+                item.style.transform = 'translateY(50px) rotateX(20deg)';
                 
                 setTimeout(() => {
                     item.style.transition = 'all 0.8s ease';
                     item.style.opacity = '1';
-                    item.style.transform = 'translateY(0)';
+                    item.style.transform = 'translateY(0) rotateX(0)';
                 }, 300 * index);
             });
         }
