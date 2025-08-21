@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Ranking VIP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-blue: #000000;
+            --secondary-blue: #152030;
+            --light-blue: #4f92e3;
+            --sky-blue: #87ceeb;
+            --accent-color: #570210;
+            --text-color: #f0f0f0;
+            --card-bg: rgba(0, 0, 0, 0.1);
+            --gradient-bg: linear-gradient(135deg, #061a38 0%, #2a5a9b 50%, #e34fbe 100%);
+            --gradient-card: linear-gradient(135deg, rgba(26, 60, 110, 0.8) 0%, rgba(42, 90, 155, 0.8) 100%);
+            --gradient-accent: linear-gradient(135deg, #4f92e3 0%, #87ceeb 100%);
+            --gradient-gold: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
+            --gradient-silver: linear-gradient(135deg, #808080 0%, #E6E6E6 50%, #808080 100%);
+            --gradient-bronze: linear-gradient(135deg, #804A00 0%, #CD7F32 50%, #804A00 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--gradient-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: var(--gradient-card);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: var(--gradient-card);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .stars-stat {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .stars-stat i {
+            color: gold;
+        }
+
+        .vip-stat {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.1) 100%);
+            border: 1px solid rgba(192, 192, 192, 0.3);
+        }
+
+        .vip-stat i {
+            color: silver;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: var(--gradient-accent);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(79, 146, 227, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--gradient-card);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ranking-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .ranking-subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            background: var(--gradient-card);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .ranking-table th, 
+        .ranking-table td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ranking-table th {
+            background: rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .ranking-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ranking-table tr:hover {
+            background: rgba(79, 146, 227, 0.1);
+        }
+
+        .rank-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            width: 80px;
+        }
+
+        .top-1 {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .top-2 {
+            background: var(--gradient-silver);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .top-3 {
+            background: var(--gradient-bronze);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .username {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .user-level {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .vip-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .vip-diamond {
+            background: linear-gradient(135deg, #4f92e3 0%, #87ceeb 100%);
+        }
+
+        .vip-gold {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 50%, #B38728 100%);
+            color: #000;
+        }
+
+        .vip-silver {
+            background: linear-gradient(135deg, #808080 0%, #E6E6E6 50%, #808080 100%);
+            color: #000;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .podium {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--gradient-card);
+            border-radius: 15px;
+            padding: 25px;
+            width: 250px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .podium-item:nth-child(1) {
+            height: 280px;
+            order: 2;
+            background: linear-gradient(135deg, rgba(191, 149, 63, 0.2) 0%, rgba(179, 135, 40, 0.2) 100%);
+            border: 2px solid rgba(191, 149, 63, 0.5);
+        }
+
+        .podium-item:nth-child(2) {
+            height: 250px;
+            order: 1;
+            margin-top: 30px;
+            background: linear-gradient(135deg, rgba(128, 128, 128, 0.2) 0%, rgba(102, 102, 102, 0.2) 100%);
+            border: 2px solid rgba(128, 128, 128, 0.5);
+        }
+
+        .podium-item:nth-child(3) {
+            height: 220px;
+            order: 3;
+            margin-top: 60px;
+            background: linear-gradient(135deg, rgba(128, 74, 0, 0.2) 0%, rgba(205, 127, 50, 0.2) 100%);
+            border: 2px solid rgba(128, 74, 0, 0.5);
+        }
+
+        .podium-rank {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .podium-item:nth-child(1) .podium-rank {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .podium-item:nth-child(2) .podium-rank {
+            background: var(--gradient-silver);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .podium-item:nth-child(3) .podium-rank {
+            background: var(--gradient-bronze);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .podium-item:nth-child(1) .podium-avatar {
+            background: var(--gradient-gold);
+            color: #000;
+        }
+
+        .podium-item:nth-child(2) .podium-avatar {
+            background: var(--gradient-silver);
+            color: #000;
+        }
+
+        .podium-item:nth-child(3) .podium-avatar {
+            background: var(--gradient-bronze);
+            color: #000;
+        }
+
+        .podium-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .podium-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .podium-stat {
+            text-align: center;
+        }
+
+        .podium-stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .podium-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--light-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            color: #ff6b6b;
+        }
+
+        .refresh-btn {
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .user-stats {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .podium-item {
+                width: 100%;
+                max-width: 300px;
+                margin-top: 0 !important;
+                margin-bottom: 20px;
+            }
+            
+            .ranking-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .ranking-table th, 
+            .ranking-table td {
+                padding: 12px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-trophy"></i> Ranking VIP
+            </div>
+            
+            <div class="user-stats">
+                <div class="stat stars-stat">
+                    <i class="fas fa-star"></i>
+                    <span id="userStars">0</span> Estrellas
+                </div>
+                <div class="stat vip-stat">
+                    <i class="fas fa-crown"></i>
+                    <span id="userVip">0</span> Puntos VIP
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <button class="btn" onclick="window.location.href='tienda2.html'">
+                    <i class="fas fa-store"></i> Tienda
+                </button>
+                <button class="btn" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+        </div>
+        
+        <h1 class="ranking-title">Tabla de Clasificación VIP</h1>
+        <p class="ranking-subtitle">Los jugadores con más puntos VIP esta temporada</p>
+        
+        <div id="podiumContainer" class="podium">
+            <!-- El podio se cargará dinámicamente -->
+        </div>
+        
+        <div id="rankingContainer">
+            <!-- La tabla se cargará dinámicamente -->
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <div class="loading-text">Cargando datos del ranking...</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Tienda de Estrellas - Todos los derechos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Elementos DOM
+        const podiumContainer = document.getElementById('podiumContainer');
+        const rankingContainer = document.getElementById('rankingContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const userStarsElement = document.getElementById('userStars');
+        const userVipElement = document.getElementById('userVip');
+        
+        // Estado de la aplicación
+        let userData = {
+            stars: 0,
+            vipPoints: 0
+        };
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos iniciales
+            loadRankingData();
+            
+            // Configurar evento para el botón de actualizar
+            refreshBtn.addEventListener('click', function() {
+                refreshBtn.classList.add('btn-loading');
+                loadRankingData().finally(() => {
+                    setTimeout(() => {
+                        refreshBtn.classList.remove('btn-loading');
+                    }, 1000);
+                });
+            });
+            
+            // Configurar actualización automática cada 60 segundos
+            setInterval(loadRankingData, 60000);
+        });
+        
+        // Función para cargar datos del ranking
+        async function loadRankingData() {
+            try {
+                showLoadingState();
+                
+                // Obtener datos de Supabase
+                const { data: profiles, error } = await supabase
+                    .from('profiles')
+                    .select('id, vip_points, vip_level, username, avatar_url')
+                    .order('vip_points', { ascending: false })
+                    .limit(20);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (!profiles || profiles.length === 0) {
+                    showEmptyState();
+                    return;
+                }
+                
+                // Actualizar la interfaz con los datos obtenidos
+                renderPodium(profiles.slice(0, 3));
+                renderRankingTable(profiles);
+                
+                // Simular datos del usuario actual (en una app real, esto vendría de la autenticación)
+                updateUserStats();
+                
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                showErrorState('Error al cargar los datos: ' + error.message);
+            }
+        }
+        
+        // Función para mostrar estado de carga
+        function showLoadingState() {
+            podiumContainer.innerHTML = '';
+            rankingContainer.innerHTML = `
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Cargando datos del ranking...</div>
+                </div>
+            `;
+        }
+        
+        // Función para mostrar estado de error
+        function showErrorState(message) {
+            podiumContainer.innerHTML = '';
+            rankingContainer.innerHTML = `
+                <div class="error-container">
+                    <div class="error-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <div>${message}</div>
+                    <button class="btn refresh-btn" onclick="loadRankingData()">
+                        <i class="fas fa-sync-alt"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Función para mostrar estado vacío
+        function showEmptyState() {
+            podiumContainer.innerHTML = '';
+            rankingContainer.innerHTML = `
+                <div class="error-container">
+                    <div class="error-icon"><i class="fas fa-users-slash"></i></div>
+                    <div>No hay datos de ranking disponibles.</div>
+                    <button class="btn refresh-btn" onclick="loadRankingData()">
+                        <i class="fas fa-sync-alt"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Función para renderizar el podio
+        function renderPodium(topUsers) {
+            if (!topUsers || topUsers.length === 0) return;
+            
+            // Asegurarse de que tenemos al menos 3 usuarios para el podio
+            const paddedUsers = [...topUsers];
+            while (paddedUsers.length < 3) {
+                paddedUsers.push({ 
+                    username: 'Jugador', 
+                    vip_points: 0, 
+                    vip_level: 0,
+                    avatar_url: null
+                });
+            }
+            
+            podiumContainer.innerHTML = `
+                <div class="podium-item">
+                    <div class="podium-rank">2°</div>
+                    <div class="podium-avatar">${getInitials(paddedUsers[1].username)}</div>
+                    <div class="podium-name">${paddedUsers[1].username || 'Jugador'}</div>
+                    <div class="vip-badge ${getVipBadgeClass(paddedUsers[1].vip_level)}">${getVipLevelName(paddedUsers[1].vip_level)}</div>
+                    <div class="podium-stats">
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${formatNumber(paddedUsers[1].vip_points)}</div>
+                            <div class="podium-stat-label">Puntos</div>
+                        </div>
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${paddedUsers[1].vip_level}</div>
+                            <div class="podium-stat-label">Nivel</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="podium-item">
+                    <div class="podium-rank">1°</div>
+                    <div class="podium-avatar">${getInitials(paddedUsers[0].username)}</div>
+                    <div class="podium-name">${paddedUsers[0].username || 'Jugador'}</div>
+                    <div class="vip-badge ${getVipBadgeClass(paddedUsers[0].vip_level)}">${getVipLevelName(paddedUsers[0].vip_level)}</div>
+                    <div class="podium-stats">
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${formatNumber(paddedUsers[0].vip_points)}</div>
+                            <div class="podium-stat-label">Puntos</div>
+                        </div>
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${paddedUsers[0].vip_level}</div>
+                            <div class="podium-stat-label">Nivel</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="podium-item">
+                    <div class="podium-rank">3°</div>
+                    <div class="podium-avatar">${getInitials(paddedUsers[2].username)}</div>
+                    <div class="podium-name">${paddedUsers[2].username || 'Jugador'}</div>
+                    <div class="vip-badge ${getVipBadgeClass(paddedUsers[2].vip_level)}">${getVipLevelName(paddedUsers[2].vip_level)}</div>
+                    <div class="podium-stats">
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${formatNumber(paddedUsers[2].vip_points)}</div>
+                            <div class="podium-stat-label">Puntos</div>
+                        </div>
+                        <div class="podium-stat">
+                            <div class="podium-stat-value">${paddedUsers[2].vip_level}</div>
+                            <div class="podium-stat-label">Nivel</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Animar la entrada del podio
+            animatePodium();
+        }
+        
+        // Función para renderizar la tabla de ranking
+        function renderRankingTable(users) {
+            if (!users || users.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th class="rank-number">#</th>
+                            <th>Jugador</th>
+                            <th>Nivel</th>
+                            <th>Puntos VIP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            users.forEach((user, index) => {
+                const rankClass = index < 3 ? `top-${index + 1}` : '';
+                
+                tableHTML += `
+                    <tr>
+                        <td class="rank-number ${rankClass}">${index + 1}</td>
+                        <td>
+                            <div class="user-info">
+                                <div class="avatar">${getInitials(user.username)}</div>
+                                <div>
+                                    <div class="username">${user.username || 'Usuario'}</div>
+                                    <div class="user-level">ID: ${user.id.substring(0, 8)}...</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="vip-badge ${getVipBadgeClass(user.vip_level)}">${user.vip_level}</span></td>
+                        <td>
+                            <div class="stats">
+                                <div class="stat-value">${formatNumber(user.vip_points)}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            rankingContainer.innerHTML = tableHTML;
+            
+            // Animar la entrada de la tabla
+            animateTable();
+        }
+        
+        // Función para obtener iniciales de un nombre
+        function getInitials(username) {
+            if (!username) return '?';
+            return username.split(' ')
+                .map(name => name[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+        
+        // Función para obtener la clase del badge VIP según el nivel
+        function getVipBadgeClass(level) {
+            if (level >= 80) return 'vip-diamond';
+            if (level >= 50) return 'vip-gold';
+            if (level >= 30) return 'vip-silver';
+            return '';
+        }
+        
+        // Función para obtener el nombre del nivel VIP
+        function getVipLevelName(level) {
+            if (level >= 80) return 'Diamante';
+            if (level >= 60) return 'Oro IV';
+            if (level >= 50) return 'Oro III';
+            if (level >= 40) return 'Plata II';
+            if (level >= 30) return 'Plata I';
+            if (level >= 20) return 'Bronce III';
+            if (level >= 10) return 'Bronce II';
+            return 'Bronce I';
+        }
+        
+        // Función para formatear números
+        function formatNumber(num) {
+            return new Intl.NumberFormat('es-ES').format(num);
+        }
+        
+        // Función para actualizar estadísticas del usuario
+        function updateUserStats() {
+            // En una aplicación real, estos datos vendrían de la autenticación
+            // Por ahora, usamos valores aleatorios para demostración
+            userData.stars = Math.floor(Math.random() * 5000);
+            userData.vipPoints = Math.floor(Math.random() * 500);
+            
+            userStarsElement.textContent = formatNumber(userData.stars);
+            userVipElement.textContent = formatNumber(userData.vipPoints);
+        }
+        
+        // Función para animar el podio
+        function animatePodium() {
+            const podiumItems = document.querySelectorAll('.podium-item');
+            podiumItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.8s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 300 * index);
+            });
+        }
+        
+        // Función para animar la tabla
+        function animateTable() {
+            const tableRows = document.querySelectorAll('.ranking-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease';
+                    row.style.opacity = '1';
+                }, 100 + (50 * index));
+            });
+        }
+    </script>
+</body>
+</html>
