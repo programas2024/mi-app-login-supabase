@@ -278,6 +278,7 @@
         .podium {
             display: flex;
             justify-content: center;
+            align-items: flex-end;
             gap: 30px;
             margin-bottom: 50px;
             perspective: 1000px;
@@ -299,8 +300,7 @@
         }
 
         .podium-item:nth-child(1) {
-            height: 320px;
-            order: 2;
+            height: 380px;
             background: linear-gradient(135deg, rgba(191, 149, 63, 0.3) 0%, rgba(179, 135, 40, 0.3) 100%);
             border: 2px solid rgba(191, 149, 63, 0.7);
             transform: translateZ(20px);
@@ -308,9 +308,7 @@
         }
 
         .podium-item:nth-child(2) {
-            height: 280px;
-            order: 1;
-            margin-top: 40px;
+            height: 350px;
             background: linear-gradient(135deg, rgba(128, 128, 128, 0.3) 0%, rgba(102, 102, 102, 0.3) 100%);
             border: 2px solid rgba(128, 128, 128, 0.7);
             transform: translateZ(10px);
@@ -318,9 +316,7 @@
         }
 
         .podium-item:nth-child(3) {
-            height: 250px;
-            order: 3;
-            margin-top: 70px;
+            height: 320px;
             background: linear-gradient(135deg, rgba(128, 74, 0, 0.3) 0%, rgba(205, 127, 50, 0.3) 100%);
             border: 2px solid rgba(128, 74, 0, 0.7);
             transform: translateZ(5px);
@@ -401,12 +397,19 @@
 
         .podium-stats {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 20px;
+            width: 100%;
         }
 
         .podium-stat {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
 
         .podium-stat-value {
@@ -493,9 +496,7 @@
             .podium-item {
                 width: 100%;
                 max-width: 350px;
-                margin-top: 0 !important;
                 height: auto !important;
-                order: unset !important;
                 transform: none !important;
             }
             
@@ -680,6 +681,7 @@
                 });
             }
             
+            // Orden correcto: 2° (izquierda), 1° (centro), 3° (derecha)
             podiumContainer.innerHTML = `
                 <div class="podium-item">
                     ${paddedUsers[1].vip_level >= 80 ? '<div class="podium-crown"><i class="fas fa-crown"></i></div>' : ''}
@@ -689,12 +691,12 @@
                     <div class="vip-badge ${getVipBadgeClass(paddedUsers[1].vip_level)}">${getVipLevelName(paddedUsers[1].vip_level)}</div>
                     <div class="podium-stats">
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${formatNumber(paddedUsers[1].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos VIP</div>
+                            <span class="podium-stat-label">Puntos VIP:</span>
+                            <span class="podium-stat-value">${formatNumber(paddedUsers[1].vip_points)}</span>
                         </div>
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${paddedUsers[1].vip_level}</div>
-                            <div class="podium-stat-label">Nivel</div>
+                            <span class="podium-stat-label">Nivel:</span>
+                            <span class="podium-stat-value">${paddedUsers[1].vip_level}</span>
                         </div>
                     </div>
                 </div>
@@ -707,12 +709,12 @@
                     <div class="vip-badge ${getVipBadgeClass(paddedUsers[0].vip_level)}">${getVipLevelName(paddedUsers[0].vip_level)}</div>
                     <div class="podium-stats">
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${formatNumber(paddedUsers[0].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos VIP</div>
+                            <span class="podium-stat-label">Puntos VIP:</span>
+                            <span class="podium-stat-value">${formatNumber(paddedUsers[0].vip_points)}</span>
                         </div>
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${paddedUsers[0].vip_level}</div>
-                            <div class="podium-stat-label">Nivel</div>
+                            <span class="podium-stat-label">Nivel:</span>
+                            <span class="podium-stat-value">${paddedUsers[0].vip_level}</span>
                         </div>
                     </div>
                 </div>
@@ -725,12 +727,12 @@
                     <div class="vip-badge ${getVipBadgeClass(paddedUsers[2].vip_level)}">${getVipLevelName(paddedUsers[2].vip_level)}</div>
                     <div class="podium-stats">
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${formatNumber(paddedUsers[2].vip_points)}</div>
-                            <div class="podium-stat-label">Puntos VIP</div>
+                            <span class="podium-stat-label">Puntos VIP:</span>
+                            <span class="podium-stat-value">${formatNumber(paddedUsers[2].vip_points)}</span>
                         </div>
                         <div class="podium-stat">
-                            <div class="podium-stat-value">${paddedUsers[2].vip_level}</div>
-                            <div class="podium-stat-label">Nivel</div>
+                            <span class="podium-stat-label">Nivel:</span>
+                            <span class="podium-stat-value">${paddedUsers[2].vip_level}</span>
                         </div>
                     </div>
                 </div>
