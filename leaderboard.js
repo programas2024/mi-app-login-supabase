@@ -220,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion,tiktok,facebook,youtube,likes')
+            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion,tiktok,facebook,youtube')
             .eq('id', targetUserId)
             .single();
 
@@ -383,8 +383,6 @@ Swal.fire({
                         });
                     }
                 }
-
-                
 
     } catch (error) {
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
