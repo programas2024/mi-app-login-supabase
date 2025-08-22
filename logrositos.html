@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking de Logros</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: shine 8s infinite linear;
+        }
+        
+        @keyframes shine {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            background: linear-gradient(to right, #ffce00, #ff9200, #ffce00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #82dbff, #2575fc);
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+        
+        .info-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .info-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+        }
+        
+        .ranking-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .ranking-table th {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .ranking-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .ranking-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .ranking-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        
+        .ranking-position {
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 70px;
+        }
+        
+        .top-1 { color: #ffd700; }
+        .top-2 { color: #c0c0c0; }
+        .top-3 { color: #cd7f32; }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-badge {
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+        
+        .category-bronze {
+            background: linear-gradient(135deg, #cd7f32, #8b4513);
+        }
+        
+        .category-silver {
+            background: linear-gradient(135deg, #c0c0c0, #808080);
+            color: #2c2c2c;
+        }
+        
+        .category-master {
+            background: linear-gradient(135deg, #ffd700, #daa520);
+            color: #2c2c2c;
+        }
+        
+        .category-epic {
+            background: linear-gradient(135deg, #9b30ff, #6a0dad);
+        }
+        
+        .category-legend {
+            background: linear-gradient(135deg, #ff8c00, #ff4500);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #ffce00;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .ranking-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .back-btn, .info-btn {
+                top: 10px;
+            }
+            
+            .back-btn {
+                left: 10px;
+                padding: 12px 20px;
+            }
+            
+            .info-btn {
+                right: 10px;
+            }
+        }
+
+        /* Estilos personalizados para SweetAlert */
+        .swal2-popup {
+            border-radius: 20px !important;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98)) !important;
+            backdrop-filter: blur(10px) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .swal2-title {
+            font-size: 2rem !important;
+            color: #ffce00 !important;
+            text-shadow: 0 0 10px rgba(255, 206, 0, 0.5) !important;
+            margin-bottom: 20px !important;
+        }
+
+        .swal2-html-container {
+            color: #f0f0f0 !important;
+            font-size: 1.1rem !important;
+            line-height: 1.6 !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #6a11cb, #2575fc) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 12px 30px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-btn" id="info-button" title="Información del Ranking">
+            <i class="fas fa-info"></i>
+        </div>
+
+        <a href="javascript:history.back()" class="back-btn" title="Volver">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        
+        <header>
+            <h1><i class="fas fa-trophy"></i> Ranking de Logros</h1>
+            <p class="subtitle">Clasificación de usuarios por categoría de logros alcanzada</p>
+        </header>
+        
+        <div class="ranking-container">
+            <div id="loading-section" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Cargando ranking...</p>
+            </div>
+            
+            <table class="ranking-table" id="ranking-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th class="ranking-position">#</th>
+                        <th>Usuario</th>
+                        <th>Categoría de Logro</th>
+                    </tr>
+                </thead>
+                <tbody id="ranking-body">
+                    <!-- Los datos se cargarán aquí dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRankingData();
+            
+            // Botón de información
+            document.getElementById('info-button').addEventListener('click', showRankingInfo);
+        });
+        
+        // Función para mostrar información sobre el ranking
+        function showRankingInfo() {
+            Swal.fire({
+                title: '<i class="fas fa-trophy" style="margin-right:15px;"></i> Información del Ranking',
+                html: `<div style="text-align:left; line-height:1.8;">
+                          <p style="margin-bottom:20px; font-size:1.2rem;">Este ranking muestra a todos los usuarios ordenados por su categoría de logro actual.</p>
+                          
+                          <div style="background:rgba(255,255,255,0.08); padding:20px; border-radius:15px; margin-bottom:20px;">
+                            <h3 style="color:#ffce00; margin-top:0; margin-bottom:15px;">¿Cómo funciona?</h3>
+                            <ul style="padding-left:20px; margin-bottom:0;">
+                              <li style="margin-bottom:10px;">Los usuarios se ordenan de mayor a menor categoría</li>
+                              <li style="margin-bottom:10px;">Las categorías van desde <b style="color:#cd7f32;">Bronce</b> hasta <b style="color:#ff8c00;">Leyenda</b></li>
+                              <li style="margin-bottom:10px;">Los primeros 3 puestos tienen colores especiales: <span style="color:#ffd700;">Oro</span>, <span style="color:#c0c0c0;">Plata</span> y <span style="color:#cd7f32;">Bronce</span></li>
+                              <li>Tu categoría se determina automáticamente según tus logros completados</li>
+                            </ul>
+                          </div>
+                          
+                          <div style="background:rgba(255,255,255,0.08); padding:20px; border-radius:15px;">
+                            <h3 style="color:#ffce00; margin-top:0; margin-bottom:15px;">Orden de Categorías</h3>
+                            <ol style="padding-left:20px; margin-bottom:0;">
+                              <li style="margin-bottom:10px;"><b style="color:#ff8c00;">Leyenda:</b> La categoría más alta</li>
+                              <li style="margin-bottom:10px;"><b style="color:#9b30ff;">Épico:</b> Logros expertos</li>
+                              <li style="margin-bottom:10px;"><b style="color:#ffd700;">Maestro:</b> Logros avanzados</li>
+                              <li style="margin-bottom:10px;"><b style="color:#c0c0c0;">Plata:</b> Logros intermedios</li>
+                              <li><b style="color:#cd7f32;">Bronce:</b> Logros iniciales</li>
+                            </ol>
+                          </div>
+                          
+                          <p style="margin-top:20px; font-style:italic;">¡Completa más logros para subir de categoría y ascender en el ranking!</p>
+                       </div>`,
+                icon: 'info',
+                confirmButtonText: '¡Entendido!',
+                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                color: 'white',
+                confirmButtonColor: '#6a11cb',
+                backdrop: 'rgba(0,0,0,0.7)',
+                width: '700px'
+            });
+        }
+        
+        async function loadRankingData() {
+            try {
+                // Obtener datos de usuarios con su categoría de logro
+                const { data: users, error } = await supabase
+                    .from('profiles')
+                    .select('id, username, current_achievement_category')
+                    .order('current_achievement_category', { ascending: false })
+                    .order('username');
+                
+                if (error) {
+                    console.error('Error cargando datos:', error);
+                    showError('Error al cargar el ranking. Intenta nuevamente.');
+                    return;
+                }
+                
+                if (users && users.length > 0) {
+                    displayRanking(users);
+                } else {
+                    showNoData();
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error inesperado al cargar el ranking.');
+            }
+        }
+        
+        function displayRanking(users) {
+            const rankingBody = document.getElementById('ranking-body');
+            rankingBody.innerHTML = '';
+            
+            // Ordenar usuarios por categoría (leyenda > épico > maestro > plata > bronce)
+            const categoryOrder = {
+                'legend': 5,
+                'epic': 4,
+                'master': 3,
+                'silver': 2,
+                'bronze': 1
+            };
+            
+            users.sort((a, b) => {
+                return categoryOrder[b.current_achievement_category] - categoryOrder[a.current_achievement_category];
+            });
+            
+            users.forEach((user, index) => {
+                const row = document.createElement('tr');
+                
+                // Posición
+                const positionCell = document.createElement('td');
+                positionCell.className = 'ranking-position';
+                if (index === 0) positionCell.classList.add('top-1');
+                if (index === 1) positionCell.classList.add('top-2');
+                if (index === 2) positionCell.classList.add('top-3');
+                positionCell.textContent = index + 1;
+                
+                // Usuario
+                const userCell = document.createElement('td');
+                userCell.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">${user.username ? user.username.charAt(0).toUpperCase() : 'U'}</div>
+                        <div>${user.username || 'Usuario'}</div>
+                    </div>
+                `;
+                
+                // Categoría
+                const categoryCell = document.createElement('td');
+                const categoryClass = `category-${user.current_achievement_category || 'bronze'}`;
+                const categoryText = user.current_achievement_category || 'bronze';
+                categoryCell.innerHTML = `<span class="category-badge ${categoryClass}">${categoryText}</span>`;
+                
+                row.appendChild(positionCell);
+                row.appendChild(userCell);
+                row.appendChild(categoryCell);
+                
+                rankingBody.appendChild(row);
+            });
+            
+            // Ocultar loading y mostrar tabla
+            document.getElementById('loading-section').style.display = 'none';
+            document.getElementById('ranking-table').style.display = 'table';
+        }
+        
+        function showError(message) {
+            document.getElementById('loading-section').style.display = 'none';
+            
+            Swal.fire({
+                title: 'Error',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'Reintentar',
+                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                color: 'white',
+                confirmButtonColor: '#6a11cb',
+                backdrop: 'rgba(0,0,0,0.7)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    loadRankingData();
+                }
+            });
+        }
+        
+        function showNoData() {
+            document.getElementById('loading-section').style.display = 'none';
+            
+            Swal.fire({
+                title: 'Sin datos',
+                text: 'No hay usuarios para mostrar en el ranking.',
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                color: 'white',
+                confirmButtonColor: '#6a11cb',
+                backdrop: 'rgba(0,0,0,0.7)'
+            });
+        }
+    </script>
+</body>
+</html>
