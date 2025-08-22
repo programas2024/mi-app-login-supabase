@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logros - Sistema de Recompensas VIP</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: shine 8s infinite linear;
+        }
+        
+        @keyframes shine {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            background: linear-gradient(to right, #ffce00, #ff9200, #ffce00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .user-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            font-weight: 600;
+        }
+        
+        .stat i {
+            font-size: 1.2rem;
+        }
+        
+        .gold i { color: #ffd700; }
+        .diamonds i { color: #b9f2ff; }
+        .pearls i { color: #d3d3d3; } /* Color gris para perlas */
+        .stars i { color: #ff4da6; }
+        .vip i { color: #ff7ae5; }
+        
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .tab {
+            padding: 18px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .tab:hover::before {
+            left: 100%;
+        }
+        
+        .tab:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .tab.bronze {
+            background: linear-gradient(135deg, #cd7f32, #8b4513, #cd7f32);
+        }
+        
+        .tab.silver {
+            background: linear-gradient(135deg, #c0c0c0, #808080, #c0c0c0);
+            color: #2c2c2c;
+        }
+        
+        .tab.master {
+            background: linear-gradient(135deg, #ffd700, #daa520, #ffd700);
+            color: #2c2c2c;
+        }
+        
+        .tab.epic {
+            background: linear-gradient(135deg, #9b30ff, #6a0dad, #9b30ff);
+        }
+        
+        .tab.legend {
+            background: linear-gradient(135deg, #ff8c00, #ff4500, #ff8c00);
+        }
+        
+        .tab.active {
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
+            100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+        
+        .bronze-card::before { background: linear-gradient(90deg, #cd7f32, #8b4513); }
+        .silver-card::before { background: linear-gradient(90deg, #c0c0c0, #808080); }
+        .master-card::before { background: linear-gradient(90deg, #ffd700, #daa520); }
+        .epic-card::before { background: linear-gradient(90deg, #9b30ff, #6a0dad); }
+        .legend-card::before { background: linear-gradient(90deg, #ff8c00, #ff4500); }
+        
+        .achievement-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .achievement-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            height: 80px;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .achievement-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .bronze-card .achievement-icon::after { background: #cd7f32; }
+        .silver-card .achievement-icon::after { background: #c0c0c0; }
+        .master-card .achievement-icon::after { background: #ffd700; }
+        .epic-card .achievement-icon::after { background: #9b30ff; }
+        .legend-card .achievement-icon::after { background: #ff8c00; }
+        
+        .bronze-card .achievement-icon { color: #cd7f32; }
+        .silver-card .achievement-icon { color: #c0c0c0; }
+        .master-card .achievement-icon { color: #ffd700; }
+        .epic-card .achievement-icon { color: #9b30ff; }
+        .legend-card .achievement-icon { color: #ff8c00; }
+        
+        /* Color gris específico para iconos de perlas en todas las categorías */
+        .pearl-icon {
+            color: #d3d3d3 !important;
+        }
+        
+        .achievement-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .achievement-desc {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progressShine 2s infinite linear;
+        }
+        
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .bronze-card .progress-bar { background: linear-gradient(90deg, #cd7f32, #8b4513); }
+        .silver-card .progress-bar { background: linear-gradient(90deg, #c0c0c0, #808080); }
+        .master-card .progress-bar { background: linear-gradient(90deg, #ffd700, #daa520); }
+        .epic-card .progress-bar { background: linear-gradient(90deg, #9b30ff, #6a0dad); }
+        .legend-card .progress-bar { background: linear-gradient(90deg, #ff8c00, #ff4500); }
+        
+        .achievement-status {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .completed {
+            color: #76ff7a;
+        }
+        
+        .in-progress {
+            color: #7bcaff;
+        }
+        
+        .reward-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .reward-info i {
+            color: gold;
+            margin-right: 5px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.7s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 40px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #2575fc, #6a11cb);
+        }
+        
+        .floating-icons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .floating-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-icon:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+        
+        .floating-vip {
+            background: linear-gradient(135deg, #ffce00, #ff9200);
+        }
+        
+        .floating-chest {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        
+        .floating-info {
+            background: linear-gradient(135deg, #9b30ff, #6a0dad);
+        }
+        
+        .info-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .info-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .tabs-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .user-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .info-btn {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        /* Estilos personalizados para SweetAlert */
+        .swal2-popup {
+            border-radius: 20px !important;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98)) !important;
+            backdrop-filter: blur(10px) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .swal2-title {
+            font-size: 2rem !important;
+            color: #ffce00 !important;
+            text-shadow: 0 0 10px rgba(255, 206, 0, 0.5) !important;
+            margin-bottom: 20px !important;
+        }
+
+        .swal2-html-container {
+            color: #f0f0f0 !important;
+            font-size: 1.1rem !important;
+            line-height: 1.6 !important;
+        }
+
+        .swal2-confirm {
+            background: linear-gradient(135deg, #6a11cb, #2575fc) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 12px 30px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-confirm:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.6) !important;
+        }
+
+        .swal2-cancel {
+            background: linear-gradient(135deg, #808080, #606060) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 12px 30px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            box-shadow: 0 5px 15px rgba(128, 128, 128, 0.4) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-cancel:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 8px 20px rgba(128, 128, 128, 0.6) !important;
+        }
+
+        .swal2-icon {
+            border-color: #ffce00 !important;
+            color: #ffce00 !important;
+            margin: 20px auto 10px !important;
+        }
+
+        .reward-animation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .reward-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: float 3s ease-in-out infinite;
+            min-width: 80px;
+        }
+
+        .reward-item:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .reward-item:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .reward-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .reward-text {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid #ffce00;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-btn" id="info-button">
+            <i class="fas fa-info"></i>
+        </div>
+        
+        <header>
+            <h1><i class="fas fa-trophy"></i> Tus Logros</h1>
+            <p class="subtitle">Desbloquea recompensas exclusivas completando desafíos</p>
+            
+            <div class="user-stats">
+                <div class="stat gold">
+                    <i class="fas fa-coins"></i>
+                    <span id="gold-amount">Cargando...</span>
+                </div>
+                <div class="stat diamonds">
+                    <i class="fas fa-gem"></i>
+                    <span id="diamonds-amount">Cargando...</span>
+                </div>
+                <div class="stat pearls">
+                    <i class="fas fa-circle pearl-icon"></i>
+                    <span id="pearls-amount">Cargando...</span>
+                </div>
+                <div class="stat stars">
+                    <i class="fas fa-star"></i>
+                    <span id="stars-amount">Cargando...</span>
+                </div>
+                <div class="stat vip">
+                    <i class="fas fa-crown"></i>
+                    <span id="vip-amount">Cargando...</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="tabs-container">
+            <div class="tab bronze active" data-tab="bronze">
+                <i class="fas fa-medal"></i> Bronce
+            </div>
+            <div class="tab silver" data-tab="silver">
+                <i class="fas fa-medal"></i> Plata
+            </div>
+            <div class="tab master" data-tab="master">
+                <i class="fas fa-medal"></i> Maestro
+            </div>
+            <div class="tab epic" data-tab="epic">
+                <i class="fas fa-gem"></i> Épicos
+            </div>
+            <div class="tab legend" data-tab="legend">
+                <i class="fas fa-crown"></i> Leyendas
+            </div>
+        </div>
+        
+        <div id="loading-section" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Cargando tus logros...</p>
+        </div>
+        
+        <!-- Logros Bronce -->
+        <div class="tab-content active" id="bronze-tab">
+            <div class="achievements-grid">
+                <div class="achievement-card bronze-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="achievement-title">Acumulador Novato</h3>
+                    <p class="achievement-desc">Consigue 10 de oro en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bronze-gold-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="bronze-gold-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 50 Oro + 5 Diamantes
+                    </div>
+                </div>
+                
+                <div class="achievement-card bronze-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="achievement-title">Diamantes Básicos</h3>
+                    <p class="achievement-desc">Consigue 10 diamantes en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bronze-diamonds-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="bronze-diamonds-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 30 Diamantes + 3 Perlas
+                    </div>
+                </div>
+                
+                <div class="achievement-card bronze-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle pearl-icon"></i>
+                    </div>
+                    <h3 class="achievement-title">Perlas Iniciales</h3>
+                    <p class="achievement-desc">Consigue 10 perlas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="bronze-pearls-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="bronze-pearls-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 20 Perlas + 1 Estrella
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logros Plata -->
+        <div class="tab-content" id="silver-tab">
+            <div class="achievements-grid">
+                <div class="achievement-card silver-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="achievement-title">Oro Intermedio</h3>
+                    <p class="achievement-desc">Consigue 200 de oro en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="silver-gold-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="silver-gold-status"><i class="fas fa-spinner"></i> 0/200 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 200 Oro + 10 Diamantes
+                    </div>
+                </div>
+                
+                <div class="achievement-card silver-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="achievement-title">Diamantes Intermedios</h3>
+                    <p class="achievement-desc">Consigue 200 diamantes en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="silver-diamonds-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="silver-diamonds-status"><i class="fas fa-spinner"></i> 0/200 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 150 Diamantes + 15 Perlas
+                    </div>
+                </div>
+                
+                <div class="achievement-card silver-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle pearl-icon"></i>
+                    </div>
+                    <h3 class="achievement-title">Perlas Avanzadas</h3>
+                    <p class="achievement-desc">Consigue 100 perlas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="silver-pearls-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="silver-pearls-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 100 Perlas + 5 Estrellas
+                    </div>
+                </div>
+                
+                <div class="achievement-card silver-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="achievement-title">Estrellas Iniciales</h3>
+                    <p class="achievement-desc">Consigue 10 estrellas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="silver-stars-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="silver-stars-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 20 Estrellas + 5 Puntos VIP
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logros Maestro -->
+        <div class="tab-content" id="master-tab">
+            <div class="achievements-grid">
+                <div class="achievement-card master-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="achievement-title">Oro Experto</h3>
+                    <p class="achievement-desc">Consigue 1000 de oro en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="master-gold-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="master-gold-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 500 Oro + 50 Diamantes
+                    </div>
+                </div>
+                
+                <div class="achievement-card master-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="achievement-title">Diamantes Expertos</h3>
+                    <p class="achievement-desc">Consigue 1000 diamantes en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="master-diamonds-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="master-diamonds-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 500 Diamantes + 50 Perlas
+                    </div>
+                </div>
+                
+                <div class="achievement-card master-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle pearl-icon"></i>
+                    </div>
+                    <h3 class="achievement-title">Perlas Expertas</h3>
+                    <p class="achievement-desc">Consigue 500 perlas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="master-pearls-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="master-pearls-status"><i class="fas fa-spinner"></i> 0/500 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 250 Perlas + 25 Estrellas
+                    </div>
+                </div>
+                
+                <div class="achievement-card master-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="achievement-title">Estrellas Maestras</h3>
+                    <p class="achievement-desc">Consigue 100 estrellas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="master-stars-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="master-stars-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 50 Estrellas + 20 Puntos VIP
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logros Épicos -->
+        <div class="tab-content" id="epic-tab">
+            <div class="achievements-grid">
+                <div class="achievement-card epic-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="achievement-title">Oro Épico</h3>
+                    <p class="achievement-desc">Consigue 6000 de oro en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="epic-gold-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="epic-gold-status"><i class="fas fa-spinner"></i> 0/6000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 2000 Oro + 200 Diamantes
+                    </div>
+                </div>
+                
+                <div class="achievement-card epic-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="achievement-title">Diamantes Épicos</h3>
+                    <p class="achievement-desc">Consigue 7000 diamantes en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="epic-diamonds-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="epic-diamonds-status"><i class="fas fa-spinner"></i> 0/7000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 1500 Diamantes + 150 Perlas
+                    </div>
+                </div>
+                
+                <div class="achievement-card epic-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle pearl-icon"></i>
+                    </div>
+                    <h3 class="achievement-title">Perlas Épicas</h3>
+                    <p class="achievement-desc">Consigue 1000 perlas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="epic-pearls-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="epic-pearls-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 500 Perlas + 100 Estrellas
+                    </div>
+                </div>
+                
+                <div class="achievement-card epic-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="achievement-title">Estrellas Épicas</h3>
+                    <p class="achievement-desc">Consigue 600 estrellas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="epic-stars-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="epic-stars-status"><i class="fas fa-spinner"></i> 0/600 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 200 Estrellas + 50 Puntos VIP
+                    </div>
+                </div>
+                
+                <div class="achievement-card epic-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="achievement-title">VIP Épico</h3>
+                    <p class="achievement-desc">Consigue 100 puntos VIP</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="epic-vip-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="epic-vip-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 100 Puntos VIP + 500 Oro
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logros Leyendas -->
+        <div class="tab-content" id="legend-tab">
+            <div class="achievements-grid">
+                <div class="achievement-card legend-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="achievement-title">Oro Legendario</h3>
+                    <p class="achievement-desc">Consigue 10000 de oro en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="legend-gold-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="legend-gold-status"><i class="fas fa-spinner"></i> 0/10000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 5000 Oro + 1000 Diamantes
+                    </div>
+                </div>
+                
+                <div class="achievement-card legend-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3 class="achievement-title">Diamantes Legendarios</h3>
+                    <p class="achievement-desc">Consigue 150000 diamantes en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="legend-diamonds-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="legend-diamonds-status"><i class="fas fa-spinner"></i> 0/150000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 10000 Diamantes + 2000 Perlas
+                    </div>
+                </div>
+                
+                <div class="achievement-card legend-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-circle pearl-icon"></i>
+                    </div>
+                    <h3 class="achievement-title">Perlas Legendarias</h3>
+                    <p class="achievement-desc">Consigue 7000 perlas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="legend-pearls-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="legend-pearls-status"><i class="fas fa-spinner"></i> 0/7000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 3000 Perlas + 1000 Estrellas
+                    </div>
+                </div>
+                
+                <div class="achievement-card legend-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="achievement-title">Estrellas Legendarias</h3>
+                    <p class="achievement-desc">Consigue 2000 estrellas en tu inventario</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="legend-stars-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="legend-stars-status"><i class="fas fa-spinner"></i> 0/2000 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 1000 Estrellas + 300 Puntos VIP
+                    </div>
+                </div>
+                
+                <div class="achievement-card legend-card">
+                    <div class="achievement-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="achievement-title">VIP Legendario</h3>
+                    <p class="achievement-desc">Consigue 900 puntos VIP</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="legend-vip-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="achievement-status in-progress" id="legend-vip-status"><i class="fas fa-spinner"></i> 0/900 completado</p>
+                    <div class="reward-info">
+                        <i class="fas fa-gift"></i> Recompensa: 500 Puntos VIP + Acceso VIP Legendario
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Volver Atrás
+            </a>
+        </div>
+    </div>
+    
+    <div class="floating-icons">
+        <div class="floating-icon floating-vip" onclick="window.location.href='caminito.html'">
+            <i class="fas fa-crown"></i>
+        </div>
+        <div class="floating-icon floating-chest" id="chest-btn">
+            <i class="fas fa-gift"></i>
+        </div>
+    </div>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Variables globales
+        let userProfile = null;
+        let achievementsUnlocked = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar la aplicación
+            initApp();
+            
+            // Cambio de pestañas
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Desactivar todas las pestañas
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // Activar la pestaña seleccionada
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Efectos al pasar el ratón por las tarjetas de logros
+            const achievementCards = document.querySelectorAll('.achievement-card');
+            
+            achievementCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-10px) scale(1.02)';
+                    card.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.3)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                    card.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
+                });
+                
+                card.addEventListener('click', () => {
+                    const title = card.querySelector('.achievement-title').textContent;
+                    const desc = card.querySelector('.achievement-desc').textContent;
+                    const status = card.querySelector('.achievement-status').textContent;
+                    const reward = card.querySelector('.reward-info').textContent;
+                    
+                    Swal.fire({
+                        title: title,
+                        html: `<div style="text-align:left; margin-bottom:20px;">
+                                  <p style="margin-bottom:10px;">${desc}</p>
+                                  <p><b>${status}</b></p>
+                               </div>
+                               <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:10px; border-left:4px solid gold;">
+                                  <p style="margin:0; display:flex; align-items:center;">
+                                    <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
+                                    ${reward}
+                                  </p>
+                               </div>`,
+                        icon: 'info',
+                        confirmButtonText: '¡Entendido!',
+                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                        color: 'white',
+                        confirmButtonColor: '#6a11cb',
+                        backdrop: 'rgba(0,0,0,0.7)',
+                        customClass: {
+                            popup: 'swal2-popup-custom'
+                        }
+                    });
+                });
+            });
+            
+            // Botón de información - Mejorado con más elegancia
+            document.getElementById('info-button').addEventListener('click', () => {
+                Swal.fire({
+                    title: '<i class="fas fa-trophy" style="margin-right:15px;"></i>Sistema de Logros',
+                    html: `<div style="text-align:left; line-height:1.8;">
+                              <p style="margin-bottom:20px; font-size:1.2rem;">Bienvenido a tu panel de logros. Aquí puedes ver todos tus progresos y recompensas disponibles.</p>
+                              
+                              <div style="background:rgba(255,255,255,0.08); padding:20px; border-radius:15px; margin-bottom:20px;">
+                                <h3 style="color:#ffce00; margin-top:0; margin-bottom:15px;">Categorías de Logros</h3>
+                                <ul style="padding-left:20px; margin-bottom:0;">
+                                  <li style="margin-bottom:10px;"><b style="color:#cd7f32;">Bronce:</b> Logros iniciales para nuevos jugadores</li>
+                                  <li style="margin-bottom:10px;"><b style="color:#c0c0c0;">Plata:</b> Logros intermedios con mejores recompensas</li>
+                                  <li style="margin-bottom:10px;"><b style="color:#ffd700;">Maestro:</b> Logros avanzados que requieren dedicación</li>
+                                  <li style="margin-bottom:10px;"><b style="color:#9b30ff;">Épicos:</b> Logros expertos con recompensas valiosas</li>
+                                  <li><b style="color:#ff8c00;">Leyendas:</b> Los logros más difíciles con recompensas exclusivas</li>
+                                </ul>
+                              </div>
+                              
+                              <p style="margin-bottom:15px;">💎 <b>Completa logros</b> para obtener recompensas exclusivas y subir de nivel.</p>
+                              <p>⭐ <b>Las recompensas</b> incluyen oro, diamantes, perlas, estrellas y puntos VIP.</p>
+                           </div>`,
+                    icon: 'info',
+                    confirmButtonText: '¡Empezar a Explorar!',
+                    background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                    color: 'white',
+                    confirmButtonColor: '#6a11cb',
+                    backdrop: 'rgba(0,0,0,0.7)',
+                    width: '700px',
+                    customClass: {
+                        title: 'swal2-title-custom',
+                        htmlContainer: 'swal2-html-container-custom'
+                    }
+                });
+            });
+            
+            // Botón de cofre - Mejorado con animación de recompensas
+            document.getElementById('chest-btn').addEventListener('click', () => {
+                Swal.fire({
+                    title: '¡Cofre Gratuito Diario!',
+                    html: `<p style="margin-bottom:20px;">¿Quieres abrir tu cofre gratuito y descubrir recompensas sorpresa?</p>
+                           <div style="background:rgba(255,215,0,0.1); padding:15px; border-radius:10px; border:2px dashed rgba(255,215,0,0.5);">
+                             <p style="margin:0; display:flex; align-items:center; justify-content:center;">
+                               <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
+                               <span>Contiene hasta 5 recompensas diferentes</span>
+                             </p>
+                           </div>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '¡Abrir Cofre!',
+                    cancelButtonText: 'Quizás después',
+                    background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                    color: 'white',
+                    confirmButtonColor: '#11998e',
+                    cancelButtonColor: '#6a11cb',
+                    backdrop: 'rgba(0,0,0,0.7)',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Animación de apertura de cofre
+                        Swal.fire({
+                            title: '¡Abriendo Cofre!',
+                            html: '<div style="margin:20px 0;"><i class="fas fa-box-open" style="font-size:3rem; color:gold;"></i></div>',
+                            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                            color: 'white',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            timerProgressBar: true,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        }).then(() => {
+                            // Mostrar recompensas con animación
+                            Swal.fire({
+                                title: '¡Felicidades!',
+                                html: `<div style="text-align:center;">
+                                          <p style="margin-bottom:20px;">Has obtenido:</p>
+                                          <div class="reward-animation">
+                                            <div class="reward-item">
+                                                <div class="reward-icon" style="color:gold;"><i class="fas fa-coins"></i></div>
+                                                <div class="reward-text">50 Oro</div>
+                                            </div>
+                                            <div class="reward-item">
+                                                <div class="reward-icon" style="color:#b9f2ff;"><i class="fas fa-gem"></i></div>
+                                                <div class="reward-text">10 Diamantes</div>
+                                            </div>
+                                            <div class="reward-item">
+                                                <div class="reward-icon" style="color:#d3d3d3;"><i class="fas fa-circle pearl-icon"></i></div>
+                                                <div class="reward-text">5 Perlas</div>
+                                            </div>
+                                          </div>
+                                       </div>`,
+                                icon: 'success',
+                                confirmButtonText: '¡Reclamar!',
+                                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                                color: 'white',
+                                confirmButtonColor: '#6a11cb',
+                                backdrop: 'rgba(0,0,0,0.7)'
+                            }).then(() => {
+                                // Lanzar confeti
+                                confetti({
+                                    particleCount: 150,
+                                    spread: 70,
+                                    origin: { y: 0.6 }
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+        });
+
+        // Función para inicializar la aplicación
+        async function initApp() {
+            try {
+                // Obtener el usuario actual (en una app real, esto vendría de la autenticación)
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                
+                if (userError) {
+                    console.error('Error obteniendo usuario:', userError);
+                    // Para propósitos de demostración, usar un usuario por defecto
+                    await loadUserProfile('default-user-id');
+                    return;
+                }
+                
+                if (user) {
+                    await loadUserProfile(user.id);
+                } else {
+                    // Si no hay usuario autenticado, usar uno por defecto para demostración
+                    await loadUserProfile('default-user-id');
+                }
+            } catch (error) {
+                console.error('Error inicializando la aplicación:', error);
+                // En caso de error, mostrar datos de demostración
+                showDemoData();
+            }
+        }
+
+        // Función para cargar el perfil del usuario
+        async function loadUserProfile(userId) {
+            try {
+                // Obtener el perfil del usuario desde Supabase
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) {
+                    console.error('Error cargando perfil:', error);
+                    // Crear un perfil por defecto si no existe
+                    await createDefaultProfile(userId);
+                    return;
+                }
+                
+                if (profile) {
+                    userProfile = profile;
+                    updateUIWithProfileData();
+                    checkAchievements();
+                    hideLoading();
+                }
+            } catch (error) {
+                console.error('Error cargando perfil:', error);
+                showDemoData();
+            }
+        }
+
+        // Función para crear un perfil por defecto
+        async function createDefaultProfile(userId) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert([
+                        { 
+                            id: userId, 
+                            gold: 2480, 
+                            diamonds: 560, 
+                            perla: 320, 
+                            stars: 85, 
+                            vip_points: 36,
+                            achievements_unlocked: 3
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error('Error creando perfil por defecto:', error);
+                    showDemoData();
+                    return;
+                }
+                
+                userProfile = data;
+                updateUIWithProfileData();
+                checkAchievements();
+                hideLoading();
+            } catch (error) {
+                console.error('Error creando perfil por defecto:', error);
+                showDemoData();
+            }
+        }
+
+        // Función para actualizar la UI con los datos del perfil
+        function updateUIWithProfileData() {
+            if (!userProfile) return;
+            
+            // Actualizar estadísticas
+            document.getElementById('gold-amount').textContent = `${userProfile.gold.toLocaleString()} Oro`;
+            document.getElementById('diamonds-amount').textContent = `${userProfile.diamonds.toLocaleString()} Diamantes`;
+            document.getElementById('pearls-amount').textContent = `${userProfile.perla.toLocaleString()} Perlas`;
+            document.getElementById('stars-amount').textContent = `${userProfile.stars.toLocaleString()} Estrellas`;
+            document.getElementById('vip-amount').textContent = `${userProfile.vip_points.toLocaleString()} Puntos VIP`;
+            
+            achievementsUnlocked = userProfile.achievements_unlocked || 0;
+        }
+
+        // Función para verificar y actualizar logros
+        function checkAchievements() {
+            if (!userProfile) return;
+            
+            // Logros Bronce
+            updateAchievementProgress('bronze', 'gold', 10, userProfile.gold);
+            updateAchievementProgress('bronze', 'diamonds', 10, userProfile.diamonds);
+            updateAchievementProgress('bronze', 'pearls', 10, userProfile.perla);
+            
+            // Logros Plata
+            updateAchievementProgress('silver', 'gold', 200, userProfile.gold);
+            updateAchievementProgress('silver', 'diamonds', 200, userProfile.diamonds);
+            updateAchievementProgress('silver', 'pearls', 100, userProfile.perla);
+            updateAchievementProgress('silver', 'stars', 10, userProfile.stars);
+            
+            // Logros Maestro
+            updateAchievementProgress('master', 'gold', 1000, userProfile.gold);
+            updateAchievementProgress('master', 'diamonds', 1000, userProfile.diamonds);
+            updateAchievementProgress('master', 'pearls', 500, userProfile.perla);
+            updateAchievementProgress('master', 'stars', 100, userProfile.stars);
+            
+            // Logros Épicos
+            updateAchievementProgress('epic', 'gold', 6000, userProfile.gold);
+            updateAchievementProgress('epic', 'diamonds', 7000, userProfile.diamonds);
+            updateAchievementProgress('epic', 'pearls', 1000, userProfile.perla);
+            updateAchievementProgress('epic', 'stars', 600, userProfile.stars);
+            updateAchievementProgress('epic', 'vip', 100, userProfile.vip_points);
+            
+            // Logros Legendarios
+            updateAchievementProgress('legend', 'gold', 10000, userProfile.gold);
+            updateAchievementProgress('legend', 'diamonds', 150000, userProfile.diamonds);
+            updateAchievementProgress('legend', 'pearls', 7000, userProfile.perla);
+            updateAchievementProgress('legend', 'stars', 2000, userProfile.stars);
+            updateAchievementProgress('legend', 'vip', 900, userProfile.vip_points);
+        }
+
+        // Función para actualizar el progreso de un logro
+        function updateAchievementProgress(category, type, target, current) {
+            const progress = Math.min((current / target) * 100, 100);
+            const progressBar = document.getElementById(`${category}-${type}-progress`);
+            const statusElement = document.getElementById(`${category}-${type}-status`);
+            
+            if (progressBar && statusElement) {
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> ¡Completado!';
+                    statusElement.className = 'achievement-status completed';
+                } else {
+                    statusElement.innerHTML = `<i class="fas fa-spinner"></i> ${Math.round(current)}/${target} completado`;
+                    statusElement.className = 'achievement-status in-progress';
+                }
+            }
+        }
+
+        // Función para mostrar datos de demostración
+        function showDemoData() {
+            document.getElementById('gold-amount').textContent = '2,480 Oro';
+            document.getElementById('diamonds-amount').textContent = '560 Diamantes';
+            document.getElementById('pearls-amount').textContent = '320 Perlas';
+            document.getElementById('stars-amount').textContent = '85 Estrellas';
+            document.getElementById('vip-amount').textContent = '36 Puntos VIP';
+            
+            // Ocultar loading
+            hideLoading();
+            
+            // Mostrar alerta informativa
+            Swal.fire({
+                title: 'Modo de Demostración',
+                text: 'Estás viendo datos de demostración. Inicia sesión para ver tus estadísticas reales.',
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                color: 'white',
+                confirmButtonColor: '#6a11cb',
+                backdrop: 'rgba(0,0,0,0.7)'
+            });
+        }
+
+        // Función para ocultar la pantalla de carga
+        function hideLoading() {
+            document.getElementById('loading-section').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

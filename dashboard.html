@@ -1924,6 +1924,20 @@
         margin-right: 8px;
         color: #ffeb3b;
     }
+ .btn-achievements-custom {
+            background: linear-gradient(45deg, #cb6b11, #fc4525);
+            box-shadow: 0 4px 10px rgba(106, 17, 203, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+        
+        .btn-achievements-custom:hover {
+            background: linear-gradient(45deg, #ff2c2c, #ffdb3d);
+            box-shadow: 0 6px 15px rgba(106, 17, 203, 0.4);
+        }
+    
 </style>
 </head>
 <body>
@@ -1952,7 +1966,13 @@
         </button>
                  
                  <div>
-                    
+                    <div>
+            <!-- Nuevo botón de Logros agregado aquí -->
+            <button id="achievements-btn" class="sidebar-btn btn-achievements-custom" title="Revisa tus logros y conquistas." onclick="window.location.href='logros.html'">
+                <i class="fas fa-trophy"></i> Logros
+            </button>
+        </div>
+        
                  </div>
                     <button id="chest-btn" class="sidebar-btn btn-chest-custom" title="Abre un cofre para obtener recompensas.">
                         <i class="fas fa-box-open"></i> Cofre Gratis
