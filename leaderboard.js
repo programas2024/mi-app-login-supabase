@@ -397,43 +397,77 @@ function showSocialMediaLinks(userProfile) {
     
     if (userProfile.tiktok) {
         socialMediaHtml += `
-            <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                <i class="fab fa-tiktok" style="color: #69c9d0; font-size: 24px; margin-right: 10px;"></i>
-                <a href="${userProfile.tiktok}" target="_blank" style="color: #69c9d0; text-decoration: none;">${userProfile.tiktok}</a>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <a href="${userProfile.tiktok}" target="_blank" class="social-btn tiktok-btn" style="display: flex; align-items: center; justify-content: center; text-decoration: none; background: linear-gradient(135deg, #69c9d0, #000000); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(105, 201, 208, 0.4);">
+                    <i class="fab fa-tiktok" style="font-size: 24px; margin-right: 10px;"></i>
+                    TikTok
+                </a>
             </div>
         `;
     }
     
     if (userProfile.facebook) {
         socialMediaHtml += `
-            <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                <i class="fab fa-facebook" style="color: #1877f2; font-size: 24px; margin-right: 10px;"></i>
-                <a href="${userProfile.facebook}" target="_blank" style="color: #1877f2; text-decoration: none;">${userProfile.facebook}</a>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <a href="${userProfile.facebook}" target="_blank" class="social-btn facebook-btn" style="display: flex; align-items: center; justify-content: center; text-decoration: none; background: linear-gradient(135deg, #1877f2, #0e5a9d); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.4);">
+                    <i class="fab fa-facebook" style="font-size: 24px; margin-right: 10px;"></i>
+                    Facebook
+                </a>
             </div>
         `;
     }
     
     if (userProfile.youtube) {
         socialMediaHtml += `
-            <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                <i class="fab fa-youtube" style="color: #ff0000; font-size: 24px; margin-right: 10px;"></i>
-                <a href="${userProfile.youtube}" target="_blank" style="color: #ff0000; text-decoration: none;">${userProfile.youtube}</a>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <a href="${userProfile.youtube}" target="_blank" class="social-btn youtube-btn" style="display: flex; align-items: center; justify-content: center; text-decoration: none; background: linear-gradient(135deg, #ff0000, #cc0000); color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);">
+                    <i class="fab fa-youtube" style="font-size: 24px; margin-right: 10px;"></i>
+                    YouTube
+                </a>
             </div>
         `;
     }
     
     Swal.fire({
-        title: 'Redes Sociales',
+        title: '<i class="fas fa-share-alt" style="margin-right: 10px;"></i> Redes Sociales',
         html: `
-            <div style="text-align: left; padding: 10px;">
-                ${socialMediaHtml || '<p>No hay redes sociales disponibles</p>'}
+            <div style="text-align: center; padding: 15px;">
+                ${socialMediaHtml || `
+                    <div style="text-align: center; padding: 30px;">
+                        <i class="fas fa-users" style="font-size: 48px; color: #6c757d; margin-bottom: 15px;"></i>
+                        <p style="color: #a0a0a0; font-size: 16px;">No hay redes sociales disponibles</p>
+                    </div>
+                `}
             </div>
         `,
-        background: '#1e1e2e',
+        background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
         color: '#e0e0e0',
         confirmButtonText: 'Cerrar',
         confirmButtonColor: '#4ecdc4',
-        width: '500px'
+        width: '400px',
+        customClass: {
+            popup: 'social-media-popup'
+        },
+        didOpen: () => {
+            // Agregar efectos hover a los botones
+            const socialButtons = document.querySelectorAll('.social-btn');
+            socialButtons.forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 7px 20px rgba(0, 0, 0, 0.5)';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    if (this.classList.contains('tiktok-btn')) {
+                        this.style.boxShadow = '0 4px 15px rgba(105, 201, 208, 0.4)';
+                    } else if (this.classList.contains('facebook-btn')) {
+                        this.style.boxShadow = '0 4px 15px rgba(24, 119, 242, 0.4)';
+                    } else if (this.classList.contains('youtube-btn')) {
+                        this.style.boxShadow = '0 4px 15px rgba(255, 0, 0, 0.4)';
+                    }
+                });
+            });
+        }
     });
 }
 
