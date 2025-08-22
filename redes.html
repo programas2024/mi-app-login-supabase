@@ -427,12 +427,10 @@
     </div>
 
     <script>
-        // Configuración de Supabase - VERIFICA ESTA CLAVE
+        // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        // Asegúrate de que esta clave sea la correcta de tu proyecto
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
-        // Inicializar Supabase con la clave correcta
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Variables globales
@@ -498,7 +496,7 @@
                 }
                 
                 currentUser = session.user;
-                document.getElementById('userInfo').innerHTML = `<i class="fas fa-user"></i> Usuario: ${currentUser.username}`;
+                document.getElementById('userInfo').innerHTML = `<i class="fas fa-user"></i> Usuario: ${currentUser.email}`;
                 await loadUserData();
             } catch (error) {
                 showError('Error inesperado: ' + error.message);
@@ -522,7 +520,6 @@
                         return;
                     }
                     console.error('Error al cargar el perfil:', error);
-                    showError('Error al cargar datos. Verifica la configuración de Supabase.');
                     return;
                 }
                 
@@ -544,7 +541,6 @@
                 }
             } catch (error) {
                 console.error('Error al cargar datos:', error);
-                showError('Error al cargar datos: ' + error.message);
             }
         }
         
@@ -600,17 +596,44 @@
             }
             
             try {
+                // Primero obtener el perfil actual para preservar el username existente
+                const { data: existingProfile, error: fetchError } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', currentUser.id)
+                    .single();
+                    
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    showError('Error al obtener datos del perfil: ' + fetchError.message);
+                    return;
+                }
+                
                 // Preparar datos para guardar
                 const profileData = {
                     id: currentUser.id,
-                    username: 'user_' + currentUser.id.substring(0, 8), // Usamos un ID único en lugar del email
                     updated_at: new Date().toISOString()
                 };
                 
+                // Si ya existe un perfil, mantener el username original
+                if (existingProfile && existingProfile.username) {
+                    profileData.username = existingProfile.username;
+                } else {
+                    // Si no existe, crear uno basado en el ID (solo para cumplir con la restricción NOT NULL)
+                    profileData.username = 'user_' + currentUser.id.substring(0, 8);
+                }
+                
+                // Solo incluir los campos que queremos actualizar
                 if (tiktok) profileData.tiktok = tiktok;
+                else profileData.tiktok = null;
+                
                 if (youtube) profileData.youtube = youtube;
+                else profileData.youtube = null;
+                
                 if (facebook) profileData.facebook = facebook;
+                else profileData.facebook = null;
+                
                 if (emotion) profileData.emotion = emotion;
+                else profileData.emotion = null;
                 
                 // Guardar en Supabase
                 const { data, error } = await supabase
