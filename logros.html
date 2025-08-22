@@ -1452,7 +1452,7 @@
             // SOLUCIÓN: Seleccionar solo los campos requeridos: gold, diamonds, perla, vip_points, stars
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('id, gold, diamonds, perla, vip_points, stars, achievements_unlocked')
+                .select('id, gold, diamonds, perla, vip_points, stars, achievements_unlocked,current_achievement_category')
                 .eq('id', userId)
                 .single();
             
@@ -1608,6 +1608,25 @@
     function hideLoading() {
         document.getElementById('loading-section').style.display = 'none';
     }
+
+    // Función para actualizar la categoría del usuario
+async function updateUserAchievementCategory(userId, category) {
+    try {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ current_achievement_category: category })
+            .eq('id', userId);
+        
+        if (error) {
+            console.error('Error actualizando categoría:', error);
+        }
+    } catch (error) {
+        console.error('Error actualizando categoría:', error);
+    }
+}
+
+// Llamar a esta función cuando el usuario cambie de categoría
+// Por ejemplo, cuando haga clic en una pestaña diferente
 </script>
 </body>
 </html>
