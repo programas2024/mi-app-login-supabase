@@ -1028,6 +1028,7 @@
     // Variables globales
     let userProfile = null;
     let achievementsUnlocked = 0;
+    let lastChestClaim = null;
 
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar la aplicación
@@ -1131,81 +1132,286 @@
             });
         });
         
-        // Botón de cofre - Mejorado con animación de recompensas
+        // Botón de cofre - Mejorado con animación de recompensas y verificación de tiempo
         document.getElementById('chest-btn').addEventListener('click', () => {
-            Swal.fire({
-                title: '¡Cofre Gratuito Diario!',
-                html: `<p style="margin-bottom:20px;">¿Quieres abrir tu cofre gratuito y descubrir recompensas sorpresa?</p>
-                       <div style="background:rgba(255,215,0,0.1); padding:15px; border-radius:10px; border:2px dashed rgba(255,215,0,0.5);">
-                         <p style="margin:0; display:flex; align-items:center; justify-content:center;">
-                           <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
-                           <span>Contiene hasta 5 recompensas diferentes</span>
-                         </p>
-                       </div>`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: '¡Abrir Cofre!',
-                cancelButtonText: 'Quizás después',
-                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                color: 'white',
-                confirmButtonColor: '#11998e',
-                cancelButtonColor: '#6a11cb',
-                backdrop: 'rgba(0,0,0,0.7)',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Animación de apertura de cofre
-                    Swal.fire({
-                        title: '¡Abriendo Cofre!',
-                        html: '<div style="margin:20px 0;"><i class="fas fa-box-open" style="font-size:3rem; color:gold;"></i></div>',
-                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                        color: 'white',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        timerProgressBar: true,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    }).then(() => {
-                        // Mostrar recompensas con animación
-                        Swal.fire({
-                            title: '¡Felicidades!',
-                            html: `<div style="text-align:center;">
-                                      <p style="margin-bottom:20px;">Has obtenido:</p>
-                                      <div class="reward-animation">
-                                        <div class="reward-item">
-                                            <div class="reward-icon" style="color:gold;"><i class="fas fa-coins"></i></div>
-                                            <div class="reward-text">50 Oro</div>
-                                        </div>
-                                        <div class="reward-item">
-                                            <div class="reward-icon" style="color:#b9f2ff;"><i class="fas fa-gem"></i></div>
-                                            <div class="reward-text">10 Diamantes</div>
-                                        </div>
-                                        <div class="reward-item">
-                                            <div class="reward-icon" style="color:#d3d3d3;"><i class="fas fa-circle pearl-icon"></i></div>
-                                            <div class="reward-text">5 Perlas</div>
-                                        </div>
-                                      </div>
-                                   </div>`,
-                            icon: 'success',
-                            confirmButtonText: '¡Reclamar!',
-                            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                            color: 'white',
-                            confirmButtonColor: '#6a11cb',
-                            backdrop: 'rgba(0,0,0,0.7)'
-                        }).then(() => {
-                            // Lanzar confeti
-                            confetti({
-                                particleCount: 150,
-                                spread: 70,
-                                origin: { y: 0.6 }
-                            });
-                        });
-                    });
-                }
-            });
+            checkDailyChestAvailability();
         });
     });
+
+    // Función para verificar la disponibilidad del cofre diario
+    async function checkDailyChestAvailability() {
+        try {
+            // Obtener la última fecha de reclamo desde Supabase
+            const { data, error } = await supabase
+                .from('user_chests')
+                .select('last_claimed')
+                .eq('user_id', userProfile.id)
+                .single();
+            
+            if (error && error.code !== 'PGRST116') { // PGRST116 es el código para "no se encontraron resultados"
+                console.error('Error obteniendo datos del cofre:', error);
+                // En caso de error, usar localStorage como respaldo
+                checkLocalStorageChest();
+                return;
+            }
+            
+            const now = new Date();
+            let lastClaimDate = null;
+            
+            if (data && data.last_claimed) {
+                lastClaimDate = new Date(data.last_claimed);
+            } else {
+                // Si no hay registro en Supabase, verificar localStorage
+                const localLastClaim = localStorage.getItem('lastChestClaim');
+                if (localLastClaim) {
+                    lastClaimDate = new Date(JSON.parse(localLastClaim));
+                    // Migrar a Supabase
+                    await saveChestClaimToSupabase(lastClaimDate);
+                }
+            }
+            
+            if (lastClaimDate) {
+                const timeDiff = now - lastClaimDate;
+                const hoursDiff = timeDiff / (1000 * 60 * 60);
+                
+                if (hoursDiff < 24) {
+                    const hoursLeft = 24 - hoursDiff;
+                    const nextClaimTime = new Date(lastClaimDate.getTime() + 24 * 60 * 60 * 1000);
+                    
+                    Swal.fire({
+                        title: '¡Cofre en Enfriamiento!',
+                        html: `<p style="margin-bottom:20px;">Ya has reclamado tu cofre hoy. Vuelve en <strong>${Math.ceil(hoursLeft)} horas</strong> para reclamar otro.</p>
+                               <p>Próximo cofre disponible: <strong>${nextClaimTime.toLocaleTimeString()}</strong></p>`,
+                        icon: 'info',
+                        confirmButtonText: 'Entendido',
+                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                        color: 'white',
+                        confirmButtonColor: '#6a11cb',
+                        backdrop: 'rgba(0,0,0,0.7)'
+                    });
+                    return;
+                }
+            }
+            
+            // Si ha pasado más de 24 horas o nunca ha reclamado
+            openDailyChest();
+            
+        } catch (error) {
+            console.error('Error verificando cofre:', error);
+            checkLocalStorageChest();
+        }
+    }
+
+    // Función de respaldo para verificar en localStorage
+    function checkLocalStorageChest() {
+        const now = new Date();
+        const lastClaim = localStorage.getItem('lastChestClaim');
+        
+        if (lastClaim) {
+            const lastClaimDate = new Date(JSON.parse(lastClaim));
+            const timeDiff = now - lastClaimDate;
+            const hoursDiff = timeDiff / (1000 * 60 * 60);
+            
+            if (hoursDiff < 24) {
+                const hoursLeft = 24 - hoursDiff;
+                const nextClaimTime = new Date(lastClaimDate.getTime() + 24 * 60 * 60 * 1000);
+                
+                Swal.fire({
+                    title: '¡Cofre en Enfriamiento!',
+                    html: `<p style="margin-bottom:20px;">Ya has reclamado tu cofre hoy. Vuelve en <strong>${Math.ceil(hoursLeft)} horas</strong> para reclamar otro.</p>
+                           <p>Próximo cofre disponible: <strong>${nextClaimTime.toLocaleTimeString()}</strong></p>`,
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                    color: 'white',
+                    confirmButtonColor: '#6a11cb',
+                    backdrop: 'rgba(0,0,0,0.7)'
+                });
+                return;
+            }
+        }
+        
+        // Si ha pasado más de 24 horas o nunca ha reclamado
+        openDailyChest();
+    }
+
+    // Función para guardar la fecha de reclamo en Supabase
+    async function saveChestClaimToSupabase(date) {
+        try {
+            const { error } = await supabase
+                .from('user_chests')
+                .upsert({
+                    user_id: userProfile.id,
+                    last_claimed: date.toISOString(),
+                    updated_at: new Date().toISOString()
+                });
+            
+            if (error) {
+                console.error('Error guardando fecha de cofre en Supabase:', error);
+                // Guardar en localStorage como respaldo
+                localStorage.setItem('lastChestClaim', JSON.stringify(date));
+            }
+        } catch (error) {
+            console.error('Error guardando fecha de cofre en Supabase:', error);
+            // Guardar en localStorage como respaldo
+            localStorage.setItem('lastChestClaim', JSON.stringify(date));
+        }
+    }
+
+    // Función para abrir el cofre diario
+    async function openDailyChest() {
+        Swal.fire({
+            title: '¡Cofre Gratuito Diario!',
+            html: `<p style="margin-bottom:20px;">¿Quieres abrir tu cofre gratuito y descubrir recompensas sorpresa?</p>
+                   <div style="background:rgba(255,215,0,0.1); padding:15px; border-radius:10px; border:2px dashed rgba(255,215,0,0.5);">
+                     <p style="margin:0; display:flex; align-items:center; justify-content:center;">
+                       <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
+                       <span>Contiene hasta 5 recompensas diferentes</span>
+                     </p>
+                   </div>`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '¡Abrir Cofre!',
+            cancelButtonText: 'Quizás después',
+            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+            color: 'white',
+            confirmButtonColor: '#11998e',
+            cancelButtonColor: '#6a11cb',
+            backdrop: 'rgba(0,0,0,0.7)',
+            reverseButtons: true
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                // Animación de apertura de cofre
+                Swal.fire({
+                    title: '¡Abriendo Cofre!',
+                    html: '<div style="margin:20px 0;"><i class="fas fa-box-open" style="font-size:3rem; color:gold;"></i></div>',
+                    background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                    color: 'white',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(async () => {
+                    // Generar recompensas aleatorias
+                    const rewards = generateRandomRewards();
+                    
+                    // Mostrar recompensas con animación
+                    Swal.fire({
+                        title: '¡Felicidades!',
+                        html: `<div style="text-align:center;">
+                                  <p style="margin-bottom:20px;">Has obtenido:</p>
+                                  <div class="reward-animation" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                                    ${rewards.map(reward => `
+                                        <div class="reward-item" style="text-align: center;">
+                                            <div class="reward-icon" style="font-size: 2rem; color:${reward.color};"><i class="${reward.icon}"></i></div>
+                                            <div class="reward-text" style="margin-top: 10px;">${reward.amount} ${reward.name}</div>
+                                        </div>
+                                    `).join('')}
+                                  </div>
+                               </div>`,
+                        icon: 'success',
+                        confirmButtonText: '¡Reclamar!',
+                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                        color: 'white',
+                        confirmButtonColor: '#6a11cb',
+                        backdrop: 'rgba(0,0,0,0.7)'
+                    }).then(async () => {
+                        // Guardar el momento del reclamo en Supabase
+                        const now = new Date();
+                        await saveChestClaimToSupabase(now);
+                        
+                        // Actualizar el perfil del usuario con las recompensas
+                        updateUserRewards(rewards);
+                        
+                        // Lanzar confeti
+                        confetti({
+                            particleCount: 150,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
+                    });
+                });
+            }
+        });
+    }
+
+    // Función para generar recompensas aleatorias
+    function generateRandomRewards() {
+        const rewardTypes = [
+            { name: 'Oro', icon: 'fas fa-coins', color: 'gold', min: 20, max: 100 },
+            { name: 'Diamantes', icon: 'fas fa-gem', color: '#b9f2ff', min: 5, max: 30 },
+            { name: 'Perlas', icon: 'fas fa-circle', color: '#d3d3d3', min: 3, max: 15 },
+            { name: 'Estrellas', icon: 'fas fa-star', color: '#ffce00', min: 1, max: 10 },
+            { name: 'Puntos VIP', icon: 'fas fa-crown', color: '#9b30ff', min: 1, max: 5 }
+        ];
+        
+        // Seleccionar entre 2 y 4 tipos de recompensas
+        const numRewards = Math.floor(Math.random() * 3) + 2;
+        const selectedRewards = [];
+        const usedIndices = new Set();
+        
+        while (selectedRewards.length < numRewards) {
+            const randomIndex = Math.floor(Math.random() * rewardTypes.length);
+            if (!usedIndices.has(randomIndex)) {
+                usedIndices.add(randomIndex);
+                const reward = rewardTypes[randomIndex];
+                const amount = Math.floor(Math.random() * (reward.max - reward.min + 1)) + reward.min;
+                
+                selectedRewards.push({
+                    name: reward.name,
+                    icon: reward.icon,
+                    color: reward.color,
+                    amount: amount,
+                    type: reward.name.toLowerCase().replace(' ', '_')
+                });
+            }
+        }
+        
+        return selectedRewards;
+    }
+
+    // Función para actualizar las recompensas del usuario
+    async function updateUserRewards(rewards) {
+        if (!userProfile) return;
+        
+        // Crear una copia del perfil del usuario
+        const updatedProfile = { ...userProfile };
+        
+        // Aplicar recompensas
+        rewards.forEach(reward => {
+            if (reward.type === 'oro') updatedProfile.gold += reward.amount;
+            if (reward.type === 'diamantes') updatedProfile.diamonds += reward.amount;
+            if (reward.type === 'perlas') updatedProfile.perla += reward.amount;
+            if (reward.type === 'estrellas') updatedProfile.stars += reward.amount;
+            if (reward.type === 'puntos_vip') updatedProfile.vip_points += reward.amount;
+        });
+        
+        try {
+            // Actualizar en Supabase
+            const { error } = await supabase
+                .from('profiles')
+                .update(updatedProfile)
+                .eq('id', userProfile.id);
+            
+            if (error) {
+                console.error('Error actualizando recompensas:', error);
+                // En caso de error, al menos actualizar localmente
+                userProfile = updatedProfile;
+                updateUIWithProfileData();
+            } else {
+                // Actualizar el perfil local
+                userProfile = updatedProfile;
+                updateUIWithProfileData();
+            }
+        } catch (error) {
+            console.error('Error actualizando recompensas:', error);
+            // En caso de error, al menos actualizar localmente
+            userProfile = updatedProfile;
+            updateUIWithProfileData();
+        }
+    }
 
     // Función para inicializar la aplicación
     async function initApp() {
@@ -1240,7 +1446,7 @@
             // SOLUCIÓN: Seleccionar solo los campos requeridos: gold, diamonds, perla, vip_points, stars
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('gold, diamonds, perla, vip_points, stars')
+                .select('id, gold, diamonds, perla, vip_points, stars, achievements_unlocked')
                 .eq('id', userId)
                 .single();
             
@@ -1276,7 +1482,8 @@
                         diamonds: 560, 
                         perla: 320, 
                         stars: 85, 
-                        vip_points: 36
+                        vip_points: 36,
+                        achievements_unlocked: 3
                     }
                 ])
                 .select()
