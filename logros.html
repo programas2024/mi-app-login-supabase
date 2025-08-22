@@ -104,7 +104,7 @@
         .gold i { color: #ffd700; }
         .diamonds i { color: #b9f2ff; }
         .pearls i { color: #d3d3d3; } /* Color gris para perlas */
-        .stars i { color: #ff4da6; }
+        .stars i { color: #ffd04d; }
         .vip i { color: #ff7ae5; }
         
         .tabs-container {
@@ -366,16 +366,19 @@
         
         .back-btn {
             display: inline-flex;
-            align-items: center;
-            margin-top: 40px;
+            position: fixed; /* Fija el botón en la pantalla */
+            top: 20px; /* Distancia desde la parte superior */
+            left: 20px; /* Distancia desde la izquierda */
+            margin-top: 10px;
             padding: 15px 30px;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #82dbff, #2575fc);
             border-radius: 50px;
             text-decoration: none;
             color: #fff;
             font-weight: 600;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
         }
         
         .back-btn:hover {
@@ -383,7 +386,6 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             background: linear-gradient(135deg, #2575fc, #6a11cb);
         }
-        
         .floating-icons {
             position: fixed;
             bottom: 20px;
@@ -608,6 +610,13 @@
         </div>
         
         <header>
+
+             <div style="text-align: center;">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Volver Atrás
+            </a>
+        </div>
+    
             <h1><i class="fas fa-trophy"></i> Tus Logros</h1>
             <p class="subtitle">Desbloquea recompensas exclusivas completando desafíos</p>
             
@@ -671,8 +680,8 @@
                         <div class="progress-bar" id="bronze-gold-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="bronze-gold-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 50 Oro + 5 Diamantes
+                    <div >
+                       
                     </div>
                 </div>
                 
@@ -686,8 +695,8 @@
                         <div class="progress-bar" id="bronze-diamonds-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="bronze-diamonds-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 30 Diamantes + 3 Perlas
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -701,8 +710,8 @@
                         <div class="progress-bar" id="bronze-pearls-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="bronze-pearls-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 20 Perlas + 1 Estrella
+                    <div >
+                        
                     </div>
                 </div>
             </div>
@@ -721,8 +730,8 @@
                         <div class="progress-bar" id="silver-gold-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="silver-gold-status"><i class="fas fa-spinner"></i> 0/200 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 200 Oro + 10 Diamantes
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -736,8 +745,8 @@
                         <div class="progress-bar" id="silver-diamonds-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="silver-diamonds-status"><i class="fas fa-spinner"></i> 0/200 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 150 Diamantes + 15 Perlas
+                    <div>
+                        
                     </div>
                 </div>
                 
@@ -751,8 +760,8 @@
                         <div class="progress-bar" id="silver-pearls-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="silver-pearls-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 100 Perlas + 5 Estrellas
+                    <div >
+                      
                     </div>
                 </div>
                 
@@ -766,8 +775,8 @@
                         <div class="progress-bar" id="silver-stars-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="silver-stars-status"><i class="fas fa-spinner"></i> 0/10 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 20 Estrellas + 5 Puntos VIP
+                    <div >
+                       
                     </div>
                 </div>
             </div>
@@ -786,8 +795,8 @@
                         <div class="progress-bar" id="master-gold-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="master-gold-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 500 Oro + 50 Diamantes
+                    <div >
+                   
                     </div>
                 </div>
                 
@@ -801,8 +810,8 @@
                         <div class="progress-bar" id="master-diamonds-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="master-diamonds-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 500 Diamantes + 50 Perlas
+                    <div >
+                     
                     </div>
                 </div>
                 
@@ -816,8 +825,8 @@
                         <div class="progress-bar" id="master-pearls-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="master-pearls-status"><i class="fas fa-spinner"></i> 0/500 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 250 Perlas + 25 Estrellas
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -831,8 +840,8 @@
                         <div class="progress-bar" id="master-stars-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="master-stars-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 50 Estrellas + 20 Puntos VIP
+                    <div >
+                        
                     </div>
                 </div>
             </div>
@@ -851,8 +860,8 @@
                         <div class="progress-bar" id="epic-gold-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="epic-gold-status"><i class="fas fa-spinner"></i> 0/6000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 2000 Oro + 200 Diamantes
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -866,8 +875,8 @@
                         <div class="progress-bar" id="epic-diamonds-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="epic-diamonds-status"><i class="fas fa-spinner"></i> 0/7000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 1500 Diamantes + 150 Perlas
+                    <div >
+                      
                     </div>
                 </div>
                 
@@ -881,8 +890,8 @@
                         <div class="progress-bar" id="epic-pearls-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="epic-pearls-status"><i class="fas fa-spinner"></i> 0/1000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 500 Perlas + 100 Estrellas
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -896,8 +905,8 @@
                         <div class="progress-bar" id="epic-stars-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="epic-stars-status"><i class="fas fa-spinner"></i> 0/600 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 200 Estrellas + 50 Puntos VIP
+                    <div >
+                       
                     </div>
                 </div>
                 
@@ -911,8 +920,8 @@
                         <div class="progress-bar" id="epic-vip-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="epic-vip-status"><i class="fas fa-spinner"></i> 0/100 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 100 Puntos VIP + 500 Oro
+                    <div >
+                        
                     </div>
                 </div>
             </div>
@@ -931,8 +940,8 @@
                         <div class="progress-bar" id="legend-gold-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="legend-gold-status"><i class="fas fa-spinner"></i> 0/10000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 5000 Oro + 1000 Diamantes
+                    <div >
+                        
                     </div>
                 </div>
                 
@@ -946,8 +955,8 @@
                         <div class="progress-bar" id="legend-diamonds-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="legend-diamonds-status"><i class="fas fa-spinner"></i> 0/150000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 10000 Diamantes + 2000 Perlas
+                    <div >
+               
                     </div>
                 </div>
                 
@@ -961,8 +970,8 @@
                         <div class="progress-bar" id="legend-pearls-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="legend-pearls-status"><i class="fas fa-spinner"></i> 0/7000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 3000 Perlas + 1000 Estrellas
+                    <div >
+     
                     </div>
                 </div>
                 
@@ -976,8 +985,8 @@
                         <div class="progress-bar" id="legend-stars-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="legend-stars-status"><i class="fas fa-spinner"></i> 0/2000 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 1000 Estrellas + 300 Puntos VIP
+                    <div >
+                      
                     </div>
                 </div>
                 
@@ -991,19 +1000,14 @@
                         <div class="progress-bar" id="legend-vip-progress" style="width: 0%"></div>
                     </div>
                     <p class="achievement-status in-progress" id="legend-vip-status"><i class="fas fa-spinner"></i> 0/900 completado</p>
-                    <div class="reward-info">
-                        <i class="fas fa-gift"></i> Recompensa: 500 Puntos VIP + Acceso VIP Legendario
+                    <div >
+                     
                     </div>
                 </div>
             </div>
         </div>
         
-        <div style="text-align: center;">
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Volver Atrás
-            </a>
-        </div>
-    </div>
+       
     
     <div class="floating-icons">
         <div class="floating-icon floating-vip" onclick="window.location.href='caminito.html'">
