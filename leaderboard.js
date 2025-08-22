@@ -316,7 +316,7 @@ let socialMediaButtonHtml = '';
 if (hasSocialMedia) {
     socialMediaButtonHtml = `
         <button class="fas fa-icons" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #8a2387, #e94057, #f27121); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
-            <i class="fas fa-share-alt"></i>
+            
         </button>
     `;
 }
