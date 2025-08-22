@@ -602,6 +602,9 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .floating-ranking {
+    background: linear-gradient(135deg, #3700ff, #00a2ff);
+}
     </style>
 </head>
 <body>
@@ -1013,14 +1016,16 @@
        
     
     <div class="floating-icons">
-        <div class="floating-icon floating-vip" onclick="window.location.href='caminito.html'">
-            <i class="fas fa-crown"></i>
-        </div>
-        <div class="floating-icon floating-chest" id="chest-btn">
-            <i class="fas fa-gift"></i>
-        </div>
+    <div class="floating-icon floating-vip" onclick="window.location.href='caminito.html'">
+        <i class="fas fa-crown"></i>
     </div>
-    
+    <div class="floating-icon floating-chest" id="chest-btn">
+        <i class="fas fa-gift"></i>
+    </div>
+    <div class="floating-icon floating-ranking" onclick="window.location.href='logros.html'">
+        <i class="fas fa-trophy"></i>
+    </div>
+</div>
     <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
