@@ -311,37 +311,37 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
           // Verificar si el usuario tiene redes sociales
         const hasSocialMedia = userProfile.tiktok || userProfile.facebook || userProfile.youtube;
         
-        // Botón de redes sociales (solo visible si tiene al menos una red social)
-        let socialMediaButtonHtml = '';
-        if (hasSocialMedia) {
-            socialMediaButtonHtml = `
-                <button class="social-media-btn" style="position: absolute; top: 15px; left: 15px; background: linear-gradient(to right, #8a2387, #e94057, #f27121); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px;">
-                    <i class="fas fa-share-alt"></i>
-                </button>
-            `;
-        }
-         // Mostrar los detalles del jugador
-        Swal.fire({
-            title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
-            html: `
-            <div style="position: relative; top: -5px; right: 15px;">
-                    ${socialMediaButtonHtml}
-                    <div style="text-align: right; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '30px' : '0'};">
-                <div style="text-align: left; padding: 10px; font-size: 1.1em;">
-                    <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ff65f7ff;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
-                    <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
-                    
-                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                        ${friendButtonHtml}
-                    </div>
-                </div>
-            `,
+       // Botón de redes sociales (solo visible si tiene al menos una red social)
+let socialMediaButtonHtml = '';
+if (hasSocialMedia) {
+    socialMediaButtonHtml = `
+        <button class="social-media-btn" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #8a2387, #e94057, #f27121); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    `;
+}
+       // Mostrar los detalles del jugador
+Swal.fire({
+    title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
+    html: `
+    <div style="position: relative;">
+        ${socialMediaButtonHtml}
+        <div style="text-align: left; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '20px' : '0'};">
+            <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ff65f7ff;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
+            <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                ${friendButtonHtml}
+            </div>
+        </div>
+    </div>
+    `,
             icon: 'info',
             iconHtml: '<i class="fas fa-user" style="color: var(--primary-color);"></i>',
             showCloseButton: true,
