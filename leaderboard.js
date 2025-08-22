@@ -324,7 +324,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
             html: `
-            <div style="position: relative;">
+            <div style="position: relative; top: -5px; right: 15px;">
                     ${socialMediaButtonHtml}
                     <div style="text-align: right; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '30px' : '0'};">
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
