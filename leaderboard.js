@@ -441,23 +441,30 @@ Swal.fire({
                 }
                 
               
-           // Agregar evento al botón de like (solo si no es el propio perfil y no ha dado like aún)
+            // Agregar evento al botón de like (solo si no es el propio perfil y no ha dado like aún)
 if (currentUserId !== targetUserId && !userAlreadyLiked) {
     const likeBtn = document.querySelector('.like-btn');
     if (likeBtn) {
         likeBtn.addEventListener('click', async () => {
             try {
+                console.log('Intentando dar like...');
+                
                 // 1. Primero incrementar el contador de likes en la tabla profiles
                 const newLikes = (userProfile.likes || 0) + 1;
+                console.log('Nuevo valor de likes:', newLikes);
+                
                 const { error: updateError } = await supabase
                     .from('profiles')
                     .update({ likes: newLikes })
                     .eq('id', targetUserId);
                     
                 if (updateError) {
+                    console.error('Error al actualizar profiles:', updateError);
                     showCustomSwal('error', 'Error', 'No se pudo actualizar el contador de likes.');
                     return;
                 }
+                
+                console.log('Like actualizado en profiles correctamente');
                 
                 // 2. Luego insertar like en la tabla profile_likes
                 const { error: insertError } = await supabase
@@ -470,42 +477,47 @@ if (currentUserId !== targetUserId && !userAlreadyLiked) {
                     ]);
                     
                 if (insertError) {
+                    console.error('Error al insertar en profile_likes:', insertError);
                     // Si falla la inserción, revertir el contador
                     await supabase
                         .from('profiles')
                         .update({ likes: userProfile.likes })
                         .eq('id', targetUserId);
                     
-                    showCustomSwal('error', 'Error', 'No se pudo dar like.');
+                    showCustomSwal('error', 'Error', 'No se pudo registrar el like.');
                     return;
                 }
+                
+                console.log('Like insertado en profile_likes correctamente');
                 
                 // Actualizar visualmente el contador
                 const likeCountElement = document.querySelector('.like-btn + div');
                 if (likeCountElement) {
                     likeCountElement.textContent = newLikes;
+                    console.log('Contador visual actualizado:', newLikes);
                 }
                 
                 // Efecto visual de like - Color más oscuro pero visible
                 likeBtn.innerHTML = '<i class="fas fa-heart" style="color: #ffffff;"></i>';
-                likeBtn.style.background = 'linear-gradient(to right, #8b0000, #cc0000)'; // Rojo oscuro
+                likeBtn.style.background = 'linear-gradient(to right, #8b0000, #cc0000)';
                 
                 // Deshabilitar el botón después de dar like
                 likeBtn.disabled = true;
                 
                 // Actualizar el perfil en memoria para reflejar el cambio
                 userProfile.likes = newLikes;
+                userAlreadyLiked = true;
                 
                 // Mostrar mensaje de éxito
                 showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
                 
             } catch (error) {
-                console.error('Error al dar like:', error);
+                console.error('Error completo al dar like:', error);
                 showCustomSwal('error', 'Error', 'No se pudo completar la acción.');
             }
         });
     }
-}      
+}    
 
     } catch (error) {
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
