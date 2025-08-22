@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Redes Sociales</title>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f1b40, #8a1a1a, #d89c1e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.4);
+            z-index: 10;
+        }
+        
+        .info-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 138, 0, 0.4);
+            z-index: 10;
+        }
+        
+        .back-btn:hover, .info-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.6);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 50px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ff8a00, #da1b60);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+        
+        .social-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #e0e0e0;
+        }
+        
+        .input-group label i {
+            font-size: 22px;
+            width: 24px;
+        }
+        
+        .fa-tiktok {
+            color: #69c9d0;
+            text-shadow: 0 0 5px rgba(105, 201, 208, 0.5);
+        }
+        
+        .fa-youtube {
+            color: #ff0000;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        
+        .fa-facebook {
+            color: #1877f2;
+            text-shadow: 0 0 5px rgba(24, 119, 242, 0.5);
+        }
+        
+        .input-group input {
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(40, 40, 50, 0.7);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            background: rgba(50, 50, 60, 0.8);
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.3);
+            border-color: #ff8c00;
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .emotion-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(40, 40, 50, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .emotion-selector h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ff8c00;
+            font-size: 18px;
+        }
+        
+        .emotion-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .emotion-btn {
+            background: rgba(50, 50, 60, 0.7);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .emotion-btn:hover {
+            background: rgba(60, 60, 70, 0.9);
+            transform: translateY(-3px);
+        }
+        
+        .emotion-btn.selected {
+            border-color: #ff8c00;
+            background: rgba(255, 140, 0, 0.2);
+        }
+        
+        .emotion-btn i {
+            font-size: 24px;
+        }
+        
+        .emotion-btn span {
+            font-size: 12px;
+            color: #e0e0e0;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-save {
+            background: linear-gradient(to right, #00c853, #009624);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(to right, #ff5252, #c50a0a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Estilos personalizados para SweetAlert2 oscuro */
+        .swal2-popup {
+            background: #1e1e2e !important;
+            color: #e0e0e0 !important;
+            border-radius: 15px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .swal2-title {
+            color: #ff8c00 !important;
+            font-weight: 700 !important;
+            font-size: 24px !important;
+        }
+        
+        .swal2-html-container {
+            color: #c0c0c0 !important;
+            font-size: 16px !important;
+        }
+        
+        .swal2-confirm {
+            background: linear-gradient(to right, #00c853, #009624) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
+            font-weight: 600 !important;
+        }
+        
+        .swal2-cancel {
+            background: linear-gradient(to right, #ff5252, #c50a0a) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 10px 20px !important;
+            font-weight: 600 !important;
+        }
+        
+        .swal2-icon {
+            border-color: #ff8c00 !important;
+            color: #ff8c00 !important;
+        }
+        
+        .swal2-success-line-tip, .swal2-success-line-long {
+            background-color: #ff8c00 !important;
+        }
+        
+        .swal2-success-ring {
+            border-color: rgba(255, 140, 0, 0.3) !important;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Botón Volver a Perfil (izquierda) -->
+        <button class="back-btn" id="backToProfile">
+            <i class="fas fa-arrow-left"></i> Volver a Perfil
+        </button>
+        
+        <!-- Botón Información (derecha) -->
+        <button class="info-btn" id="infoBtnTop">
+            <i class="fas fa-info-circle"></i> Información
+        </button>
+        
+        <div class="header">
+            <h1><i class="fas fa-share-alt"></i> Mis Redes Sociales</h1>
+            <p>Agrega los enlaces a tus perfiles sociales</p>
+        </div>
+        
+        <div class="user-info" id="userInfo">
+            <i class="fas fa-spinner fa-spin"></i> Cargando información del usuario...
+        </div>
+        
+        <form class="social-form" id="socialForm">
+            <div class="input-group">
+                <label for="tiktok"><i class="fab fa-tiktok"></i> TikTok</label>
+                <input type="url" id="tiktok" placeholder="https://tiktok.com/@tuusuario">
+            </div>
+            
+            <div class="input-group">
+                <label for="youtube"><i class="fab fa-youtube"></i> YouTube</label>
+                <input type="url" id="youtube" placeholder="https://youtube.com/@tuusuario">
+            </div>
+            
+            <div class="input-group">
+                <label for="facebook"><i class="fab fa-facebook"></i> Facebook</label>
+                <input type="url" id="facebook" placeholder="https://facebook.com/tuusuario">
+            </div>
+            
+            <div class="emotion-selector">
+                <h3><i class="fas fa-smile"></i> Selecciona tu emoción</h3>
+                <div class="emotion-buttons">
+                    <button type="button" class="emotion-btn" data-emotion="feliz">
+                        <i class="fas fa-smile" style="color: #FFD700;"></i>
+                        <span>Feliz</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="triste">
+                        <i class="fas fa-sad-tear" style="color: #4682B4;"></i>
+                        <span>Triste</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="enojado">
+                        <i class="fas fa-angry" style="color: #DC143C;"></i>
+                        <span>Enojado</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="sorprendido">
+                        <i class="fas fa-surprise" style="color: #9370DB;"></i>
+                        <span>Sorprendido</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="emocionado">
+                        <i class="fas fa-grin-stars" style="color: #FF69B4;"></i>
+                        <span>Emocionado</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="cansado">
+                        <i class="fas fa-tired" style="color: #696969;"></i>
+                        <span>Cansado</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="relajado">
+                        <i class="fas fa-laugh-beam" style="color: #32CD32;"></i>
+                        <span>Relajado</span>
+                    </button>
+                    <button type="button" class="emotion-btn" data-emotion="confundido">
+                        <i class="fas fa-meh-rolling-eyes" style="color: #FFA500;"></i>
+                        <span>Confundido</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button type="button" class="btn btn-save" id="saveBtn">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <button type="button" class="btn btn-cancel" id="cancelBtn">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Variables globales
+        let currentUser = null;
+        let userProfile = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar sesión al cargar
+            checkUserSession();
+            
+            // Configurar event listeners para emociones
+            document.querySelectorAll('.emotion-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Deseleccionar cualquier emoción previamente seleccionada
+                    document.querySelectorAll('.emotion-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // Seleccionar la emoción actual
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Evento para el botón de guardar
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                saveData();
+            });
+            
+            // Evento para el botón de cancelar
+            document.getElementById('cancelBtn').addEventListener('click', function() {
+                // Regresar a la página anterior
+                window.history.back();
+            });
+            
+            // Evento para el botón de información superior
+            document.getElementById('infoBtnTop').addEventListener('click', function() {
+                showInfo();
+            });
+            
+            // Evento para el botón "Volver a Perfil"
+            document.getElementById('backToProfile').addEventListener('click', function() {
+                goToProfile();
+            });
+        });
+        
+        // Función para verificar la sesión del usuario
+        async function checkUserSession() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error) {
+                showError('Error al verificar la sesión: ' + error.message);
+                return;
+            }
+            
+            if (!session) {
+                showError('No hay una sesión activa. Por favor, inicia sesión primero.');
+                // Redirigir a la página de login después de 3 segundos
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 3000);
+                return;
+            }
+            
+            currentUser = session.user;
+            loadUserData();
+        }
+        
+        // Función para cargar los datos del usuario
+        async function loadUserData() {
+            // Actualizar información del usuario
+            document.getElementById('userInfo').innerHTML = `
+                <i class="fas fa-user"></i> Usuario: ${currentUser.email}
+            `;
+            
+            // Cargar perfil del usuario desde Supabase
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+                
+            if (error && error.code !== 'PGRST116') { // PGRST116 es el error cuando no se encuentra ningún registro
+                console.error('Error al cargar el perfil:', error);
+                return;
+            }
+            
+            userProfile = data;
+            
+            // Si existe un perfil, cargar los datos
+            if (userProfile) {
+                if (userProfile.tiktok) document.getElementById('tiktok').value = userProfile.tiktok;
+                if (userProfile.youtube) document.getElementById('youtube').value = userProfile.youtube;
+                if (userProfile.facebook) document.getElementById('facebook').value = userProfile.facebook;
+                
+                // Seleccionar la emoción guardada
+                if (userProfile.emotion) {
+                    const emotionButton = document.querySelector(`.emotion-btn[data-emotion="${userProfile.emotion}"]`);
+                    if (emotionButton) {
+                        emotionButton.classList.add('selected');
+                    }
+                }
+            }
+        }
+        
+        // Función para ir a profile.html
+        function goToProfile() {
+            window.location.href = 'profile.html';
+        }
+        
+        // Función para mostrar información
+        function showInfo() {
+            Swal.fire({
+                title: 'Información',
+                html: `
+                    <div style="text-align: left; color: #c0c0c0;">
+                        <p>🔹 Puedes agregar enlaces a tus redes sociales favoritas.</p>
+                        <p>🔹 Selecciona una emoción para expresar cómo te sientes hoy.</p>
+                        <p>🔹 Tus datos se guardan en tu perfil de Supabase.</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Entendido',
+                background: '#1e1e2e',
+                color: '#e0e0e0',
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            });
+        }
+        
+        // Función para guardar los datos en Supabase
+        async function saveData() {
+            const tiktok = document.getElementById('tiktok').value.trim();
+            const youtube = document.getElementById('youtube').value.trim();
+            const facebook = document.getElementById('facebook').value.trim();
+            
+            // Obtener emoción seleccionada
+            const selectedEmotion = document.querySelector('.emotion-btn.selected');
+            const emotion = selectedEmotion ? selectedEmotion.getAttribute('data-emotion') : null;
+            
+            // Validar que al menos un campo esté lleno o se haya seleccionado una emoción
+            if (!tiktok && !youtube && !facebook && !emotion) {
+                Swal.fire({
+                    title: 'Oops...',
+                    text: 'Debes ingresar al menos un enlace o seleccionar una emoción',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido',
+                    background: '#1e1e2e',
+                    color: '#e0e0e0',
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                });
+                return;
+            }
+            
+            // Preparar datos para guardar
+            const profileData = {
+                id: currentUser.id,
+                updated_at: new Date().toISOString()
+            };
+            
+            if (tiktok) profileData.tiktok = tiktok;
+            if (youtube) profileData.youtube = youtube;
+            if (facebook) profileData.facebook = facebook;
+            if (emotion) profileData.emotion = emotion;
+            
+            // Guardar en Supabase
+            const { data, error } = await supabase
+                .from('profiles')
+                .upsert(profileData, { onConflict: 'id' });
+                
+            if (error) {
+                showError('Error al guardar: ' + error.message);
+                return;
+            }
+            
+            // Mostrar mensaje de éxito con confeti
+            Swal.fire({
+                title: '¡Guardado!',
+                text: 'Tus datos se han guardado correctamente en Supabase',
+                icon: 'success',
+                confirmButtonText: 'Genial',
+                background: '#1e1e2e',
+                color: '#e0e0e0',
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            }).then(() => {
+                // Disparar confeti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            });
+        }
+        
+        // Función para mostrar errores
+        function showError(message) {
+            Swal.fire({
+                title: 'Error',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                background: '#1e1e2e',
+                color: '#e0e0e0',
+                customClass: {
+                    confirmButton: 'swal2-confirm'
+                }
+            });
+        }
+    </script>
+</body>
+</html>
