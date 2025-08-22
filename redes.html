@@ -324,6 +324,20 @@
             border-radius: 10px;
             font-size: 14px;
         }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -344,7 +358,7 @@
         </div>
         
         <div class="user-info" id="userInfo">
-            <i class="fas fa-spinner fa-spin"></i> Cargando información del usuario...
+            <div class="loading"></div> Verificando sesión...
         </div>
         
         <form class="social-form" id="socialForm">
@@ -464,60 +478,69 @@
         
         // Función para verificar la sesión del usuario
         async function checkUserSession() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error) {
-                showError('Error al verificar la sesión: ' + error.message);
-                return;
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    showError('Error al verificar la sesión: ' + error.message);
+                    return;
+                }
+                
+                if (!session) {
+                    showError('No hay una sesión activa. Por favor, inicia sesión primero.');
+                    // Redirigir a la página de login después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
+                    return;
+                }
+                
+                currentUser = session.user;
+                document.getElementById('userInfo').innerHTML = `<i class="fas fa-user"></i> Usuario: ${currentUser.email}`;
+                await loadUserData();
+            } catch (error) {
+                showError('Error inesperado: ' + error.message);
             }
-            
-            if (!session) {
-                showError('No hay una sesión activa. Por favor, inicia sesión primero.');
-                // Redirigir a la página de login después de 3 segundos
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 3000);
-                return;
-            }
-            
-            currentUser = session.user;
-            loadUserData();
         }
         
         // Función para cargar los datos del usuario
         async function loadUserData() {
-            // Actualizar información del usuario
-            document.getElementById('userInfo').innerHTML = `
-                <i class="fas fa-user"></i> Usuario: ${currentUser.email}
-            `;
-            
-            // Cargar perfil del usuario desde Supabase
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', currentUser.id)
-                .single();
+            try {
+                // Cargar perfil del usuario desde Supabase
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                    
+                if (error) {
+                    // Si no existe el perfil, no es un error grave
+                    if (error.code === 'PGRST116') {
+                        console.log('Perfil no encontrado, se creará uno nuevo al guardar');
+                        return;
+                    }
+                    console.error('Error al cargar el perfil:', error);
+                    return;
+                }
                 
-            if (error && error.code !== 'PGRST116') { // PGRST116 es el error cuando no se encuentra ningún registro
-                console.error('Error al cargar el perfil:', error);
-                return;
-            }
-            
-            userProfile = data;
-            
-            // Si existe un perfil, cargar los datos
-            if (userProfile) {
-                if (userProfile.tiktok) document.getElementById('tiktok').value = userProfile.tiktok;
-                if (userProfile.youtube) document.getElementById('youtube').value = userProfile.youtube;
-                if (userProfile.facebook) document.getElementById('facebook').value = userProfile.facebook;
+                userProfile = data;
                 
-                // Seleccionar la emoción guardada
-                if (userProfile.emotion) {
-                    const emotionButton = document.querySelector(`.emotion-btn[data-emotion="${userProfile.emotion}"]`);
-                    if (emotionButton) {
-                        emotionButton.classList.add('selected');
+                // Si existe un perfil, cargar los datos
+                if (userProfile) {
+                    if (userProfile.tiktok) document.getElementById('tiktok').value = userProfile.tiktok;
+                    if (userProfile.youtube) document.getElementById('youtube').value = userProfile.youtube;
+                    if (userProfile.facebook) document.getElementById('facebook').value = userProfile.facebook;
+                    
+                    // Seleccionar la emoción guardada
+                    if (userProfile.emotion) {
+                        const emotionButton = document.querySelector(`.emotion-btn[data-emotion="${userProfile.emotion}"]`);
+                        if (emotionButton) {
+                            emotionButton.classList.add('selected');
+                        }
                     }
                 }
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
             }
         }
         
@@ -573,46 +596,53 @@
                 return;
             }
             
-            // Preparar datos para guardar
-            const profileData = {
-                id: currentUser.id,
-                updated_at: new Date().toISOString()
-            };
-            
-            if (tiktok) profileData.tiktok = tiktok;
-            if (youtube) profileData.youtube = youtube;
-            if (facebook) profileData.facebook = facebook;
-            if (emotion) profileData.emotion = emotion;
-            
-            // Guardar en Supabase
-            const { data, error } = await supabase
-                .from('profiles')
-                .upsert(profileData, { onConflict: 'id' });
+            try {
+                // Preparar datos para guardar
+                const profileData = {
+                    id: currentUser.id,
+                    updated_at: new Date().toISOString()
+                };
                 
-            if (error) {
-                showError('Error al guardar: ' + error.message);
-                return;
-            }
-            
-            // Mostrar mensaje de éxito con confeti
-            Swal.fire({
-                title: '¡Guardado!',
-                text: 'Tus datos se han guardado correctamente en Supabase',
-                icon: 'success',
-                confirmButtonText: 'Genial',
-                background: '#1e1e2e',
-                color: '#e0e0e0',
-                customClass: {
-                    confirmButton: 'swal2-confirm'
+                if (tiktok) profileData.tiktok = tiktok;
+                if (youtube) profileData.youtube = youtube;
+                if (facebook) profileData.facebook = facebook;
+                if (emotion) profileData.emotion = emotion;
+                
+                // Guardar en Supabase - FORMA CORRECTA
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .upsert(profileData, { 
+                        onConflict: 'id', 
+                        returning: 'minimal'  // Esto evita que devuelva los datos
+                    });
+                    
+                if (error) {
+                    showError('Error al guardar: ' + error.message);
+                    return;
                 }
-            }).then(() => {
-                // Disparar confeti
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
+                
+                // Mostrar mensaje de éxito con confeti
+                Swal.fire({
+                    title: '¡Guardado!',
+                    text: 'Tus datos se han guardado correctamente en Supabase',
+                    icon: 'success',
+                    confirmButtonText: 'Genial',
+                    background: '#1e1e2e',
+                    color: '#e0e0e0',
+                    customClass: {
+                        confirmButton: 'swal2-confirm'
+                    }
+                }).then(() => {
+                    // Disparar confeti
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
                 });
-            });
+            } catch (error) {
+                showError('Error inesperado: ' + error.message);
+            }
         }
         
         // Función para mostrar errores
