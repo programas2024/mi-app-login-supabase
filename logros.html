@@ -1445,36 +1445,38 @@
         }
     }
 
-    // Función para cargar el perfil del usuario
-    async function loadUserProfile(userId) {
-        try {
-            // Obtener el perfil del usuario desde Supabase
-            // SOLUCIÓN: Seleccionar solo los campos requeridos: gold, diamonds, perla, vip_points, stars
-            const { data: profile, error } = await supabase
-                .from('profiles')
-                .select('id, gold, diamonds, perla, vip_points, stars, achievements_unlocked,current_achievement_category')
-                .eq('id', userId)
-                .single();
-            
-            if (error) {
-                console.error('Error cargando perfil:', error);
-                // Crear un perfil por defecto si no existe
-                await createDefaultProfile(userId);
-                return;
-            }
-            
-            if (profile) {
-                userProfile = profile;
-                updateUIWithProfileData();
-                checkAchievements();
-                hideLoading();
-            }
-        } catch (error) {
+   async function loadUserProfile(userId) {
+    try {
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('id, gold, diamonds, perla, vip_points, stars, achievements_unlocked, current_achievement_category')
+            .eq('id', userId)
+            .single();
+        
+        if (error) {
             console.error('Error cargando perfil:', error);
-            showDemoData();
+            await createDefaultProfile(userId);
+            return;
         }
+        
+        if (profile) {
+            userProfile = profile;
+            updateUIWithProfileData();
+            checkAchievements();
+            
+            // Determinar y actualizar categoría si es necesario
+            const calculatedCategory = determineAchievementCategory();
+            if (profile.current_achievement_category !== calculatedCategory) {
+                await updateUserAchievementCategory();
+            }
+            
+            hideLoading();
+        }
+    } catch (error) {
+        console.error('Error cargando perfil:', error);
+        showDemoData();
     }
-
+} 
     // Función para crear un perfil por defecto
     async function createDefaultProfile(userId) {
         try {
@@ -1609,24 +1611,132 @@
         document.getElementById('loading-section').style.display = 'none';
     }
 
-    // Función para actualizar la categoría del usuario
-async function updateUserAchievementCategory(userId, category) {
+// Función para determinar la categoría actual del usuario
+function determineAchievementCategory() {
+    if (!userProfile) return 'bronze';
+    
+    // Verificar logros de categoría Leyenda
+    if (userProfile.gold >= 10000 && 
+        userProfile.diamonds >= 150000 && 
+        userProfile.perla >= 7000 && 
+        userProfile.stars >= 2000 && 
+        userProfile.vip_points >= 900) {
+        return 'legend';
+    }
+    
+    // Verificar logros de categoría Épica
+    if (userProfile.gold >= 6000 && 
+        userProfile.diamonds >= 7000 && 
+        userProfile.perla >= 1000 && 
+        userProfile.stars >= 600 && 
+        userProfile.vip_points >= 100) {
+        return 'epic';
+    }
+    
+    // Verificar logros de categoría Maestro
+    if (userProfile.gold >= 1000 && 
+        userProfile.diamonds >= 1000 && 
+        userProfile.perla >= 500 && 
+        userProfile.stars >= 100) {
+        return 'master';
+    }
+    
+    // Verificar logros de categoría Plata
+    if (userProfile.gold >= 200 && 
+        userProfile.diamonds >= 200 && 
+        userProfile.perla >= 100 && 
+        userProfile.stars >= 10) {
+        return 'silver';
+    }
+    
+    // Verificar logros de categoría Bronce
+    if (userProfile.gold >= 10 && 
+        userProfile.diamonds >= 10 && 
+        userProfile.perla >= 10) {
+        return 'bronze';
+    }
+    
+    // Si no cumple con ningún logro, se queda en bronce
+    return 'bronze';
+}
+
+// Función para actualizar la categoría en la base de datos
+async function updateUserAchievementCategory() {
+    if (!userProfile) return;
+    
+    const category = determineAchievementCategory();
+    
     try {
         const { error } = await supabase
             .from('profiles')
             .update({ current_achievement_category: category })
-            .eq('id', userId);
+            .eq('id', userProfile.id);
         
         if (error) {
             console.error('Error actualizando categoría:', error);
+        } else {
+            // Actualizar localmente
+            userProfile.current_achievement_category = category;
+            console.log('Categoría actualizada a:', category);
         }
     } catch (error) {
         console.error('Error actualizando categoría:', error);
     }
 }
 
-// Llamar a esta función cuando el usuario cambie de categoría
-// Por ejemplo, cuando haga clic en una pestaña diferente
+// Función para actualizar las recompensas del usuario
+async function updateUserRewards(rewards) {
+    if (!userProfile) return;
+    
+    // Crear una copia del perfil del usuario
+    const updatedProfile = { ...userProfile };
+    
+    // Aplicar recompensas
+    rewards.forEach(reward => {
+        if (reward.type === 'oro') updatedProfile.gold += reward.amount;
+        if (reward.type === 'diamantes') updatedProfile.diamonds += reward.amount;
+        if (reward.type === 'perlas') updatedProfile.perla += reward.amount;
+        if (reward.type === 'estrellas') updatedProfile.stars += reward.amount;
+        if (reward.type === 'puntos_vip') updatedProfile.vip_points += reward.amount;
+    });
+    
+    try {
+        // Actualizar en Supabase
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                gold: updatedProfile.gold,
+                diamonds: updatedProfile.diamonds,
+                perla: updatedProfile.perla,
+                stars: updatedProfile.stars,
+                vip_points: updatedProfile.vip_points
+            })
+            .eq('id', userProfile.id);
+        
+        if (error) {
+            console.error('Error actualizando recompensas:', error);
+            // En caso de error, al menos actualizar localmente
+            userProfile = updatedProfile;
+            updateUIWithProfileData();
+        } else {
+            // Actualizar el perfil local
+            userProfile = updatedProfile;
+            updateUIWithProfileData();
+            
+            // Verificar si se alcanzó una nueva categoría de logros
+            await updateUserAchievementCategory();
+            
+            // Verificar y actualizar logros
+            checkAchievements();
+        }
+    } catch (error) {
+        console.error('Error actualizando recompensas:', error);
+        // En caso de error, al menos actualizar localmente
+        userProfile = updatedProfile;
+        updateUIWithProfileData();
+    }
+}
+
 </script>
 </body>
 </html>
