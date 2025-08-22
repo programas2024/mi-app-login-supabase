@@ -235,6 +235,9 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
 
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
+         // Obtener el ícono y texto de la emoción - AQUÍ SE UTILIZA getEmotionInfo
+        const emotionInfo = getEmotionInfo(userProfile.emotion);
+
         // Determinar el estado de amistad (código sin cambios)
         let friendshipStatus = 'unknown';
         if (currentUserId === targetUserId) {
@@ -364,20 +367,20 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
 }
 
 
-function getEmotionInfo(emotion) {
-    const emotions = {
-        'feliz': { icon: '😊', text: 'Feliz' },
-        'triste': { icon: '😢', text: 'Triste' },
-        'enojado': { icon: '😠', text: 'Enojado' },
-        'sorprendido': { icon: '😲', text: 'Sorprendido' },
-        'emocionado': { icon: '🤩', text: 'Emocionado' },
-        'cansado': { icon: '😴', text: 'Cansado' },
-        'relajado': { icon: '😌', text: 'Relajado' },
-        'confundido': { icon: '😕', text: 'Confundido' }
-    };
-    
-    return emotions[emotion] || { icon: '😐', text: 'Neutral' };
-}
+    function getEmotionInfo(emotion) {
+        const emotions = {
+            'feliz': { icon: '😊', text: 'Feliz' },
+            'triste': { icon: '😢', text: 'Triste' },
+            'enojado': { icon: '😠', text: 'Enojado' },
+            'sorprendido': { icon: '😲', text: 'Sorprendido' },
+            'emocionado': { icon: '🤩', text: 'Emocionado' },
+            'cansado': { icon: '😴', text: 'Cansado' },
+            'relajado': { icon: '😌', text: 'Relajado' },
+            'confundido': { icon: '😕', text: 'Confundido' }
+        };
+        
+        return emotions[emotion] || { icon: '😐', text: 'Neutral' };
+    }
 /**
  * Envía una solicitud de amistad.
  * @param {string} senderId - ID del usuario que envía la solicitud.
