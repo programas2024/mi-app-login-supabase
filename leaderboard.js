@@ -441,12 +441,25 @@ Swal.fire({
                 }
                 
               
+           // Agregar evento al botón de like (solo si no es el propio perfil y no ha dado like aún)
 if (currentUserId !== targetUserId && !userAlreadyLiked) {
     const likeBtn = document.querySelector('.like-btn');
     if (likeBtn) {
         likeBtn.addEventListener('click', async () => {
             try {
-                // Insertar like en la tabla profile_likes
+                // 1. Primero incrementar el contador de likes en la tabla profiles
+                const newLikes = (userProfile.likes || 0) + 1;
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ likes: newLikes })
+                    .eq('id', targetUserId);
+                    
+                if (updateError) {
+                    showCustomSwal('error', 'Error', 'No se pudo actualizar el contador de likes.');
+                    return;
+                }
+                
+                // 2. Luego insertar like en la tabla profile_likes
                 const { error: insertError } = await supabase
                     .from('profile_likes')
                     .insert([
@@ -457,19 +470,13 @@ if (currentUserId !== targetUserId && !userAlreadyLiked) {
                     ]);
                     
                 if (insertError) {
-                    showCustomSwal('error', 'Error', 'No se pudo dar like.');
-                    return;
-                }
-                
-                // Incrementar el contador de likes en el perfil
-                const newLikes = (userProfile.likes || 0) + 1;
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ likes: newLikes })
-                    .eq('id', targetUserId);
+                    // Si falla la inserción, revertir el contador
+                    await supabase
+                        .from('profiles')
+                        .update({ likes: userProfile.likes })
+                        .eq('id', targetUserId);
                     
-                if (updateError) {
-                    showCustomSwal('error', 'Error', 'No se pudo actualizar el contador de likes.');
+                    showCustomSwal('error', 'Error', 'No se pudo dar like.');
                     return;
                 }
                 
@@ -486,6 +493,9 @@ if (currentUserId !== targetUserId && !userAlreadyLiked) {
                 // Deshabilitar el botón después de dar like
                 likeBtn.disabled = true;
                 
+                // Actualizar el perfil en memoria para reflejar el cambio
+                userProfile.likes = newLikes;
+                
                 // Mostrar mensaje de éxito
                 showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
                 
@@ -495,8 +505,7 @@ if (currentUserId !== targetUserId && !userAlreadyLiked) {
             }
         });
     }
-}
-            
+}      
 
     } catch (error) {
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
