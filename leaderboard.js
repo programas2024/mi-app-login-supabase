@@ -305,7 +305,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         }
         // ---------------------------------------------------
 
-          // Mostrar los detalles del jugador
+         // Mostrar los detalles del jugador
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
             html: `
@@ -317,8 +317,9 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                     <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ffd700;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
+                    <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
                     
-                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
                         ${friendButtonHtml}
                     </div>
                 </div>
@@ -360,6 +361,22 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
         console.error('Error al cargar detalles del jugador:', error.message);
     }
+}
+
+
+function getEmotionInfo(emotion) {
+    const emotions = {
+        'feliz': { icon: '😊', text: 'Feliz' },
+        'triste': { icon: '😢', text: 'Triste' },
+        'enojado': { icon: '😠', text: 'Enojado' },
+        'sorprendido': { icon: '😲', text: 'Sorprendido' },
+        'emocionado': { icon: '🤩', text: 'Emocionado' },
+        'cansado': { icon: '😴', text: 'Cansado' },
+        'relajado': { icon: '😌', text: 'Relajado' },
+        'confundido': { icon: '😕', text: 'Confundido' }
+    };
+    
+    return emotions[emotion] || { icon: '😐', text: 'Neutral' };
 }
 /**
  * Envía una solicitud de amistad.
