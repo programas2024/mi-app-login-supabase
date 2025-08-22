@@ -13,7 +13,6 @@
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
-        /* Estilos CSS (sin cambios) */
         * {
             margin: 0;
             padding: 0;
@@ -336,7 +335,6 @@
             animation: spin 1s ease-in-out infinite;
         }
         
-        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -431,7 +429,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -559,7 +557,6 @@
                     <div style="text-align: left; color: #c0c0c0;">
                         <p>🔹 Puedes agregar enlaces a tus redes sociales favoritas.</p>
                         <p>🔹 Selecciona una emoción para expresar cómo te sientes hoy.</p>
-                        
                     </div>
                 `,
                 icon: 'info',
@@ -602,7 +599,7 @@
                 // Preparar datos para guardar
                 const profileData = {
                     id: currentUser.id,
-                    username: currentUser.email.split('@')[0], // Usamos la parte antes del @ como username
+                    username: 'user_' + currentUser.id.substring(0, 8), // Usamos un ID único en lugar del email
                     updated_at: new Date().toISOString()
                 };
                 
@@ -611,12 +608,12 @@
                 if (facebook) profileData.facebook = facebook;
                 if (emotion) profileData.emotion = emotion;
                 
-                // Guardar en Supabase - FORMA CORRECTA
+                // Guardar en Supabase
                 const { data, error } = await supabase
                     .from('profiles')
                     .upsert(profileData, { 
                         onConflict: 'id', 
-                        returning: 'minimal'  // Esto evita que devuelva los datos
+                        returning: 'minimal'
                     });
                     
                 if (error) {
