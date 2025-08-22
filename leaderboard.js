@@ -232,7 +232,20 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             showCustomSwal('error', 'Error', 'No se encontraron los detalles de este jugador.');
             return;
         }
+        // Verificar si el usuario actual ya dio like a este perfil
+        let userAlreadyLiked = false;
+        if (currentUserId !== targetUserId) {
+            const { data: likeData, error: likeError } = await supabase
+                .from('profile_likes')
+                .select('id')
+                .eq('profile_id', targetUserId)
+                .eq('user_id', currentUserId)
+                .maybeSingle();
 
+            if (!likeError && likeData) {
+                userAlreadyLiked = true;
+            }
+        }
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
          // Obtener el ícono y texto de la emoción - AQUÍ SE UTILIZA getEmotionInfo
@@ -321,15 +334,23 @@ if (hasSocialMedia) {
     `;
 }
 
-// Botón de like y contador (siempre visible el contador, botón solo para otros usuarios)
+// Botón de like y contador
         let likeButtonHtml = '';
         const likesCount = userProfile.likes || 0;
 
         if (currentUserId !== targetUserId) {
             // Botón de like + contador (para otros usuarios)
+            const likeBtnStyle = userAlreadyLiked 
+                ? 'background: linear-gradient(to right, #ff0000, #ff4b4b);' 
+                : 'background: linear-gradient(to right, #ff6b6b, #ff4b4b);';
+                
+            const likeIconStyle = userAlreadyLiked 
+                ? 'color: #ff0000;' 
+                : 'color: white;';
+                
             likeButtonHtml = `
-                <button class="like-btn" style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; background: linear-gradient(to right, #ff6b6b, #ff4b4b); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
-                    <i class="fas fa-heart"></i>
+                <button class="like-btn" style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; ${likeBtnStyle} color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;" ${userAlreadyLiked ? 'disabled' : ''}>
+                    <i class="fas fa-heart" style="${likeIconStyle}"></i>
                 </button>
                 <div style="position: absolute; top: 50px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
                     ${likesCount}
@@ -410,23 +431,49 @@ Swal.fire({
                     }
                 }
 
-          // Agregar evento al botón de like
-                if (currentUserId !== targetUserId) {
+          // Agregar evento al botón de redes sociales
+                if (hasSocialMedia) {
+                    const socialMediaBtn = document.querySelector('.social-media-btn');
+                    if (socialMediaBtn) {
+                        socialMediaBtn.addEventListener('click', () => {
+                            showSocialMediaLinks(userProfile);
+                        });
+                    }
+                }
+                
+                // Agregar evento al botón de like (solo si no es el propio perfil y no ha dado like aún)
+                if (currentUserId !== targetUserId && !userAlreadyLiked) {
                     const likeBtn = document.querySelector('.like-btn');
                     if (likeBtn) {
                         likeBtn.addEventListener('click', async () => {
-                            // Incrementar el contador de likes
-                            const newLikes = (userProfile.likes || 0) + 1;
-                            
-                            // Actualizar en la base de datos
-                            const { error: updateError } = await supabase
-                                .from('profiles')
-                                .update({ likes: newLikes })
-                                .eq('id', targetUserId);
+                            try {
+                                // Insertar like en la tabla profile_likes
+                                const { error: insertError } = await supabase
+                                    .from('profile_likes')
+                                    .insert([
+                                        { 
+                                            profile_id: targetUserId, 
+                                            user_id: currentUserId
+                                        }
+                                    ]);
+                                    
+                                if (insertError) {
+                                    showCustomSwal('error', 'Error', 'No se pudo dar like.');
+                                    return;
+                                }
                                 
-                            if (updateError) {
-                                showCustomSwal('error', 'Error', 'No se pudo dar like.');
-                            } else {
+                                // Incrementar el contador de likes en el perfil
+                                const newLikes = (userProfile.likes || 0) + 1;
+                                const { error: updateError } = await supabase
+                                    .from('profiles')
+                                    .update({ likes: newLikes })
+                                    .eq('id', targetUserId);
+                                    
+                                if (updateError) {
+                                    showCustomSwal('error', 'Error', 'No se pudo actualizar el contador de likes.');
+                                    return;
+                                }
+                                
                                 // Actualizar visualmente el contador
                                 const likeCountElement = document.querySelector('.like-btn + div');
                                 if (likeCountElement) {
@@ -437,8 +484,15 @@ Swal.fire({
                                 likeBtn.innerHTML = '<i class="fas fa-heart" style="color: #ff0000;"></i>';
                                 likeBtn.style.background = 'linear-gradient(to right, #ff0000, #ff4b4b)';
                                 
+                                // Deshabilitar el botón después de dar like
+                                likeBtn.disabled = true;
+                                
                                 // Mostrar mensaje de éxito
                                 showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
+                                
+                            } catch (error) {
+                                console.error('Error al dar like:', error);
+                                showCustomSwal('error', 'Error', 'No se pudo completar la acción.');
                             }
                         });
                     }
