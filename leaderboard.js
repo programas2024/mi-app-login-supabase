@@ -220,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion,tiktok,facebook,youtube,likes')
+            .select('username, country, diamonds, gold, perla, vip_points, stars, current_achievement_category, emotion, tiktok, facebook, youtube, likes')
             .eq('id', targetUserId)
             .single();
 
@@ -232,6 +232,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             showCustomSwal('error', 'Error', 'No se encontraron los detalles de este jugador.');
             return;
         }
+
         // Verificar si el usuario actual ya dio like a este perfil
         let userAlreadyLiked = false;
         if (currentUserId !== targetUserId) {
@@ -246,12 +247,13 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                 userAlreadyLiked = true;
             }
         }
+
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
-         // Obtener el ícono y texto de la emoción - AQUÍ SE UTILIZA getEmotionInfo
+        // Obtener el ícono y texto de la emoción
         const emotionInfo = getEmotionInfo(userProfile.emotion);
 
-        // Determinar el estado de amistad (código sin cambios)
+        // Determinar el estado de amistad
         let friendshipStatus = 'unknown';
         if (currentUserId === targetUserId) {
             friendshipStatus = 'self';
@@ -294,7 +296,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-plus"></i> Inicia sesión para añadir</button>';
         }
 
-        // --- Lógica para determinar el ícono de ranking según la posición ---
+        // Lógica para determinar el ícono de ranking según la posición
         let rankIconHtml;
         const rank = parseInt(playerRank);
 
@@ -308,67 +310,68 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             } else if (rank >= 51 && rank <= 100) {
                 rankIconHtml = '<img src="https://cdn-user-icons.flaticon.com/171937/171937425/1754692625511.svg?token=exp=1754693908~hmac=a27f3e96393d6429c07e97b5ea02850e" alt="Top 51-100" style="height: 24px; vertical-align: middle; margin-right: 5px;">';
             } else {
-                rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Medalla por defecto
+                rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>';
             }
         } else {
-            rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear
+            rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>';
         }
 
-        // --- Lógica para añadir la poción junto al nombre (tamaño ajustado) ---
+        // Lógica para añadir la poción junto al nombre
         let specialTitleIconHtml = '';
         if (targetUserId === 'd7ec375b-94b2-40fe-a1bb-af92bcc167b5') {
             specialTitleIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 32px; vertical-align: middle; margin-left: 5px;">';
         }
-        // ---------------------------------------------------
 
-          // Verificar si el usuario tiene redes sociales
+        // Verificar si el usuario tiene redes sociales
         const hasSocialMedia = userProfile.tiktok || userProfile.facebook || userProfile.youtube;
         
-       // Botón de redes sociales (solo visible si tiene al menos una red social)
-let socialMediaButtonHtml = '';
-if (hasSocialMedia) {
-    socialMediaButtonHtml = `
-        <button class="social-media-btn" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #376de2ff, #e94057, #ff9351ff); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
-            <i class="fas fa-icons"></i>
-        </button>
-    `;
-}
+        // Botón de redes sociales
+        let socialMediaButtonHtml = '';
+        if (hasSocialMedia) {
+            socialMediaButtonHtml = `
+                <button class="social-media-btn" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #376de2ff, #e94057, #ff9351ff); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
+                    <i class="fas fa-icons"></i>
+                </button>
+            `;
+        }
 
-// Botón de like y contador
-let likeButtonHtml = '';
-const likesCount = userProfile.likes || 0;
+        // Botón de like y contador
+        let likeButtonHtml = '';
+        const likesCount = userProfile.likes || 0;
 
-if (currentUserId !== targetUserId) {
-    // Botón de like + contador (para otros usuarios)
-    const likeBtnStyle = userAlreadyLiked 
-        ? 'background: linear-gradient(to right, #8b0000, #cc0000);' // Rojo oscuro
-        : 'background: linear-gradient(to right, #ff6b6b, #ff4b4b);'; // Rojo normal
-        
-    const likeIconStyle = userAlreadyLiked 
-        ? 'color: #ffffff;' // Blanco para contrastar con fondo oscuro
-        : 'color: white;';
-        
-    likeButtonHtml = `
-        <button class="like-btn" style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; ${likeBtnStyle} color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;" ${userAlreadyLiked ? 'disabled' : ''}>
-            <i class="fas fa-heart" style="${likeIconStyle}"></i>
-        </button>
-        <div style="position: absolute; top: 50px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
-            ${likesCount}
-        </div>
-    `;
-} else {
-    // Solo contador de likes (para el propio perfil)
-    likeButtonHtml = `
-        <div style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
-            <i class="fas fa-heart" style="font-size: 20px; margin-bottom: 5px;"></i>
-            <div>${likesCount}</div>
-        </div>
-    `;
-}
-       // Mostrar los detalles del jugador
-Swal.fire({
-    title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
-   html: `
+        if (currentUserId !== targetUserId) {
+            const likeBtnStyle = userAlreadyLiked 
+                ? 'background: linear-gradient(to right, #8b0000, #cc0000);' 
+                : 'background: linear-gradient(to right, #ff6b6b, #ff4b4b);';
+                
+            const likeIconStyle = userAlreadyLiked 
+                ? 'color: #ffffff;' 
+                : 'color: white;';
+                
+            likeButtonHtml = `
+                <button class="like-btn" style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; ${likeBtnStyle} color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;" ${userAlreadyLiked ? 'disabled' : ''}>
+                    <i class="fas fa-heart" style="${likeIconStyle}"></i>
+                </button>
+                <div style="position: absolute; top: 50px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
+                    ${likesCount}
+                </div>
+            `;
+        } else {
+            likeButtonHtml = `
+                <div style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
+                    <i class="fas fa-heart" style="font-size: 20px; margin-bottom: 5px;"></i>
+                    <div>${likesCount}</div>
+                </div>
+            `;
+        }
+
+        // Cerrar el loading de SweetAlert
+        Swal.close();
+
+        // Mostrar los detalles del jugador
+        Swal.fire({
+            title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
+            html: `
                 <div style="position: relative;">
                     ${socialMediaButtonHtml}
                     ${likeButtonHtml}
@@ -388,49 +391,34 @@ Swal.fire({
                     </div>
                 </div>
             `,
-            icon: 'info',
-            iconHtml: '<i class="fas fa-user" style="color: var(--primary-color);"></i>',
+            showConfirmButton: false,
             showCloseButton: true,
-            confirmButtonText: '¡Cerrar!',
+            width: '600px',
+            background: '#1e1e2e',
+            color: '#e0e0e0',
             customClass: {
-                popup: 'swal2-profile-popup',
-                title: 'swal2-profile-title',
-                htmlContainer: 'swal2-profile-html',
-                confirmButton: 'swal2-profile-confirm-button'
+                closeButton: 'swal2-close-custom',
+                popup: 'player-details-popup'
             },
-            buttonsStyling: false,
-        }).then((result) => {
-            if (result.isConfirmed && friendshipStatus === 'pending_received' && result.value === 'accept_friend') {
-                handleAcceptFriendRequest(currentUserId, targetUserId);
-            }
-        });
-
-        const addFriendBtn = document.getElementById('add-friend-btn');
-        if (addFriendBtn) {
-            addFriendBtn.addEventListener('click', () => {
-                handleAddFriend(currentUserId, targetUserId, userProfile.username);
-                Swal.close();
-            });
-        }
-
-        const acceptFriendBtn = document.getElementById('accept-friend-btn');
-        if (acceptFriendBtn) {
-            acceptFriendBtn.addEventListener('click', () => {
-                handleAcceptFriendRequest(currentUserId, targetUserId, userProfile.username);
-                Swal.close();
-            });
-        }
-         // Agregar evento al botón de redes sociales
-                if (hasSocialMedia) {
-                    const socialMediaBtn = document.querySelector('.social-media-btn');
-                    if (socialMediaBtn) {
-                        socialMediaBtn.addEventListener('click', () => {
-                            showSocialMediaLinks(userProfile);
-                        });
-                    }
+            didOpen: () => {
+                // Agregar evento al botón de amigo
+                const addFriendBtn = document.getElementById('add-friend-btn');
+                if (addFriendBtn) {
+                    addFriendBtn.addEventListener('click', () => {
+                        handleAddFriend(currentUserId, targetUserId, userProfile.username);
+                        Swal.close();
+                    });
                 }
 
-          // Agregar evento al botón de redes sociales
+                const acceptFriendBtn = document.getElementById('accept-friend-btn');
+                if (acceptFriendBtn) {
+                    acceptFriendBtn.addEventListener('click', () => {
+                        handleAcceptFriendRequest(currentUserId, targetUserId, userProfile.username);
+                        Swal.close();
+                    });
+                }
+                
+                // Agregar evento al botón de redes sociales
                 if (hasSocialMedia) {
                     const socialMediaBtn = document.querySelector('.social-media-btn');
                     if (socialMediaBtn) {
@@ -440,59 +428,83 @@ Swal.fire({
                     }
                 }
                 
-              
-              // Agregar evento al botón de like (versión simplificada)
-if (currentUserId !== targetUserId && !userAlreadyLiked) {
-    const likeBtn = document.querySelector('.like-btn');
-    if (likeBtn) {
-        likeBtn.addEventListener('click', async () => {
-            try {
-                console.log('Intentando dar like (versión simplificada)...');
-                
-                // Solo actualizar el contador en profiles
-                const newLikes = (userProfile.likes || 0) + 1;
-                
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ likes: newLikes })
-                    .eq('id', targetUserId);
-                    
-                if (updateError) {
-                    console.error('Error al actualizar:', updateError);
-                    showCustomSwal('error', 'Error', 'No se pudo dar like: ' + updateError.message);
-                    return;
+                // Agregar evento al botón de like
+                if (currentUserId !== targetUserId && !userAlreadyLiked) {
+                    const likeBtn = document.querySelector('.like-btn');
+                    if (likeBtn) {
+                        likeBtn.addEventListener('click', async () => {
+                            try {
+                                console.log('Intentando dar like...');
+                                
+                                // 1. Primero incrementar el contador de likes en la tabla profiles
+                                const newLikes = (userProfile.likes || 0) + 1;
+                                
+                                const { error: updateError } = await supabase
+                                    .from('profiles')
+                                    .update({ likes: newLikes })
+                                    .eq('id', targetUserId);
+                                    
+                                if (updateError) {
+                                    console.error('Error al actualizar profiles:', updateError);
+                                    showCustomSwal('error', 'Error', 'No se pudo actualizar el contador de likes.');
+                                    return;
+                                }
+                                
+                                // 2. Luego insertar like en la tabla profile_likes
+                                const { error: insertError } = await supabase
+                                    .from('profile_likes')
+                                    .insert([
+                                        { 
+                                            profile_id: targetUserId, 
+                                            user_id: currentUserId
+                                        }
+                                    ]);
+                                    
+                                if (insertError) {
+                                    console.error('Error al insertar en profile_likes:', insertError);
+                                    // Revertir el contador si falla la inserción
+                                    await supabase
+                                        .from('profiles')
+                                        .update({ likes: userProfile.likes })
+                                        .eq('id', targetUserId);
+                                    
+                                    showCustomSwal('error', 'Error', 'No se pudo registrar el like.');
+                                    return;
+                                }
+                                
+                                // Actualizar visualmente el contador
+                                const likeCountElement = document.querySelector('.like-btn + div');
+                                if (likeCountElement) {
+                                    likeCountElement.textContent = newLikes;
+                                }
+                                
+                                // Efecto visual de like
+                                likeBtn.innerHTML = '<i class="fas fa-heart" style="color: #ffffff;"></i>';
+                                likeBtn.style.background = 'linear-gradient(to right, #8b0000, #cc0000)';
+                                likeBtn.disabled = true;
+                                
+                                // Actualizar el perfil en memoria
+                                userProfile.likes = newLikes;
+                                
+                                // Mostrar mensaje de éxito
+                                showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
+                                
+                            } catch (error) {
+                                console.error('Error completo al dar like:', error);
+                                showCustomSwal('error', 'Error', 'No se pudo completar la acción.');
+                            }
+                        });
+                    }
                 }
-                
-                console.log('Like actualizado correctamente');
-                
-                // Actualizar interfaz
-                const likeCountElement = document.querySelector('.like-btn + div');
-                if (likeCountElement) {
-                    likeCountElement.textContent = newLikes;
-                }
-                
-                likeBtn.innerHTML = '<i class="fas fa-heart" style="color: #ffffff;"></i>';
-                likeBtn.style.background = 'linear-gradient(to right, #8b0000, #cc0000)';
-                likeBtn.disabled = true;
-                
-                userProfile.likes = newLikes;
-                
-                showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showCustomSwal('error', 'Error', 'No se pudo completar la acción.');
             }
         });
-    }
-}  
 
     } catch (error) {
-        showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
-        console.error('Error al cargar detalles del jugador:', error.message);
+        Swal.close();
+        console.error('Error al cargar detalles del jugador:', error);
+        showCustomSwal('error', 'Error', 'No se pudieron cargar los detalles del jugador.');
     }
 }
-
 
 // Función para mostrar los enlaces de redes sociales
 function showSocialMediaLinks(userProfile) {
