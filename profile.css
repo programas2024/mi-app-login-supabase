@@ -490,3 +490,7 @@
     .swal2-html-container { font-size: 0.9em !important; }
 }
 
+.swal-btn-social {
+    background: linear-gradient(to right, #3A1C71, #D76D77, #FFAF7B);
+    color: white;
+}

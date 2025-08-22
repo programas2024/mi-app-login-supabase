@@ -382,6 +382,7 @@ async function showConfigureOptions() {
         html: `
             <div class="swal-custom-buttons-container">
                 <button id="swal-give-gold" class="swal-custom-btn swal-btn-gold"><i class="fas fa-coins"></i> Recibir 10 de Oro</button>
+                <button id="swal-social-media" class="swal-custom-btn swal-btn-social"><i class="fas fa-share-alt"></i> Redes Sociales</button>
                 <button id="swal-logout" class="swal-custom-btn swal-btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
             </div>
         `,
@@ -390,6 +391,11 @@ async function showConfigureOptions() {
                 Swal.close();
                 await giveGold();
             });
+            document.getElementById('swal-social-media').addEventListener('click', async () => {
+                        Swal.close();
+                        // Redirigir a la página de redes sociales
+                        window.location.href = 'redes.html';
+                    });
             document.getElementById('swal-logout').addEventListener('click', async () => {
                 Swal.close();
                 await signOut();
