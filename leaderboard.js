@@ -220,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla')
+            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion')
             .eq('id', targetUserId)
             .single();
 
@@ -305,6 +305,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         }
         // ---------------------------------------------------
 
+          // Mostrar los detalles del jugador
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
             html: `
@@ -312,10 +313,12 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                     <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
-                    <p style="margin-bottom: 20px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
-                    <p style="margin-bottom: 20px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ffd700;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
                     
-                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
                         ${friendButtonHtml}
                     </div>
                 </div>
