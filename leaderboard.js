@@ -208,7 +208,6 @@ export async function loadLeaderboard(supabase, loaderElement = null, currentUse
  * @param {string} currentUserId - El ID del usuario actualmente logueado.
  * @param {string} playerRank - La posición del jugador en el ranking.
  */
-
 async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRank) {
     Swal.fire({
         title: 'Cargando detalles...',
@@ -233,21 +232,13 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             showCustomSwal('error', 'Error', 'No se encontraron los detalles de este jugador.');
             return;
         }
-        
-        // Verificar si el usuario actual ya dio like a este perfil
-        let userAlreadyLiked = false;
-        if (currentUserId !== targetUserId) {
-            // Ya no consultamos la tabla profile_likes, solo verificamos si el usuario actual es el mismo
-            // Esto es solo para la interfaz, ya que ahora solo incrementamos el contador directamente
-            userAlreadyLiked = false; // Siempre false porque no hay persistencia de likes individuales
-        }
-        
+
         const countryIcon = getCountryFlagEmoji(userProfile.country);
 
-        // Obtener el ícono y texto de la emoción
+         // Obtener el ícono y texto de la emoción - AQUÍ SE UTILIZA getEmotionInfo
         const emotionInfo = getEmotionInfo(userProfile.emotion);
 
-        // Determinar el estado de amistad
+        // Determinar el estado de amistad (código sin cambios)
         let friendshipStatus = 'unknown';
         if (currentUserId === targetUserId) {
             friendshipStatus = 'self';
@@ -290,7 +281,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             friendButtonHtml = '<button class="swal2-profile-button" disabled><i class="fas fa-user-plus"></i> Inicia sesión para añadir</button>';
         }
 
-        // Lógica para determinar el ícono de ranking según la posición
+        // --- Lógica para determinar el ícono de ranking según la posición ---
         let rankIconHtml;
         const rank = parseInt(playerRank);
 
@@ -310,80 +301,47 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             rankIconHtml = '<i class="fas fa-medal" style="color: #6c757d;"></i>'; // Si no se puede parsear
         }
 
-        // Lógica para añadir la poción junto al nombre (tamaño ajustado)
+        // --- Lógica para añadir la poción junto al nombre (tamaño ajustado) ---
         let specialTitleIconHtml = '';
         if (targetUserId === 'd7ec375b-94b2-40fe-a1bb-af92bcc167b5') {
             specialTitleIconHtml = '<img src="https://cdn-icons-png.flaticon.com/128/3410/3410273.png" alt="Poción especial" style="height: 32px; vertical-align: middle; margin-left: 5px;">';
         }
+        // ---------------------------------------------------
 
-        // Verificar si el usuario tiene redes sociales
+          // Verificar si el usuario tiene redes sociales
         const hasSocialMedia = userProfile.tiktok || userProfile.facebook || userProfile.youtube;
         
-        // Botón de redes sociales (solo visible si tiene al menos una red social)
-        let socialMediaButtonHtml = '';
-        if (hasSocialMedia) {
-            socialMediaButtonHtml = `
-                <button class="social-media-btn" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #376de2ff, #e94057, #ff9351ff); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
-                    <i class="fas fa-icons"></i>
-                </button>
-            `;
-        }
-
-        // Botón de like y contador
-        let likeButtonHtml = '';
-        const likesCount = userProfile.likes || 0;
-
-        if (currentUserId !== targetUserId) {
-            // Botón de like + contador (para otros usuarios)
-            const likeBtnStyle = userAlreadyLiked 
-                ? 'background: linear-gradient(to right, #8b0000, #cc0000);' // Rojo oscuro
-                : 'background: linear-gradient(to right, #ff6b6b, #ff4b4b);'; // Rojo normal
-                
-            const likeIconStyle = userAlreadyLiked 
-                ? 'color: #ffffff;' // Blanco para contrastar con fondo oscuro
-                : 'color: white;';
-                
-            likeButtonHtml = `
-                <button class="like-btn" style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; ${likeBtnStyle} color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;" ${userAlreadyLiked ? 'disabled' : ''}>
-                    <i class="fas fa-heart" style="${likeIconStyle}"></i>
-                </button>
-                <div style="position: absolute; top: 50px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
-                    ${likesCount}
-                </div>
-            `;
-        } else {
-            // Solo contador de likes (para el propio perfil)
-            likeButtonHtml = `
-                <div style="position: absolute; top: 5px; right: ${hasSocialMedia ? '65px' : '15px'}; text-align: center; width: 40px; font-size: 12px; color: #ff6b6b; font-weight: bold;">
-                    <i class="fas fa-heart" style="font-size: 20px; margin-bottom: 5px;"></i>
-                    <div>${likesCount}</div>
-                </div>
-            `;
-        }
-
-        // Mostrar los detalles del jugador
-        Swal.fire({
-            title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
-            html: `
-                <div style="position: relative;">
-                    ${socialMediaButtonHtml}
-                    ${likeButtonHtml}
-                    <div style="text-align: left; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia || likeButtonHtml ? '20px' : '0'};">
-                        <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ff65f7ff;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
-                        <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
-                        <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
-                        
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                            ${friendButtonHtml}
-                        </div>
-                    </div>
-                </div>
-            `,
+       // Botón de redes sociales (solo visible si tiene al menos una red social)
+let socialMediaButtonHtml = '';
+if (hasSocialMedia) {
+    socialMediaButtonHtml = `
+        <button class="social-media-btn" style="position: absolute; top: 5px; right: 15px; background: linear-gradient(to right, #376de2ff, #e94057, #ff9351ff); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 1000;">
+            <i class="fas fa-icons"></i>
+        </button>
+    `;
+}
+       // Mostrar los detalles del jugador
+Swal.fire({
+    title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
+    html: `
+    <div style="position: relative;">
+        ${socialMediaButtonHtml}
+        <div style="text-align: left; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '20px' : '0'};">
+            <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ff65f7ff;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
+            <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
+            <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                ${friendButtonHtml}
+            </div>
+        </div>
+    </div>
+    `,
             icon: 'info',
             iconHtml: '<i class="fas fa-user" style="color: var(--primary-color);"></i>',
             showCloseButton: true,
@@ -395,6 +353,10 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                 confirmButton: 'swal2-profile-confirm-button'
             },
             buttonsStyling: false,
+        }).then((result) => {
+            if (result.isConfirmed && friendshipStatus === 'pending_received' && result.value === 'accept_friend') {
+                handleAcceptFriendRequest(currentUserId, targetUserId);
+            }
         });
 
         const addFriendBtn = document.getElementById('add-friend-btn');
@@ -412,68 +374,25 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                 Swal.close();
             });
         }
-        
-        // Agregar evento al botón de redes sociales
-        if (hasSocialMedia) {
-            const socialMediaBtn = document.querySelector('.social-media-btn');
-            if (socialMediaBtn) {
-                socialMediaBtn.addEventListener('click', () => {
-                    showSocialMediaLinks(userProfile);
-                });
-            }
-        }
-        
-        // Agregar evento al botón de like
-        if (currentUserId !== targetUserId && !userAlreadyLiked) {
-            const likeBtn = document.querySelector('.like-btn');
-            if (likeBtn) {
-                likeBtn.addEventListener('click', async () => {
-                    try {
-                        console.log('Intentando dar like...');
-                        
-                        // Incrementar el contador de likes directamente en profiles
-                        const newLikes = (userProfile.likes || 0) + 1;
-                        
-                        const { error: updateError } = await supabase
-                            .from('profiles')
-                            .update({ likes: newLikes })
-                            .eq('id', targetUserId);
-                            
-                        if (updateError) {
-                            console.error('Error al actualizar:', updateError);
-                            showCustomSwal('error', 'Error', 'No se pudo dar like: ' + updateError.message);
-                            return;
-                        }
-                        
-                        console.log('Like actualizado correctamente');
-                        
-                        // Actualizar interfaz
-                        const likeCountElement = document.querySelector('.like-btn + div');
-                        if (likeCountElement) {
-                            likeCountElement.textContent = newLikes;
-                        }
-                        
-                        likeBtn.innerHTML = '<i class="fas fa-heart" style="color: #ffffff;"></i>';
-                        likeBtn.style.background = 'linear-gradient(to right, #8b0000, #cc0000)';
-                        likeBtn.disabled = true;
-                        
-                        userProfile.likes = newLikes;
-                        
-                        showCustomSwal('success', '¡Like!', 'Has dado like a este jugador.');
-                        
-                    } catch (error) {
-                        console.error('Error:', error);
-                        showCustomSwal('error', 'Error', 'No se pudo completar la acción.');
+         // Agregar evento al botón de redes sociales
+                if (hasSocialMedia) {
+                    const socialMediaBtn = document.querySelector('.social-media-btn');
+                    if (socialMediaBtn) {
+                        socialMediaBtn.addEventListener('click', () => {
+                            showSocialMediaLinks(userProfile);
+                        });
                     }
-                });
-            }
-        }  
+                }
+
+                
 
     } catch (error) {
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
         console.error('Error al cargar detalles del jugador:', error.message);
     }
 }
+
+
 // Función para mostrar los enlaces de redes sociales
 function showSocialMediaLinks(userProfile) {
     let socialMediaHtml = '';
