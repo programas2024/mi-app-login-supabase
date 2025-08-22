@@ -220,7 +220,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
     try {
         const { data: userProfile, error: profileError } = await supabase
             .from('profiles')
-            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion')
+            .select('username, country, diamonds, gold, perla,vip_points,stars,current_achievement_category,emotion,tiktok,facebook,youtube')
             .eq('id', targetUserId)
             .single();
 
@@ -308,17 +308,32 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
         }
         // ---------------------------------------------------
 
+          // Verificar si el usuario tiene redes sociales
+        const hasSocialMedia = userProfile.tiktok || userProfile.facebook || userProfile.youtube;
+        
+        // Botón de redes sociales (solo visible si tiene al menos una red social)
+        let socialMediaButtonHtml = '';
+        if (hasSocialMedia) {
+            socialMediaButtonHtml = `
+                <button class="social-media-btn" style="position: absolute; top: 15px; left: 15px; background: linear-gradient(to right, #8a2387, #e94057, #f27121); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            `;
+        }
          // Mostrar los detalles del jugador
         Swal.fire({
             title: `<strong>${userProfile.username || 'Jugador Desconocido'}${specialTitleIconHtml}</strong>`,
             html: `
+            <div style="position: relative;">
+                    ${socialMediaButtonHtml}
+                    <div style="text-align: left; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '30px' : '0'};">
                 <div style="text-align: left; padding: 10px; font-size: 1.1em;">
                     <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-coins" style="color: #ffd700;"></i> <strong>Oro:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.gold || 0}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-certificate pearl-icon" style="color: #b0c4de;"></i> <strong>Perlas:</strong> <span style="font-weight: bold; color: #b0c4de;">${userProfile.perla || 0}</span></p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ffd700;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
+                    <p style="margin-bottom: 8px;"><i class="fas fa-crown" style="color: #ff65f7ff;"></i> <strong>Puntos VIP:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.vip_points || 0}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-star" style="color: #ffd700;"></i> <strong>Estrellas:</strong> <span style="font-weight: bold; color: #ffd700;">${userProfile.stars || 0}</span></p>
                     <p style="margin-bottom: 20px;">${emotionInfo.icon} <strong>Ánimo:</strong> <span style="font-weight: bold;">${emotionInfo.text}</span></p>
                     
@@ -359,11 +374,67 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
                 Swal.close();
             });
         }
+         // Agregar evento al botón de redes sociales
+                if (hasSocialMedia) {
+                    const socialMediaBtn = document.querySelector('.social-media-btn');
+                    if (socialMediaBtn) {
+                        socialMediaBtn.addEventListener('click', () => {
+                            showSocialMediaLinks(userProfile);
+                        });
+                    }
+                }
 
     } catch (error) {
         showCustomSwal('error', 'Error', `No se pudo cargar la información: ${error.message}`);
         console.error('Error al cargar detalles del jugador:', error.message);
     }
+}
+
+
+// Función para mostrar los enlaces de redes sociales
+function showSocialMediaLinks(userProfile) {
+    let socialMediaHtml = '';
+    
+    if (userProfile.tiktok) {
+        socialMediaHtml += `
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <i class="fab fa-tiktok" style="color: #69c9d0; font-size: 24px; margin-right: 10px;"></i>
+                <a href="${userProfile.tiktok}" target="_blank" style="color: #69c9d0; text-decoration: none;">${userProfile.tiktok}</a>
+            </div>
+        `;
+    }
+    
+    if (userProfile.facebook) {
+        socialMediaHtml += `
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <i class="fab fa-facebook" style="color: #1877f2; font-size: 24px; margin-right: 10px;"></i>
+                <a href="${userProfile.facebook}" target="_blank" style="color: #1877f2; text-decoration: none;">${userProfile.facebook}</a>
+            </div>
+        `;
+    }
+    
+    if (userProfile.youtube) {
+        socialMediaHtml += `
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <i class="fab fa-youtube" style="color: #ff0000; font-size: 24px; margin-right: 10px;"></i>
+                <a href="${userProfile.youtube}" target="_blank" style="color: #ff0000; text-decoration: none;">${userProfile.youtube}</a>
+            </div>
+        `;
+    }
+    
+    Swal.fire({
+        title: 'Redes Sociales',
+        html: `
+            <div style="text-align: left; padding: 10px;">
+                ${socialMediaHtml || '<p>No hay redes sociales disponibles</p>'}
+            </div>
+        `,
+        background: '#1e1e2e',
+        color: '#e0e0e0',
+        confirmButtonText: 'Cerrar',
+        confirmButtonColor: '#4ecdc4',
+        width: '500px'
+    });
 }
 
 
