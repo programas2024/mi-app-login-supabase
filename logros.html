@@ -1015,385 +1015,386 @@
     </div>
     
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Configuración de Supabase
-        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
-        
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Variables globales
-        let userProfile = null;
-        let achievementsUnlocked = 0;
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Variables globales
+    let userProfile = null;
+    let achievementsUnlocked = 0;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar la aplicación
-            initApp();
-            
-            // Cambio de pestañas
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    
-                    // Desactivar todas las pestañas
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(tc => tc.classList.remove('active'));
-                    
-                    // Activar la pestaña seleccionada
-                    tab.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-                });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar la aplicación
+        initApp();
+        
+        // Cambio de pestañas
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Desactivar todas las pestañas
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                // Activar la pestaña seleccionada
+                tab.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Efectos al pasar el ratón por las tarjetas de logros
+        const achievementCards = document.querySelectorAll('.achievement-card');
+        
+        achievementCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) scale(1.02)';
+                card.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.3)';
             });
             
-            // Efectos al pasar el ratón por las tarjetas de logros
-            const achievementCards = document.querySelectorAll('.achievement-card');
-            
-            achievementCards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-10px) scale(1.02)';
-                    card.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.3)';
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0) scale(1)';
-                    card.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
-                });
-                
-                card.addEventListener('click', () => {
-                    const title = card.querySelector('.achievement-title').textContent;
-                    const desc = card.querySelector('.achievement-desc').textContent;
-                    const status = card.querySelector('.achievement-status').textContent;
-                    const reward = card.querySelector('.reward-info').textContent;
-                    
-                    Swal.fire({
-                        title: title,
-                        html: `<div style="text-align:left; margin-bottom:20px;">
-                                  <p style="margin-bottom:10px;">${desc}</p>
-                                  <p><b>${status}</b></p>
-                               </div>
-                               <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:10px; border-left:4px solid gold;">
-                                  <p style="margin:0; display:flex; align-items:center;">
-                                    <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
-                                    ${reward}
-                                  </p>
-                               </div>`,
-                        icon: 'info',
-                        confirmButtonText: '¡Entendido!',
-                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                        color: 'white',
-                        confirmButtonColor: '#6a11cb',
-                        backdrop: 'rgba(0,0,0,0.7)',
-                        customClass: {
-                            popup: 'swal2-popup-custom'
-                        }
-                    });
-                });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+                card.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2)';
             });
             
-            // Botón de información - Mejorado con más elegancia
-            document.getElementById('info-button').addEventListener('click', () => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.achievement-title').textContent;
+                const desc = card.querySelector('.achievement-desc').textContent;
+                const status = card.querySelector('.achievement-status').textContent;
+                const reward = card.querySelector('.reward-info').textContent;
+                
                 Swal.fire({
-                    title: '<i class="fas fa-trophy" style="margin-right:15px;"></i>Sistema de Logros',
-                    html: `<div style="text-align:left; line-height:1.8;">
-                              <p style="margin-bottom:20px; font-size:1.2rem;">Bienvenido a tu panel de logros. Aquí puedes ver todos tus progresos y recompensas disponibles.</p>
-                              
-                              <div style="background:rgba(255,255,255,0.08); padding:20px; border-radius:15px; margin-bottom:20px;">
-                                <h3 style="color:#ffce00; margin-top:0; margin-bottom:15px;">Categorías de Logros</h3>
-                                <ul style="padding-left:20px; margin-bottom:0;">
-                                  <li style="margin-bottom:10px;"><b style="color:#cd7f32;">Bronce:</b> Logros iniciales para nuevos jugadores</li>
-                                  <li style="margin-bottom:10px;"><b style="color:#c0c0c0;">Plata:</b> Logros intermedios con mejores recompensas</li>
-                                  <li style="margin-bottom:10px;"><b style="color:#ffd700;">Maestro:</b> Logros avanzados que requieren dedicación</li>
-                                  <li style="margin-bottom:10px;"><b style="color:#9b30ff;">Épicos:</b> Logros expertos con recompensas valiosas</li>
-                                  <li><b style="color:#ff8c00;">Leyendas:</b> Los logros más difíciles con recompensas exclusivas</li>
-                                </ul>
-                              </div>
-                              
-                              <p style="margin-bottom:15px;">💎 <b>Completa logros</b> para obtener recompensas exclusivas y subir de nivel.</p>
-                              <p>⭐ <b>Las recompensas</b> incluyen oro, diamantes, perlas, estrellas y puntos VIP.</p>
+                    title: title,
+                    html: `<div style="text-align:left; margin-bottom:20px;">
+                              <p style="margin-bottom:10px;">${desc}</p>
+                              <p><b>${status}</b></p>
+                           </div>
+                           <div style="background:rgba(255,255,255,0.1); padding:15px; border-radius:10px; border-left:4px solid gold;">
+                              <p style="margin:0; display:flex; align-items:center;">
+                                <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
+                                ${reward}
+                              </p>
                            </div>`,
                     icon: 'info',
-                    confirmButtonText: '¡Empezar a Explorar!',
+                    confirmButtonText: '¡Entendido!',
                     background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
                     color: 'white',
                     confirmButtonColor: '#6a11cb',
                     backdrop: 'rgba(0,0,0,0.7)',
-                    width: '700px',
                     customClass: {
-                        title: 'swal2-title-custom',
-                        htmlContainer: 'swal2-html-container-custom'
-                    }
-                });
-            });
-            
-            // Botón de cofre - Mejorado con animación de recompensas
-            document.getElementById('chest-btn').addEventListener('click', () => {
-                Swal.fire({
-                    title: '¡Cofre Gratuito Diario!',
-                    html: `<p style="margin-bottom:20px;">¿Quieres abrir tu cofre gratuito y descubrir recompensas sorpresa?</p>
-                           <div style="background:rgba(255,215,0,0.1); padding:15px; border-radius:10px; border:2px dashed rgba(255,215,0,0.5);">
-                             <p style="margin:0; display:flex; align-items:center; justify-content:center;">
-                               <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
-                               <span>Contiene hasta 5 recompensas diferentes</span>
-                             </p>
-                           </div>`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: '¡Abrir Cofre!',
-                    cancelButtonText: 'Quizás después',
-                    background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                    color: 'white',
-                    confirmButtonColor: '#11998e',
-                    cancelButtonColor: '#6a11cb',
-                    backdrop: 'rgba(0,0,0,0.7)',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Animación de apertura de cofre
-                        Swal.fire({
-                            title: '¡Abriendo Cofre!',
-                            html: '<div style="margin:20px 0;"><i class="fas fa-box-open" style="font-size:3rem; color:gold;"></i></div>',
-                            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                            color: 'white',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        }).then(() => {
-                            // Mostrar recompensas con animación
-                            Swal.fire({
-                                title: '¡Felicidades!',
-                                html: `<div style="text-align:center;">
-                                          <p style="margin-bottom:20px;">Has obtenido:</p>
-                                          <div class="reward-animation">
-                                            <div class="reward-item">
-                                                <div class="reward-icon" style="color:gold;"><i class="fas fa-coins"></i></div>
-                                                <div class="reward-text">50 Oro</div>
-                                            </div>
-                                            <div class="reward-item">
-                                                <div class="reward-icon" style="color:#b9f2ff;"><i class="fas fa-gem"></i></div>
-                                                <div class="reward-text">10 Diamantes</div>
-                                            </div>
-                                            <div class="reward-item">
-                                                <div class="reward-icon" style="color:#d3d3d3;"><i class="fas fa-circle pearl-icon"></i></div>
-                                                <div class="reward-text">5 Perlas</div>
-                                            </div>
-                                          </div>
-                                       </div>`,
-                                icon: 'success',
-                                confirmButtonText: '¡Reclamar!',
-                                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
-                                color: 'white',
-                                confirmButtonColor: '#6a11cb',
-                                backdrop: 'rgba(0,0,0,0.7)'
-                            }).then(() => {
-                                // Lanzar confeti
-                                confetti({
-                                    particleCount: 150,
-                                    spread: 70,
-                                    origin: { y: 0.6 }
-                                });
-                            });
-                        });
+                        popup: 'swal2-popup-custom'
                     }
                 });
             });
         });
-
-        // Función para inicializar la aplicación
-        async function initApp() {
-            try {
-                // Obtener el usuario actual (en una app real, esto vendría de la autenticación)
-                const { data: { user }, error: userError } = await supabase.auth.getUser();
-                
-                if (userError) {
-                    console.error('Error obteniendo usuario:', userError);
-                    // Para propósitos de demostración, usar un usuario por defecto
-                    await loadUserProfile('default-user-id');
-                    return;
-                }
-                
-                if (user) {
-                    await loadUserProfile(user.id);
-                } else {
-                    // Si no hay usuario autenticado, usar uno por defecto para demostración
-                    await loadUserProfile('default-user-id');
-                }
-            } catch (error) {
-                console.error('Error inicializando la aplicación:', error);
-                // En caso de error, mostrar datos de demostración
-                showDemoData();
-            }
-        }
-
-        // Función para cargar el perfil del usuario
-        async function loadUserProfile(userId) {
-            try {
-                // Obtener el perfil del usuario desde Supabase
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-                
-                if (error) {
-                    console.error('Error cargando perfil:', error);
-                    // Crear un perfil por defecto si no existe
-                    await createDefaultProfile(userId);
-                    return;
-                }
-                
-                if (profile) {
-                    userProfile = profile;
-                    updateUIWithProfileData();
-                    checkAchievements();
-                    hideLoading();
-                }
-            } catch (error) {
-                console.error('Error cargando perfil:', error);
-                showDemoData();
-            }
-        }
-
-        // Función para crear un perfil por defecto
-        async function createDefaultProfile(userId) {
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .insert([
-                        { 
-                            id: userId, 
-                            gold: 2480, 
-                            diamonds: 560, 
-                            perla: 320, 
-                            stars: 85, 
-                            vip_points: 36,
-                            achievements_unlocked: 3
-                        }
-                    ])
-                    .select()
-                    .single();
-                
-                if (error) {
-                    console.error('Error creando perfil por defecto:', error);
-                    showDemoData();
-                    return;
-                }
-                
-                userProfile = data;
-                updateUIWithProfileData();
-                checkAchievements();
-                hideLoading();
-            } catch (error) {
-                console.error('Error creando perfil por defecto:', error);
-                showDemoData();
-            }
-        }
-
-        // Función para actualizar la UI con los datos del perfil
-        function updateUIWithProfileData() {
-            if (!userProfile) return;
-            
-            // Actualizar estadísticas
-            document.getElementById('gold-amount').textContent = `${userProfile.gold.toLocaleString()} Oro`;
-            document.getElementById('diamonds-amount').textContent = `${userProfile.diamonds.toLocaleString()} Diamantes`;
-            document.getElementById('pearls-amount').textContent = `${userProfile.perla.toLocaleString()} Perlas`;
-            document.getElementById('stars-amount').textContent = `${userProfile.stars.toLocaleString()} Estrellas`;
-            document.getElementById('vip-amount').textContent = `${userProfile.vip_points.toLocaleString()} Puntos VIP`;
-            
-            achievementsUnlocked = userProfile.achievements_unlocked || 0;
-        }
-
-        // Función para verificar y actualizar logros
-        function checkAchievements() {
-            if (!userProfile) return;
-            
-            // Logros Bronce
-            updateAchievementProgress('bronze', 'gold', 10, userProfile.gold);
-            updateAchievementProgress('bronze', 'diamonds', 10, userProfile.diamonds);
-            updateAchievementProgress('bronze', 'pearls', 10, userProfile.perla);
-            
-            // Logros Plata
-            updateAchievementProgress('silver', 'gold', 200, userProfile.gold);
-            updateAchievementProgress('silver', 'diamonds', 200, userProfile.diamonds);
-            updateAchievementProgress('silver', 'pearls', 100, userProfile.perla);
-            updateAchievementProgress('silver', 'stars', 10, userProfile.stars);
-            
-            // Logros Maestro
-            updateAchievementProgress('master', 'gold', 1000, userProfile.gold);
-            updateAchievementProgress('master', 'diamonds', 1000, userProfile.diamonds);
-            updateAchievementProgress('master', 'pearls', 500, userProfile.perla);
-            updateAchievementProgress('master', 'stars', 100, userProfile.stars);
-            
-            // Logros Épicos
-            updateAchievementProgress('epic', 'gold', 6000, userProfile.gold);
-            updateAchievementProgress('epic', 'diamonds', 7000, userProfile.diamonds);
-            updateAchievementProgress('epic', 'pearls', 1000, userProfile.perla);
-            updateAchievementProgress('epic', 'stars', 600, userProfile.stars);
-            updateAchievementProgress('epic', 'vip', 100, userProfile.vip_points);
-            
-            // Logros Legendarios
-            updateAchievementProgress('legend', 'gold', 10000, userProfile.gold);
-            updateAchievementProgress('legend', 'diamonds', 150000, userProfile.diamonds);
-            updateAchievementProgress('legend', 'pearls', 7000, userProfile.perla);
-            updateAchievementProgress('legend', 'stars', 2000, userProfile.stars);
-            updateAchievementProgress('legend', 'vip', 900, userProfile.vip_points);
-        }
-
-        // Función para actualizar el progreso de un logro
-        function updateAchievementProgress(category, type, target, current) {
-            const progress = Math.min((current / target) * 100, 100);
-            const progressBar = document.getElementById(`${category}-${type}-progress`);
-            const statusElement = document.getElementById(`${category}-${type}-status`);
-            
-            if (progressBar && statusElement) {
-                progressBar.style.width = `${progress}%`;
-                
-                if (progress >= 100) {
-                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> ¡Completado!';
-                    statusElement.className = 'achievement-status completed';
-                } else {
-                    statusElement.innerHTML = `<i class="fas fa-spinner"></i> ${Math.round(current)}/${target} completado`;
-                    statusElement.className = 'achievement-status in-progress';
-                }
-            }
-        }
-
-        // Función para mostrar datos de demostración
-        function showDemoData() {
-            document.getElementById('gold-amount').textContent = '2,480 Oro';
-            document.getElementById('diamonds-amount').textContent = '560 Diamantes';
-            document.getElementById('pearls-amount').textContent = '320 Perlas';
-            document.getElementById('stars-amount').textContent = '85 Estrellas';
-            document.getElementById('vip-amount').textContent = '36 Puntos VIP';
-            
-            // Ocultar loading
-            hideLoading();
-            
-            // Mostrar alerta informativa
+        
+        // Botón de información - Mejorado con más elegancia
+        document.getElementById('info-button').addEventListener('click', () => {
             Swal.fire({
-                title: 'Modo de Demostración',
-                text: 'Estás viendo datos de demostración. Inicia sesión para ver tus estadísticas reales.',
+                title: '<i class="fas fa-trophy" style="margin-right:15px;"></i>Sistema de Logros',
+                html: `<div style="text-align:left; line-height:1.8;">
+                          <p style="margin-bottom:20px; font-size:1.2rem;">Bienvenido a tu panel de logros. Aquí puedes ver todos tus progresos y recompensas disponibles.</p>
+                          
+                          <div style="background:rgba(255,255,255,0.08); padding:20px; border-radius:15px; margin-bottom:20px;">
+                            <h3 style="color:#ffce00; margin-top:0; margin-bottom:15px;">Categorías de Logros</h3>
+                            <ul style="padding-left:20px; margin-bottom:0;">
+                              <li style="margin-bottom:10px;"><b style="color:#cd7f32;">Bronce:</b> Logros iniciales para nuevos jugadores</li>
+                              <li style="margin-bottom:10px;"><b style="color:#c0c0c0;">Plata:</b> Logros intermedios con mejores recompensas</li>
+                              <li style="margin-bottom:10px;"><b style="color:#ffd700;">Maestro:</b> Logros avanzados que requieren dedicación</li>
+                              <li style="margin-bottom:10px;"><b style="color:#9b30ff;">Épicos:</b> Logros expertos con recompensas valiosas</li>
+                              <li><b style="color:#ff8c00;">Leyendas:</b> Los logros más difíciles con recompensas exclusivas</li>
+                            </ul>
+                          </div>
+                          
+                          <p style="margin-bottom:15px;">💎 <b>Completa logros</b> para obtener recompensas exclusivas y subir de nivel.</p>
+                          <p>⭐ <b>Las recompensas</b> incluyen oro, diamantes, perlas, estrellas y puntos VIP.</p>
+                       </div>`,
                 icon: 'info',
-                confirmButtonText: 'Entendido',
+                confirmButtonText: '¡Empezar a Explorar!',
                 background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
                 color: 'white',
                 confirmButtonColor: '#6a11cb',
-                backdrop: 'rgba(0,0,0,0.7)'
+                backdrop: 'rgba(0,0,0,0.7)',
+                width: '700px',
+                customClass: {
+                    title: 'swal2-title-custom',
+                    htmlContainer: 'swal2-html-container-custom'
+                }
             });
-        }
+        });
+        
+        // Botón de cofre - Mejorado con animación de recompensas
+        document.getElementById('chest-btn').addEventListener('click', () => {
+            Swal.fire({
+                title: '¡Cofre Gratuito Diario!',
+                html: `<p style="margin-bottom:20px;">¿Quieres abrir tu cofre gratuito y descubrir recompensas sorpresa?</p>
+                       <div style="background:rgba(255,215,0,0.1); padding:15px; border-radius:10px; border:2px dashed rgba(255,215,0,0.5);">
+                         <p style="margin:0; display:flex; align-items:center; justify-content:center;">
+                           <i class="fas fa-gift" style="color:gold; margin-right:10px;"></i>
+                           <span>Contiene hasta 5 recompensas diferentes</span>
+                         </p>
+                       </div>`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '¡Abrir Cofre!',
+                cancelButtonText: 'Quizás después',
+                background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                color: 'white',
+                confirmButtonColor: '#11998e',
+                cancelButtonColor: '#6a11cb',
+                backdrop: 'rgba(0,0,0,0.7)',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Animación de apertura de cofre
+                    Swal.fire({
+                        title: '¡Abriendo Cofre!',
+                        html: '<div style="margin:20px 0;"><i class="fas fa-box-open" style="font-size:3rem; color:gold;"></i></div>',
+                        background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                        color: 'white',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        timerProgressBar: true,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    }).then(() => {
+                        // Mostrar recompensas con animación
+                        Swal.fire({
+                            title: '¡Felicidades!',
+                            html: `<div style="text-align:center;">
+                                      <p style="margin-bottom:20px;">Has obtenido:</p>
+                                      <div class="reward-animation">
+                                        <div class="reward-item">
+                                            <div class="reward-icon" style="color:gold;"><i class="fas fa-coins"></i></div>
+                                            <div class="reward-text">50 Oro</div>
+                                        </div>
+                                        <div class="reward-item">
+                                            <div class="reward-icon" style="color:#b9f2ff;"><i class="fas fa-gem"></i></div>
+                                            <div class="reward-text">10 Diamantes</div>
+                                        </div>
+                                        <div class="reward-item">
+                                            <div class="reward-icon" style="color:#d3d3d3;"><i class="fas fa-circle pearl-icon"></i></div>
+                                            <div class="reward-text">5 Perlas</div>
+                                        </div>
+                                      </div>
+                                   </div>`,
+                            icon: 'success',
+                            confirmButtonText: '¡Reclamar!',
+                            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+                            color: 'white',
+                            confirmButtonColor: '#6a11cb',
+                            backdrop: 'rgba(0,0,0,0.7)'
+                        }).then(() => {
+                            // Lanzar confeti
+                            confetti({
+                                particleCount: 150,
+                                spread: 70,
+                                origin: { y: 0.6 }
+                            });
+                        });
+                    });
+                }
+            });
+        });
+    });
 
-        // Función para ocultar la pantalla de carga
-        function hideLoading() {
-            document.getElementById('loading-section').style.display = 'none';
+    // Función para inicializar la aplicación
+    async function initApp() {
+        try {
+            // Obtener el usuario actual (en una app real, esto vendría de la autenticación)
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            
+            if (userError) {
+                console.error('Error obteniendo usuario:', userError);
+                // Para propósitos de demostración, usar un usuario por defecto
+                await loadUserProfile('default-user-id');
+                return;
+            }
+            
+            if (user) {
+                await loadUserProfile(user.id);
+            } else {
+                // Si no hay usuario autenticado, usar uno por defecto para demostración
+                await loadUserProfile('default-user-id');
+            }
+        } catch (error) {
+            console.error('Error inicializando la aplicación:', error);
+            // En caso de error, mostrar datos de demostración
+            showDemoData();
         }
-    </script>
+    }
+
+    // Función para cargar el perfil del usuario
+    async function loadUserProfile(userId) {
+        try {
+            // Obtener el perfil del usuario desde Supabase
+            // SOLUCIÓN: Seleccionar solo los campos requeridos: gold, diamonds, perla, vip_points, stars
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('gold, diamonds, perla, vip_points, stars')
+                .eq('id', userId)
+                .single();
+            
+            if (error) {
+                console.error('Error cargando perfil:', error);
+                // Crear un perfil por defecto si no existe
+                await createDefaultProfile(userId);
+                return;
+            }
+            
+            if (profile) {
+                userProfile = profile;
+                updateUIWithProfileData();
+                checkAchievements();
+                hideLoading();
+            }
+        } catch (error) {
+            console.error('Error cargando perfil:', error);
+            showDemoData();
+        }
+    }
+
+    // Función para crear un perfil por defecto
+    async function createDefaultProfile(userId) {
+        try {
+            // SOLUCIÓN: Insertar solo los campos requeridos
+            const { data, error } = await supabase
+                .from('profiles')
+                .insert([
+                    { 
+                        id: userId, 
+                        gold: 2480, 
+                        diamonds: 560, 
+                        perla: 320, 
+                        stars: 85, 
+                        vip_points: 36
+                    }
+                ])
+                .select()
+                .single();
+            
+            if (error) {
+                console.error('Error creando perfil por defecto:', error);
+                showDemoData();
+                return;
+            }
+            
+            userProfile = data;
+            updateUIWithProfileData();
+            checkAchievements();
+            hideLoading();
+        } catch (error) {
+            console.error('Error creando perfil por defecto:', error);
+            showDemoData();
+        }
+    }
+
+    // Función para actualizar la UI con los datos del perfil
+    function updateUIWithProfileData() {
+        if (!userProfile) return;
+        
+        // Actualizar estadísticas
+        document.getElementById('gold-amount').textContent = `${userProfile.gold.toLocaleString()} Oro`;
+        document.getElementById('diamonds-amount').textContent = `${userProfile.diamonds.toLocaleString()} Diamantes`;
+        document.getElementById('pearls-amount').textContent = `${userProfile.perla.toLocaleString()} Perlas`;
+        document.getElementById('stars-amount').textContent = `${userProfile.stars.toLocaleString()} Estrellas`;
+        document.getElementById('vip-amount').textContent = `${userProfile.vip_points.toLocaleString()} Puntos VIP`;
+        
+        achievementsUnlocked = userProfile.achievements_unlocked || 0;
+    }
+
+    // Función para verificar y actualizar logros
+    function checkAchievements() {
+        if (!userProfile) return;
+        
+        // Logros Bronce
+        updateAchievementProgress('bronze', 'gold', 10, userProfile.gold);
+        updateAchievementProgress('bronze', 'diamonds', 10, userProfile.diamonds);
+        updateAchievementProgress('bronze', 'pearls', 10, userProfile.perla);
+        
+        // Logros Plata
+        updateAchievementProgress('silver', 'gold', 200, userProfile.gold);
+        updateAchievementProgress('silver', 'diamonds', 200, userProfile.diamonds);
+        updateAchievementProgress('silver', 'pearls', 100, userProfile.perla);
+        updateAchievementProgress('silver', 'stars', 10, userProfile.stars);
+        
+        // Logros Maestro
+        updateAchievementProgress('master', 'gold', 1000, userProfile.gold);
+        updateAchievementProgress('master', 'diamonds', 1000, userProfile.diamonds);
+        updateAchievementProgress('master', 'pearls', 500, userProfile.perla);
+        updateAchievementProgress('master', 'stars', 100, userProfile.stars);
+        
+        // Logros Épicos
+        updateAchievementProgress('epic', 'gold', 6000, userProfile.gold);
+        updateAchievementProgress('epic', 'diamonds', 7000, userProfile.diamonds);
+        updateAchievementProgress('epic', 'pearls', 1000, userProfile.perla);
+        updateAchievementProgress('epic', 'stars', 600, userProfile.stars);
+        updateAchievementProgress('epic', 'vip', 100, userProfile.vip_points);
+        
+        // Logros Legendarios
+        updateAchievementProgress('legend', 'gold', 10000, userProfile.gold);
+        updateAchievementProgress('legend', 'diamonds', 150000, userProfile.diamonds);
+        updateAchievementProgress('legend', 'pearls', 7000, userProfile.perla);
+        updateAchievementProgress('legend', 'stars', 2000, userProfile.stars);
+        updateAchievementProgress('legend', 'vip', 900, userProfile.vip_points);
+    }
+
+    // Función para actualizar el progreso de un logro
+    function updateAchievementProgress(category, type, target, current) {
+        const progress = Math.min((current / target) * 100, 100);
+        const progressBar = document.getElementById(`${category}-${type}-progress`);
+        const statusElement = document.getElementById(`${category}-${type}-status`);
+        
+        if (progressBar && statusElement) {
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> ¡Completado!';
+                statusElement.className = 'achievement-status completed';
+            } else {
+                statusElement.innerHTML = `<i class="fas fa-spinner"></i> ${Math.round(current)}/${target} completado`;
+                statusElement.className = 'achievement-status in-progress';
+            }
+        }
+    }
+
+    // Función para mostrar datos de demostración
+    function showDemoData() {
+        document.getElementById('gold-amount').textContent = '2,480 Oro';
+        document.getElementById('diamonds-amount').textContent = '560 Diamantes';
+        document.getElementById('pearls-amount').textContent = '320 Perlas';
+        document.getElementById('stars-amount').textContent = '85 Estrellas';
+        document.getElementById('vip-amount').textContent = '36 Puntos VIP';
+        
+        // Ocultar loading
+        hideLoading();
+        
+        // Mostrar alerta informativa
+        Swal.fire({
+            title: 'Modo de Demostración',
+            text: 'Estás viendo datos de demostración. Inicia sesión para ver tus estadísticas reales.',
+            icon: 'info',
+            confirmButtonText: 'Entendido',
+            background: 'linear-gradient(135deg, rgba(25, 25, 35, 0.98), rgba(15, 15, 25, 0.98))',
+            color: 'white',
+            confirmButtonColor: '#6a11cb',
+            backdrop: 'rgba(0,0,0,0.7)'
+        });
+    }
+
+    // Función para ocultar la pantalla de carga
+    function hideLoading() {
+        document.getElementById('loading-section').style.display = 'none';
+    }
+</script>
 </body>
 </html>
