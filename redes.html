@@ -498,7 +498,7 @@
                 }
                 
                 currentUser = session.user;
-                document.getElementById('userInfo').innerHTML = `<i class="fas fa-user"></i> Usuario: ${currentUser.email}`;
+                document.getElementById('userInfo').innerHTML = `<i class="fas fa-user"></i> Usuario: ${currentUser.username}`;
                 await loadUserData();
             } catch (error) {
                 showError('Error inesperado: ' + error.message);
