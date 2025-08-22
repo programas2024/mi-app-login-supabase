@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Escuadrón</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Raleway', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, #a8ff78, #78ffd6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .gold-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .gold-display i {
+            color: gold;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .create-title, .squad-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .create-title h2, .squad-title h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #78ffd6;
+        }
+        
+        .create-title p, .squad-title p {
+            color: #c0d6e4;
+            font-size: 16px;
+        }
+        
+        .cost-display {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(205, 127, 50, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .cost-display i {
+            color: gold;
+        }
+        
+        .cost-display span {
+            font-weight: 700;
+            color: gold;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #78ffd6;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #78ffd6;
+            box-shadow: 0 0 12px rgba(120, 255, 214, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .mission-select {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        
+        .mission-select:focus {
+            border-color: #78ffd6;
+            box-shadow: 0 0 12px rgba(120, 255, 214, 0.3);
+        }
+        
+        .rank-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
+            border-radius: 10px;
+            border: 1px solid rgba(205, 127, 50, 0.2);
+        }
+        
+        .rank-icon {
+            color: #cd7f32;
+            font-size: 20px;
+        }
+        
+        .rank-name {
+            font-weight: 700;
+            color: #cd7f32;
+            font-size: 16px;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #a8ff78, #78ffd6);
+            border: none;
+            padding: 16px 30px;
+            border-radius: 10px;
+            color: #0f2027;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(168, 255, 120, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(168, 255, 120, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Estilos para el contenedor de Mi Escuadrón */
+        .squad-info {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .squad-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .squad-detail:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .detail-label {
+            color: #78ffd6;
+            font-weight: 600;
+        }
+        
+        .detail-value {
+            font-weight: 700;
+        }
+        
+        .members-list {
+            margin-top: 25px;
+        }
+        
+        .members-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #78ffd6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .member-name {
+            flex: 1;
+            font-weight: 600;
+        }
+        
+        .member-rank {
+            background: rgba(205, 127, 50, 0.2);
+            color: #cd7f32;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .empty-squad {
+            text-align: center;
+            padding: 40px 20px;
+            color: #c0d6e4;
+        }
+        
+        .empty-squad i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .view-more-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .view-more-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(79, 172, 254, 0.4);
+        }
+        
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="header-title">Gestión de Escuadrones</h1>
+        <div class="header-actions">
+            <div class="gold-display">
+                <i class="fas fa-coins"></i>
+                <span id="gold-amount">Cargando...</span>
+            </div>
+            <button class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="container">
+            <div class="create-title">
+                <h2>Crea tu Escuadrón</h2>
+                <p>Forma tu equipo para desbloquear recompensas exclusivas</p>
+            </div>
+            
+            <div class="cost-display">
+                <i class="fas fa-tag"></i>
+                <div>Costo de creación: <span>200 Oro</span></div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-signature"></i>Nombre del escuadrón
+                </label>
+                <input type="text" class="form-input" id="squad-name" placeholder="Ingresa un nombre épico">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-users"></i>Cantidad de miembros
+                </label>
+                <input type="number" class="form-input" id="squad-members" placeholder="Número entre 1 y 10" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-bullseye"></i>Selecciona una misión
+                </label>
+                <select class="mission-select" id="squad-mission">
+                    <option value="">Elige una misión</option>
+                    <option value="Hacer amigos">Hacer amigos</option>
+                    <option value="Subir de rango">Subir de rango</option>
+                    <option value="Ser top 1">Ser top 1</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-medal"></i>Rango
+                </label>
+                <div class="rank-display">
+                    <i class="fas fa-medal rank-icon"></i>
+                    <span class="rank-name">Bronce</span>
+                    <span>(Rango inicial)</span>
+                </div>
+            </div>
+            
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancel-btn">Cancelar</button>
+                <button class="submit-btn" id="create-squad-btn">Crear Escuadrón</button>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="squad-title">
+                <h2>Mi Escuadrón</h2>
+                <p>Gestiona tu equipo y sus miembros</p>
+            </div>
+            
+            <div id="squad-container">
+                <div class="empty-squad" id="empty-squad">
+                    <i class="fas fa-users"></i>
+                    <h3>No tienes un escuadrón</h3>
+                    <p>Crea tu primer escuadrón para comenzar</p>
+                </div>
+                
+                <div id="squad-details" style="display: none;">
+                    <div class="squad-info">
+                        <div class="squad-detail">
+                            <span class="detail-label">Nombre:</span>
+                            <span class="detail-value" id="detail-name">-</span>
+                        </div>
+                        <div class="squad-detail">
+                            <span class="detail-label">Miembros:</span>
+                            <span class="detail-value" id="detail-members">-</span>
+                        </div>
+                        <div class="squad-detail">
+                            <span class="detail-label">Misión:</span>
+                            <span class="detail-value" id="detail-mission">-</span>
+                        </div>
+                        <div class="squad-detail">
+                            <span class="detail-label">Rango:</span>
+                            <span class="detail-value" id="detail-rank">-</span>
+                        </div>
+                        <div class="squad-detail">
+                            <span class="detail-label">Líder:</span>
+                            <span class="detail-value" id="detail-leader">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="members-list">
+                        <h3 class="members-title">
+                            <i class="fas fa-users"></i> Miembros del escuadrón
+                        </h3>
+                        
+                        <div class="member-item" id="leader-member">
+                            <div class="member-avatar">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <span class="member-name" id="leader-name">Cargando...</span>
+                            <span class="member-rank">Líder</span>
+                        </div>
+                    </div>
+                    
+                    <button class="view-more-btn" id="view-more-btn">
+                        <i class="fas fa-eye"></i> Ver más
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ4ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Variables globales
+        let currentUser = null;
+        let userProfile = null;
+        let userSquad = null;
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUserStatus();
+            await loadUserData();
+            await checkExistingSquad();
+        });
+        
+        // Verificar el estado del usuario
+        async function checkUserStatus() {
+            try {
+                // Obtener la sesión actual
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Error al obtener sesión:', error);
+                    Swal.fire({
+                        title: 'Error de autenticación',
+                        text: 'Por favor inicia sesión nuevamente',
+                        icon: 'error',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+                
+                if (!session) {
+                    Swal.fire({
+                        title: 'No autenticado',
+                        text: 'Debes iniciar sesión para acceder a esta página',
+                        icon: 'warning',
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log("Usuario actual:", currentUser.id);
+            } catch (error) {
+                console.error('Error al verificar estado de usuario:', error);
+            }
+        }
+        
+        // Cargar datos del usuario
+        async function loadUserData() {
+            try {
+                if (!currentUser) return;
+                
+                // Obtener el perfil del usuario
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                if (error) {
+                    console.error('Error al cargar perfil:', error);
+                    return;
+                }
+                
+                userProfile = profile;
+                document.getElementById('gold-amount').textContent = profile.gold.toLocaleString();
+                document.getElementById('leader-name').textContent = profile.username || 'Usuario';
+                
+            } catch (error) {
+                console.error('Error al cargar datos del usuario:', error);
+            }
+        }
+        
+        // Verificar si el usuario ya tiene un escuadrón
+        async function checkExistingSquad() {
+            try {
+                if (!currentUser) return;
+                
+                // Buscar si el usuario ya tiene un escuadrón
+                const { data: squad, error } = await supabase
+                    .from('squads')
+                    .select('*')
+                    .eq('leader_id', currentUser.id)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') { // PGRST116 es el código cuando no encuentra resultados
+                    console.error('Error al verificar escuadrón:', error);
+                    return;
+                }
+                
+                if (squad) {
+                    userSquad = squad;
+                    displaySquadData(squad);
+                }
+            } catch (error) {
+                console.error('Error al verificar escuadrón:', error);
+            }
+        }
+        
+        // Mostrar datos del escuadrón
+        async function displaySquadData(squad) {
+            document.getElementById('empty-squad').style.display = 'none';
+            document.getElementById('squad-details').style.display = 'block';
+            
+            document.getElementById('detail-name').textContent = squad.name;
+            document.getElementById('detail-members').textContent = `${squad.member_count}/${squad.max_members}`;
+            document.getElementById('detail-mission').textContent = squad.mission;
+            document.getElementById('detail-rank').textContent = squad.rank;
+            document.getElementById('detail-leader').textContent = userProfile.username;
+        }
+        
+        // Crear escuadrón
+        document.getElementById('create-squad-btn').addEventListener('click', async function() {
+            const name = document.getElementById('squad-name').value;
+            const members = document.getElementById('squad-members').value;
+            const mission = document.getElementById('squad-mission').value;
+            
+            if (!name || !members || !mission) {
+                Swal.fire({
+                    title: 'Campos incompletos',
+                    text: 'Por favor completa todos los campos',
+                    icon: 'warning',
+                    confirmButtonColor: '#78ffd6',
+                    confirmButtonText: 'Entendido',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                return;
+            }
+            
+            // Verificar si tiene suficiente oro
+            if (userProfile.gold < 200) {
+                Swal.fire({
+                    title: 'Oro insuficiente',
+                    text: 'Necesitas 200 oro para crear un escuadrón',
+                    icon: 'error',
+                    confirmButtonColor: '#78ffd6',
+                    confirmButtonText: 'Entendido',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                return;
+            }
+            
+            try {
+                // 1. Restar el oro al usuario en la tabla profiles
+                const newGold = userProfile.gold - 200;
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ gold: newGold })
+                    .eq('id', currentUser.id);
+                
+                if (updateError) {
+                    console.error('Error al actualizar oro:', updateError);
+                    throw new Error('No se pudo actualizar el oro');
+                }
+                
+                // 2. Insertar el nuevo escuadrón en la tabla de squads
+                const squadData = {
+                    name: name,
+                    member_count: parseInt(members),
+                    max_members: 10,
+                    mission: mission,
+                    rank: 'Bronce',
+                    leader_id: currentUser.id,
+                    created_at: new Date().toISOString()
+                };
+                
+                const { data: newSquad, error: insertError } = await supabase
+                    .from('squads')
+                    .insert([squadData])
+                    .select()
+                    .single();
+                
+                if (insertError) {
+                    console.error('Error al crear escuadrón:', insertError);
+                    throw new Error('No se pudo crear el escuadrón');
+                }
+                
+                // Actualizar la UI
+                userProfile.gold = newGold;
+                userSquad = newSquad;
+                
+                document.getElementById('gold-amount').textContent = newGold.toLocaleString();
+                displaySquadData(newSquad);
+                
+                // Mostrar confeti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                
+                Swal.fire({
+                    title: '¡Escuadrón Creado!',
+                    html: `
+                        <div style="text-align:left; margin:20px 0;">
+                            <p style="margin-bottom:10px;"><strong>Nombre:</strong> ${name}</p>
+                            <p style="margin-bottom:10px;"><strong>Miembros:</strong> ${members}</p>
+                            <p style="margin-bottom:10px;"><strong>Misión:</strong> ${mission}</p>
+                            <p style="margin-bottom:10px;"><strong>Rango:</strong> <span style="color:#cd7f32;">Bronce</span></p>
+                            <p style="margin-bottom:10px;"><strong>Costo:</strong> <span style="color:gold;">200 Oro</span></p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonColor: '#78ffd6',
+                    confirmButtonText: '¡Empezar!',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                
+            } catch (error) {
+                console.error('Error al crear escuadrón:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.',
+                    icon: 'error',
+                    confirmButtonColor: '#78ffd6',
+                    confirmButtonText: 'Entendido',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+            }
+        });
+        
+        // Botón Cancelar
+        document.getElementById('cancel-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: 'Los datos ingresados se perderán',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#78ffd6',
+                cancelButtonColor: '#ff6b6b',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar editando',
+                background: '#1e3a47',
+                color: 'white'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('squad-name').value = '';
+                    document.getElementById('squad-members').value = '';
+                    document.getElementById('squad-mission').selectedIndex = 0;
+                }
+            });
+        });
+        
+        // Botón Ver Más
+        document.getElementById('view-more-btn').addEventListener('click', function() {
+            window.location.href = 'equipo.html';
+        });
+        
+        // Botón Volver
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Volver al menú principal',
+                text: '¿Estás seguro de que quieres salir?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#78ffd6',
+                cancelButtonColor: '#ff6b6b',
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Permanecer aquí',
+                background: '#1e3a47',
+                color: 'white'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
