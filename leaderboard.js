@@ -327,7 +327,7 @@ async function showPlayerDetails(supabase, targetUserId, currentUserId, playerRa
             <div style="position: relative;">
                     ${socialMediaButtonHtml}
                     <div style="text-align: left; padding: 10px; font-size: 1.1em; margin-top: ${hasSocialMedia ? '30px' : '0'};">
-                <div style="text-align: left; padding: 10px; font-size: 1.1em;">
+                <div style="text-align: right; padding: 10px; font-size: 1.1em;">
                     <p style="margin-bottom: 8px;">${rankIconHtml} <strong>Posición:</strong> <span style="font-weight: bold;">#${playerRank}</span></p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-globe-americas" style="color: #6a5acd;"></i> <strong>País:</strong> ${countryIcon} ${userProfile.country || 'No especificado'}</p>
                     <p style="margin-bottom: 8px;"><i class="fas fa-gem" style="color: #00bcd4;"></i> <strong>Diamantes:</strong> <span style="font-weight: bold; color: #00bcd4;">${userProfile.diamonds || 0}</span></p>
