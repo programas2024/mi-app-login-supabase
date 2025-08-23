@@ -552,6 +552,7 @@
         
         .action-icon {
             font-size: 1.5rem;
+            margin-bottom: 0.5rem;
         }
         
         .action-leave {
@@ -568,63 +569,6 @@
         
         .action-mission {
             color: var(--color-accent);
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 0.75rem;
-                text-align: center;
-            }
-            
-            .header-title {
-                margin-right: 0;
-                margin-bottom: 0.5rem;
-            }
-            
-            .header-actions {
-                justify-content: center;
-            }
-            
-            .container {
-                padding: 1.25rem;
-            }
-            
-            .actions-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .content {
-                width: 100%;
-            }
-            
-            .header-title {
-                font-size: 1.25rem;
-            }
-            
-            .squad-name {
-                font-size: 1.5rem;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .container {
-            animation: fadeIn 0.5s ease;
         }
         
         .loading {
@@ -722,9 +666,8 @@
                 // Si el usuario tiene un escuadrón, cargar los datos
                 if (userSquad) {
                     renderSquadDetails();
-                    await checkIfUserIsLeader();
                 } else {
-                    showError('No se pudo cargar la información del escuadrón. Verifica que pertenezcas a un escuadrón.');
+                    showError('No se pudo cargar la información del escuadrón.');
                 }
             } catch (error) {
                 console.error('Error inesperado:', error);
@@ -735,31 +678,12 @@
         // Cargar el escuadrón del usuario
         async function loadUserSquad() {
             try {
-                // Obtener el perfil del usuario para ver a qué escuadrón pertenece
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('squad_id, is_squad_leader')
-                    .eq('id', currentUser.id)
-                    .single();
-                
-                if (profileError) {
-                    console.error('Error al obtener el perfil:', profileError);
-                    showError('Error al cargar el perfil de usuario.');
-                    return;
-                }
-                
-                if (!profile || !profile.squad_id) {
-                    console.log('El usuario no pertenece a ningún escuadrón');
-                    showError('No perteneces a ningún escuadrón.');
-                    return;
-                }
-                
-                // Obtener los datos del escuadrón
+                // Buscar escuadrones donde el usuario sea el líder
                 const { data: squad, error: squadError } = await supabase
                     .from('squads')
                     .select('*')
-                    .eq('id', profile.squad_id)
-                    .single();
+                    .eq('leader_id', currentUser.id)
+                    .maybeSingle();
                 
                 if (squadError) {
                     console.error('Error al obtener el escuadrón:', squadError);
@@ -768,13 +692,13 @@
                 }
                 
                 if (!squad) {
-                    console.log('No se encontró el escuadrón');
-                    showError('No se encontró información del escuadrón.');
+                    console.log('El usuario no es líder de ningún escuadrón');
+                    showError('No eres el líder de ningún escuadrón.');
                     return;
                 }
                 
                 userSquad = squad;
-                isSquadLeader = profile.is_squad_leader;
+                isSquadLeader = true; // Si encontramos un escuadrón, el usuario es el líder
                 console.log('Escuadrón cargado:', userSquad);
                 console.log('¿Es líder?', isSquadLeader);
             } catch (error) {
@@ -802,7 +726,7 @@
                     <div class="container">
                         <div class="squad-header">
                             <h2 class="squad-name">${userSquad.name || 'Sin nombre'}</h2>
-                            <p class="squad-motto">${userSquad.motto || '¡Hacia la victoria juntos!'}</p>
+                            <p class="squad-motto">${userSquad.mission || '¡Hacia la victoria juntos!'}</p>
                         </div>
                         
                         <div class="squad-info">
@@ -817,7 +741,7 @@
                                 </div>
                                 <div class="info-item">
                                     <span class="info-label">Miembros</span>
-                                    <span class="info-value">${userSquad.member_count || 4}/${userSquad.max_members || 10}</span>
+                                    <span class="info-value">${userSquad.member_count || 1}/${userSquad.max_members || 10}</span>
                                 </div>
                                 <div class="info-item">
                                     <span class="info-label">Fecha de creación</span>
@@ -858,7 +782,7 @@
                                 <div class="stat-icon points-icon">
                                     <i class="fas fa-star"></i>
                                 </div>
-                                <div class="stat-number">${userSquad.total_points || '3,520'}</div>
+                                <div class="stat-number">${userSquad.total_points || '0'}</div>
                                 <div class="stat-label">Puntos Totales</div>
                             </div>
                             
@@ -866,7 +790,7 @@
                                 <div class="stat-icon ranking-icon">
                                     <i class="fas fa-trophy"></i>
                                 </div>
-                                <div class="stat-number">#${userSquad.global_rank || '127'}</div>
+                                <div class="stat-number">#${userSquad.global_rank || 'N/A'}</div>
                                 <div class="stat-label">Ranking Global</div>
                             </div>
                         </div>
@@ -1001,44 +925,57 @@
         // Cargar miembros del escuadrón
         async function loadSquadMembers() {
             try {
-                const { data: members, error } = await supabase
+                // Obtener el perfil del líder
+                const { data: leaderProfile, error: leaderError } = await supabase
                     .from('profiles')
-                    .select('id, username, level, points, is_squad_leader')
-                    .eq('squad_id', userSquad.id)
-                    .order('points', { ascending: false });
+                    .select('id, username, level, points')
+                    .eq('id', userSquad.leader_id)
+                    .single();
                 
-                if (error) {
-                    console.error('Error al cargar miembros:', error);
+                if (leaderError) {
+                    console.error('Error al cargar el líder:', leaderError);
                     document.getElementById('members-list').innerHTML = '<p>Error al cargar los miembros.</p>';
-                    return;
-                }
-                
-                if (!members || members.length === 0) {
-                    document.getElementById('members-list').innerHTML = '<p>No hay miembros en este escuadrón.</p>';
                     return;
                 }
                 
                 let membersHTML = '';
                 
-                members.forEach(member => {
-                    membersHTML += `
-                        <div class="member-item">
-                            <div class="member-avatar ${member.is_squad_leader ? 'leader-avatar' : ''}">
-                                <i class="fas ${member.is_squad_leader ? 'fa-crown' : 'fa-user'}"></i>
+                // Mostrar el líder primero
+                membersHTML += `
+                    <div class="member-item">
+                        <div class="member-avatar leader-avatar">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="member-details">
+                            <div class="member-name">
+                                ${leaderProfile.username || 'Líder'}
+                                <span class="member-role">Líder</span>
                             </div>
-                            <div class="member-details">
-                                <div class="member-name">
-                                    ${member.username || 'Usuario'}
-                                    ${member.is_squad_leader ? '<span class="member-role">Líder</span>' : ''}
-                                </div>
-                                <div class="member-stats">
-                                    <span class="stat">Nivel: <span class="stat-value">${member.level || 1}</span></span>
-                                    <span class="stat">Puntos: <span class="stat-value">${member.points ? member.points.toLocaleString() : 0}</span></span>
-                                </div>
+                            <div class="member-stats">
+                                <span class="stat">Nivel: <span class="stat-value">${leaderProfile.level || 1}</span></span>
+                                <span class="stat">Puntos: <span class="stat-value">${leaderProfile.points || 0}</span></span>
                             </div>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
+                
+                // En una aplicación real, aquí cargarías los demás miembros del escuadrón
+                // Como no tenemos una relación directa en la base de datos, mostramos un mensaje
+                membersHTML += `
+                    <div class="member-item">
+                        <div class="member-avatar">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="member-details">
+                            <div class="member-name">
+                                Invita a más miembros
+                            </div>
+                            <div class="member-stats">
+                                <span class="stat">Usa el botón de invitación</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
                 
                 document.getElementById('members-list').innerHTML = membersHTML;
             } catch (error) {
@@ -1050,37 +987,38 @@
         // Cargar clasificación interna
         async function loadLeaderboard() {
             try {
-                const { data: members, error } = await supabase
+                // Obtener el perfil del líder para la clasificación
+                const { data: leaderProfile, error: leaderError } = await supabase
                     .from('profiles')
                     .select('username, points')
-                    .eq('squad_id', userSquad.id)
-                    .order('points', { ascending: false })
-                    .limit(5);
+                    .eq('id', userSquad.leader_id)
+                    .single();
                 
-                if (error) {
-                    console.error('Error al cargar la clasificación:', error);
+                if (leaderError) {
+                    console.error('Error al cargar la clasificación:', leaderError);
                     document.getElementById('leaderboard').innerHTML = '<p>Error al cargar la clasificación.</p>';
-                    return;
-                }
-                
-                if (!members || members.length === 0) {
-                    document.getElementById('leaderboard').innerHTML = '<p>No hay datos de clasificación.</p>';
                     return;
                 }
                 
                 let leaderboardHTML = '';
                 
-                members.forEach((member, index) => {
-                    const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
-                    
-                    leaderboardHTML += `
-                        <div class="leaderboard-item">
-                            <span class="leaderboard-rank ${rankClass}">${index + 1}</span>
-                            <div class="leaderboard-name">${member.username || 'Usuario'}</div>
-                            <span class="leaderboard-points">${member.points ? member.points.toLocaleString() : 0} pts</span>
-                        </div>
-                    `;
-                });
+                // Mostrar solo al líder por ahora
+                leaderboardHTML += `
+                    <div class="leaderboard-item">
+                        <span class="leaderboard-rank rank-1">1</span>
+                        <div class="leaderboard-name">${leaderProfile.username || 'Líder'}</div>
+                        <span class="leaderboard-points">${leaderProfile.points || 0} pts</span>
+                    </div>
+                `;
+                
+                // Mensaje para otros miembros
+                leaderboardHTML += `
+                    <div class="leaderboard-item">
+                        <span class="leaderboard-rank">-</span>
+                        <div class="leaderboard-name">Invita a más miembros para ver la clasificación completa</div>
+                        <span class="leaderboard-points">-</span>
+                    </div>
+                `;
                 
                 document.getElementById('leaderboard').innerHTML = leaderboardHTML;
             } catch (error) {
@@ -1089,11 +1027,8 @@
             }
         }
         
-        // Cargar misiones (datos de ejemplo ya que no tenemos tabla de misiones)
+        // Cargar misiones (datos de ejemplo)
         async function loadMissions() {
-            // En un caso real, aquí se cargarían las misiones desde la base de datos
-            // Por ahora usamos datos de ejemplo
-            
             const missionsHTML = `
                 <div class="mission-card">
                     <div class="mission-header">
@@ -1173,7 +1108,6 @@
             document.querySelectorAll('.mailbox-item').forEach(item => {
                 item.addEventListener('click', function() {
                     this.classList.remove('unread');
-                    // Aquí iría la lógica para mostrar el mensaje completo
                 });
             });
             
@@ -1181,28 +1115,23 @@
             if (isSquadLeader) {
                 document.getElementById('invite-btn').addEventListener('click', function() {
                     alert('Función de invitación activada');
-                    // Aquí iría la lógica para invitar jugadores
                 });
                 
                 document.getElementById('edit-squad-btn').addEventListener('click', function() {
                     alert('Función de edición activada');
-                    // Aquí iría la lógica para editar el escuadrón
                 });
                 
                 document.getElementById('invite-players-btn').addEventListener('click', function() {
                     alert('Función de invitación activada');
-                    // Aquí iría la lógica para invitar jugadores
                 });
                 
                 document.getElementById('new-mission-btn').addEventListener('click', function() {
                     alert('Función de nueva misión activada');
-                    // Aquí iría la lógica para crear una nueva misión
                 });
                 
                 document.getElementById('leave-squad-btn').addEventListener('click', function() {
                     if (confirm('¿Estás seguro de que quieres abandonar el escuadrón? Como líder, esta acción disolverá el escuadrón.')) {
                         alert('Función de abandonar escuadrón activada');
-                        // Aquí iría la lógica para abandonar el escuadrón
                     }
                 });
             }
