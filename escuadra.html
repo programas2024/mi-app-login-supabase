@@ -17,6 +17,8 @@
             --color-danger: #ff6b6b;
             --color-warning: #ffd166;
             --color-bronze: #cd7f32;
+            --container-width: 90%;
+            --header-padding: 1rem;
         }
         
         * {
@@ -30,45 +32,49 @@
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: white;
             min-height: 100vh;
-            padding: 20px;
+            padding: 1rem;
         }
         
         .header {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: var(--header-padding);
+            margin-bottom: 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
         }
         
         .header-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: 700;
             background: linear-gradient(to right, var(--color-secondary), var(--color-primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-right: 1rem;
         }
         
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
         
         .gold-display {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
             background: rgba(0, 0, 0, 0.2);
-            padding: 8px 15px;
+            padding: 0.5rem 1rem;
             border-radius: 20px;
             font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .gold-display i {
@@ -79,14 +85,15 @@
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 0.6rem 1.2rem;
             border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .back-btn:hover {
@@ -96,15 +103,17 @@
         
         .content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
             max-width: 1200px;
             margin: 0 auto;
+            width: var(--container-width);
         }
         
-        @media (max-width: 900px) {
+        @media (min-width: 900px) {
             .content {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
             }
         }
         
@@ -112,54 +121,57 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border-radius: 20px;
-            padding: 30px;
+            padding: 1.5rem;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
         
         .rls-error {
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid var(--color-danger);
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
             display: none;
+            font-size: 0.9rem;
         }
         
         .rls-error i {
             color: var(--color-danger);
-            margin-right: 10px;
+            margin-right: 0.5rem;
         }
         
         .create-title, .squad-title {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
         }
         
         .create-title h2, .squad-title h2 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 28px;
+            font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 0.75rem;
             color: var(--color-primary);
         }
         
         .create-title p, .squad-title p {
             color: #c0d6e4;
-            font-size: 16px;
+            font-size: 1rem;
         }
         
         .cost-display {
             text-align: center;
             background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
-            padding: 12px;
+            padding: 0.75rem;
             border-radius: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
             border: 1px solid rgba(205, 127, 50, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 0.75rem;
+            font-size: 0.95rem;
         }
         
         .cost-display i {
@@ -172,28 +184,28 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
         }
         
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
             font-weight: 600;
             color: var(--color-primary);
-            font-size: 16px;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
         
         .form-input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 0.875rem 1rem;
             border-radius: 10px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.2);
             color: white;
-            font-size: 16px;
+            font-size: 1rem;
             transition: all 0.3s ease;
             outline: none;
         }
@@ -210,19 +222,19 @@
         
         .mission-select {
             width: 100%;
-            padding: 14px 18px;
+            padding: 0.875rem 1rem;
             border-radius: 10px;
             border: 2px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.2);
             color: white;
-            font-size: 16px;
+            font-size: 1rem;
             transition: all 0.3s ease;
             outline: none;
             appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
+            background-position: right 1rem center;
+            background-size: 1rem;
         }
         
         .mission-select:focus {
@@ -233,38 +245,46 @@
         .rank-display {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
             background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
             border-radius: 10px;
             border: 1px solid rgba(205, 127, 50, 0.2);
+            font-size: 0.95rem;
         }
         
         .rank-icon {
             color: var(--color-bronze);
-            font-size: 20px;
+            font-size: 1.25rem;
         }
         
         .rank-name {
             font-weight: 700;
             color: var(--color-bronze);
-            font-size: 16px;
+            font-size: 0.95rem;
         }
         
         .form-buttons {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 480px) {
+            .form-buttons {
+                flex-direction: row;
+            }
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, var(--color-secondary), var(--color-primary);
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
             border: none;
-            padding: 16px 30px;
+            padding: 1rem 1.5rem;
             border-radius: 10px;
             color: #0f2027;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 1rem;
             cursor: pointer;
             flex: 1;
             transition: all 0.3s ease;
@@ -283,11 +303,11 @@
         .cancel-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 30px;
+            padding: 1rem 1.5rem;
             border-radius: 10px;
             color: white;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 1rem;
             cursor: pointer;
             flex: 1;
             transition: all 0.3s ease;
@@ -300,8 +320,8 @@
         
         /* Estilos para el contenedor de Mi Escuadrón */
         .squad-info {
-            margin-bottom: 25px;
-            padding: 20px;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -310,9 +330,19 @@
         .squad-detail {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        @media (min-width: 480px) {
+            .squad-detail {
+                flex-direction: row;
+                align-items: center;
+                gap: 0;
+            }
         }
         
         .squad-detail:last-child {
@@ -324,85 +354,102 @@
         .detail-label {
             color: var(--color-primary);
             font-weight: 600;
+            font-size: 0.9rem;
         }
         
         .detail-value {
             font-weight: 700;
+            font-size: 0.95rem;
         }
         
         .members-list {
-            margin-top: 25px;
+            margin-top: 1.5rem;
         }
         
         .members-title {
-            font-size: 18px;
-            margin-bottom: 15px;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
             color: var(--color-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
         
         .member-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px;
+            gap: 0.75rem;
+            padding: 0.75rem;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 0.75rem;
         }
         
         .member-avatar {
-            width: 40px;
-            height: 40px;
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--color-accent), #00f2fe);
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         
         .member-name {
             flex: 1;
             font-weight: 600;
+            font-size: 0.95rem;
         }
         
         .member-rank {
             background: rgba(205, 127, 50, 0.2);
             color: var(--color-bronze);
-            padding: 4px 10px;
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
         
         .empty-squad {
             text-align: center;
-            padding: 40px 20px;
+            padding: 2.5rem 1.25rem;
             color: #c0d6e4;
         }
         
         .empty-squad i {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 3rem;
+            margin-bottom: 1rem;
             color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .empty-squad h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
         }
         
         .view-more-btn {
             background: linear-gradient(135deg, var(--color-accent), #00f2fe);
             border: none;
-            padding: 12px 20px;
+            padding: 0.75rem 1.25rem;
             border-radius: 8px;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 0.875rem;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 20px;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
             transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        @media (min-width: 480px) {
+            .view-more-btn {
+                width: auto;
+            }
         }
         
         .view-more-btn:hover {
@@ -412,42 +459,80 @@
         
         .api-error {
             text-align: center;
-            padding: 40px 20px;
+            padding: 2.5rem 1.25rem;
             color: #c0d6e4;
             display: none;
         }
         
         .api-error i {
-            font-size: 64px;
+            font-size: 3rem;
             color: var(--color-danger);
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
         }
         
         .api-error h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
             color: var(--color-danger);
         }
         
-        @media (max-width: 600px) {
+        /* Media queries para responsividad */
+        @media (max-width: 768px) {
+            :root {
+                --container-width: 95%;
+                --header-padding: 0.75rem;
+            }
+            
             .header {
                 flex-direction: column;
-                gap: 15px;
+                gap: 0.75rem;
                 text-align: center;
             }
             
-            .container {
-                padding: 20px 15px;
+            .header-title {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
             }
             
-            .form-buttons {
-                flex-direction: column;
-            }
-            
-            .back-btn {
-                width: 100%;
+            .header-actions {
                 justify-content: center;
             }
+            
+            .container {
+                padding: 1.25rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content {
+                width: 100%;
+            }
+            
+            .header-title {
+                font-size: 1.25rem;
+            }
+            
+            .gold-display, .back-btn {
+                font-size: 0.85rem;
+            }
+            
+            .create-title h2, .squad-title h2 {
+                font-size: 1.5rem;
+            }
+            
+            .form-input, .mission-select {
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease;
         }
     </style>
 </head>
@@ -466,7 +551,7 @@
     </div>
     
     <div class="content">
-        <div class="container">
+        <div class="container" id="create-squad-container">
             <div class="api-error" id="api-error">
                 <i class="fas fa-exclamation-triangle"></i>
                 <h3>Error de Conexión</h3>
@@ -641,16 +726,16 @@
             if (apiError) apiError.style.display = 'block';
         }
         
-        // Ocultar sección de creación de escuadrón
-        function hideCreateSquadSection() {
-            const createSection = document.getElementById('create-squad-section');
-            if (createSection) createSection.style.display = 'none';
+        // Ocultar contenedor completo de creación de escuadrón
+        function hideCreateSquadContainer() {
+            const createContainer = document.getElementById('create-squad-container');
+            if (createContainer) createContainer.style.display = 'none';
         }
         
-        // Mostrar sección de creación de escuadrón
-        function showCreateSquadSection() {
-            const createSection = document.getElementById('create-squad-section');
-            if (createSection) createSection.style.display = 'block';
+        // Mostrar contenedor completo de creación de escuadrón
+        function showCreateSquadContainer() {
+            const createContainer = document.getElementById('create-squad-container');
+            if (createContainer) createContainer.style.display = 'block';
         }
         
         // Verificar el estado del usuario
@@ -723,7 +808,7 @@
                     // Si no encuentra resultados, es normal (usuario no tiene escuadrón)
                     if (error.code === 'PGRST116') {
                         console.log('El usuario no tiene escuadrón');
-                        showCreateSquadSection(); // Mostrar formulario de creación
+                        showCreateSquadContainer(); // Mostrar formulario de creación
                         return;
                     }
                     
@@ -734,7 +819,7 @@
                 if (squad) {
                     userSquad = squad;
                     displaySquadData(squad);
-                    hideCreateSquadSection(); // Ocultar formulario de creación
+                    hideCreateSquadContainer(); // Ocultar contenedor completo de creación
                 }
             } catch (error) {
                 console.error('Error al verificar escuadrón:', error);
@@ -892,7 +977,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
                 
                 displaySquadData(newSquad);
-                hideCreateSquadSection(); // Ocultar formulario después de crear
+                hideCreateSquadContainer(); // Ocultar contenedor completo después de crear
                 
                 // Mostrar confeti
                 confetti({
