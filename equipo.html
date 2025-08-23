@@ -681,7 +681,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         // Inicializar Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -724,7 +724,7 @@
                     renderSquadDetails();
                     await checkIfUserIsLeader();
                 } else {
-                    showError('No perteneces a ningún escuadrón.');
+                    showError('No se pudo cargar la información del escuadrón. Verifica que pertenezcas a un escuadrón.');
                 }
             } catch (error) {
                 console.error('Error inesperado:', error);
@@ -738,9 +738,9 @@
                 // Obtener el perfil del usuario para ver a qué escuadrón pertenece
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
-                    .select('squad_id')
+                    .select('squad_id, is_squad_leader')
                     .eq('id', currentUser.id)
-                    .maybeSingle();  // Usamos maybeSingle para evitar errores si no hay datos
+                    .single();
                 
                 if (profileError) {
                     console.error('Error al obtener el perfil:', profileError);
@@ -750,6 +750,7 @@
                 
                 if (!profile || !profile.squad_id) {
                     console.log('El usuario no pertenece a ningún escuadrón');
+                    showError('No perteneces a ningún escuadrón.');
                     return;
                 }
                 
@@ -758,7 +759,7 @@
                     .from('squads')
                     .select('*')
                     .eq('id', profile.squad_id)
-                    .maybeSingle();  // Usamos maybeSingle para evitar errores si no hay datos
+                    .single();
                 
                 if (squadError) {
                     console.error('Error al obtener el escuadrón:', squadError);
@@ -768,37 +769,17 @@
                 
                 if (!squad) {
                     console.log('No se encontró el escuadrón');
+                    showError('No se encontró información del escuadrón.');
                     return;
                 }
                 
                 userSquad = squad;
+                isSquadLeader = profile.is_squad_leader;
                 console.log('Escuadrón cargado:', userSquad);
+                console.log('¿Es líder?', isSquadLeader);
             } catch (error) {
                 console.error('Error inesperado:', error);
                 showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
-            }
-        }
-        
-        // Verificar si el usuario es el líder del escuadrón
-        async function checkIfUserIsLeader() {
-            try {
-                // Obtener el perfil del líder del escuadrón
-                const { data: leaderProfile, error: leaderError } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('squad_id', userSquad.id)
-                    .eq('is_squad_leader', true)
-                    .maybeSingle();
-                
-                if (leaderError) {
-                    console.error('Error al verificar el líder:', leaderError);
-                    return;
-                }
-                
-                isSquadLeader = leaderProfile && leaderProfile.id === currentUser.id;
-                console.log('¿Es líder?', isSquadLeader);
-            } catch (error) {
-                console.error('Error al verificar el líder:', error);
             }
         }
         
