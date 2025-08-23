@@ -135,6 +135,7 @@
         .create-title, .squad-title {
             text-align: center;
             margin-bottom: 25px;
+            display: none;
         }
         
         .create-title h2, .squad-title h2 {
@@ -161,6 +162,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            display: none;
         }
         
         .cost-display i {
@@ -174,6 +176,7 @@
         
         .form-group {
             margin-bottom: 20px;
+            display: none;
         }
         
         .form-label {
@@ -239,6 +242,7 @@
             background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
             border-radius: 10px;
             border: 1px solid rgba(205, 127, 50, 0.2);
+            display: none;
         }
         
         .rank-icon {
@@ -256,6 +260,7 @@
             display: flex;
             gap: 15px;
             margin-top: 30px;
+            display: none;
         }
         
         .submit-btn {
@@ -306,6 +311,7 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
         }
         
         .squad-detail {
@@ -405,11 +411,30 @@
             gap: 8px;
             margin-top: 20px;
             transition: all 0.3s ease;
+            display: none;
         }
         
         .view-more-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 12px rgba(79, 172, 254, 0.4);
+        }
+        
+        .api-error {
+            text-align: center;
+            padding: 40px 20px;
+            color: #c0d6e4;
+        }
+        
+        .api-error i {
+            font-size: 64px;
+            color: var(--color-danger);
+            margin-bottom: 20px;
+        }
+        
+        .api-error h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--color-danger);
         }
         
         @media (max-width: 600px) {
@@ -450,6 +475,15 @@
     
     <div class="content">
         <div class="container">
+            <div class="api-error" id="api-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error de Conexión</h3>
+                <p>No se puede conectar con la base de datos. Verifica tu conexión e intenta nuevamente.</p>
+                <button class="submit-btn" id="retry-btn" style="margin-top: 20px;">
+                    <i class="fas fa-sync-alt"></i> Reintentar
+                </button>
+            </div>
+            
             <div class="rls-error" id="rls-error">
                 <i class="fas fa-exclamation-triangle"></i>
                 <span>Error de permisos: Necesitas configurar las políticas RLS en Supabase.</span>
@@ -573,7 +607,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3RwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -589,13 +623,34 @@
         
         // Inicializar la aplicación
         async function initializeApp() {
+            hideApiError();
+            
             try {
                 await checkUserStatus();
                 await loadUserData();
                 await checkExistingSquad();
+                showMainContent();
             } catch (error) {
                 console.error('Error al inicializar la aplicación:', error);
+                showApiError();
             }
+        }
+        
+        // Mostrar contenido principal
+        function showMainContent() {
+            document.querySelectorAll('.create-title, .cost-display, .form-group, .rank-display, .form-buttons, .squad-title').forEach(el => {
+                el.style.display = 'block';
+            });
+        }
+        
+        // Ocultar error de API
+        function hideApiError() {
+            document.getElementById('api-error').style.display = 'none';
+        }
+        
+        // Mostrar error de API
+        function showApiError() {
+            document.getElementById('api-error').style.display = 'block';
         }
         
         // Verificar el estado del usuario
@@ -606,18 +661,19 @@
                 
                 if (error) {
                     console.error('Error al obtener sesión:', error);
-                    return;
+                    throw error;
                 }
                 
                 if (!session) {
                     showError('No autenticado', 'Debes iniciar sesión para acceder a esta página');
-                    return;
+                    throw new Error('No autenticado');
                 }
                 
                 currentUser = session.user;
                 console.log("Usuario actual:", currentUser.id);
             } catch (error) {
                 console.error('Error al verificar estado de usuario:', error);
+                throw error;
             }
         }
         
@@ -635,7 +691,7 @@
                 
                 if (error) {
                     console.error('Error al cargar perfil:', error);
-                    return;
+                    throw error;
                 }
                 
                 userProfile = profile;
@@ -644,6 +700,7 @@
                 
             } catch (error) {
                 console.error('Error al cargar datos del usuario:', error);
+                throw error;
             }
         }
         
@@ -667,7 +724,7 @@
                     }
                     
                     console.error('Error al verificar escuadrón:', error);
-                    return;
+                    throw error;
                 }
                 
                 if (squad) {
@@ -676,6 +733,7 @@
                 }
             } catch (error) {
                 console.error('Error al verificar escuadrón:', error);
+                throw error;
             }
         }
         
@@ -683,15 +741,25 @@
         async function displaySquadData(squad) {
             document.getElementById('empty-squad').style.display = 'none';
             document.getElementById('squad-details').style.display = 'block';
+            document.getElementById('squad-info').style.display = 'block';
+            document.getElementById('members-list').style.display = 'block';
+            document.getElementById('view-more-btn').style.display = 'flex';
             
             document.getElementById('detail-name').textContent = squad.name;
             document.getElementById('detail-members').textContent = `${squad.member_count}/${squad.max_members}`;
             document.getElementById('detail-mission').textContent = squad.mission;
             document.getElementById('detail-rank').textContent = squad.rank;
             document.getElementById('detail-leader').textContent = userProfile.username;
-            
-            // Mostrar botón de ver más
-            document.getElementById('view-more-btn').style.display = 'flex';
+        }
+        
+        // Mostrar error de RLS
+        function showRLSError() {
+            document.getElementById('rls-error').style.display = 'block';
+        }
+        
+        // Ocultar error de RLS
+        function hideRLSError() {
+            document.getElementById('rls-error').style.display = 'none';
         }
         
         // Mostrar error genérico
@@ -743,6 +811,11 @@ FOR UPDATE USING (auth.uid() = leader_id);
         // Botón Volver
         document.getElementById('back-btn').addEventListener('click', function() {
             window.location.href = 'dashboard.html';
+        });
+        
+        // Botón Reintentar
+        document.getElementById('retry-btn').addEventListener('click', function() {
+            initializeApp();
         });
         
         // Crear escuadrón
