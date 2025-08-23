@@ -648,6 +648,17 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .error-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .error-icon {
+            font-size: 3rem;
+            color: var(--color-danger);
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -661,7 +672,6 @@
     </div>
     
     <div class="content" id="content">
-        <!-- El contenido se cargará dinámicamente -->
         <div class="loading">
             <div class="spinner"></div>
             <p>Cargando datos del escuadrón...</p>
@@ -671,7 +681,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         // Inicializar Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -688,25 +698,37 @@
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
-            // Obtener la sesión actual
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            
-            if (sessionError || !session) {
-                showError('No se pudo verificar la sesión. Por favor, inicia sesión nuevamente.');
-                return;
-            }
-            
-            currentUser = session.user;
-            
-            // Obtener el escuadrón del usuario
-            await loadUserSquad();
-            
-            // Si el usuario tiene un escuadrón, cargar los datos
-            if (userSquad) {
-                renderSquadDetails();
-                checkIfUserIsLeader();
-            } else {
-                showError('No perteneces a ningún escuadrón o no se pudieron cargar los datos.');
+            try {
+                // Obtener la sesión actual
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError) {
+                    console.error('Error al obtener la sesión:', sessionError);
+                    showError('No se pudo verificar la sesión. Por favor, inicia sesión nuevamente.');
+                    return;
+                }
+                
+                if (!session) {
+                    showError('No hay una sesión activa. Por favor, inicia sesión.');
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log('Usuario actual:', currentUser);
+                
+                // Obtener el escuadrón del usuario
+                await loadUserSquad();
+                
+                // Si el usuario tiene un escuadrón, cargar los datos
+                if (userSquad) {
+                    renderSquadDetails();
+                    await checkIfUserIsLeader();
+                } else {
+                    showError('No perteneces a ningún escuadrón.');
+                }
+            } catch (error) {
+                console.error('Error inesperado:', error);
+                showError('Ocurrió un error inesperado al cargar los datos.');
             }
         });
         
@@ -718,15 +740,16 @@
                     .from('profiles')
                     .select('squad_id')
                     .eq('id', currentUser.id)
-                    .single();
+                    .maybeSingle();  // Usamos maybeSingle para evitar errores si no hay datos
                 
-                if (profileError || !profile) {
+                if (profileError) {
                     console.error('Error al obtener el perfil:', profileError);
+                    showError('Error al cargar el perfil de usuario.');
                     return;
                 }
                 
-                if (!profile.squad_id) {
-                    showError('No perteneces a ningún escuadrón.');
+                if (!profile || !profile.squad_id) {
+                    console.log('El usuario no pertenece a ningún escuadrón');
                     return;
                 }
                 
@@ -735,18 +758,24 @@
                     .from('squads')
                     .select('*')
                     .eq('id', profile.squad_id)
-                    .single();
+                    .maybeSingle();  // Usamos maybeSingle para evitar errores si no hay datos
                 
-                if (squadError || !squad) {
+                if (squadError) {
                     console.error('Error al obtener el escuadrón:', squadError);
-                    showError('No se pudo cargar la información del escuadrón.');
+                    showError('Error al cargar la información del escuadrón.');
+                    return;
+                }
+                
+                if (!squad) {
+                    console.log('No se encontró el escuadrón');
                     return;
                 }
                 
                 userSquad = squad;
+                console.log('Escuadrón cargado:', userSquad);
             } catch (error) {
                 console.error('Error inesperado:', error);
-                showError('Ocurrió un error inesperado al cargar los datos.');
+                showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
             }
         }
         
@@ -759,7 +788,7 @@
                     .select('id')
                     .eq('squad_id', userSquad.id)
                     .eq('is_squad_leader', true)
-                    .single();
+                    .maybeSingle();
                 
                 if (leaderError) {
                     console.error('Error al verificar el líder:', leaderError);
@@ -767,6 +796,7 @@
                 }
                 
                 isSquadLeader = leaderProfile && leaderProfile.id === currentUser.id;
+                console.log('¿Es líder?', isSquadLeader);
             } catch (error) {
                 console.error('Error al verificar el líder:', error);
             }
@@ -790,7 +820,7 @@
                     <!-- Información del escuadrón -->
                     <div class="container">
                         <div class="squad-header">
-                            <h2 class="squad-name">${userSquad.name}</h2>
+                            <h2 class="squad-name">${userSquad.name || 'Sin nombre'}</h2>
                             <p class="squad-motto">${userSquad.motto || '¡Hacia la victoria juntos!'}</p>
                         </div>
                         
@@ -1201,8 +1231,10 @@
         function showError(message) {
             const contentEl = document.getElementById('content');
             contentEl.innerHTML = `
-                <div class="container" style="text-align: center; padding: 2rem;">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--color-danger); margin-bottom: 1rem;"></i>
+                <div class="container error-container">
+                    <div class="error-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
                     <h2>Error</h2>
                     <p>${message}</p>
                     <button class="back-btn" onclick="window.history.back()" style="margin-top: 1rem;">
@@ -1211,7 +1243,6 @@
                 </div>
             `;
         }
-
     </script>
 </body>
 </html>
