@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Tus estilos aquí (igual que antes) */
         * {
             margin: 0;
             padding: 0;
@@ -37,373 +38,12 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .header-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(to right, #a8ff78, #78ffd6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        /* ... (mantén todos tus estilos igual) ... */
         
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .gold-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        
-        .gold-display i {
-            color: gold;
-        }
-        
-        .back-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        @media (max-width: 900px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .create-title, .squad-title {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        
-        .create-title h2, .squad-title h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #78ffd6;
-        }
-        
-        .create-title p, .squad-title p {
-            color: #c0d6e4;
-            font-size: 16px;
-        }
-        
-        .cost-display {
-            text-align: center;
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(205, 127, 50, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .cost-display i {
-            color: gold;
-        }
-        
-        .cost-display span {
-            font-weight: 700;
-            color: gold;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #78ffd6;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-        
-        .form-input:focus {
-            border-color: #78ffd6;
-            box-shadow: 0 0 12px rgba(120, 255, 214, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-        }
-        
-        .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-        
-        .mission-select {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
-            color: white;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            outline: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 16px;
-        }
-        
-        .mission-select:focus {
-            border-color: #78ffd6;
-            box-shadow: 0 0 12px rgba(120, 255, 214, 0.3);
-        }
-        
-        .rank-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
-            border-radius: 10px;
-            border: 1px solid rgba(205, 127, 50, 0.2);
-        }
-        
-        .rank-icon {
-            color: #cd7f32;
-            font-size: 20px;
-        }
-        
-        .rank-name {
-            font-weight: 700;
-            color: #cd7f32;
-            font-size: 16px;
-        }
-        
-        .form-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #a8ff78, #78ffd6);
-            border: none;
-            padding: 16px 30px;
-            border-radius: 10px;
-            color: #0f2027;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(168, 255, 120, 0.3);
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(168, 255, 120, 0.4);
-        }
-        
-        .submit-btn:active {
-            transform: translateY(1px);
-        }
-        
-        .cancel-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 30px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.3s ease;
-        }
-        
-        .cancel-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Estilos para el contenedor de Mi Escuadrón */
-        .squad-info {
-            margin-bottom: 25px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .squad-detail {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .squad-detail:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        
-        .detail-label {
-            color: #78ffd6;
-            font-weight: 600;
-        }
-        
-        .detail-value {
-            font-weight: 700;
-        }
-        
-        .members-list {
-            margin-top: 25px;
-        }
-        
-        .members-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #78ffd6;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .member-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .member-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .member-name {
-            flex: 1;
-            font-weight: 600;
-        }
-        
-        .member-rank {
-            background: rgba(205, 127, 50, 0.2);
-            color: #cd7f32;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .empty-squad {
-            text-align: center;
-            padding: 40px 20px;
-            color: #c0d6e4;
-        }
-        
-        .empty-squad i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .view-more-btn {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .view-more-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 12px rgba(79, 172, 254, 0.4);
-        }
-        
-        @media (max-width: 600px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .container {
-                padding: 20px 15px;
-            }
-            
-            .form-buttons {
-                flex-direction: column;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- Tu HTML aquí (igual que antes) -->
     <div class="header">
         <h1 class="header-title">Gestión de Escuadrones</h1>
         <div class="header-actions">
@@ -440,7 +80,7 @@
                 <label class="form-label">
                     <i class="fas fa-users"></i>Cantidad de miembros
                 </label>
-                <input type="number" class="form-input" id="squad-members" placeholder="Número entre 1 y 10" min="1" max="10">
+                <input type="number" class="form-input" id="squad-members" placeholder="Número entre 1 и 10" min="1" max="10">
             </div>
             
             <div class="form-group">
@@ -558,22 +198,12 @@
                 
                 if (error) {
                     console.error('Error al obtener sesión:', error);
-                    Swal.fire({
-                        title: 'Error de autenticación',
-                        text: 'Por favor inicia sesión nuevamente',
-                        icon: 'error',
-                        confirmButtonText: 'Entendido'
-                    });
+                    showError('Error de autenticación', 'Por favor inicia sesión nuevamente');
                     return;
                 }
                 
                 if (!session) {
-                    Swal.fire({
-                        title: 'No autenticado',
-                        text: 'Debes iniciar sesión para acceder a esta página',
-                        icon: 'warning',
-                        confirmButtonText: 'Entendido'
-                    });
+                    showError('No autenticado', 'Debes iniciar sesión para acceder a esta página');
                     return;
                 }
                 
@@ -581,6 +211,7 @@
                 console.log("Usuario actual:", currentUser.id);
             } catch (error) {
                 console.error('Error al verificar estado de usuario:', error);
+                showError('Error', 'No se pudo verificar tu sesión');
             }
         }
         
@@ -598,6 +229,13 @@
                 
                 if (error) {
                     console.error('Error al cargar perfil:', error);
+                    
+                    // Si el error es 401, probablemente sea por políticas RLS
+                    if (error.code === 'PGRST301' || error.message.includes('401')) {
+                        showRLSError();
+                    } else {
+                        showError('Error', 'No se pudieron cargar los datos de tu perfil');
+                    }
                     return;
                 }
                 
@@ -607,6 +245,7 @@
                 
             } catch (error) {
                 console.error('Error al cargar datos del usuario:', error);
+                showError('Error', 'Error inesperado al cargar datos');
             }
         }
         
@@ -622,8 +261,19 @@
                     .eq('leader_id', currentUser.id)
                     .single();
                 
-                if (error && error.code !== 'PGRST116') { // PGRST116 es el código cuando no encuentra resultados
+                if (error) {
+                    // Si no encuentra resultados, es normal (usuario no tiene escuadrón)
+                    if (error.code === 'PGRST116') {
+                        console.log('El usuario no tiene escuadrón');
+                        return;
+                    }
+                    
                     console.error('Error al verificar escuadrón:', error);
+                    
+                    // Si el error es 401, probablemente sea por políticas RLS
+                    if (error.code === 'PGRST301' || error.message.includes('401')) {
+                        showRLSError();
+                    }
                     return;
                 }
                 
@@ -655,29 +305,13 @@
             const mission = document.getElementById('squad-mission').value;
             
             if (!name || !members || !mission) {
-                Swal.fire({
-                    title: 'Campos incompletos',
-                    text: 'Por favor completa todos los campos',
-                    icon: 'warning',
-                    confirmButtonColor: '#78ffd6',
-                    confirmButtonText: 'Entendido',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
+                showError('Campos incompletos', 'Por favor completa todos los campos');
                 return;
             }
             
             // Verificar si tiene suficiente oro
             if (userProfile.gold < 200) {
-                Swal.fire({
-                    title: 'Oro insuficiente',
-                    text: 'Necesitas 200 oro para crear un escuadrón',
-                    icon: 'error',
-                    confirmButtonColor: '#78ffd6',
-                    confirmButtonText: 'Entendido',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
+                showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
                 return;
             }
             
@@ -691,7 +325,14 @@
                 
                 if (updateError) {
                     console.error('Error al actualizar oro:', updateError);
-                    throw new Error('No se pudo actualizar el oro');
+                    
+                    // Si el error es 401, probablemente sea por políticas RLS
+                    if (updateError.code === 'PGRST301' || updateError.message.includes('401')) {
+                        showRLSError();
+                    } else {
+                        throw new Error('No se pudo actualizar el oro');
+                    }
+                    return;
                 }
                 
                 // 2. Insertar el nuevo escuadrón en la tabla de squads
@@ -713,7 +354,14 @@
                 
                 if (insertError) {
                     console.error('Error al crear escuadrón:', insertError);
-                    throw new Error('No se pudo crear el escuadrón');
+                    
+                    // Si el error es 401, probablemente sea por políticas RLS
+                    if (insertError.code === 'PGRST301' || insertError.message.includes('401')) {
+                        showRLSError();
+                    } else {
+                        throw new Error('No se pudo crear el escuadrón');
+                    }
+                    return;
                 }
                 
                 // Actualizar la UI
@@ -750,17 +398,41 @@
                 
             } catch (error) {
                 console.error('Error al crear escuadrón:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.',
-                    icon: 'error',
-                    confirmButtonColor: '#78ffd6',
-                    confirmButtonText: 'Entendido',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
+                showError('Error', error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.');
             }
         });
+        
+        // Mostrar error de políticas RLS
+        function showRLSError() {
+            Swal.fire({
+                title: 'Error de permisos',
+                html: `
+                    <div style="text-align:left;">
+                        <p>Necesitas configurar las políticas RLS en Supabase:</p>
+                        <ol>
+                            <li>Ve a tu proyecto de Supabase</li>
+                            <li>Abre el Editor de SQL</li>
+                            <li>Ejecuta las políticas para permitir acceso a las tablas</li>
+                        </ol>
+                    </div>
+                `,
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+        }
+        
+        // Mostrar error genérico
+        function showError(title, message) {
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: 'error',
+                confirmButtonColor: '#78ffd6',
+                confirmButtonText: 'Entendido',
+                background: '#1e3a47',
+                color: 'white'
+            });
+        }
         
         // Botón Cancelar
         document.getElementById('cancel-btn').addEventListener('click', function() {
