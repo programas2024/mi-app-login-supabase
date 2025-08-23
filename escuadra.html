@@ -258,7 +258,7 @@
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-primary);
             border: none;
             padding: 16px 30px;
             border-radius: 10px;
@@ -484,56 +484,58 @@
                 </button>
             </div>
             
-            <div class="create-title">
-                <h2>Crea tu Escuadrón</h2>
-                <p>Forma tu equipo para desbloquear recompensas exclusivas</p>
-            </div>
-            
-            <div class="cost-display">
-                <i class="fas fa-tag"></i>
-                <div>Costo de creación: <span>200 Oro</span></div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-signature"></i>Nombre del escuadrón
-                </label>
-                <input type="text" class="form-input" id="squad-name" placeholder="Ingresa un nombre épico">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-users"></i>Cantidad de miembros
-                </label>
-                <input type="number" class="form-input" id="squad-members" placeholder="Número entre 1 y 10" min="1" max="10">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-bullseye"></i>Selecciona una misión
-                </label>
-                <select class="mission-select" id="squad-mission">
-                    <option value="">Elige una misión</option>
-                    <option value="Hacer amigos">Hacer amigos</option>
-                    <option value="Subir de rango">Subir de rango</option>
-                    <option value="Ser top 1">Ser top 1</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">
-                    <i class="fas fa-medal"></i>Rango
-                </label>
-                <div class="rank-display">
-                    <i class="fas fa-medal rank-icon"></i>
-                    <span class="rank-name">Bronce</span>
-                    <span>(Rango inicial)</span>
+            <div id="create-squad-section">
+                <div class="create-title">
+                    <h2>Crea tu Escuadrón</h2>
+                    <p>Forma tu equipo para desbloquear recompensas exclusivas</p>
                 </div>
-            </div>
-            
-            <div class="form-buttons">
-                <button class="cancel-btn" id="cancel-btn">Cancelar</button>
-                <button class="submit-btn" id="create-squad-btn">Crear Escuadrón</button>
+                
+                <div class="cost-display">
+                    <i class="fas fa-tag"></i>
+                    <div>Costo de creación: <span>200 Oro</span></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-signature"></i>Nombre del escuadrón
+                    </label>
+                    <input type="text" class="form-input" id="squad-name" placeholder="Ingresa un nombre épico">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-users"></i>Cantidad de miembros
+                    </label>
+                    <input type="number" class="form-input" id="squad-members" placeholder="Número entre 1 y 10" min="1" max="10">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-bullseye"></i>Selecciona una misión
+                    </label>
+                    <select class="mission-select" id="squad-mission">
+                        <option value="">Elige una misión</option>
+                        <option value="Hacer amigos">Hacer amigos</option>
+                        <option value="Subir de rango">Subir de rango</option>
+                        <option value="Ser top 1">Ser top 1</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-medal"></i>Rango
+                    </label>
+                    <div class="rank-display">
+                        <i class="fas fa-medal rank-icon"></i>
+                        <span class="rank-name">Bronce</span>
+                        <span>(Rango inicial)</span>
+                    </div>
+                </div>
+                
+                <div class="form-buttons">
+                    <button class="cancel-btn" id="cancel-btn">Cancelar</button>
+                    <button class="submit-btn" id="create-squad-btn">Crear Escuadrón</button>
+                </div>
             </div>
         </div>
         
@@ -639,6 +641,18 @@
             if (apiError) apiError.style.display = 'block';
         }
         
+        // Ocultar sección de creación de escuadrón
+        function hideCreateSquadSection() {
+            const createSection = document.getElementById('create-squad-section');
+            if (createSection) createSection.style.display = 'none';
+        }
+        
+        // Mostrar sección de creación de escuadrón
+        function showCreateSquadSection() {
+            const createSection = document.getElementById('create-squad-section');
+            if (createSection) createSection.style.display = 'block';
+        }
+        
         // Verificar el estado del usuario
         async function checkUserStatus() {
             try {
@@ -709,6 +723,7 @@
                     // Si no encuentra resultados, es normal (usuario no tiene escuadrón)
                     if (error.code === 'PGRST116') {
                         console.log('El usuario no tiene escuadrón');
+                        showCreateSquadSection(); // Mostrar formulario de creación
                         return;
                     }
                     
@@ -719,6 +734,7 @@
                 if (squad) {
                     userSquad = squad;
                     displaySquadData(squad);
+                    hideCreateSquadSection(); // Ocultar formulario de creación
                 }
             } catch (error) {
                 console.error('Error al verificar escuadrón:', error);
@@ -876,6 +892,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
                 
                 displaySquadData(newSquad);
+                hideCreateSquadSection(); // Ocultar formulario después de crear
                 
                 // Mostrar confeti
                 confetti({
