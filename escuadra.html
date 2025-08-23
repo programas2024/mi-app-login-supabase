@@ -75,23 +75,23 @@
             color: gold;
         }
         
-        .config-btn {
+        .back-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            gap: 8px;
             transition: all 0.3s ease;
         }
         
-        .config-btn:hover {
+        .back-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: rotate(30deg);
+            transform: translateX(-5px);
         }
         
         .content {
@@ -333,6 +333,7 @@
         
         .members-list {
             margin-top: 25px;
+            display: none;
         }
         
         .members-title {
@@ -411,35 +412,6 @@
             box-shadow: 0 5px 12px rgba(79, 172, 254, 0.4);
         }
         
-        .config-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 600px;
-            margin: 30px auto;
-            display: none;
-        }
-        
-        .config-panel h2 {
-            color: var(--color-primary);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .config-input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.2);
-            color: white;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        
         @media (max-width: 600px) {
             .header {
                 flex-direction: column;
@@ -454,6 +426,11 @@
             .form-buttons {
                 flex-direction: column;
             }
+            
+            .back-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -465,25 +442,9 @@
                 <i class="fas fa-coins"></i>
                 <span id="gold-amount">Cargando...</span>
             </div>
-            <button class="config-btn" id="config-btn">
-                <i class="fas fa-cog"></i>
+            <button class="back-btn" id="back-btn">
+                <i class="fas fa-arrow-left"></i> Volver
             </button>
-        </div>
-    </div>
-    
-    <div class="config-panel" id="config-panel">
-        <h2>Configuración de Supabase</h2>
-        <p>Por favor, ingresa la información correcta de tu proyecto Supabase:</p>
-        
-        <label>URL de Supabase:</label>
-        <input type="text" class="config-input" id="supabase-url" placeholder="https://tu-proyecto.supabase.co">
-        
-        <label>Clave API Anónima:</label>
-        <input type="text" class="config-input" id="supabase-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-        
-        <div class="form-buttons">
-            <button class="cancel-btn" id="cancel-config">Cancelar</button>
-            <button class="submit-btn" id="save-config">Guardar Configuración</button>
         </div>
     </div>
     
@@ -587,7 +548,7 @@
                         </div>
                     </div>
                     
-                    <div class="members-list">
+                    <div class="members-list" id="members-list">
                         <h3 class="members-title">
                             <i class="fas fa-users"></i> Miembros del escuadrón
                         </h3>
@@ -612,7 +573,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3RwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -634,9 +595,6 @@
                 await checkExistingSquad();
             } catch (error) {
                 console.error('Error al inicializar la aplicación:', error);
-                if (error.message && error.message.includes('API key')) {
-                    showApiKeyError();
-                }
             }
         }
         
@@ -648,7 +606,6 @@
                 
                 if (error) {
                     console.error('Error al obtener sesión:', error);
-                    showError('Error de autenticación', 'Por favor inicia sesión nuevamente');
                     return;
                 }
                 
@@ -661,7 +618,6 @@
                 console.log("Usuario actual:", currentUser.id);
             } catch (error) {
                 console.error('Error al verificar estado de usuario:', error);
-                showError('Error', 'No se pudo verificar tu sesión');
             }
         }
         
@@ -679,13 +635,6 @@
                 
                 if (error) {
                     console.error('Error al cargar perfil:', error);
-                    
-                    // Mostrar error específico de RLS
-                    if (error.code === 'PGRST301' || error.message.includes('401')) {
-                        showRLSError();
-                    } else {
-                        showError('Error', 'No se pudieron cargar los datos de tu perfil');
-                    }
                     return;
                 }
                 
@@ -695,7 +644,6 @@
                 
             } catch (error) {
                 console.error('Error al cargar datos del usuario:', error);
-                showError('Error', 'Error inesperado al cargar datos');
             }
         }
         
@@ -719,11 +667,6 @@
                     }
                     
                     console.error('Error al verificar escuadrón:', error);
-                    
-                    // Mostrar error específico de RLS
-                    if (error.code === 'PGRST301' || error.message.includes('401')) {
-                        showRLSError();
-                    }
                     return;
                 }
                 
@@ -749,36 +692,6 @@
             
             // Mostrar botón de ver más
             document.getElementById('view-more-btn').style.display = 'flex';
-        }
-        
-        // Mostrar error de RLS
-        function showRLSError() {
-            document.getElementById('rls-error').style.display = 'block';
-        }
-        
-        // Ocultar error de RLS
-        function hideRLSError() {
-            document.getElementById('rls-error').style.display = 'none';
-        }
-        
-        // Mostrar error de API key
-        function showApiKeyError() {
-            Swal.fire({
-                title: 'Error de Clave API',
-                html: `
-                    <div style="text-align:left;">
-                        <p>La clave API de Supabase es inválida o ha expirado.</p>
-                        <p>Por favor, verifica en tu proyecto de Supabase:</p>
-                        <ol>
-                            <li>Ve a Settings → API</li>
-                            <li>Copia la "anon public key" correcta</li>
-                            <li>Actualiza la configuración</li>
-                        </ol>
-                    </div>
-                `,
-                icon: 'error',
-                confirmButtonText: 'Entendido'
-            });
         }
         
         // Mostrar error genérico
@@ -827,34 +740,9 @@ FOR UPDATE USING (auth.uid() = leader_id);
             });
         });
         
-        // Botón Configuración
-        document.getElementById('config-btn').addEventListener('click', function() {
-            document.getElementById('config-panel').style.display = 'block';
-        });
-        
-        // Botón Cancelar Configuración
-        document.getElementById('cancel-config').addEventListener('click', function() {
-            document.getElementById('config-panel').style.display = 'none';
-        });
-        
-        // Botón Guardar Configuración
-        document.getElementById('save-config').addEventListener('click', function() {
-            const newUrl = document.getElementById('supabase-url').value;
-            const newKey = document.getElementById('supabase-key').value;
-            
-            if (newUrl && newKey) {
-                localStorage.setItem('supabase_url', newUrl);
-                localStorage.setItem('supabase_key', newKey);
-                
-                Swal.fire({
-                    title: 'Configuración Guardada',
-                    text: 'La página se recargará para aplicar los cambios.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    location.reload();
-                });
-            }
+        // Botón Volver
+        document.getElementById('back-btn').addEventListener('click', function() {
+            window.location.href = 'dashboard.html';
         });
         
         // Crear escuadrón
@@ -884,14 +772,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 
                 if (updateError) {
                     console.error('Error al actualizar oro:', updateError);
-                    
-                    // Si el error es 401, probablemente sea por políticas RLS
-                    if (updateError.code === 'PGRST301' || updateError.message.includes('401')) {
-                        showRLSError();
-                    } else {
-                        throw new Error('No se pudo actualizar el oro');
-                    }
-                    return;
+                    throw new Error('No se pudo actualizar el oro');
                 }
                 
                 // 2. Insertar el nuevo escuadrón en la tabla de squads
@@ -913,14 +794,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 
                 if (insertError) {
                     console.error('Error al crear escuadrón:', insertError);
-                    
-                    // Si el error es 401, probablemente sea por políticas RLS
-                    if (insertError.code === 'PGRST301' || insertError.message.includes('401')) {
-                        showRLSError();
-                    } else {
-                        throw new Error('No se pudo crear el escuadrón');
-                    }
-                    return;
+                    throw new Error('No se pudo crear el escuadrón');
                 }
                 
                 // Actualizar la UI
@@ -929,7 +803,6 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 
                 document.getElementById('gold-amount').textContent = newGold.toLocaleString();
                 displaySquadData(newSquad);
-                hideRLSError();
                 
                 // Mostrar confeti
                 confetti({
@@ -964,24 +837,9 @@ FOR UPDATE USING (auth.uid() = leader_id);
         
         // Botón Cancelar
         document.getElementById('cancel-btn').addEventListener('click', function() {
-            Swal.fire({
-                title: '¿Cancelar creación?',
-                text: 'Los datos ingresados se perderán',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#78ffd6',
-                cancelButtonColor: '#ff6b6b',
-                confirmButtonText: 'Sí, cancelar',
-                cancelButtonText: 'Continuar editando',
-                background: '#1e3a47',
-                color: 'white'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('squad-name').value = '';
-                    document.getElementById('squad-members').value = '';
-                    document.getElementById('squad-mission').selectedIndex = 0;
-                }
-            });
+            document.getElementById('squad-name').value = '';
+            document.getElementById('squad-members').value = '';
+            document.getElementById('squad-mission').selectedIndex = 0;
         });
         
         // Botón Ver Más
