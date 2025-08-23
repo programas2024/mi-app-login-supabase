@@ -115,7 +115,6 @@
             padding: 30px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
         }
         
         .rls-error {
@@ -135,7 +134,6 @@
         .create-title, .squad-title {
             text-align: center;
             margin-bottom: 25px;
-            display: none;
         }
         
         .create-title h2, .squad-title h2 {
@@ -162,7 +160,6 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            display: none;
         }
         
         .cost-display i {
@@ -176,7 +173,6 @@
         
         .form-group {
             margin-bottom: 20px;
-            display: none;
         }
         
         .form-label {
@@ -242,7 +238,6 @@
             background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.1));
             border-radius: 10px;
             border: 1px solid rgba(205, 127, 50, 0.2);
-            display: none;
         }
         
         .rank-icon {
@@ -260,7 +255,6 @@
             display: flex;
             gap: 15px;
             margin-top: 30px;
-            display: none;
         }
         
         .submit-btn {
@@ -311,7 +305,6 @@
             background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
         }
         
         .squad-detail {
@@ -339,7 +332,6 @@
         
         .members-list {
             margin-top: 25px;
-            display: none;
         }
         
         .members-title {
@@ -411,7 +403,6 @@
             gap: 8px;
             margin-top: 20px;
             transition: all 0.3s ease;
-            display: none;
         }
         
         .view-more-btn:hover {
@@ -423,6 +414,7 @@
             text-align: center;
             padding: 40px 20px;
             color: #c0d6e4;
+            display: none;
         }
         
         .api-error i {
@@ -559,7 +551,7 @@
                 </div>
                 
                 <div id="squad-details" style="display: none;">
-                    <div class="squad-info">
+                    <div class="squad-info" id="squad-info">
                         <div class="squad-detail">
                             <span class="detail-label">Nombre:</span>
                             <span class="detail-value" id="detail-name">-</span>
@@ -629,28 +621,22 @@
                 await checkUserStatus();
                 await loadUserData();
                 await checkExistingSquad();
-                showMainContent();
             } catch (error) {
                 console.error('Error al inicializar la aplicación:', error);
                 showApiError();
             }
         }
         
-        // Mostrar contenido principal
-        function showMainContent() {
-            document.querySelectorAll('.create-title, .cost-display, .form-group, .rank-display, .form-buttons, .squad-title').forEach(el => {
-                el.style.display = 'block';
-            });
-        }
-        
         // Ocultar error de API
         function hideApiError() {
-            document.getElementById('api-error').style.display = 'none';
+            const apiError = document.getElementById('api-error');
+            if (apiError) apiError.style.display = 'none';
         }
         
         // Mostrar error de API
         function showApiError() {
-            document.getElementById('api-error').style.display = 'block';
+            const apiError = document.getElementById('api-error');
+            if (apiError) apiError.style.display = 'block';
         }
         
         // Verificar el estado del usuario
@@ -695,8 +681,11 @@
                 }
                 
                 userProfile = profile;
-                document.getElementById('gold-amount').textContent = profile.gold.toLocaleString();
-                document.getElementById('leader-name').textContent = profile.username || 'Usuario';
+                const goldAmount = document.getElementById('gold-amount');
+                const leaderName = document.getElementById('leader-name');
+                
+                if (goldAmount) goldAmount.textContent = profile.gold.toLocaleString();
+                if (leaderName) leaderName.textContent = profile.username || 'Usuario';
                 
             } catch (error) {
                 console.error('Error al cargar datos del usuario:', error);
@@ -738,28 +727,37 @@
         }
         
         // Mostrar datos del escuadrón
-        async function displaySquadData(squad) {
-            document.getElementById('empty-squad').style.display = 'none';
-            document.getElementById('squad-details').style.display = 'block';
-            document.getElementById('squad-info').style.display = 'block';
-            document.getElementById('members-list').style.display = 'block';
-            document.getElementById('view-more-btn').style.display = 'flex';
+        function displaySquadData(squad) {
+            const emptySquad = document.getElementById('empty-squad');
+            const squadDetails = document.getElementById('squad-details');
+            const squadInfo = document.getElementById('squad-info');
+            const membersList = document.getElementById('members-list');
+            const viewMoreBtn = document.getElementById('view-more-btn');
             
-            document.getElementById('detail-name').textContent = squad.name;
-            document.getElementById('detail-members').textContent = `${squad.member_count}/${squad.max_members}`;
-            document.getElementById('detail-mission').textContent = squad.mission;
-            document.getElementById('detail-rank').textContent = squad.rank;
-            document.getElementById('detail-leader').textContent = userProfile.username;
+            if (emptySquad) emptySquad.style.display = 'none';
+            if (squadDetails) squadDetails.style.display = 'block';
+            if (squadInfo) squadInfo.style.display = 'block';
+            if (membersList) membersList.style.display = 'block';
+            if (viewMoreBtn) viewMoreBtn.style.display = 'flex';
+            
+            // Actualizar los detalles del escuadrón
+            const detailName = document.getElementById('detail-name');
+            const detailMembers = document.getElementById('detail-members');
+            const detailMission = document.getElementById('detail-mission');
+            const detailRank = document.getElementById('detail-rank');
+            const detailLeader = document.getElementById('detail-leader');
+            
+            if (detailName) detailName.textContent = squad.name;
+            if (detailMembers) detailMembers.textContent = `${squad.member_count}/${squad.max_members}`;
+            if (detailMission) detailMission.textContent = squad.mission;
+            if (detailRank) detailRank.textContent = squad.rank;
+            if (detailLeader && userProfile) detailLeader.textContent = userProfile.username;
         }
         
         // Mostrar error de RLS
         function showRLSError() {
-            document.getElementById('rls-error').style.display = 'block';
-        }
-        
-        // Ocultar error de RLS
-        function hideRLSError() {
-            document.getElementById('rls-error').style.display = 'none';
+            const rlsError = document.getElementById('rls-error');
+            if (rlsError) rlsError.style.display = 'block';
         }
         
         // Mostrar error genérico
@@ -874,7 +872,9 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 userProfile.gold = newGold;
                 userSquad = newSquad;
                 
-                document.getElementById('gold-amount').textContent = newGold.toLocaleString();
+                const goldAmount = document.getElementById('gold-amount');
+                if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
+                
                 displaySquadData(newSquad);
                 
                 // Mostrar confeti
