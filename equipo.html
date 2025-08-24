@@ -625,7 +625,7 @@
     <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
     
     // Inicializar Supabase
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -866,8 +866,8 @@
                             </div>
                             <div class="mailbox-content">
                                 <div class="mailbox-sender">Sistema</div>
-                                <div class('mailbox-subject')>Escuadrón creado exitosamente</div>
-                                <div class('mailbox-time')>10 Nov 2023</div>
+                                <div class="mailbox-subject">Escuadrón creado exitosamente</div>
+                                <div class="mailbox-time">10 Nov 2023</div>
                             </div>
                         </div>
                     </div>
@@ -921,19 +921,26 @@
         addEventListeners();
     }
     
-    // Cargar miembros del escuadrón - MODIFICADO: Usando solo datos del squad
+    // Cargar miembros del escuadrón - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
     async function loadSquadMembers() {
         try {
-            // Obtener el username del líder desde profiles
+            // Obtener el perfil del líder - AHORA CON level y points
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
-                .select('username')
+                .select('id, username, level, points')
                 .eq('id', userSquad.leader_id)
                 .single();
             
+            if (leaderError) {
+                console.error('Error al cargar el líder:', leaderError);
+                // Usar datos de ejemplo si hay error
+                renderExampleMembers();
+                return;
+            }
+            
             let membersHTML = '';
             
-            // Mostrar el líder primero - usando datos del squad para puntos y nivel
+            // Mostrar el líder primero
             membersHTML += `
                 <div class="member-item">
                     <div class="member-avatar leader-avatar">
@@ -941,12 +948,12 @@
                     </div>
                     <div class="member-details">
                         <div class="member-name">
-                            ${leaderProfile?.username || 'Líder'}
+                            ${leaderProfile.username || 'Líder'}
                             <span class="member-role">Líder</span>
                         </div>
                         <div class="member-stats">
-                            <span class="stat">Nivel: <span class="stat-value">${userSquad.level || 2}</span></span>
-                            <span class="stat">Puntos: <span class="stat-value">${userSquad.total_points || 0}</span></span>
+                            <span class="stat">Nivel: <span class="stat-value">${leaderProfile.level || 1}</span></span>
+                            <span class="stat">Puntos: <span class="stat-value">${leaderProfile.points || 0}</span></span>
                         </div>
                     </div>
                 </div>
@@ -979,43 +986,39 @@
     
     // Función para mostrar miembros de ejemplo en caso de error
     function renderExampleMembers() {
-        let membersHTML = '';
-        
-        // Mostrar el líder con datos del squad
-        membersHTML += `
-            <div class="member-item">
-                <div class="member-avatar leader-avatar">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div class="member-details">
-                    <div class="member-name">
-                        ${currentUser.email.split('@')[0]}
-                        <span class="member-role">Líder</span>
-                    </div>
-                    <div class="member-stats">
-                        <span class="stat">Nivel: <span class="stat-value">${userSquad.level || 2}</span></span>
-                        <span class="stat">Puntos: <span class="stat-value">${userSquad.total_points || 0}</span></span>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Miembros de ejemplo
         const exampleMembers = [
-            { username: 'JavierLopez', level: 12, points: 980 },
-            { username: 'MartaGarcia', level: 10, points: 750 }
+            {
+                username: currentUser.email.split('@')[0],
+                level: 15,
+                points: 1250,
+                role: 'Líder'
+            },
+            {
+                username: 'JavierLopez',
+                level: 12,
+                points: 980,
+                role: 'Miembro'
+            },
+            {
+                username: 'MartaGarcia',
+                level: 10,
+                points: 750,
+                role: 'Miembro'
+            }
         ];
         
-        exampleMembers.forEach(member => {
+        let membersHTML = '';
+        
+        exampleMembers.forEach((member, index) => {
             membersHTML += `
                 <div class="member-item">
-                    <div class="member-avatar">
-                        <i class="fas fa-user"></i>
+                    <div class="member-avatar ${index === 0 ? 'leader-avatar' : ''}">
+                        ${index === 0 ? '<i class="fas fa-crown"></i>' : '<i class="fas fa-user"></i>'}
                     </div>
                     <div class="member-details">
                         <div class="member-name">
                             ${member.username}
-                            <span class="member-role">Miembro</span>
+                            <span class="member-role">${member.role}</span>
                         </div>
                         <div class="member-stats">
                             <span class="stat">Nivel: <span class="stat-value">${member.level}</span></span>
@@ -1029,24 +1032,31 @@
         document.getElementById('members-list').innerHTML = membersHTML;
     }
     
-    // Cargar clasificación interna - MODIFICADO: Usando datos del squad
+    // Cargar clasificación interna - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
     async function loadLeaderboard() {
         try {
-            // Obtener el username del líder desde profiles
+            // Obtener el perfil del líder para la clasificación - AHORA CON points
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
-                .select('username')
+                .select('username, points')
                 .eq('id', userSquad.leader_id)
                 .single();
             
+            if (leaderError) {
+                console.error('Error al cargar la clasificación:', leaderError);
+                // Usar datos de ejemplo si hay error
+                renderExampleLeaderboard();
+                return;
+            }
+            
             let leaderboardHTML = '';
             
-            // Mostrar solo al líder por ahora - usando datos del squad
+            // Mostrar solo al líder por ahora
             leaderboardHTML += `
                 <div class="leaderboard-item">
                     <span class="leaderboard-rank rank-1">1</span>
-                    <div class="leaderboard-name">${leaderProfile?.username || 'Líder'}</div>
-                    <span class="leaderboard-points">${userSquad.total_points || 0} pts</span>
+                    <div class="leaderboard-name">${leaderProfile.username || 'Líder'}</div>
+                    <span class="leaderboard-points">${leaderProfile.points || 0} pts</span>
                 </div>
             `;
             
@@ -1068,27 +1078,18 @@
     
     // Función para mostrar clasificación de ejemplo en caso de error
     function renderExampleLeaderboard() {
-        let leaderboardHTML = '';
-        
-        // Líder con datos del squad
-        leaderboardHTML += `
-            <div class="leaderboard-item">
-                <span class="leaderboard-rank rank-1">1</span>
-                <div class="leaderboard-name">${currentUser.email.split('@')[0]}</div>
-                <span class="leaderboard-points">${userSquad.total_points || 0} pts</span>
-            </div>
-        `;
-        
-        // Ejemplos de otros miembros
         const exampleLeaderboard = [
+            { username: currentUser.email.split('@')[0], points: 1250 },
             { username: 'JavierLopez', points: 980 },
             { username: 'MartaGarcia', points: 750 }
         ];
         
+        let leaderboardHTML = '';
+        
         exampleLeaderboard.forEach((player, index) => {
             leaderboardHTML += `
                 <div class="leaderboard-item">
-                    <span class="leaderboard-rank rank-${index + 2}">${index + 2}</span>
+                    <span class="leaderboard-rank rank-${index + 1}">${index + 1}</span>
                     <div class="leaderboard-name">${player.username}</div>
                     <span class="leaderboard-points">${player.points} pts</span>
                 </div>
