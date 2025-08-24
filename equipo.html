@@ -622,7 +622,8 @@
         </div>
     </div>
 
- <script>
+  
+    <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
@@ -660,7 +661,7 @@
             }
             
             currentUser = session.user;
-            console.log('Usuario actual:', currentUser);
+            console.log('Usuario actual:', currentUser.id);
             
             // Obtener los escuadrones del usuario
             await loadUserSquads();
@@ -674,36 +675,43 @@
     // Cargar los escuadrones del usuario - CORREGIDO
     async function loadUserSquads() {
         try {
-            // Buscar todos los escuadrones donde el usuario sea el líder
-            const { data: squads, error: squadError } = await supabase
-                .from('squads')
-                .select('*')
-                .eq('leader_id', currentUser.id)
-                .order('created_at', { ascending: false });
+            console.log('Buscando escuadrones para el usuario:', currentUser.id);
             
-            if (squadError) {
-                console.error('Error al obtener escuadrones:', squadError);
-                showError('Error al cargar la información de escuadrones.');
+            // Buscar todos los escuadrones (sin filtro primero para debug)
+            const { data: allSquads, error: allError } = await supabase
+                .from('squads')
+                .select('*');
+            
+            if (allError) {
+                console.error('Error al obtener todos los escuadrones:', allError);
+                // Intentar con filtro diferente
+                await tryAlternativeQuery();
                 return;
             }
             
-            if (!squads || squads.length === 0) {
+            console.log('Todos los escuadrones:', allSquads);
+            
+            // Filtrar manualmente por leader_id
+            const userSquadsFiltered = allSquads.filter(squad => squad.leader_id === currentUser.id);
+            console.log('Escuadrones filtrados:', userSquadsFiltered);
+            
+            if (userSquadsFiltered.length === 0) {
                 console.log('El usuario no es líder de ningún escuadrón');
                 showError('No eres el líder de ningún escuadrón.');
                 return;
             }
             
-            userSquads = squads;
+            userSquads = userSquadsFiltered;
             console.log('Escuadrones encontrados:', userSquads.length);
             
             // Si hay múltiples escuadrones, mostrar selector
-            if (squads.length > 1) {
-                showSquadSelector(squads);
+            if (userSquads.length > 1) {
+                showSquadSelector(userSquads);
                 return;
             }
             
             // Si solo hay un escuadrón, usarlo directamente
-            userSquad = squads[0];
+            userSquad = userSquads[0];
             isSquadLeader = true;
             console.log('Escuadrón cargado:', userSquad);
             
@@ -714,6 +722,46 @@
         } catch (error) {
             console.error('Error inesperado:', error);
             showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
+        }
+    }
+    
+    // Intentar consulta alternativa
+    async function tryAlternativeQuery() {
+        try {
+            // Intentar con una consulta diferente
+            const { data: squads, error } = await supabase
+                .from('squads')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error en consulta alternativa:', error);
+                showError('No se pudieron cargar los escuadrones. Verifica las políticas de seguridad de la base de datos.');
+                return;
+            }
+            
+            // Filtrar manualmente
+            const userSquadsFiltered = squads.filter(squad => squad.leader_id === currentUser.id);
+            
+            if (userSquadsFiltered.length === 0) {
+                showError('No eres el líder de ningún escuadrón.');
+                return;
+            }
+            
+            userSquads = userSquadsFiltered;
+            
+            if (userSquads.length > 1) {
+                showSquadSelector(userSquads);
+            } else {
+                userSquad = userSquads[0];
+                isSquadLeader = true;
+                await calculateGlobalRanking();
+                renderSquadDetails();
+            }
+            
+        } catch (error) {
+            console.error('Error en consulta alternativa:', error);
+            showError('Error crítico al cargar los datos.');
         }
     }
     
@@ -756,7 +804,7 @@
             </div>
         `;
         
-        // Agregar event listeners a los botones de selección
+        // Agregar event listeners
         document.querySelectorAll('.select-squad-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const squadId = this.getAttribute('data-id');
@@ -772,16 +820,14 @@
             isSquadLeader = true;
             console.log('Escuadrón seleccionado:', userSquad);
             
-            // Calcular ranking global antes de renderizar
             await calculateGlobalRanking();
             renderSquadDetails();
         }
     }
     
-    // Calcular ranking global de todos los escuadrones
+    // Calcular ranking global
     async function calculateGlobalRanking() {
         try {
-            // Obtener todos los escuadrones ordenados por puntos
             const { data: allSquads, error } = await supabase
                 .from('squads')
                 .select('id, total_points')
@@ -792,42 +838,28 @@
                 return;
             }
             
-            // Calcular ranking manualmente
             let currentRank = 1;
             let previousPoints = null;
             
             const rankedSquads = allSquads.map((squad, index) => {
                 if (index === 0) {
                     previousPoints = squad.total_points;
-                    return {
-                        id: squad.id,
-                        rank: 1,
-                        points: squad.total_points
-                    };
+                    return { id: squad.id, rank: 1, points: squad.total_points };
                 }
                 
-                // Si los puntos son diferentes al anterior, aumentar el ranking
                 if (squad.total_points !== previousPoints) {
                     currentRank = index + 1;
                 }
                 
                 previousPoints = squad.total_points;
-                
-                return {
-                    id: squad.id,
-                    rank: currentRank,
-                    points: squad.total_points
-                };
+                return { id: squad.id, rank: currentRank, points: squad.total_points };
             });
             
             globalRanking = rankedSquads;
-            console.log('Ranking global calculado:', globalRanking);
             
-            // Encontrar el ranking del escuadrón actual
             const userSquadRank = rankedSquads.find(squad => squad.id === userSquad.id);
             if (userSquadRank) {
                 userSquad.global_rank = userSquadRank.rank;
-                console.log('Escuadrón actual en posición:', userSquadRank.rank);
             }
             
         } catch (error) {
@@ -839,15 +871,11 @@
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
         
-        // Formatear la fecha de creación
         const createdDate = new Date(userSquad.created_at);
         const formattedDate = createdDate.toLocaleDateString('es-ES', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
+            day: 'numeric', month: 'short', year: 'numeric'
         });
         
-        // Determinar el ranking a mostrar
         let displayRank = 'N/A';
         if (userSquad.global_rank) {
             displayRank = userSquad.global_rank;
@@ -991,28 +1019,6 @@
                                 <div class="mailbox-time">Ayer</div>
                             </div>
                         </div>
-                        
-                        <div class="mailbox-item">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Bienvenida a MartaGarcia al escuadrón</div>
-                                <div class="mailbox-time">15 Nov 2023</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mailbox-item">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Escuadrón creado exitosamente</div>
-                                <div class="mailbox-time">10 Nov 2023</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -1067,7 +1073,6 @@
     // Cargar miembros del escuadrón
     async function loadSquadMembers() {
         try {
-            // Obtener el perfil del líder
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('id, username, level, points')
@@ -1080,10 +1085,7 @@
                 return;
             }
             
-            let membersHTML = '';
-            
-            // Mostrar el líder primero
-            membersHTML += `
+            let membersHTML = `
                 <div class="member-item">
                     <div class="member-avatar leader-avatar">
                         <i class="fas fa-crown"></i>
@@ -1099,10 +1101,6 @@
                         </div>
                     </div>
                 </div>
-            `;
-            
-            // Mensaje para invitar más miembros
-            membersHTML += `
                 <div class="member-item">
                     <div class="member-avatar">
                         <i class="fas fa-user-plus"></i>
@@ -1125,7 +1123,7 @@
         }
     }
     
-    // Función para mostrar miembros de ejemplo en caso de error
+    // Función para mostrar miembros de ejemplo
     function renderExampleMembers() {
         const exampleMembers = [
             {
@@ -1133,12 +1131,6 @@
                 level: 15,
                 points: 1250,
                 role: 'Líder'
-            },
-            {
-                username: 'JavierLopez',
-                level: 12,
-                points: 980,
-                role: 'Miembro'
             }
         ];
         
@@ -1170,7 +1162,6 @@
     // Cargar clasificación interna
     async function loadLeaderboard() {
         try {
-            // Obtener el perfil del líder para la clasificación
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('username, points')
@@ -1183,19 +1174,12 @@
                 return;
             }
             
-            let leaderboardHTML = '';
-            
-            // Mostrar solo al líder por ahora
-            leaderboardHTML += `
+            let leaderboardHTML = `
                 <div class="leaderboard-item">
                     <span class="leaderboard-rank rank-1">1</span>
                     <div class="leaderboard-name">${leaderProfile.username || 'Líder'}</div>
                     <span class="leaderboard-points">${leaderProfile.points || 0} pts</span>
                 </div>
-            `;
-            
-            // Mensaje para otros miembros
-            leaderboardHTML += `
                 <div class="leaderboard-item">
                     <span class="leaderboard-rank">-</span>
                     <div class="leaderboard-name">Invita a más miembros para ver la clasificación completa</div>
@@ -1210,11 +1194,10 @@
         }
     }
     
-    // Función para mostrar clasificación de ejemplo en caso de error
+    // Función para mostrar clasificación de ejemplo
     function renderExampleLeaderboard() {
         const exampleLeaderboard = [
-            { username: currentUser.email.split('@')[0], points: 1250 },
-            { username: 'JavierLopez', points: 980 }
+            { username: currentUser.email.split('@')[0], points: 1250 }
         ];
         
         let leaderboardHTML = '';
@@ -1251,23 +1234,6 @@
                     <span>+200 Puntos</span>
                 </div>
             </div>
-            
-            <div class="mission-card">
-                <div class="mission-header">
-                    <div class="mission-title">Reclutamiento</div>
-                    <span class="mission-status status-progress">En Progreso</span>
-                </div>
-                <div class="mission-details">
-                    Consigue que el escuadrón tenga al menos 8 miembros activos.
-                </div>
-                <div class="mission-progress">
-                    <div class="progress-bar" style="width: 50%"></div>
-                </div>
-                <div class="mission-meta">
-                    <span>50% completado</span>
-                    <span>+150 Puntos</span>
-                </div>
-            </div>
         `;
         
         document.getElementById('missions-container').innerHTML = missionsHTML;
@@ -1275,20 +1241,16 @@
     
     // Agregar event listeners a los botones
     function addEventListeners() {
-        // Funcionalidad para los elementos del buzón
         document.querySelectorAll('.mailbox-item').forEach(item => {
             item.addEventListener('click', function() {
                 this.classList.remove('unread');
             });
         });
         
-        // Funcionalidad para los botones de acción
         if (isSquadLeader) {
             const addListener = (id, action) => {
                 const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('click', action);
-                }
+                if (element) element.addEventListener('click', action);
             };
             
             addListener('invite-btn', () => alert('Función de invitación activada'));
@@ -1296,12 +1258,11 @@
             addListener('invite-players-btn', () => alert('Función de invitación activada'));
             addListener('new-mission-btn', () => alert('Función de nueva misión activada'));
             addListener('leave-squad-btn', () => {
-                if (confirm('¿Estás seguro de que quieres abandonar el escuadrón? Como líder, esta acción disolverá el escuadrón.')) {
+                if (confirm('¿Estás seguro de que quieres abandonar el escuadrón?')) {
                     alert('Función de abandonar escuadrón activada');
                 }
             });
             
-            // Botón para cambiar de escuadrón
             addListener('change-squad-btn', () => showSquadSelector(userSquads));
         }
     }
@@ -1316,13 +1277,12 @@
                 </div>
                 <h2>Error</h2>
                 <p>${message}</p>
-                <button class="back-btn" onclick="window.history.back()" style="margin-top: 1rem;">
+                <button class="back-btn" onclick="window.history.back()">
                     <i class="fas fa-arrow-left"></i> Volver
                 </button>
             </div>
         `;
     }
 </script>
-    
 </body>
 </html>
