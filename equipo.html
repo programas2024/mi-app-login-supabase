@@ -622,8 +622,7 @@
         </div>
     </div>
 
-  
-    <script>
+  <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
@@ -636,6 +635,7 @@
     let userSquad = null;
     let isSquadLeader = false;
     let globalRanking = null;
+    let userSquads = []; // Para almacenar todos los escuadrones del usuario
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
@@ -665,29 +665,21 @@
             // Obtener el escuadrón del usuario
             await loadUserSquad();
             
-            // Si el usuario tiene un escuadrón, cargar los datos
-            if (userSquad) {
-                // Calcular ranking global antes de renderizar
-                await calculateGlobalRanking();
-                renderSquadDetails();
-            } else {
-                showError('No perteneces a ningún escuadrón o no eres el líder.');
-            }
         } catch (error) {
             console.error('Error inesperado:', error);
             showError('Ocurrió un error inesperado al cargar los datos.');
         }
     });
     
-    // Cargar el escuadrón del usuario
+    // Cargar el escuadrón del usuario - CORREGIDO
     async function loadUserSquad() {
         try {
-            // Buscar escuadrones donde el usuario sea el líder
-            const { data: squad, error: squadError } = await supabase
+            // Buscar todos los escuadrones donde el usuario sea el líder
+            const { data: squads, error: squadError } = await supabase
                 .from('squads')
                 .select('*')
                 .eq('leader_id', currentUser.id)
-                .maybeSingle();
+                .order('created_at', { ascending: false }); // Ordenar por más reciente
             
             if (squadError) {
                 console.error('Error al obtener el escuadrón:', squadError);
@@ -695,18 +687,91 @@
                 return;
             }
             
-            if (!squad) {
+            if (!squads || squads.length === 0) {
                 console.log('El usuario no es líder de ningún escuadrón');
+                showError('No eres el líder de ningún escuadrón.');
                 return;
             }
             
-            userSquad = squad;
+            userSquads = squads;
+            
+            // Si hay múltiples escuadrones, mostrar selector
+            if (squads.length > 1) {
+                showSquadSelector(squads);
+                return;
+            }
+            
+            // Si solo hay un escuadrón, usarlo directamente
+            userSquad = squads[0];
             isSquadLeader = true;
             console.log('Escuadrón cargado:', userSquad);
-            console.log('¿Es líder?', isSquadLeader);
+            
+            // Calcular ranking global antes de renderizar
+            await calculateGlobalRanking();
+            renderSquadDetails();
+            
         } catch (error) {
             console.error('Error inesperado:', error);
             showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
+        }
+    }
+    
+    // Mostrar selector de escuadrones
+    function showSquadSelector(squads) {
+        const contentEl = document.getElementById('content');
+        
+        let squadsHTML = '';
+        squads.forEach((squad, index) => {
+            const createdDate = new Date(squad.created_at);
+            const formattedDate = createdDate.toLocaleDateString('es-ES');
+            
+            squadsHTML += `
+                <div class="squad-selector-item" data-id="${squad.id}">
+                    <div class="squad-selector-header">
+                        <h3>${squad.name || 'Sin nombre'}</h3>
+                        <span class="member-count">${squad.member_count || 1}/${squad.max_members || 10} miembros</span>
+                    </div>
+                    <div class="squad-selector-details">
+                        <p><strong>Misión:</strong> ${squad.mission || 'No especificada'}</p>
+                        <p><strong>Puntos:</strong> ${squad.total_points || 0}</p>
+                        <p><strong>Creado:</strong> ${formattedDate}</p>
+                    </div>
+                    <button class="select-squad-btn" data-id="${squad.id}">Seleccionar este escuadrón</button>
+                </div>
+            `;
+        });
+        
+        contentEl.innerHTML = `
+            <div class="container">
+                <div class="squad-selector-header">
+                    <h2><i class="fas fa-users"></i> Tus Escuadrones</h2>
+                    <p>Eres líder de ${squads.length} escuadrones. Selecciona uno para gestionarlo.</p>
+                </div>
+                <div class="squad-selector-grid">
+                    ${squadsHTML}
+                </div>
+            </div>
+        `;
+        
+        // Agregar event listeners a los botones de selección
+        document.querySelectorAll('.select-squad-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const squadId = this.getAttribute('data-id');
+                selectSquad(squadId);
+            });
+        });
+    }
+    
+    // Seleccionar un escuadrón específico
+    async function selectSquad(squadId) {
+        userSquad = userSquads.find(squad => squad.id === squadId);
+        if (userSquad) {
+            isSquadLeader = true;
+            console.log('Escuadrón seleccionado:', userSquad);
+            
+            // Calcular ranking global antes de renderizar
+            await calculateGlobalRanking();
+            renderSquadDetails();
         }
     }
     
@@ -730,11 +795,22 @@
             let skipCount = 0;
             
             const rankedSquads = allSquads.map((squad, index) => {
+                // Si es el primer escuadrón
+                if (index === 0) {
+                    previousPoints = squad.total_points;
+                    return {
+                        id: squad.id,
+                        rank: 1,
+                        points: squad.total_points
+                    };
+                }
+                
                 // Si los puntos son diferentes al anterior, actualizar el ranking
-                if (previousPoints !== null && squad.total_points !== previousPoints) {
-                    currentRank += skipCount + 1;
+                if (squad.total_points !== previousPoints) {
+                    currentRank = currentRank + skipCount + 1;
                     skipCount = 0;
-                } else if (previousPoints !== null) {
+                } else {
+                    // Mismos puntos que el anterior
                     skipCount++;
                 }
                 
@@ -762,7 +838,7 @@
         }
     }
     
-  
+    // Mostrar detalles del escuadrón
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
         
@@ -775,8 +851,13 @@
         });
         
         // Determinar el ranking a mostrar
-        const displayRank = userSquad.global_rank || (globalRanking ? 
-            globalRanking.find(s => s.id === userSquad.id)?.rank : 'N/A');
+        let displayRank = 'N/A';
+        if (userSquad.global_rank) {
+            displayRank = userSquad.global_rank;
+        } else if (globalRanking) {
+            const userRank = globalRanking.find(s => s.id === userSquad.id);
+            displayRank = userRank ? userRank.rank : 'N/A';
+        }
         
         contentEl.innerHTML = `
             <!-- Columna izquierda -->
@@ -786,6 +867,11 @@
                     <div class="squad-header">
                         <h2 class="squad-name">${userSquad.name || 'Sin nombre'}</h2>
                         <p class="squad-motto">${userSquad.motto || userSquad.mission || '¡Hacia la victoria juntos!'}</p>
+                        ${userSquads.length > 1 ? `
+                            <button class="change-squad-btn" id="change-squad-btn">
+                                <i class="fas fa-exchange-alt"></i> Cambiar de escuadrón
+                            </button>
+                        ` : ''}
                     </div>
                     
                     <div class="squad-info">
@@ -920,8 +1006,8 @@
                             </div>
                         </div>
                         
-                        <div class="mailbox-item">
-                            <div class="mailbox-icon">
+                        <div class('mailbox-item')>
+                            <div class('mailbox-icon')>
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div class="mailbox-content">
@@ -981,13 +1067,10 @@
         addEventListeners();
     }
     
-   
-
-    
-   
+    // Cargar miembros del escuadrón
     async function loadSquadMembers() {
         try {
-            // Obtener el perfil del líder - AHORA CON level y points
+            // Obtener el perfil del líder
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('id, username, level, points')
@@ -1095,10 +1178,10 @@
         document.getElementById('members-list').innerHTML = membersHTML;
     }
     
-    // Cargar clasificación interna - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
+    // Cargar clasificación interna
     async function loadLeaderboard() {
         try {
-            // Obtener el perfil del líder para la clasificación - AHORA CON points
+            // Obtener el perfil del líder para la clasificación
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('username, points')
@@ -1269,6 +1352,13 @@
                     alert('Función de abandonar escuadrón activada');
                 }
             });
+            
+            // Botón para cambiar de escuadrón
+            if (document.getElementById('change-squad-btn')) {
+                document.getElementById('change-squad-btn').addEventListener('click', function() {
+                    showSquadSelector(userSquads);
+                });
+            }
         }
     }
     
@@ -1289,5 +1379,6 @@
         `;
     }
 </script>
+    
 </body>
 </html>
