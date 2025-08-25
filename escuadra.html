@@ -548,6 +548,7 @@
     let userProfile = null;
     let userSquad = null;
     let userSquads = [];
+    let userRole = null; // 'leader' o 'member'
     
     // Inicializar la aplicación
     document.addEventListener('DOMContentLoaded', async function() {
@@ -746,6 +747,14 @@
                 if (allSquads.length === 1) {
                     // Si solo tiene un escuadrón, mostrarlo directamente
                     userSquad = allSquads[0];
+                    
+                    // Determinar si el usuario es líder o miembro
+                    if (userSquad.leader_id === currentUser.id) {
+                        userRole = 'leader';
+                    } else {
+                        userRole = 'member';
+                    }
+                    
                     displaySquadData(userSquad);
                     showSquadDetails();
                 } else {
@@ -771,11 +780,14 @@
         squadList.innerHTML = '';
         
         squads.forEach(squad => {
+            // Determinar si el usuario es líder o miembro de este escuadrón
+            const role = squad.leader_id === currentUser.id ? 'Líder' : 'Miembro';
+            
             const squadItem = document.createElement('div');
             squadItem.className = 'squad-item';
             squadItem.innerHTML = `
                 <div class="squad-item-info">
-                    <div class="squad-item-name">${squad.name}</div>
+                    <div class="squad-item-name">${squad.name} <span class="role-badge">${role}</span></div>
                     <div class="squad-item-mission">${squad.mission} - ${squad.member_count}/${squad.max_members} miembros</div>
                 </div>
                 <div>
@@ -785,6 +797,7 @@
             
             squadItem.addEventListener('click', () => {
                 userSquad = squad;
+                userRole = squad.leader_id === currentUser.id ? 'leader' : 'member';
                 displaySquadData(squad);
                 showSquadDetails();
             });
@@ -826,14 +839,55 @@
             if (detailLeader) detailLeader.textContent = 'Líder no disponible';
         }
         
-        // Actualizar información del líder en la lista de miembros
-        const leaderUsername = document.getElementById('leader-username');
-        const leaderLevel = document.getElementById('leader-level');
-        const leaderPoints = document.getElementById('leader-points');
-        
-        if (leaderUsername) leaderUsername.textContent = userProfile.username;
-        if (leaderLevel) leaderLevel.textContent = userProfile.level || 1;
-        if (leaderPoints) leaderPoints.textContent = userProfile.points || 0;
+        // Actualizar información del usuario actual en la lista de miembros
+        const memberList = document.getElementById('member-list');
+        if (memberList) {
+            memberList.innerHTML = '';
+            
+            // Primero mostrar al líder
+            try {
+                const { data: leaderProfile, error } = await supabase
+                    .from('profiles')
+                    .select('username, level, points')
+                    .eq('id', squad.leader_id)
+                    .single();
+                
+                if (!error && leaderProfile) {
+                    const leaderItem = document.createElement('div');
+                    leaderItem.className = 'member-item';
+                    leaderItem.innerHTML = `
+                        <div class="member-avatar">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="member-info">
+                            <div class="member-name">${leaderProfile.username} <span class="member-role">Líder</span></div>
+                            <div class="member-stats">Nivel ${leaderProfile.level || 1} • ${leaderProfile.points || 0} puntos</div>
+                        </div>
+                    `;
+                    memberList.appendChild(leaderItem);
+                }
+            } catch (error) {
+                console.error('Error al obtener información del líder:', error);
+            }
+            
+            // Luego mostrar al usuario actual (si no es el líder)
+            if (userRole === 'member') {
+                const memberItem = document.createElement('div');
+                memberItem.className = 'member-item';
+                memberItem.innerHTML = `
+                    <div class="member-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">${userProfile.username} <span class="member-role">Miembro</span></div>
+                        <div class="member-stats">Nivel ${userProfile.level || 1} • ${userProfile.points || 0} puntos</div>
+                    </div>
+                `;
+                memberList.appendChild(memberItem);
+            }
+            
+            // Aquí podrías agregar más lógica para cargar otros miembros del escuadrón
+        }
     }
     
     // Mostrar error de RLS
@@ -1001,6 +1055,7 @@ FOR SELECT USING (EXISTS (
             // Actualizar la UI
             userProfile.gold = newGold;
             userSquad = newSquad;
+            userRole = 'leader';
             
             const goldAmount = document.getElementById('gold-amount');
             if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
