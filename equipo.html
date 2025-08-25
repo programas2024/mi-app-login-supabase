@@ -636,6 +636,7 @@
     let isSquadLeader = false;
     let friendsList = [];
     let squadMembers = [];
+    let squadNotifications = [];
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
@@ -668,6 +669,7 @@
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
                 await loadSquadMembers();
+                await loadSquadNotifications();
                 renderSquadDetails();
             } else {
                 showNoSquadMessage();
@@ -738,11 +740,12 @@
                 is_leader: true
             }];
             
-            // Obtener miembros aceptados del escuadrón
+            // Obtener miembros aceptados del escuadrón (desde squad_requests)
             const { data: members, error: membersError } = await supabase
                 .from('squad_requests')
                 .select(`
-                    user:profiles(id, username, level, points)
+                    user:profiles(id, username, level, points),
+                    accepted_at
                 `)
                 .eq('squad_id', userSquad.id)
                 .eq('status', 'accepted');
@@ -761,7 +764,8 @@
                             username: member.user.username,
                             level: member.user.level,
                             points: member.user.points,
-                            is_leader: false
+                            is_leader: false,
+                            joined_at: member.accepted_at
                         });
                     }
                 });
@@ -770,6 +774,32 @@
             console.log('Miembros del escuadrón:', squadMembers);
         } catch (error) {
             console.error('Error al cargar miembros:', error);
+        }
+    }
+    
+    // Cargar notificaciones del escuadrón
+    async function loadSquadNotifications() {
+        try {
+            // Obtener notificaciones de aceptación de invitaciones
+            const { data: notifications, error: notificationsError } = await supabase
+                .from('squad_requests')
+                .select(`
+                    user:profiles(username),
+                    accepted_at
+                `)
+                .eq('squad_id', userSquad.id)
+                .eq('status', 'accepted')
+                .order('accepted_at', { ascending: false });
+            
+            if (notificationsError) {
+                console.error('Error al cargar notificaciones:', notificationsError);
+                return;
+            }
+            
+            squadNotifications = notifications || [];
+            console.log('Notificaciones del escuadrón:', squadNotifications);
+        } catch (error) {
+            console.error('Error al cargar notificaciones:', error);
         }
     }
     
@@ -993,53 +1023,11 @@
                 <div class="container">
                     <div class="mailbox-header">
                         <h3 class="section-title" style="margin: 0;"><i class="fas fa-inbox"></i> Buzón de Escuadrón</h3>
-                        <span class="mailbox-badge">3</span>
+                        <span class="mailbox-badge">${squadNotifications.length}</span>
                     </div>
                     
-                    <div class="mailbox">
-                        <div class="mailbox-item unread">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Misión completada: Victorias Consecutivas</div>
-                                <div class="mailbox-time">Hace 2 horas</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mailbox-item unread">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">JavierLopez</div>
-                                <div class="mailbox-subject">Sugerencia para la próxima misión</div>
-                                <div class="mailbox-time">Ayer</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mailbox-item">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Bienvenida a MartaGarcia al escuadrón</div>
-                                <div class="mailbox-time">15 Nov 2023</div>
-                            </div>
-                        </div>
-                        
-                        <div class="mailbox-item">
-                            <div class="mailbox-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="mailbox-content">
-                                <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Escuadrón creado exitosamente</div>
-                                <div class="mailbox-time">10 Nov 2023</div>
-                            </div>
-                        </div>
+                    <div class="mailbox" id="mailbox">
+                        ${renderNotifications()}
                     </div>
                 </div>
                 
@@ -1100,6 +1088,18 @@
         let membersHTML = '';
         
         squadMembers.forEach(member => {
+            // Formatear fecha de unión si existe
+            let joinDateInfo = '';
+            if (member.joined_at) {
+                const joinDate = new Date(member.joined_at);
+                const formattedJoinDate = joinDate.toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                joinDateInfo = `<div class="member-joined">Se unió: ${formattedJoinDate}</div>`;
+            }
+            
             membersHTML += `
                 <div class="member-item">
                     <div class="member-avatar ${member.is_leader ? 'leader-avatar' : ''}">
@@ -1114,6 +1114,7 @@
                             <span class="stat">Nivel: <span class="stat-value">${member.level || 1}</span></span>
                             <span class="stat">Puntos: <span class="stat-value">${member.points || 0}</span></span>
                         </div>
+                        ${joinDateInfo}
                     </div>
                 </div>
             `;
@@ -1212,6 +1213,67 @@
                 </div>
             </div>
         `;
+    }
+    
+    // Renderizar notificaciones del buzón
+    function renderNotifications() {
+        if (!squadNotifications || squadNotifications.length === 0) {
+            return `
+                <div class="mailbox-item">
+                    <div class="mailbox-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="mailbox-content">
+                        <div class="mailbox-sender">Sistema</div>
+                        <div class="mailbox-subject">No hay notificaciones recientes</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        let notificationsHTML = '';
+        
+        squadNotifications.forEach(notification => {
+            const notificationDate = new Date(notification.accepted_at);
+            const formattedDate = notificationDate.toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+            
+            notificationsHTML += `
+                <div class="mailbox-item unread">
+                    <div class="mailbox-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="mailbox-content">
+                        <div class="mailbox-sender">Sistema</div>
+                        <div class="mailbox-subject">${notification.user.username} aceptó la invitación al escuadrón</div>
+                        <div class="mailbox-time">${formattedDate}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Añadir notificaciones del sistema (siempre visibles)
+        notificationsHTML += `
+            <div class="mailbox-item">
+                <div class="mailbox-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="mailbox-content">
+                    <div class="mailbox-sender">Sistema</div>
+                    <div class="mailbox-subject">Escuadrón creado exitosamente</div>
+                    <div class="mailbox-time">${new Date(userSquad.created_at).toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                    })}</div>
+                </div>
+            </div>
+        `;
+        
+        return notificationsHTML;
     }
     
     // Función para mostrar el modal de invitación
@@ -1325,102 +1387,103 @@
     }
     
     // Función para invitar a un amigo
-async function inviteFriend(userId, username) {
-    try {
-        // PRIMERO: Verificar si ya existe una solicitud (pending o accepted)
-        const { data: existingRequest, error: checkError } = await supabase
-            .from('squad_requests')
-            .select('id, status')
-            .eq('squad_id', userSquad.id)
-            .eq('user_id', userId)
-            .maybeSingle();
-        
-        if (checkError) {
-            console.error('Error al verificar solicitud existente:', checkError);
-            throw checkError;
-        }
-        
-        if (existingRequest) {
-            // Ya existe una solicitud para este usuario
-            if (existingRequest.status === 'pending') {
-                Swal.fire({
-                    title: 'Solicitud pendiente',
-                    text: `Ya hay una invitación pendiente para ${username}.`,
-                    icon: 'info',
-                    confirmButtonColor: '#78ffd6',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
-                return;
-            } else if (existingRequest.status === 'accepted') {
-                Swal.fire({
-                    title: 'Ya es miembro',
-                    text: `${username} ya es miembro de este escuadrón.`,
-                    icon: 'info',
-                    confirmButtonColor: '#78ffd6',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
-                return;
-            } else if (existingRequest.status === 'rejected') {
-                // Puedes optar por re-enviar la solicitud o informar al usuario
-                Swal.fire({
-                    title: 'Solicitud rechazada',
-                    text: `${username} rechazó una invitación anterior.`,
-                    icon: 'warning',
-                    confirmButtonColor: '#78ffd6',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
-                return;
+    async function inviteFriend(userId, username) {
+        try {
+            // PRIMERO: Verificar si ya existe una solicitud (pending o accepted)
+            const { data: existingRequest, error: checkError } = await supabase
+                .from('squad_requests')
+                .select('id, status')
+                .eq('squad_id', userSquad.id)
+                .eq('user_id', userId)
+                .maybeSingle();
+            
+            if (checkError) {
+                console.error('Error al verificar solicitud existente:', checkError);
+                throw checkError;
             }
-        }
-        
-        // NO existe solicitud previa, proceder con la inserción
-        const { error } = await supabase
-            .from('squad_requests')
-            .insert({
-                squad_id: userSquad.id,
-                user_id: userId,
-                requested_by: currentUser.id,
-                status: 'pending'
-            });
-        
-        if (error) {
-            console.error('Error al enviar invitación:', error);
-            throw error;
-        }
-        
-        // Mostrar mensaje de éxito
-        Swal.fire({
-            title: '¡Invitación enviada!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
-                        <i class="fas fa-check-circle"></i>
+            
+            if (existingRequest) {
+                // Ya existe una solicitud para este usuario
+                if (existingRequest.status === 'pending') {
+                    Swal.fire({
+                        title: 'Solicitud pendiente',
+                        text: `Ya hay una invitación pendiente para ${username}.`,
+                        icon: 'info',
+                        confirmButtonColor: '#78ffd6',
+                        background: '#1e3a47',
+                        color: 'white'
+                    });
+                    return;
+                } else if (existingRequest.status === 'accepted') {
+                    Swal.fire({
+                        title: 'Ya es miembro',
+                        text: `${username} ya es miembro de este escuadrón.`,
+                        icon: 'info',
+                        confirmButtonColor: '#78ffd6',
+                        background: '#1e3a47',
+                        color: 'white'
+                    });
+                    return;
+                } else if (existingRequest.status === 'rejected') {
+                    // Puedes optar por re-enviar la solicitud o informar al usuario
+                    Swal.fire({
+                        title: 'Solicitud rechazada',
+                        text: `${username} rechazó una invitación anterior.`,
+                        icon: 'warning',
+                        confirmButtonColor: '#78ffd6',
+                        background: '#1e3a47',
+                        color: 'white'
+                    });
+                    return;
+                }
+            }
+            
+            // NO existe solicitud previa, proceder con la inserción
+            const { error } = await supabase
+                .from('squad_requests')
+                .insert({
+                    squad_id: userSquad.id,
+                    user_id: userId,
+                    requested_by: currentUser.id,
+                    status: 'pending'
+                });
+            
+            if (error) {
+                console.error('Error al enviar invitación:', error);
+                throw error;
+            }
+            
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Invitación enviada!',
+                html: `
+                    <div style="text-align: center;">
+                        <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <p>Se ha enviado una invitación a <strong>${username}</strong> para unirse a tu escuadrón.</p>
+                        <p>Te notificaremos cuando acepte la invitación.</p>
                     </div>
-                    <p>Se ha enviado una invitación a <strong>${username}</strong> para unirse a tu escuadrón.</p>
-                    <p>Te notificaremos cuando acepte la invitación.</p>
-                </div>
-            `,
-            icon: 'success',
-            confirmButtonColor: '#78ffd6',
-            background: '#1e3a47',
-            color: 'white'
-        });
-        
-    } catch (error) {
-        console.error('Error al invitar amigo:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Ocurrió un error al enviar la invitación. Inténtalo de nuevo.',
-            icon: 'error',
-            confirmButtonColor: '#78ffd6',
-            background: '#1e3a47',
-            color: 'white'
-        });
+                `,
+                icon: 'success',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+            
+        } catch (error) {
+            console.error('Error al invitar amigo:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al enviar la invitación. Inténtalo de nuevo.',
+                icon: 'error',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+        }
     }
-}
+    
     // Agregar event listeners a los botones
     function addEventListeners() {
         // Funcionalidad para los elementos del buzón
