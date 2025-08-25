@@ -1325,62 +1325,102 @@
     }
     
     // Función para invitar a un amigo
-    async function inviteFriend(userId, username) {
-        try {
-            // Enviar la solicitud a la nueva tabla
-            const { error } = await supabase
-                .from('squad_requests')
-                .insert({
-                    squad_id: userSquad.id,
-                    user_id: userId,
-                    requested_by: currentUser.id,
-                    status: 'pending'
-                });
-            
-            if (error) {
-                console.error('Error al enviar invitación:', error);
+async function inviteFriend(userId, username) {
+    try {
+        // PRIMERO: Verificar si ya existe una solicitud (pending o accepted)
+        const { data: existingRequest, error: checkError } = await supabase
+            .from('squad_requests')
+            .select('id, status')
+            .eq('squad_id', userSquad.id)
+            .eq('user_id', userId)
+            .maybeSingle();
+        
+        if (checkError) {
+            console.error('Error al verificar solicitud existente:', checkError);
+            throw checkError;
+        }
+        
+        if (existingRequest) {
+            // Ya existe una solicitud para este usuario
+            if (existingRequest.status === 'pending') {
                 Swal.fire({
-                    title: 'Error',
-                    text: 'No se pudo enviar la invitación. Inténtalo de nuevo.',
-                    icon: 'error',
+                    title: 'Solicitud pendiente',
+                    text: `Ya hay una invitación pendiente para ${username}.`,
+                    icon: 'info',
+                    confirmButtonColor: '#78ffd6',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                return;
+            } else if (existingRequest.status === 'accepted') {
+                Swal.fire({
+                    title: 'Ya es miembro',
+                    text: `${username} ya es miembro de este escuadrón.`,
+                    icon: 'info',
+                    confirmButtonColor: '#78ffd6',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                return;
+            } else if (existingRequest.status === 'rejected') {
+                // Puedes optar por re-enviar la solicitud o informar al usuario
+                Swal.fire({
+                    title: 'Solicitud rechazada',
+                    text: `${username} rechazó una invitación anterior.`,
+                    icon: 'warning',
                     confirmButtonColor: '#78ffd6',
                     background: '#1e3a47',
                     color: 'white'
                 });
                 return;
             }
-            
-            // Mostrar mensaje de éxito
-            Swal.fire({
-                title: '¡Invitación enviada!',
-                html: `
-                    <div style="text-align: center;">
-                        <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <p>Se ha enviado una invitación a <strong>${username}</strong> para unirse a tu escuadrón.</p>
-                        <p>Te notificaremos cuando acepte la invitación.</p>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonColor: '#78ffd6',
-                background: '#1e3a47',
-                color: 'white'
-            });
-            
-        } catch (error) {
-            console.error('Error al invitar amigo:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Ocurrió un error al enviar la invitación. Inténtalo de nuevo.',
-                icon: 'error',
-                confirmButtonColor: '#78ffd6',
-                background: '#1e3a47',
-                color: 'white'
-            });
         }
+        
+        // NO existe solicitud previa, proceder con la inserción
+        const { error } = await supabase
+            .from('squad_requests')
+            .insert({
+                squad_id: userSquad.id,
+                user_id: userId,
+                requested_by: currentUser.id,
+                status: 'pending'
+            });
+        
+        if (error) {
+            console.error('Error al enviar invitación:', error);
+            throw error;
+        }
+        
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            title: '¡Invitación enviada!',
+            html: `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <p>Se ha enviado una invitación a <strong>${username}</strong> para unirse a tu escuadrón.</p>
+                    <p>Te notificaremos cuando acepte la invitación.</p>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonColor: '#78ffd6',
+            background: '#1e3a47',
+            color: 'white'
+        });
+        
+    } catch (error) {
+        console.error('Error al invitar amigo:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al enviar la invitación. Inténtalo de nuevo.',
+            icon: 'error',
+            confirmButtonColor: '#78ffd6',
+            background: '#1e3a47',
+            color: 'white'
+        });
     }
-    
+}
     // Agregar event listeners a los botones
     function addEventListeners() {
         // Funcionalidad para los elementos del buzón
