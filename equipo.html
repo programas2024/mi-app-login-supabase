@@ -667,7 +667,7 @@
             if (userSquad) {
                 renderSquadDetails();
             } else {
-                showError('No perteneces a ningún escuadrón o no eres el líder.');
+                showNoSquadMessage();
             }
         } catch (error) {
             console.error('Error inesperado:', error);
@@ -687,6 +687,11 @@
             
             if (squadError) {
                 console.error('Error al obtener el escuadrón:', squadError);
+                // Mostrar mensaje de error específico para 406
+                if (squadError.code === '406' || squadError.message.includes('406')) {
+                    console.log('El usuario no es líder de ningún escuadrón');
+                    return;
+                }
                 showError('Error al cargar la información del escuadrón.');
                 return;
             }
@@ -706,6 +711,53 @@
         }
     }
     
+    // Mostrar mensaje cuando el usuario no tiene escuadrón
+    function showNoSquadMessage() {
+        const contentEl = document.getElementById('content');
+        contentEl.innerHTML = `
+            <div class="container">
+                <div class="no-squad-container">
+                    <div class="no-squad-icon">
+                        <i class="fas fa-users-slash"></i>
+                    </div>
+                    <h2>No tienes un escuadrón</h2>
+                    <p>Actualmente no eres el líder de ningún escuadrón. Puedes unirte a uno existente o crear uno nuevo.</p>
+                    
+                    <div class="no-squad-actions">
+                        <button class="action-btn primary" id="create-squad-btn">
+                            <i class="fas fa-plus"></i> Crear Escuadrón
+                        </button>
+                        <button class="action-btn secondary" id="join-squad-btn">
+                            <i class="fas fa-sign-in-alt"></i> Unirse a un Escuadrón
+                        </button>
+                    </div>
+                    
+                    <div class="no-squad-info">
+                        <h3>¿Por qué unirse a un escuadrón?</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Juega con amigos y forma un equipo coordinado</li>
+                            <li><i class="fas fa-check-circle"></i> Completa misiones especiales y gana recompensas exclusivas</li>
+                            <li><i class="fas fa-check-circle"></i> Sube en el ranking de escuadrones y demuestra tu habilidad</li>
+                            <li><i class="fas fa-check-circle"></i> Desbloquea logros y personalizaciones para tu escuadrón</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Agregar event listeners a los botones
+        document.getElementById('create-squad-btn').addEventListener('click', function() {
+            // Redirigir a la página de creación de escuadrón
+            window.location.href = 'crear-escuadron.html';
+        });
+        
+        document.getElementById('join-squad-btn').addEventListener('click', function() {
+            // Redirigir a la página de búsqueda de escuadrones
+            window.location.href = 'unirse-escuadron.html';
+        });
+    }
+    
+    // Resto del código sin cambios (renderSquadDetails, loadSquadMembers, loadLeaderboard, etc.)
     // Mostrar detalles del escuadrón
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
