@@ -692,12 +692,6 @@
             
             if (squadError) {
                 console.error('Error al obtener el escuadrón:', squadError);
-                // Mostrar mensaje de error específico para 406
-                if (squadError.code === '406' || squadError.message.includes('406')) {
-                    console.log('El usuario no es líder de ningún escuadrón');
-                    return;
-                }
-                showError('Error al cargar la información del escuadrón.');
                 return;
             }
             
@@ -709,10 +703,8 @@
             userSquad = squad;
             isSquadLeader = true;
             console.log('Escuadrón cargado:', userSquad);
-            console.log('¿Es líder?', isSquadLeader);
         } catch (error) {
             console.error('Error inesperado:', error);
-            showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
         }
     }
     
@@ -744,7 +736,8 @@
             const { data: members, error: membersError } = await supabase
                 .from('squad_requests')
                 .select(`
-                    user:profiles(id, username, level, points),
+                    user_id,
+                    profiles!squad_requests_user_id_fkey(id, username, level, points),
                     accepted_at
                 `)
                 .eq('squad_id', userSquad.id)
@@ -758,12 +751,12 @@
             // Agregar miembros al array
             if (members && members.length > 0) {
                 members.forEach(member => {
-                    if (member.user) {
+                    if (member.profiles) {
                         squadMembers.push({
-                            id: member.user.id,
-                            username: member.user.username,
-                            level: member.user.level,
-                            points: member.user.points,
+                            id: member.profiles.id,
+                            username: member.profiles.username,
+                            level: member.profiles.level,
+                            points: member.profiles.points,
                             is_leader: false,
                             joined_at: member.accepted_at
                         });
@@ -784,7 +777,7 @@
             const { data: notifications, error: notificationsError } = await supabase
                 .from('squad_requests')
                 .select(`
-                    user:profiles(username),
+                    profiles!squad_requests_user_id_fkey(username),
                     accepted_at
                 `)
                 .eq('squad_id', userSquad.id)
@@ -806,63 +799,42 @@
     // Cargar amigos del líder
     async function loadLeaderFriends() {
         try {
-            // Primero intentamos con la estructura esperada por el código original
-            const { data: friends, error } = await supabase
+            // Intentar con la estructura actual de la tabla friends
+            const { data: userFriends, error: userError } = await supabase
                 .from('friends')
-                .select(`
-                    friend:profiles!friends_friend_id_fkey(id, username, level, points)
-                `)
-                .eq('user_id', currentUser.id)
+                .select('*')
+                .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
                 .eq('status', 'accepted');
-            
-            if (error) {
-                console.log('Intentando estructura alternativa debido a error:', error);
                 
-                // Si falla, intentamos con la estructura de tu tabla actual
-                const { data: userFriends, error: userError } = await supabase
-                    .from('friends')
-                    .select('*')
-                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-                    
-                if (userError) {
-                    console.error('Error al cargar amigos:', userError);
-                    return [];
-                }
-                
-                if (!userFriends || userFriends.length === 0) {
-                    console.log('El usuario no tiene amigos');
-                    return [];
-                }
-                
-                // Obtener IDs de amigos
-                const friendIds = userFriends.map(friend => 
-                    friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
-                );
-                
-                // Obtener información de perfiles de amigos
-                const { data: friendsProfiles, error: profilesError } = await supabase
-                    .from('profiles')
-                    .select('id, username, level, points')
-                    .in('id', friendIds);
-                    
-                if (profilesError) {
-                    console.error('Error al cargar perfiles de amigos:', profilesError);
-                    return [];
-                }
-                
-                console.log('Amigos cargados (estructura actual):', friendsProfiles);
-                return friendsProfiles || [];
+            if (userError) {
+                console.error('Error al cargar amigos:', userError);
+                return [];
             }
             
-            if (friends && friends.length > 0) {
-                // Extraer los perfiles de amigos
-                friendsList = friends.map(f => f.friend).filter(f => f !== null);
-                console.log('Amigos cargados:', friendsList);
-                return friendsList;
-            } else {
+            if (!userFriends || userFriends.length === 0) {
                 console.log('El usuario no tiene amigos');
                 return [];
             }
+            
+            // Obtener IDs de amigos
+            const friendIds = userFriends.map(friend => 
+                friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
+            );
+            
+            // Obtener información de perfiles de amigos
+            const { data: friendsProfiles, error: profilesError } = await supabase
+                .from('profiles')
+                .select('id, username, level, points')
+                .in('id', friendIds);
+                
+            if (profilesError) {
+                console.error('Error al cargar perfiles de amigos:', profilesError);
+                return [];
+            }
+            
+            console.log('Amigos cargados:', friendsProfiles);
+            return friendsProfiles || [];
+            
         } catch (error) {
             console.error('Error inesperado al cargar amigos:', error);
             return [];
@@ -905,12 +877,10 @@
         
         // Agregar event listeners a los botones
         document.getElementById('create-squad-btn').addEventListener('click', function() {
-            // Redirigir a la página de creación de escuadrón
             window.location.href = 'crear-escuadron.html';
         });
         
         document.getElementById('join-squad-btn').addEventListener('click', function() {
-            // Redirigir a la página de búsqueda de escuadrones
             window.location.href = 'unirse-escuadron.html';
         });
     }
@@ -1248,7 +1218,7 @@
                     </div>
                     <div class="mailbox-content">
                         <div class="mailbox-sender">Sistema</div>
-                        <div class="mailbox-subject">${notification.user.username} aceptó la invitación al escuadrón</div>
+                        <div class="mailbox-subject">${notification.profiles.username} aceptó la invitación al escuadrón</div>
                         <div class="mailbox-time">${formattedDate}</div>
                     </div>
                 </div>
