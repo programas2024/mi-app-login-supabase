@@ -1003,6 +1003,10 @@
             
             // Actualizar la UI
             renderMissionsSection();
+
+            // DESPUÉS de actualizar los puntos, actualizar el ranking
+        await updateGlobalRank();
+        
             
         } catch (error) {
             console.error('Error al completar misión:', error);
@@ -1121,6 +1125,47 @@
         });
     }
     
+    // Agrega esta función auxiliar para formatear el ranking
+function formatRank(rank) {
+    if (rank === null || rank === undefined || rank === 0) {
+        return 'N/A';
+    }
+    return `#${rank}`;
+}
+
+async function updateGlobalRank() {
+    try {
+        // Obtener todos los escuadrones ordenados por puntos (descendente)
+        const { data: allSquads, error } = await supabase
+            .from('squads')
+            .select('id, total_points')
+            .order('total_points', { ascending: false });
+        
+        if (error) {
+            console.error('Error al obtener escuadrones:', error);
+            return;
+        }
+        
+        // Actualizar el ranking de cada escuadrón
+        for (let i = 0; i < allSquads.length; i++) {
+            const squad = allSquads[i];
+            const { error: updateError } = await supabase
+                .from('squads')
+                .update({ global_rank: i + 1 })
+                .eq('id', squad.id);
+            
+            if (updateError) {
+                console.error('Error al actualizar ranking:', updateError);
+            }
+        }
+        
+        console.log('Ranking global actualizado');
+        
+    } catch (error) {
+        console.error('Error inesperado al actualizar ranking:', error);
+    }
+}
+
     // Mostrar detalles del escuadrón
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
@@ -1197,13 +1242,14 @@
                             <div class="stat-label">Puntos Totales</div>
                         </div>
                         
-                        <div class="stat-card">
-                            <div class="stat-icon ranking-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div class="stat-number">#${userSquad.global_rank || 'N/A'}</div>
-                            <div class="stat-label">Ranking Global</div>
+                    // Y cámbiala por esto:
+                    <div class="stat-card">
+                        <div class="stat-icon ranking-icon">
+                            <i class="fas fa-trophy"></i>
                         </div>
+                        <div class="stat-number">#${userSquad.global_rank !== null && userSquad.global_rank !== undefined ? userSquad.global_rank : 'N/A'}</div>
+                        <div class="stat-label">Ranking Global</div>
+                    </div>
                     </div>
                     
                     <h3 class="section-title" style="margin-top: 1.5rem;"><i class="fas fa-medal"></i> Clasificación Interna</h3>
