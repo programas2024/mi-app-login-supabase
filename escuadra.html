@@ -553,6 +553,7 @@
     // Inicializar la aplicación
     document.addEventListener('DOMContentLoaded', async function() {
         await initializeApp();
+        setupEventListeners(); // Configurar event listeners después de inicializar
     });
     
     // Inicializar la aplicación
@@ -572,19 +573,231 @@
         }
     }
     
+    // Configurar event listeners de forma segura
+    function setupEventListeners() {
+        // Botón para mostrar instrucciones de RLS
+        const fixRlsBtn = document.getElementById('fix-rls-btn');
+        if (fixRlsBtn) {
+            fixRlsBtn.addEventListener('click', function() {
+                Swal.fire({
+                    title: 'Configurar Políticas RLS',
+                    html: `
+                        <div style="text-align:left;">
+                            <p>Para solucionar el error, ejecuta este SQL en el Editor SQL de Supabase:</p>
+                            <pre style="background: #1e3a47; padding: 15px; border-radius: 8px; overflow: auto; color: white; font-size: 12px;">
+-- Políticas para la tabla 'profiles'
+CREATE POLICY "Users can view own profile" ON profiles
+FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+FOR UPDATE USING (auth.uid() = id);
+
+-- Políticas para la tabla 'squads'  
+CREATE POLICY "Anyone can view squads" ON squads
+FOR SELECT USING (true);
+
+CREATE POLICY "Authenticated users can create squads" ON squads
+FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Users can update own squads" ON squads
+FOR UPDATE USING (auth.uid() = leader_id);
+
+-- Políticas para la tabla 'squad_requests'
+CREATE POLICY "Users can view their requests" ON squad_requests
+FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their requests" ON squad_requests
+FOR UPDATE USING (auth.uid() = user_id);
+                            </pre>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Entendido',
+                    width: '800px'
+                });
+            });
+        }
+        
+        // Botón Volver
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                window.location.href = 'dashboard.html';
+            });
+        }
+        
+        // Botón Reintentar
+        const retryBtn = document.getElementById('retry-btn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                initializeApp();
+            });
+        }
+        
+        // Botón Crear Nuevo desde mensaje vacío
+        const createNewBtn = document.getElementById('create-new-btn');
+        if (createNewBtn) {
+            createNewBtn.addEventListener('click', function() {
+                showCreateSquadContainer();
+            });
+        }
+        
+        // Botón Buscar Escuadrones
+        const searchSquadsBtn = document.getElementById('search-squads-btn');
+        if (searchSquadsBtn) {
+            searchSquadsBtn.addEventListener('click', function() {
+                alert('Función de búsqueda de escuadrones en desarrollo');
+            });
+        }
+        
+        // Botón Ver Más (en el header del escuadrón)
+        const viewMoreBtn = document.getElementById('view-more-btn');
+        if (viewMoreBtn) {
+            viewMoreBtn.addEventListener('click', function() {
+                window.location.href = 'equipo.html';
+            });
+        }
+        
+        // Botón Ver Más (en la parte inferior)
+        const viewMoreButton = document.getElementById('view-more-button');
+        if (viewMoreButton) {
+            viewMoreButton.addEventListener('click', function() {
+                window.location.href = 'equipo.html';
+            });
+        }
+        
+        // Botón para ignorar solicitudes
+        const ignoreRequestsBtn = document.getElementById('ignore-requests-btn');
+        if (ignoreRequestsBtn) {
+            ignoreRequestsBtn.addEventListener('click', function() {
+                showEmptySquadMessage();
+            });
+        }
+        
+        // Crear escuadrón
+        const createSquadBtn = document.getElementById('create-squad-btn');
+        if (createSquadBtn) {
+            createSquadBtn.addEventListener('click', async function() {
+                const name = document.getElementById('squad-name').value;
+                const members = document.getElementById('squad-members').value;
+                const mission = document.getElementById('squad-mission').value;
+                
+                if (!name || !members || !mission) {
+                    showError('Campos incompletos', 'Por favor completa todos los campos');
+                    return;
+                }
+                
+                // Verificar si tiene suficiente oro
+                if (userProfile.gold < 200) {
+                    showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
+                    return;
+                }
+                
+                try {
+                    // 1. Restar el oro al usuario en la tabla profiles
+                    const newGold = userProfile.gold - 200;
+                    const { error: updateError } = await supabase
+                        .from('profiles')
+                        .update({ gold: newGold })
+                        .eq('id', currentUser.id);
+                    
+                    if (updateError) {
+                        console.error('Error al actualizar oro:', updateError);
+                        throw new Error('No se pudo actualizar el oro');
+                    }
+                    
+                    // 2. Insertar el nuevo escuadrón en la tabla de squads
+                    const squadData = {
+                        name: name,
+                        member_count: parseInt(members),
+                        max_members: 10,
+                        mission: mission,
+                        rank: 'Bronce',
+                        leader_id: currentUser.id,
+                        created_at: new Date().toISOString(),
+                        level: 2,
+                        total_points: 0
+                    };
+                    
+                    const { data: newSquad, error: insertError } = await supabase
+                        .from('squads')
+                        .insert([squadData])
+                        .select()
+                        .single();
+                    
+                    if (insertError) {
+                        console.error('Error al crear escuadrón:', insertError);
+                        throw new Error('No se pudo crear el escuadrón');
+                    }
+                    
+                    // Actualizar la UI
+                    userProfile.gold = newGold;
+                    userSquad = newSquad;
+                    
+                    const goldAmount = document.getElementById('gold-amount');
+                    if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
+                    
+                    displaySquadData(newSquad);
+                    showSquadDetails();
+                    
+                    // Mostrar confeti
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                    
+                    Swal.fire({
+                        title: '¡Escuadrón Creado!',
+                        html: `
+                            <div style="text-align:left; margin:20px 0;">
+                                <p style="margin-bottom:10px;"><strong>Nombre:</strong> ${name}</p>
+                                <p style="margin-bottom:10px;"><strong>Miembros:</strong> ${members}</p>
+                                <p style="margin-bottom:10px;"><strong>Misión:</strong> ${mission}</p>
+                                <p style="margin-bottom:10px;"><strong>Rango:</strong> <span style="color:#cd7f32;">Bronce</span></p>
+                                <p style="margin-bottom:10px;"><strong>Costo:</strong> <span style="color:gold;">200 Oro</span></p>
+                            </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonColor: '#78ffd6',
+                        confirmButtonText: '¡Empezar!',
+                        background: '#1e3a47',
+                        color: 'white'
+                    });
+                    
+                } catch (error) {
+                    console.error('Error al crear escuadrón:', error);
+                    showError('Error', error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.');
+                }
+            });
+        }
+        
+        // Botón Cancelar
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                document.getElementById('squad-name').value = '';
+                document.getElementById('squad-members').value = '1';
+                document.getElementById('squad-mission').selectedIndex = 0;
+                showEmptySquadMessage();
+            });
+        }
+    }
+    
     // Ocultar todos los contenedores principales
     function hideAllContainers() {
-        const squadDetails = document.getElementById('squad-details');
-        const createContainer = document.getElementById('create-squad-container');
-        const emptySquad = document.getElementById('empty-squad');
-        const squadSelection = document.getElementById('squad-selection');
-        const requestContainer = document.getElementById('request-container');
+        const containers = [
+            'squad-details',
+            'create-squad-container',
+            'empty-squad',
+            'squad-selection',
+            'request-container'
+        ];
         
-        if (squadDetails) squadDetails.style.display = 'none';
-        if (createContainer) createContainer.style.display = 'none';
-        if (emptySquad) emptySquad.style.display = 'none';
-        if (squadSelection) squadSelection.style.display = 'none';
-        if (requestContainer) requestContainer.style.display = 'none';
+        containers.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.style.display = 'none';
+        });
     }
     
     // Ocultar error de API
@@ -728,6 +941,8 @@
     // Mostrar solicitudes pendientes
     function displayRequests(requests) {
         const requestsList = document.getElementById('requests-list');
+        if (!requestsList) return;
+        
         requestsList.innerHTML = '';
         
         requests.forEach(request => {
@@ -921,6 +1136,8 @@
     // Mostrar lista de escuadrones para selección
     function displaySquadList(squads) {
         const squadList = document.getElementById('squad-list');
+        if (!squadList) return;
+        
         squadList.innerHTML = '';
         
         squads.forEach(squad => {
@@ -989,184 +1206,6 @@
             color: 'white'
         });
     }
-    
-    // Botón para mostrar instrucciones de RLS
-    document.getElementById('fix-rls-btn').addEventListener('click', function() {
-        Swal.fire({
-            title: 'Configurar Políticas RLS',
-            html: `
-                <div style="text-align:left;">
-                    <p>Para solucionar el error, ejecuta este SQL en el Editor SQL de Supabase:</p>
-                    <pre style="background: #1e3a47; padding: 15px; border-radius: 8px; overflow: auto; color: white; font-size: 12px;">
--- Políticas para la tabla 'profiles'
-CREATE POLICY "Users can view own profile" ON profiles
-FOR SELECT USING (auth.uid() = id);
-
-CREATE POLICY "Users can update own profile" ON profiles
-FOR UPDATE USING (auth.uid() = id);
-
--- Políticas para la tabla 'squads'  
-CREATE POLICY "Anyone can view squads" ON squads
-FOR SELECT USING (true);
-
-CREATE POLICY "Authenticated users can create squads" ON squads
-FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Users can update own squads" ON squads
-FOR UPDATE USING (auth.uid() = leader_id);
-
--- Políticas para la tabla 'squad_requests'
-CREATE POLICY "Users can view their requests" ON squad_requests
-FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can update their requests" ON squad_requests
-FOR UPDATE USING (auth.uid() = user_id);
-                    </pre>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Entendido',
-            width: '800px'
-        });
-    });
-    
-    // Botón Volver
-    document.getElementById('back-btn').addEventListener('click', function() {
-        window.location.href = 'dashboard.html';
-    });
-    
-    // Botón Reintentar
-    document.getElementById('retry-btn').addEventListener('click', function() {
-        initializeApp();
-    });
-    
-    // Botón Crear Nuevo desde mensaje vacío
-    document.getElementById('create-new-btn').addEventListener('click', function() {
-        showCreateSquadContainer();
-    });
-    
-    // Botón Buscar Escuadrones
-    document.getElementById('search-squads-btn').addEventListener('click', function() {
-        alert('Función de búsqueda de escuadrones en desarrollo');
-    });
-    
-    // Botón Ver Más (en el header del escuadrón)
-    document.getElementById('view-more-btn').addEventListener('click', function() {
-        window.location.href = 'equipo.html';
-    });
-    
-    // Botón Ver Más (en la parte inferior)
-    document.getElementById('view-more-button').addEventListener('click', function() {
-        window.location.href = 'equipo.html';
-    });
-    
-    // Botón para ignorar solicitudes
-    document.getElementById('ignore-requests-btn').addEventListener('click', function() {
-        showEmptySquadMessage();
-    });
-    
-    // Crear escuadrón
-    document.getElementById('create-squad-btn').addEventListener('click', async function() {
-        const name = document.getElementById('squad-name').value;
-        const members = document.getElementById('squad-members').value;
-        const mission = document.getElementById('squad-mission').value;
-        
-        if (!name || !members || !mission) {
-            showError('Campos incompletos', 'Por favor completa todos los campos');
-            return;
-        }
-        
-        // Verificar si tiene suficiente oro
-        if (userProfile.gold < 200) {
-            showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
-            return;
-        }
-        
-        try {
-            // 1. Restar el oro al usuario en la tabla profiles
-            const newGold = userProfile.gold - 200;
-            const { error: updateError } = await supabase
-                .from('profiles')
-                .update({ gold: newGold })
-                .eq('id', currentUser.id);
-            
-            if (updateError) {
-                console.error('Error al actualizar oro:', updateError);
-                throw new Error('No se pudo actualizar el oro');
-            }
-            
-            // 2. Insertar el nuevo escuadrón en la tabla de squads
-            const squadData = {
-                name: name,
-                member_count: parseInt(members),
-                max_members: 10,
-                mission: mission,
-                rank: 'Bronce',
-                leader_id: currentUser.id,
-                created_at: new Date().toISOString(),
-                level: 2,
-                total_points: 0
-            };
-            
-            const { data: newSquad, error: insertError } = await supabase
-                .from('squads')
-                .insert([squadData])
-                .select()
-                .single();
-            
-            if (insertError) {
-                console.error('Error al crear escuadrón:', insertError);
-                throw new Error('No se pudo crear el escuadrón');
-            }
-            
-            // Actualizar la UI
-            userProfile.gold = newGold;
-            userSquad = newSquad;
-            
-            const goldAmount = document.getElementById('gold-amount');
-            if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
-            
-            displaySquadData(newSquad);
-            showSquadDetails();
-            
-            // Mostrar confeti
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-            
-            Swal.fire({
-                title: '¡Escuadrón Creado!',
-                html: `
-                    <div style="text-align:left; margin:20px 0;">
-                        <p style="margin-bottom:10px;"><strong>Nombre:</strong> ${name}</p>
-                        <p style="margin-bottom:10px;"><strong>Miembros:</strong> ${members}</p>
-                        <p style="margin-bottom:10px;"><strong>Misión:</strong> ${mission}</p>
-                        <p style="margin-bottom:10px;"><strong>Rango:</strong> <span style="color:#cd7f32;">Bronce</span></p>
-                        <p style="margin-bottom:10px;"><strong>Costo:</strong> <span style="color:gold;">200 Oro</span></p>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonColor: '#78ffd6',
-                confirmButtonText: '¡Empezar!',
-                background: '#1e3a47',
-                color: 'white'
-            });
-            
-        } catch (error) {
-            console.error('Error al crear escuadrón:', error);
-            showError('Error', error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.');
-        }
-    });
-    
-    // Botón Cancelar
-    document.getElementById('cancel-btn').addEventListener('click', function() {
-        document.getElementById('squad-name').value = '';
-        document.getElementById('squad-members').value = '1';
-        document.getElementById('squad-mission').selectedIndex = 0;
-        showEmptySquadMessage();
-    });
 </script>
 </body>
 </html>
