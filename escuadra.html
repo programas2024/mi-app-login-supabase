@@ -458,15 +458,15 @@
                     </div>
                 </div>
 
-                <div class="view-more" id="view-more-btn">
-                    <button class="btn">
+                <div class="view-more" id="view-more-container">
+                    <button class="btn" id="view-more-button">
                         <i class="fas fa-chevron-down"></i> Ver todos los miembros
                     </button>
                 </div>
             </div>
 
             <!-- Creación de escuadrón (visible solo si no tiene escuadrón) -->
-            <div class="create-squad-container" id="create-squad-container">
+            <div class="create-squad-container" id="create-squad-container" style="display: none;">
                 <div class="create-header">
                     <h2>Crear un Nuevo Escuadrón</h2>
                     <p>Forma tu equipo y comienza a ascender en el ranking</p>
@@ -513,7 +513,7 @@
             </div>
 
             <!-- Mensaje cuando no tiene escuadrón -->
-            <div class="create-squad-container" id="empty-squad">
+            <div class="create-squad-container" id="empty-squad" style="display: none;">
                 <div class="create-header">
                     <h2>No tienes un escuadrón</h2>
                     <p>Crea tu propio escuadrón o únete a uno existente para comenzar</p>
@@ -528,7 +528,7 @@
                     <button class="btn" id="create-new-btn">
                         <i class="fas fa-plus"></i> Crear Escuadrón
                     </button>
-                    <button class="btn btn-back">
+                    <button class="btn btn-back" id="search-squads-btn">
                         <i class="fas fa-search"></i> Buscar Escuadrones
                     </button>
                 </div>
@@ -558,6 +558,7 @@
         async function initializeApp() {
             hideApiError();
             hideSquadSelection();
+            hideAllContainers();
             
             try {
                 await checkUserStatus();
@@ -567,6 +568,19 @@
                 console.error('Error al inicializar la aplicación:', error);
                 showApiError();
             }
+        }
+        
+        // Ocultar todos los contenedores principales
+        function hideAllContainers() {
+            const squadDetails = document.getElementById('squad-details');
+            const createContainer = document.getElementById('create-squad-container');
+            const emptySquad = document.getElementById('empty-squad');
+            const squadSelection = document.getElementById('squad-selection');
+            
+            if (squadDetails) squadDetails.style.display = 'none';
+            if (createContainer) createContainer.style.display = 'none';
+            if (emptySquad) emptySquad.style.display = 'none';
+            if (squadSelection) squadSelection.style.display = 'none';
         }
         
         // Ocultar error de API
@@ -589,32 +603,30 @@
         
         // Mostrar selección de escuadrón
         function showSquadSelection() {
+            hideAllContainers();
             const squadSelection = document.getElementById('squad-selection');
             if (squadSelection) squadSelection.style.display = 'block';
         }
         
-        // Ocultar contenedor completo de creación de escuadrón
-        function hideCreateSquadContainer() {
-            const createContainer = document.getElementById('create-squad-container');
-            if (createContainer) createContainer.style.display = 'none';
-            const emptySquad = document.getElementById('empty-squad');
-            if (emptySquad) emptySquad.style.display = 'none';
-        }
-        
-        // Mostrar contenedor completo de creación de escuadrón
+        // Mostrar creación de escuadrón
         function showCreateSquadContainer() {
+            hideAllContainers();
             const createContainer = document.getElementById('create-squad-container');
             if (createContainer) createContainer.style.display = 'block';
-            const emptySquad = document.getElementById('empty-squad');
-            if (emptySquad) emptySquad.style.display = 'none';
         }
         
         // Mostrar mensaje de no tener escuadrón
         function showEmptySquadMessage() {
-            const createContainer = document.getElementById('create-squad-container');
-            if (createContainer) createContainer.style.display = 'none';
+            hideAllContainers();
             const emptySquad = document.getElementById('empty-squad');
             if (emptySquad) emptySquad.style.display = 'block';
+        }
+        
+        // Mostrar detalles del escuadrón
+        function showSquadDetails() {
+            hideAllContainers();
+            const squadDetails = document.getElementById('squad-details');
+            if (squadDetails) squadDetails.style.display = 'block';
         }
         
         // Verificar el estado del usuario
@@ -702,7 +714,7 @@
                         // Si solo tiene un escuadrón, mostrarlo directamente
                         userSquad = squads[0];
                         displaySquadData(userSquad);
-                        hideCreateSquadContainer();
+                        showSquadDetails();
                     } else {
                         // Si tiene múltiples escuadrones, mostrar selector
                         showSquadSelection();
@@ -739,7 +751,7 @@
                 squadItem.addEventListener('click', () => {
                     userSquad = squad;
                     displaySquadData(squad);
-                    hideSquadSelection();
+                    showSquadDetails();
                 });
                 
                 squadList.appendChild(squadItem);
@@ -748,18 +760,6 @@
         
         // Mostrar datos del escuadrón
         function displaySquadData(squad) {
-            const emptySquad = document.getElementById('empty-squad');
-            const squadDetails = document.getElementById('squad-details');
-            const squadInfo = document.getElementById('squad-info');
-            const membersList = document.getElementById('members-list');
-            const viewMoreBtn = document.getElementById('view-more-btn');
-            
-            if (emptySquad) emptySquad.style.display = 'none';
-            if (squadDetails) squadDetails.style.display = 'block';
-            if (squadInfo) squadInfo.style.display = 'block';
-            if (membersList) membersList.style.display = 'block';
-            if (viewMoreBtn) viewMoreBtn.style.display = 'flex';
-            
             // Actualizar los detalles del escuadrón
             const detailName = document.getElementById('detail-name');
             const detailMembers = document.getElementById('detail-members');
@@ -850,6 +850,11 @@ FOR UPDATE USING (auth.uid() = leader_id);
             showCreateSquadContainer();
         });
         
+        // Botón Buscar Escuadrones
+        document.getElementById('search-squads-btn').addEventListener('click', function() {
+            alert('Función de búsqueda de escuadrones en desarrollo');
+        });
+        
         // Crear escuadrón
         document.getElementById('create-squad-btn').addEventListener('click', async function() {
             const name = document.getElementById('squad-name').value;
@@ -863,7 +868,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
             
             // Verificar si tiene suficiente oro
             if (userProfile.gold < 200) {
-                showError('Oro insuficiente', 'Necessitas 200 oro para crear un escuadrón');
+                showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
                 return;
             }
             
@@ -912,7 +917,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
                 if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
                 
                 displaySquadData(newSquad);
-                hideCreateSquadContainer();
+                showSquadDetails();
                 
                 // Mostrar confeti
                 confetti({
@@ -954,7 +959,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
         });
         
         // Botón Ver Más
-        document.getElementById('view-more-btn').addEventListener('click', function() {
+        document.getElementById('view-more-button').addEventListener('click', function() {
             window.location.href = 'equipo.html';
         });
     </script>
