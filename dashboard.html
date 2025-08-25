@@ -1964,20 +1964,12 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        /* Estilos para centrar icono y texto con icono desplazado a la derecha */
-        .btn-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            position: relative;
-            width: 100%;
-        }
+       
+       
         
-        .btn-content i {
-            position: relative;
-            left: 13px; /* Desplaza el icono hacia la derecha */
-        }
+        
+        
+       
 </style>
 </head>
 <body>
@@ -2103,9 +2095,17 @@
         <span>Mensajes</span>
         <span id="messages-badge" class="notification-badge hidden">0</span>
     </button>
-</div>
-            </aside>
 
+
+ <div class="container">
+       
+        <!-- Botón de Buzón con icono azul -->
+        <button id="mailbox-btn" class="sidebar-btn" title="Revisa tus mensajes recibidos">
+            <i class="fas fa-inbox" style="color: #4fc3f7; margin-right: 15px; font-size: 24px;"></i>
+            <span>Buzón</span>
+            <span id="mailbox-badge" class="notification-badge">3</span>
+        </button>
+    </div>
             <button id="logout-btn" class="btn btn-logout floating-logout-btn" title="Cerrar tu sesión actual.">
                 <i class="fas fa-sign-out-alt"></i>
             </button>

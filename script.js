@@ -614,3 +614,58 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+
+// Función para mostrar los mensajes con SweetAlert
+        function showMessages() {
+            Swal.fire({
+                title: 'Tus Mensajes',
+                html: `
+                    <div class="message-list">
+                        <div class="message">
+                            <div class="message-header">
+                                <span>Ana María</span>
+                                <span>Hoy, 10:30 AM</span>
+                            </div>
+                            <div class="message-content">
+                                ¡Hola! ¿Te gustaría ir al cine este fin de semana? Hay una nueva película que creo que te encantará.
+                            </div>
+                        </div>
+                        
+                        <div class="message">
+                            <div class="message-header">
+                                <span>Carlos Rodríguez</span>
+                                <span>Ayer, 4:15 PM</span>
+                            </div>
+                            <div class="message-content">
+                                ¿Podrías enviarme los documentos para la reunión de mañana? ¡Gracias!
+                            </div>
+                        </div>
+                        
+                        <div class="message">
+                            <div class="message-header">
+                                <span>Laura García</span>
+                                <span>15 Oct, 9:20 AM</span>
+                            </div>
+                            <div class="message-content">
+                                ¡Feliz cumpleaños! Espero que tengas un día maravilloso. Nos vemos en la fiesta.
+                            </div>
+                        </div>
+                    </div>
+                `,
+                width: 600,
+                padding: '2em',
+                background: '#fff',
+                color: '#343a40',
+                showConfirmButton: true,
+                confirmButtonText: 'Cerrar',
+                confirmButtonColor: '#ff6b6b',
+                customClass: {
+                    popup: 'custom-swal-popup'
+                }
+            });
+        }
+        
+        // Obtener el botón y añadir el evento
+        const mailboxBtn = document.getElementById('mailbox-btn');
+        mailboxBtn.addEventListener('click', showMessages);
