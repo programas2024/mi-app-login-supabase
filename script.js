@@ -615,310 +615,314 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-  // Obtener el ID del usuario actual (esto es un ejemplo, debes ajustarlo según tu sistema de autenticación)
-        // En una aplicación real, obtendrías el ID del usuario autenticado
-        const getCurrentUserId = async () => {
-            // Esta es una implementación de ejemplo
-            // Debes reemplazarla con la lógica real para obtener el ID del usuario autenticado
-            const { data: { user } } = await supabase.auth.getUser();
-            return user ? user.id : null;
-        };
+// Configuración de Supabase
+const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
-        // Función para mostrar las invitaciones con SweetAlert personalizado
-        async function showSquadInvitations() {
-            // Crear el contenido HTML para el SweetAlert
-            const content = document.createElement('div');
-            content.className = 'custom-swal-container';
+// Inicializar Supabase
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Obtener el ID del usuario actual
+const getCurrentUserId = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user ? user.id : null;
+};
+
+// Función para mostrar las invitaciones con SweetAlert personalizado
+async function showSquadInvitations() {
+    // Crear el contenido HTML para el SweetAlert
+    const content = document.createElement('div');
+    content.className = 'custom-swal-container';
+    
+    // Mostrar estado de carga mientras se obtienen los datos
+    content.innerHTML = `
+        <div class="custom-swal-header">
+            <h2 class="custom-swal-title"><i class="fas fa-users"></i> Invitaciones a Escuadrones</h2>
+            <button class="custom-swal-close">&times;</button>
+        </div>
+        <div class="custom-swal-content">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+        <div class="custom-swal-actions">
+            <button class="custom-swal-confirm"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+    `;
+    
+    // Mostrar el SweetAlert personalizado
+    const swalInstance = Swal.fire({
+        html: content,
+        width: 700,
+        padding: 0,
+        background: 'transparent',
+        showConfirmButton: false,
+        showCloseButton: false,
+        customClass: {
+            popup: 'custom-swal-popup'
+        },
+        didOpen: () => {
+            // Agregar funcionalidad al botón de cerrar
+            const closeBtn = content.querySelector('.custom-swal-close');
+            const confirmBtn = content.querySelector('.custom-swal-confirm');
             
-            // Mostrar estado de carga mientras se obtienen los datos
-            content.innerHTML = `
-                <div class="custom-swal-header">
-                    <h2 class="custom-swal-title"><i class="fas fa-users"></i> Invitaciones a Escuadrones</h2>
-                    <button class="custom-swal-close">&times;</button>
-                </div>
-                <div class="custom-swal-content">
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                    </div>
-                </div>
-                <div class="custom-swal-actions">
-                    <button class="custom-swal-confirm"><i class="fas fa-times"></i> Cerrar</button>
-                </div>
-            `;
-            
-            // Mostrar el SweetAlert personalizado
-            const swalInstance = Swal.fire({
-                html: content,
-                width: 700,
-                padding: 0,
-                background: 'transparent',
-                showConfirmButton: false,
-                showCloseButton: false,
-                customClass: {
-                    popup: 'custom-swal-popup'
-                },
-                didOpen: () => {
-                    // Agregar funcionalidad al botón de cerrar
-                    const closeBtn = content.querySelector('.custom-swal-close');
-                    const confirmBtn = content.querySelector('.custom-swal-confirm');
-                    
-                    closeBtn.addEventListener('click', () => {
-                        Swal.close();
-                    });
-                    
-                    confirmBtn.addEventListener('click', () => {
-                        Swal.close();
-                    });
-                }
+            closeBtn.addEventListener('click', () => {
+                Swal.close();
             });
             
-            try {
-                // Obtener el ID del usuario actual
-                const currentUserId = await getCurrentUserId();
+            confirmBtn.addEventListener('click', () => {
+                Swal.close();
+            });
+        }
+    });
+    
+    try {
+        // Obtener el ID del usuario actual
+        const currentUserId = await getCurrentUserId();
+        
+        if (!currentUserId) {
+            throw new Error('No se pudo obtener el ID del usuario. Por favor, inicia sesión.');
+        }
+        
+        // Obtener las invitaciones del usuario actual desde Supabase
+        const invitations = await fetchSquadInvitations(currentUserId);
+        
+        // Actualizar el contenido con las invitaciones
+        const messageList = document.createElement('div');
+        messageList.className = 'message-list';
+        
+        if (invitations.length === 0) {
+            messageList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No tienes invitaciones pendientes</h3>
+                    <p>Cuando recibas una invitación a un escuadrón, aparecerá aquí.</p>
+                </div>
+            `;
+        } else {
+            invitations.forEach(invitation => {
+                const message = document.createElement('div');
+                message.className = 'message';
                 
-                if (!currentUserId) {
-                    throw new Error('No se pudo obtener el ID del usuario. Por favor, inicia sesión.');
-                }
+                // Obtener inicial del nombre del remitente
+                const senderInitial = invitation.requester_name ? invitation.requester_name.charAt(0).toUpperCase() : 'U';
                 
-                // Obtener las invitaciones del usuario actual desde Supabase
-                const invitations = await fetchSquadInvitations(currentUserId);
+                // Formatear la fecha
+                const formattedDate = formatDate(invitation.created_at);
                 
-                // Actualizar el contenido con las invitaciones
-                const messageList = document.createElement('div');
-                messageList.className = 'message-list';
-                
-                if (invitations.length === 0) {
-                    messageList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-inbox"></i>
-                            <h3>No tienes invitaciones pendientes</h3>
-                            <p>Cuando recibas una invitación a un escuadrón, aparecerá aquí.</p>
+                message.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-sender">
+                            <div class="sender-avatar">${senderInitial}</div>
+                            <span>${invitation.requester_name || 'Usuario'}</span>
                         </div>
-                    `;
-                } else {
-                    invitations.forEach(invitation => {
-                        const message = document.createElement('div');
-                        message.className = 'message';
-                        
-                        // Obtener inicial del nombre del remitente
-                        const senderInitial = invitation.requester_name ? invitation.requester_name.charAt(0).toUpperCase() : 'U';
-                        
-                        // Formatear la fecha
-                        const formattedDate = formatDate(invitation.created_at);
-                        
-                        message.innerHTML = `
-                            <div class="message-header">
-                                <div class="message-sender">
-                                    <div class="sender-avatar">${senderInitial}</div>
-                                    <span>${invitation.requester_name || 'Usuario'}</span>
-                                </div>
-                                <span class="message-time">${formattedDate}</span>
-                            </div>
-                            <div class="message-content">
-                                <strong>${invitation.requester_name || 'Un usuario'}</strong> te invita a unirte al escuadrón <strong>${invitation.squad_name || 'Sin nombre'}</strong>.
-                            </div>
-                            <div class="message-actions">
-                                <button class="message-btn accept" data-id="${invitation.id}">
-                                    <i class="fas fa-check"></i> Aceptar
-                                </button>
-                                <button class="message-btn reject" data-id="${invitation.id}">
-                                    <i class="fas fa-times"></i> Rechazar
-                                </button>
-                            </div>
-                        `;
-                        
-                        messageList.appendChild(message);
-                    });
-                }
-                
-                // Reemplazar el contenido de carga con la lista de invitaciones
-                const swalContent = content.querySelector('.custom-swal-content');
-                swalContent.innerHTML = '';
-                swalContent.appendChild(messageList);
-                
-                // Agregar event listeners a los botones de aceptar y rechazar
-                content.querySelectorAll('.message-btn.accept').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const invitationId = btn.getAttribute('data-id');
-                        acceptInvitation(invitationId, btn);
-                    });
-                });
-                
-                content.querySelectorAll('.message-btn.reject').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const invitationId = btn.getAttribute('data-id');
-                        rejectInvitation(invitationId, btn);
-                    });
-                });
-                
-            } catch (error) {
-                console.error('Error al cargar las invitaciones:', error);
-                content.querySelector('.custom-swal-content').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Error al cargar las invitaciones</h3>
-                        <p>${error.message || 'Intenta de nuevo más tarde.'}</p>
+                        <span class="message-time">${formattedDate}</span>
+                    </div>
+                    <div class="message-content">
+                        <strong>${invitation.requester_name || 'Un usuario'}</strong> te invita a unirte al escuadrón <strong>${invitation.squad_name || 'Sin nombre'}</strong>.
+                    </div>
+                    <div class="message-actions">
+                        <button class="message-btn accept" data-id="${invitation.id}">
+                            <i class="fas fa-check"></i> Aceptar
+                        </button>
+                        <button class="message-btn reject" data-id="${invitation.id}">
+                            <i class="fas fa-times"></i> Rechazar
+                        </button>
                     </div>
                 `;
-            }
+                
+                messageList.appendChild(message);
+            });
         }
         
-        // Función para obtener las invitaciones desde Supabase
-        async function fetchSquadInvitations(userId) {
-            try {
-                // Consultar las invitaciones pendientes para el usuario actual
-                const { data, error } = await supabase
-                    .from('squad_requests')
-                    .select(`
-                        id,
-                        squad_id,
-                        user_id,
-                        requested_by,
-                        status,
-                        created_at,
-                        updated_at,
-                        squads: squad_id (name),
-                        profiles: requested_by (username, full_name)
-                    `)
-                    .eq('user_id', userId)
-                    .eq('status', 'pending');
-                
-                if (error) {
-                    throw error;
-                }
-                
-                // Procesar los datos para obtener un formato más usable
-                return data.map(invitation => ({
-                    id: invitation.id,
-                    squad_id: invitation.squad_id,
-                    squad_name: invitation.squads?.name || 'Escuadrón sin nombre',
-                    user_id: invitation.user_id,
-                    requested_by: invitation.requested_by,
-                    requester_name: invitation.profiles?.full_name || invitation.profiles?.username || 'Usuario',
-                    status: invitation.status,
-                    created_at: invitation.created_at
-                }));
-                
-            } catch (error) {
-                console.error('Error al obtener invitaciones:', error);
-                throw error;
-            }
+        // Reemplazar el contenido de carga con la lista de invitaciones
+        const swalContent = content.querySelector('.custom-swal-content');
+        swalContent.innerHTML = '';
+        swalContent.appendChild(messageList);
+        
+        // Agregar event listeners a los botones de aceptar y rechazar
+        content.querySelectorAll('.message-btn.accept').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const invitationId = btn.getAttribute('data-id');
+                acceptInvitation(invitationId, btn);
+            });
+        });
+        
+        content.querySelectorAll('.message-btn.reject').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const invitationId = btn.getAttribute('data-id');
+                rejectInvitation(invitationId, btn);
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error al cargar las invitaciones:', error);
+        content.querySelector('.custom-swal-content').innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Error al cargar las invitaciones</h3>
+                <p>${error.message || 'Intenta de nuevo más tarde.'}</p>
+            </div>
+        `;
+    }
+}
+
+// Función para obtener las invitaciones desde Supabase (CORREGIDA)
+async function fetchSquadInvitations(userId) {
+    try {
+        // Consultar las invitaciones pendientes para el usuario actual
+        const { data, error } = await supabase
+            .from('squad_requests')
+            .select(`
+                id,
+                squad_id,
+                user_id,
+                requested_by,
+                status,
+                created_at,
+                updated_at,
+                squads: squad_id (name),
+                profiles!squad_requests_requested_by_fkey (username)
+            `)
+            .eq('user_id', userId)
+            .eq('status', 'pending');
+        
+        if (error) {
+            throw error;
         }
         
-        // Función para formatear la fecha
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) {
-                return 'Hoy, ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            } else if (diffDays === 1) {
-                return 'Ayer, ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            } else {
-                return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-            }
+        // Procesar los datos para obtener un formato más usable
+        return data.map(invitation => ({
+            id: invitation.id,
+            squad_id: invitation.squad_id,
+            squad_name: invitation.squads?.name || 'Escuadrón sin nombre',
+            user_id: invitation.user_id,
+            requested_by: invitation.requested_by,
+            requester_name: invitation.profiles?.username || 'Usuario', // Usamos username en lugar de full_name
+            status: invitation.status,
+            created_at: invitation.created_at
+        }));
+        
+    } catch (error) {
+        console.error('Error al obtener invitaciones:', error);
+        throw error;
+    }
+}
+
+// Función para formatear la fecha
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+        return 'Hoy, ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffDays === 1) {
+        return 'Ayer, ' + date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    }
+}
+
+// Función para aceptar una invitación
+async function acceptInvitation(invitationId, button) {
+    // Deshabilitar botones para evitar múltiples clics
+    button.disabled = true;
+    button.closest('.message-actions').querySelector('.message-btn.reject').disabled = true;
+    
+    // Cambiar texto y apariencia del botón
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    
+    try {
+        // Actualizar el estado de la invitación a "accepted" en Supabase
+        const { error } = await supabase
+            .from('squad_requests')
+            .update({ status: 'accepted', updated_at: new Date() })
+            .eq('id', invitationId);
+        
+        if (error) {
+            throw error;
         }
         
-        // Función para aceptar una invitación
-        async function acceptInvitation(invitationId, button) {
-            // Deshabilitar botones para evitar múltiples clics
-            button.disabled = true;
-            button.closest('.message-actions').querySelector('.message-btn.reject').disabled = true;
-            
-            // Cambiar texto y apariencia del botón
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-            
-            try {
-                // Actualizar el estado de la invitación a "accepted" en Supabase
-                const { error } = await supabase
-                    .from('squad_requests')
-                    .update({ status: 'accepted', updated_at: new Date() })
-                    .eq('id', invitationId);
-                
-                if (error) {
-                    throw error;
-                }
-                
-                // Mostrar mensaje de éxito
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Invitación aceptada!',
-                    text: 'Te has unido al escuadrón exitosamente.',
-                    confirmButtonColor: '#6a11cb'
-                });
-                
-                // Eliminar la invitación de la lista
-                button.closest('.message').remove();
-                
-            } catch (error) {
-                console.error('Error al aceptar la invitación:', error);
-                
-                // Restaurar botón
-                button.innerHTML = '<i class="fas fa-check"></i> Aceptar';
-                button.disabled = false;
-                button.closest('.message-actions').querySelector('.message-btn.reject').disabled = false;
-                
-                // Mostrar mensaje de error
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo aceptar la invitación. Intenta de nuevo.',
-                    confirmButtonColor: '#6a11cb'
-                });
-            }
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            icon: 'success',
+            title: '¡Invitación aceptada!',
+            text: 'Te has unido al escuadrón exitosamente.',
+            confirmButtonColor: '#6a11cb'
+        });
+        
+        // Eliminar la invitación de la lista
+        button.closest('.message').remove();
+        
+    } catch (error) {
+        console.error('Error al aceptar la invitación:', error);
+        
+        // Restaurar botón
+        button.innerHTML = '<i class="fas fa-check"></i> Aceptar';
+        button.disabled = false;
+        button.closest('.message-actions').querySelector('.message-btn.reject').disabled = false;
+        
+        // Mostrar mensaje de error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo aceptar la invitación. Intenta de nuevo.',
+            confirmButtonColor: '#6a11cb'
+        });
+    }
+}
+
+// Función para rechazar una invitación
+async function rejectInvitation(invitationId, button) {
+    // Deshabilitar botones para evitar múltiples clics
+    button.disabled = true;
+    button.closest('.message-actions').querySelector('.message-btn.accept').disabled = true;
+    
+    // Cambiar texto y apariencia del botón
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    
+    try {
+        // Actualizar el estado de la invitación a "rejected" en Supabase
+        const { error } = await supabase
+            .from('squad_requests')
+            .update({ status: 'rejected', updated_at: new Date() })
+            .eq('id', invitationId);
+        
+        if (error) {
+            throw error;
         }
         
-        // Función para rechazar una invitación
-        async function rejectInvitation(invitationId, button) {
-            // Deshabilitar botones para evitar múltiples clics
-            button.disabled = true;
-            button.closest('.message-actions').querySelector('.message-btn.accept').disabled = true;
-            
-            // Cambiar texto y apariencia del botón
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-            
-            try {
-                // Actualizar el estado de la invitación a "rejected" en Supabase
-                const { error } = await supabase
-                    .from('squad_requests')
-                    .update({ status: 'rejected', updated_at: new Date() })
-                    .eq('id', invitationId);
-                
-                if (error) {
-                    throw error;
-                }
-                
-                // Mostrar mensaje de éxito
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Invitación rechazada',
-                    text: 'Has rechazado la invitación al escuadrón.',
-                    confirmButtonColor: '#6a11cb'
-                });
-                
-                // Eliminar la invitación de la lista
-                button.closest('.message').remove();
-                
-            } catch (error) {
-                console.error('Error al rechazar la invitación:', error);
-                
-                // Restaurar botón
-                button.innerHTML = '<i class="fas fa-times"></i> Rechazar';
-                button.disabled = false;
-                button.closest('.message-actions').querySelector('.message-btn.accept').disabled = false;
-                
-                // Mostrar mensaje de error
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo rechazar la invitación. Intenta de nuevo.',
-                    confirmButtonColor: '#6a11cb'
-                });
-            }
-        }
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            icon: 'info',
+            title: 'Invitación rechazada',
+            text: 'Has rechazado la invitación al escuadrón.',
+            confirmButtonColor: '#6a11cb'
+        });
         
-        // Obtener el botón y añadir el evento
-        const mailboxBtn = document.getElementById('mailbox-btn');
-        mailboxBtn.addEventListener('click', showSquadInvitations);
+        // Eliminar la invitación de la lista
+        button.closest('.message').remove();
+        
+    } catch (error) {
+        console.error('Error al rechazar la invitación:', error);
+        
+        // Restaurar botón
+        button.innerHTML = '<i class="fas fa-times"></i> Rechazar';
+        button.disabled = false;
+        button.closest('.message-actions').querySelector('.message-btn.accept').disabled = false;
+        
+        // Mostrar mensaje de error
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo rechazar la invitación. Intenta de nuevo.',
+            confirmButtonColor: '#6a11cb'
+        });
+    }
+}
+
+// Obtener el botón y añadir el evento
+const mailboxBtn = document.getElementById('mailbox-btn');
+mailboxBtn.addEventListener('click', showSquadInvitations);
