@@ -548,7 +548,7 @@
     let userProfile = null;
     let userSquad = null;
     let userSquads = [];
-    let pendingInvitations = [];
+    let pendingRequests = [];
     
     // Inicializar la aplicación
     document.addEventListener('DOMContentLoaded', async function() {
@@ -564,7 +564,7 @@
         try {
             await checkUserStatus();
             await loadUserData();
-            await checkPendingInvitations(); // Verificar invitaciones primero
+            await checkPendingRequests(); // Verificar solicitudes primero
             await checkExistingSquads();
         } catch (error) {
             console.error('Error al inicializar la aplicación:', error);
@@ -578,13 +578,13 @@
         const createContainer = document.getElementById('create-squad-container');
         const emptySquad = document.getElementById('empty-squad');
         const squadSelection = document.getElementById('squad-selection');
-        const invitationContainer = document.getElementById('invitation-container');
+        const requestContainer = document.getElementById('request-container');
         
         if (squadDetails) squadDetails.style.display = 'none';
         if (createContainer) createContainer.style.display = 'none';
         if (emptySquad) emptySquad.style.display = 'none';
         if (squadSelection) squadSelection.style.display = 'none';
-        if (invitationContainer) invitationContainer.style.display = 'none';
+        if (requestContainer) requestContainer.style.display = 'none';
     }
     
     // Ocultar error de API
@@ -633,11 +633,11 @@
         if (squadDetails) squadDetails.style.display = 'block';
     }
     
-    // Mostrar invitaciones pendientes
-    function showInvitations() {
+    // Mostrar solicitudes pendientes
+    function showRequests() {
         hideAllContainers();
-        const invitationContainer = document.getElementById('invitation-container');
-        if (invitationContainer) invitationContainer.style.display = 'block';
+        const requestContainer = document.getElementById('request-container');
+        if (requestContainer) requestContainer.style.display = 'block';
     }
     
     // Verificar el estado del usuario
@@ -694,92 +694,94 @@
         }
     }
     
-    // Verificar si el usuario tiene invitaciones pendientes
-    async function checkPendingInvitations() {
+    // Verificar si el usuario tiene solicitudes pendientes
+    async function checkPendingRequests() {
         try {
             if (!currentUser) return;
             
-            // Buscar invitaciones pendientes para este usuario
-            const { data: invitations, error } = await supabase
-                .from('squad_invitations')
+            // Buscar solicitudes pendientes para este usuario
+            const { data: requests, error } = await supabase
+                .from('squad_requests')
                 .select(`
                     *,
-                    squads (*)
+                    squads (*),
+                    profiles:requested_by (username)
                 `)
-                .eq('invited_user_id', currentUser.id)
+                .eq('user_id', currentUser.id)
                 .eq('status', 'pending');
             
             if (error) {
-                console.error('Error al verificar invitaciones:', error);
+                console.error('Error al verificar solicitudes:', error);
                 return;
             }
             
-            if (invitations && invitations.length > 0) {
-                pendingInvitations = invitations;
-                showInvitations();
-                displayInvitations(invitations);
+            if (requests && requests.length > 0) {
+                pendingRequests = requests;
+                showRequests();
+                displayRequests(requests);
             }
         } catch (error) {
-            console.error('Error al verificar invitaciones:', error);
+            console.error('Error al verificar solicitudes:', error);
         }
     }
     
-    // Mostrar invitaciones pendientes
-    function displayInvitations(invitations) {
-        const invitationsList = document.getElementById('invitations-list');
-        invitationsList.innerHTML = '';
+    // Mostrar solicitudes pendientes
+    function displayRequests(requests) {
+        const requestsList = document.getElementById('requests-list');
+        requestsList.innerHTML = '';
         
-        invitations.forEach(invitation => {
-            const invitationItem = document.createElement('div');
-            invitationItem.className = 'invitation-item';
-            invitationItem.innerHTML = `
-                <div class="invitation-info">
-                    <h3>Invitación a: ${invitation.squads.name}</h3>
-                    <p>Misión: ${invitation.squads.mission}</p>
-                    <p>Miembros: ${invitation.squads.member_count}/${invitation.squads.max_members}</p>
-                    <p>Rango: ${invitation.squads.rank}</p>
+        requests.forEach(request => {
+            const requestItem = document.createElement('div');
+            requestItem.className = 'request-item';
+            requestItem.innerHTML = `
+                <div class="request-info">
+                    <h3>Invitación a: ${request.squads.name}</h3>
+                    <p>Invitado por: ${request.profiles.username}</p>
+                    <p>Misión: ${request.squads.mission}</p>
+                    <p>Miembros: ${request.squads.member_count}/${request.squads.max_members}</p>
+                    <p>Rango: ${request.squads.rank}</p>
                 </div>
-                <div class="invitation-actions">
-                    <button class="btn-accept" data-id="${invitation.id}" data-squad-id="${invitation.squad_id}">Aceptar</button>
-                    <button class="btn-reject" data-id="${invitation.id}">Rechazar</button>
+                <div class="request-actions">
+                    <button class="btn-accept" data-id="${request.id}" data-squad-id="${request.squad_id}">Aceptar</button>
+                    <button class="btn-reject" data-id="${request.id}">Rechazar</button>
                 </div>
             `;
             
-            invitationsList.appendChild(invitationItem);
+            requestsList.appendChild(requestItem);
         });
         
         // Agregar event listeners a los botones
         document.querySelectorAll('.btn-accept').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                const invitationId = e.target.getAttribute('data-id');
+                const requestId = e.target.getAttribute('data-id');
                 const squadId = e.target.getAttribute('data-squad-id');
-                await acceptInvitation(invitationId, squadId);
+                await acceptRequest(requestId, squadId);
             });
         });
         
         document.querySelectorAll('.btn-reject').forEach(btn => {
             btn.addEventListener('click', async (e) => {
-                const invitationId = e.target.getAttribute('data-id');
-                await rejectInvitation(invitationId);
+                const requestId = e.target.getAttribute('data-id');
+                await rejectRequest(requestId);
             });
         });
     }
     
-    // Aceptar una invitación
-    async function acceptInvitation(invitationId, squadId) {
+    // Aceptar una solicitud
+    async function acceptRequest(requestId, squadId) {
         try {
-            // 1. Actualizar el estado de la invitación a "accepted"
+            // 1. Actualizar el estado de la solicitud a "accepted"
             const { error: updateError } = await supabase
-                .from('squad_invitations')
+                .from('squad_requests')
                 .update({ 
                     status: 'accepted',
-                    responded_at: new Date().toISOString()
+                    updated_at: new Date().toISOString()
                 })
-                .eq('id', invitationId);
+                .eq('id', requestId);
             
             if (updateError) {
-                console.error('Error al aceptar invitación:', updateError);
-                throw new Error('No se pudo aceptar la invitación');
+                console.error('Error al aceptar solicitud:', updateError);
+                throw new Error('No se pudo aceptar la solicitud');
             }
             
             // 2. Obtener los datos del escuadrón
@@ -824,7 +826,7 @@
             
             // Mostrar mensaje de éxito
             Swal.fire({
-                title: '¡Invitación Aceptada!',
+                title: '¡Solicitud Aceptada!',
                 text: `Te has unido al escuadrón ${squad.name}`,
                 icon: 'success',
                 confirmButtonColor: '#78ffd6',
@@ -834,38 +836,38 @@
             });
             
         } catch (error) {
-            console.error('Error al aceptar invitación:', error);
-            showError('Error', error.message || 'No se pudo aceptar la invitación. Intenta nuevamente.');
+            console.error('Error al aceptar solicitud:', error);
+            showError('Error', error.message || 'No se pudo aceptar la solicitud. Intenta nuevamente.');
         }
     }
     
-    // Rechazar una invitación
-    async function rejectInvitation(invitationId) {
+    // Rechazar una solicitud
+    async function rejectRequest(requestId) {
         try {
             const { error } = await supabase
-                .from('squad_invitations')
+                .from('squad_requests')
                 .update({ 
                     status: 'rejected',
-                    responded_at: new Date().toISOString()
+                    updated_at: new Date().toISOString()
                 })
-                .eq('id', invitationId);
+                .eq('id', requestId);
             
             if (error) {
-                console.error('Error al rechazar invitación:', error);
-                throw new Error('No se pudo rechazar la invitación');
+                console.error('Error al rechazar solicitud:', error);
+                throw new Error('No se pudo rechazar la solicitud');
             }
             
-            // Recargar la lista de invitaciones
-            await checkPendingInvitations();
+            // Recargar la lista de solicitudes
+            await checkPendingRequests();
             
-            // Si no hay más invitaciones, mostrar la vista normal
-            if (pendingInvitations.length === 0) {
+            // Si no hay más solicitudes, mostrar la vista normal
+            if (pendingRequests.length === 0) {
                 await checkExistingSquads();
             }
             
         } catch (error) {
-            console.error('Error al rechazar invitación:', error);
-            showError('Error', error.message || 'No se pudo rechazar la invitación. Intenta nuevamente.');
+            console.error('Error al rechazar solicitud:', error);
+            showError('Error', error.message || 'No se pudo rechazar la solicitud. Intenta nuevamente.');
         }
     }
     
@@ -1013,12 +1015,12 @@ FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can update own squads" ON squads
 FOR UPDATE USING (auth.uid() = leader_id);
 
--- Políticas para la tabla 'squad_invitations'
-CREATE POLICY "Users can view their invitations" ON squad_invitations
-FOR SELECT USING (auth.uid() = invited_user_id);
+-- Políticas para la tabla 'squad_requests'
+CREATE POLICY "Users can view their requests" ON squad_requests
+FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their invitations" ON squad_invitations
-FOR UPDATE USING (auth.uid() = invited_user_id);
+CREATE POLICY "Users can update their requests" ON squad_requests
+FOR UPDATE USING (auth.uid() = user_id);
                     </pre>
                 </div>
             `,
@@ -1058,8 +1060,8 @@ FOR UPDATE USING (auth.uid() = invited_user_id);
         window.location.href = 'equipo.html';
     });
     
-    // Botón para ignorar invitaciones
-    document.getElementById('ignore-invitations-btn').addEventListener('click', function() {
+    // Botón para ignorar solicitudes
+    document.getElementById('ignore-requests-btn').addEventListener('click', function() {
         showEmptySquadMessage();
     });
     
