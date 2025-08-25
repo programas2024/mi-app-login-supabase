@@ -536,280 +536,323 @@
         </div>
     </div>
 
-    <script>
-        // Configuración de Supabase
-        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+  <script>
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Variables globales
+    let currentUser = null;
+    let userProfile = null;
+    let userSquad = null;
+    let userSquads = [];
+    
+    // Inicializar la aplicación
+    document.addEventListener('DOMContentLoaded', async function() {
+        await initializeApp();
+    });
+    
+    // Inicializar la aplicación
+    async function initializeApp() {
+        hideApiError();
+        hideSquadSelection();
+        hideAllContainers();
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        try {
+            await checkUserStatus();
+            await loadUserData();
+            await checkExistingSquads();
+        } catch (error) {
+            console.error('Error al inicializar la aplicación:', error);
+            showApiError();
+        }
+    }
+    
+    // Ocultar todos los contenedores principales
+    function hideAllContainers() {
+        const squadDetails = document.getElementById('squad-details');
+        const createContainer = document.getElementById('create-squad-container');
+        const emptySquad = document.getElementById('empty-squad');
+        const squadSelection = document.getElementById('squad-selection');
         
-        // Variables globales
-        let currentUser = null;
-        let userProfile = null;
-        let userSquad = null;
-        let userSquads = [];
-        
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', async function() {
-            await initializeApp();
-        });
-        
-        // Inicializar la aplicación
-        async function initializeApp() {
-            hideApiError();
-            hideSquadSelection();
-            hideAllContainers();
+        if (squadDetails) squadDetails.style.display = 'none';
+        if (createContainer) createContainer.style.display = 'none';
+        if (emptySquad) emptySquad.style.display = 'none';
+        if (squadSelection) squadSelection.style.display = 'none';
+    }
+    
+    // Ocultar error de API
+    function hideApiError() {
+        const apiError = document.getElementById('api-error');
+        if (apiError) apiError.style.display = 'none';
+    }
+    
+    // Mostrar error de API
+    function showApiError() {
+        const apiError = document.getElementById('api-error');
+        if (apiError) apiError.style.display = 'block';
+    }
+    
+    // Ocultar selección de escuadrón
+    function hideSquadSelection() {
+        const squadSelection = document.getElementById('squad-selection');
+        if (squadSelection) squadSelection.style.display = 'none';
+    }
+    
+    // Mostrar selección de escuadrón
+    function showSquadSelection() {
+        hideAllContainers();
+        const squadSelection = document.getElementById('squad-selection');
+        if (squadSelection) squadSelection.style.display = 'block';
+    }
+    
+    // Mostrar creación de escuadrón
+    function showCreateSquadContainer() {
+        hideAllContainers();
+        const createContainer = document.getElementById('create-squad-container');
+        if (createContainer) createContainer.style.display = 'block';
+    }
+    
+    // Mostrar mensaje de no tener escuadrón
+    function showEmptySquadMessage() {
+        hideAllContainers();
+        const emptySquad = document.getElementById('empty-squad');
+        if (emptySquad) emptySquad.style.display = 'block';
+    }
+    
+    // Mostrar detalles del escuadrón
+    function showSquadDetails() {
+        hideAllContainers();
+        const squadDetails = document.getElementById('squad-details');
+        if (squadDetails) squadDetails.style.display = 'block';
+    }
+    
+    // Verificar el estado del usuario
+    async function checkUserStatus() {
+        try {
+            // Obtener la sesión actual
+            const { data: { session }, error } = await supabase.auth.getSession();
             
-            try {
-                await checkUserStatus();
-                await loadUserData();
-                await checkExistingSquads();
-            } catch (error) {
-                console.error('Error al inicializar la aplicación:', error);
-                showApiError();
-            }
-        }
-        
-        // Ocultar todos los contenedores principales
-        function hideAllContainers() {
-            const squadDetails = document.getElementById('squad-details');
-            const createContainer = document.getElementById('create-squad-container');
-            const emptySquad = document.getElementById('empty-squad');
-            const squadSelection = document.getElementById('squad-selection');
-            
-            if (squadDetails) squadDetails.style.display = 'none';
-            if (createContainer) createContainer.style.display = 'none';
-            if (emptySquad) emptySquad.style.display = 'none';
-            if (squadSelection) squadSelection.style.display = 'none';
-        }
-        
-        // Ocultar error de API
-        function hideApiError() {
-            const apiError = document.getElementById('api-error');
-            if (apiError) apiError.style.display = 'none';
-        }
-        
-        // Mostrar error de API
-        function showApiError() {
-            const apiError = document.getElementById('api-error');
-            if (apiError) apiError.style.display = 'block';
-        }
-        
-        // Ocultar selección de escuadrón
-        function hideSquadSelection() {
-            const squadSelection = document.getElementById('squad-selection');
-            if (squadSelection) squadSelection.style.display = 'none';
-        }
-        
-        // Mostrar selección de escuadrón
-        function showSquadSelection() {
-            hideAllContainers();
-            const squadSelection = document.getElementById('squad-selection');
-            if (squadSelection) squadSelection.style.display = 'block';
-        }
-        
-        // Mostrar creación de escuadrón
-        function showCreateSquadContainer() {
-            hideAllContainers();
-            const createContainer = document.getElementById('create-squad-container');
-            if (createContainer) createContainer.style.display = 'block';
-        }
-        
-        // Mostrar mensaje de no tener escuadrón
-        function showEmptySquadMessage() {
-            hideAllContainers();
-            const emptySquad = document.getElementById('empty-squad');
-            if (emptySquad) emptySquad.style.display = 'block';
-        }
-        
-        // Mostrar detalles del escuadrón
-        function showSquadDetails() {
-            hideAllContainers();
-            const squadDetails = document.getElementById('squad-details');
-            if (squadDetails) squadDetails.style.display = 'block';
-        }
-        
-        // Verificar el estado del usuario
-        async function checkUserStatus() {
-            try {
-                // Obtener la sesión actual
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) {
-                    console.error('Error al obtener sesión:', error);
-                    throw error;
-                }
-                
-                if (!session) {
-                    showError('No autenticado', 'Debes iniciar sesión para acceder a esta página');
-                    throw new Error('No autenticado');
-                }
-                
-                currentUser = session.user;
-                console.log("Usuario actual:", currentUser.id);
-            } catch (error) {
-                console.error('Error al verificar estado de usuario:', error);
+            if (error) {
+                console.error('Error al obtener sesión:', error);
                 throw error;
             }
+            
+            if (!session) {
+                showError('No autenticado', 'Debes iniciar sesión para acceder a esta página');
+                throw new Error('No autenticado');
+            }
+            
+            currentUser = session.user;
+            console.log("Usuario actual:", currentUser.id);
+        } catch (error) {
+            console.error('Error al verificar estado de usuario:', error);
+            throw error;
         }
-        
-        // Cargar datos del usuario
-        async function loadUserData() {
-            try {
-                if (!currentUser) return;
-                
-                // Obtener el perfil del usuario
-                const { data: profile, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single();
-                
-                if (error) {
-                    console.error('Error al cargar perfil:', error);
-                    throw error;
-                }
-                
-                userProfile = profile;
-                const goldAmount = document.getElementById('gold-amount');
-                const leaderName = document.getElementById('leader-name');
-                
-                if (goldAmount) goldAmount.textContent = profile.gold.toLocaleString();
-                if (leaderName) leaderName.textContent = profile.username || 'Usuario';
-                
-            } catch (error) {
-                console.error('Error al cargar datos del usuario:', error);
+    }
+    
+    // Cargar datos del usuario
+    async function loadUserData() {
+        try {
+            if (!currentUser) return;
+            
+            // Obtener el perfil del usuario
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+            
+            if (error) {
+                console.error('Error al cargar perfil:', error);
                 throw error;
             }
+            
+            userProfile = profile;
+            const goldAmount = document.getElementById('gold-amount');
+            const leaderName = document.getElementById('leader-name');
+            
+            if (goldAmount) goldAmount.textContent = profile.gold.toLocaleString();
+            if (leaderName) leaderName.textContent = profile.username || 'Usuario';
+            
+        } catch (error) {
+            console.error('Error al cargar datos del usuario:', error);
+            throw error;
         }
-        
-        // Verificar si el usuario ya tiene escuadrones - CORREGIDO
-        async function checkExistingSquads() {
-            try {
-                if (!currentUser) return;
-                
-                console.log("Buscando escuadrones para el líder:", currentUser.id);
-                
-                // Buscar TODOS los escuadrones del usuario
-                const { data: squads, error } = await supabase
-                    .from('squads')
-                    .select('*')
-                    .eq('leader_id', currentUser.id);
-                
-                if (error) {
-                    console.error('Error al verificar escuadrones:', error);
-                    // Mostrar error de RLS si es un error de permisos
-                    if (error.code === '42501' || error.message.includes('permission')) {
-                        showRLSError();
+    }
+    
+    // Verificar si el usuario ya tiene escuadrones - ACTUALIZADO
+    async function checkExistingSquads() {
+        try {
+            if (!currentUser) return;
+            
+            console.log("Buscando escuadrones para el usuario:", currentUser.id);
+            
+            // Buscar escuadrones donde el usuario es LÍDER
+            const { data: leaderSquads, error: leaderError } = await supabase
+                .from('squads')
+                .select('*')
+                .eq('leader_id', currentUser.id);
+            
+            if (leaderError) {
+                console.error('Error al verificar escuadrones de líder:', leaderError);
+                if (leaderError.code === '42501' || leaderError.message.includes('permission')) {
+                    showRLSError();
+                }
+                throw leaderError;
+            }
+            
+            // Buscar escuadrones donde el usuario es MIEMBRO (aceptó invitación)
+            const { data: memberSquads, error: memberError } = await supabase
+                .from('squad_members')
+                .select('squad_id, squads(*)')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'accepted');
+            
+            if (memberError) {
+                console.error('Error al verificar escuadrones de miembro:', memberError);
+                if (memberError.code === '42501' || memberError.message.includes('permission')) {
+                    showRLSError();
+                }
+                throw memberError;
+            }
+            
+            // Combinar ambos resultados
+            const allSquads = [...leaderSquads];
+            
+            if (memberSquads && memberSquads.length > 0) {
+                memberSquads.forEach(member => {
+                    if (member.squads) {
+                        allSquads.push(member.squads);
                     }
-                    throw error;
-                }
-                
-                console.log("Resultado de la consulta de escuadrones:", squads);
-                
-                if (squads && squads.length > 0) {
-                    userSquads = squads;
-                    
-                    if (squads.length === 1) {
-                        // Si solo tiene un escuadrón, mostrarlo directamente
-                        userSquad = squads[0];
-                        displaySquadData(userSquad);
-                        showSquadDetails();
-                    } else {
-                        // Si tiene múltiples escuadrones, mostrar selector
-                        showSquadSelection();
-                        displaySquadList(squads);
-                    }
-                } else {
-                    console.log('El usuario no tiene escuadrones');
-                    showEmptySquadMessage();
-                }
-            } catch (error) {
-                console.error('Error al verificar escuadrones:', error);
-                throw error;
-            }
-        }
-        
-        // Mostrar lista de escuadrones para selección
-        function displaySquadList(squads) {
-            const squadList = document.getElementById('squad-list');
-            squadList.innerHTML = '';
-            
-            squads.forEach(squad => {
-                const squadItem = document.createElement('div');
-                squadItem.className = 'squad-item';
-                squadItem.innerHTML = `
-                    <div class="squad-item-info">
-                        <div class="squad-item-name">${squad.name}</div>
-                        <div class="squad-item-mission">${squad.mission} - ${squad.member_count}/${squad.max_members} miembros</div>
-                    </div>
-                    <div>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                `;
-                
-                squadItem.addEventListener('click', () => {
-                    userSquad = squad;
-                    displaySquadData(squad);
-                    showSquadDetails();
                 });
+            }
+            
+            console.log("Todos los escuadrones del usuario:", allSquads);
+            
+            if (allSquads && allSquads.length > 0) {
+                userSquads = allSquads;
                 
-                squadList.appendChild(squadItem);
+                if (allSquads.length === 1) {
+                    // Si solo tiene un escuadrón, mostrarlo directamente
+                    userSquad = allSquads[0];
+                    displaySquadData(userSquad);
+                    showSquadDetails();
+                } else {
+                    // Si tiene múltiples escuadrones, mostrar selector
+                    showSquadSelection();
+                    displaySquadList(allSquads);
+                }
+            } else {
+                console.log('El usuario no tiene escuadrones');
+                showEmptySquadMessage();
+            }
+        } catch (error) {
+            console.error('Error al verificar escuadrones:', error);
+            throw error;
+        }
+    }
+    
+    // Mostrar lista de escuadrones para selección
+    function displaySquadList(squads) {
+        const squadList = document.getElementById('squad-list');
+        squadList.innerHTML = '';
+        
+        squads.forEach(squad => {
+            const squadItem = document.createElement('div');
+            squadItem.className = 'squad-item';
+            squadItem.innerHTML = `
+                <div class="squad-item-info">
+                    <div class="squad-item-name">${squad.name}</div>
+                    <div class="squad-item-mission">${squad.mission} - ${squad.member_count}/${squad.max_members} miembros</div>
+                </div>
+                <div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            `;
+            
+            squadItem.addEventListener('click', () => {
+                userSquad = squad;
+                displaySquadData(squad);
+                showSquadDetails();
             });
-        }
-        
-        // Mostrar datos del escuadrón
-        function displaySquadData(squad) {
-            // Actualizar los detalles del escuadrón
-            const detailName = document.getElementById('detail-name');
-            const detailMembers = document.getElementById('detail-members');
-            const detailMission = document.getElementById('detail-mission');
-            const detailRank = document.getElementById('detail-rank');
-            const detailLeader = document.getElementById('detail-leader');
             
-            if (detailName) detailName.textContent = squad.name;
-            if (detailMembers) detailMembers.textContent = `${squad.member_count}/${squad.max_members}`;
-            if (detailMission) detailMission.textContent = squad.mission;
-            if (detailRank) detailRank.textContent = squad.rank;
-            if (detailLeader && userProfile) detailLeader.textContent = userProfile.username;
+            squadList.appendChild(squadItem);
+        });
+    }
+    
+    // Mostrar datos del escuadrón
+    async function displaySquadData(squad) {
+        // Actualizar los detalles del escuadrón
+        const detailName = document.getElementById('detail-name');
+        const detailMembers = document.getElementById('detail-members');
+        const detailMission = document.getElementById('detail-mission');
+        const detailRank = document.getElementById('detail-rank');
+        const detailLeader = document.getElementById('detail-leader');
+        
+        if (detailName) detailName.textContent = squad.name;
+        if (detailMembers) detailMembers.textContent = `${squad.member_count}/${squad.max_members}`;
+        if (detailMission) detailMission.textContent = squad.mission;
+        if (detailRank) detailRank.textContent = squad.rank;
+        
+        // Obtener información del líder del escuadrón
+        try {
+            const { data: leaderProfile, error } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', squad.leader_id)
+                .single();
             
-            // Actualizar información del líder en la lista de miembros
-            const leaderUsername = document.getElementById('leader-username');
-            const leaderLevel = document.getElementById('leader-level');
-            const leaderPoints = document.getElementById('leader-points');
-            
-            if (leaderUsername) leaderUsername.textContent = userProfile.username;
-            if (leaderLevel) leaderLevel.textContent = userProfile.level || 1;
-            if (leaderPoints) leaderPoints.textContent = userProfile.points || 0;
+            if (error) {
+                console.error('Error al obtener perfil del líder:', error);
+                if (detailLeader) detailLeader.textContent = 'Líder no disponible';
+            } else {
+                if (detailLeader) detailLeader.textContent = leaderProfile.username;
+            }
+        } catch (error) {
+            console.error('Error al obtener información del líder:', error);
+            if (detailLeader) detailLeader.textContent = 'Líder no disponible';
         }
         
-        // Mostrar error de RLS
-        function showRLSError() {
-            const rlsError = document.getElementById('rls-error');
-            if (rlsError) rlsError.style.display = 'block';
-        }
+        // Actualizar información del líder en la lista de miembros
+        const leaderUsername = document.getElementById('leader-username');
+        const leaderLevel = document.getElementById('leader-level');
+        const leaderPoints = document.getElementById('leader-points');
         
-        // Mostrar error genérico
-        function showError(title, message) {
-            Swal.fire({
-                title: title,
-                text: message,
-                icon: 'error',
-                confirmButtonColor: '#78ffd6',
-                confirmButtonText: 'Entendido',
-                background: '#1e3a47',
-                color: 'white'
-            });
-        }
-        
-        // Botón para mostrar instrucciones de RLS
-        document.getElementById('fix-rls-btn').addEventListener('click', function() {
-            Swal.fire({
-                title: 'Configurar Políticas RLS',
-                html: `
-                    <div style="text-align:left;">
-                        <p>Para solucionar el error, ejecuta este SQL en el Editor SQL de Supabase:</p>
-                        <pre style="background: #1e3a47; padding: 15px; border-radius: 8px; overflow: auto; color: white; font-size: 12px;">
+        if (leaderUsername) leaderUsername.textContent = userProfile.username;
+        if (leaderLevel) leaderLevel.textContent = userProfile.level || 1;
+        if (leaderPoints) leaderPoints.textContent = userProfile.points || 0;
+    }
+    
+    // Mostrar error de RLS
+    function showRLSError() {
+        const rlsError = document.getElementById('rls-error');
+        if (rlsError) rlsError.style.display = 'block';
+    }
+    
+    // Mostrar error genérico
+    function showError(title, message) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: 'error',
+            confirmButtonColor: '#78ffd6',
+            confirmButtonText: 'Entendido',
+            background: '#1e3a47',
+            color: 'white'
+        });
+    }
+    
+    // Botón para mostrar instrucciones de RLS
+    document.getElementById('fix-rls-btn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Configurar Políticas RLS',
+            html: `
+                <div style="text-align:left;">
+                    <p>Para solucionar el error, ejecuta este SQL en el Editor SQL de Supabase:</p>
+                    <pre style="background: #1e3a47; padding: 15px; border-radius: 8px; overflow: auto; color: white; font-size: 12px;">
 -- Políticas para la tabla 'profiles'
 CREATE POLICY "Users can view own profile" ON profiles
 FOR SELECT USING (auth.uid() = id);
@@ -826,147 +869,174 @@ FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 CREATE POLICY "Users can update own squads" ON squads
 FOR UPDATE USING (auth.uid() = leader_id);
-                        </pre>
+
+-- Políticas para la tabla 'squad_members'
+CREATE POLICY "Users can view their squad memberships" ON squad_members
+FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view members of their squads" ON squad_members
+FOR SELECT USING (EXISTS (
+    SELECT 1 FROM squads 
+    WHERE squads.id = squad_members.squad_id 
+    AND squads.leader_id = auth.uid()
+));
+                    </pre>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Entendido',
+            width: '800px'
+        });
+    });
+    
+    // Botón Volver
+    document.getElementById('back-btn').addEventListener('click', function() {
+        window.location.href = 'dashboard.html';
+    });
+    
+    // Botón Reintentar
+    document.getElementById('retry-btn').addEventListener('click', function() {
+        initializeApp();
+    });
+    
+    // Botón Crear Nuevo desde mensaje vacío
+    document.getElementById('create-new-btn').addEventListener('click', function() {
+        showCreateSquadContainer();
+    });
+    
+    // Botón Buscar Escuadrones
+    document.getElementById('search-squads-btn').addEventListener('click', function() {
+        alert('Función de búsqueda de escuadrones en desarrollo');
+    });
+    
+    // Botón Ver Más (en el header del escuadrón)
+    document.getElementById('view-more-btn').addEventListener('click', function() {
+        window.location.href = 'equipo.html';
+    });
+    
+    // Botón Ver Más (en la parte inferior)
+    document.getElementById('view-more-button').addEventListener('click', function() {
+        window.location.href = 'equipo.html';
+    });
+    
+    // Crear escuadrón
+    document.getElementById('create-squad-btn').addEventListener('click', async function() {
+        const name = document.getElementById('squad-name').value;
+        const members = document.getElementById('squad-members').value;
+        const mission = document.getElementById('squad-mission').value;
+        
+        if (!name || !members || !mission) {
+            showError('Campos incompletos', 'Por favor completa todos los campos');
+            return;
+        }
+        
+        // Verificar si tiene suficiente oro
+        if (userProfile.gold < 200) {
+            showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
+            return;
+        }
+        
+        try {
+            // 1. Restar el oro al usuario en la tabla profiles
+            const newGold = userProfile.gold - 200;
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ gold: newGold })
+                .eq('id', currentUser.id);
+            
+            if (updateError) {
+                console.error('Error al actualizar oro:', updateError);
+                throw new Error('No se pudo actualizar el oro');
+            }
+            
+            // 2. Insertar el nuevo escuadrón en la tabla de squads
+            const squadData = {
+                name: name,
+                member_count: parseInt(members),
+                max_members: 10,
+                mission: mission,
+                rank: 'Bronce',
+                leader_id: currentUser.id,
+                created_at: new Date().toISOString(),
+                level: 2,
+                total_points: 0
+            };
+            
+            const { data: newSquad, error: insertError } = await supabase
+                .from('squads')
+                .insert([squadData])
+                .select()
+                .single();
+            
+            if (insertError) {
+                console.error('Error al crear escuadrón:', insertError);
+                throw new Error('No se pudo crear el escuadrón');
+            }
+            
+            // 3. Agregar al líder como miembro del escuadrón
+            const { error: memberError } = await supabase
+                .from('squad_members')
+                .insert([{
+                    squad_id: newSquad.id,
+                    user_id: currentUser.id,
+                    status: 'accepted',
+                    joined_at: new Date().toISOString(),
+                    role: 'leader'
+                }]);
+            
+            if (memberError) {
+                console.error('Error al agregar líder como miembro:', memberError);
+                // No lanzamos error aquí porque el escuadrón ya se creó
+            }
+            
+            // Actualizar la UI
+            userProfile.gold = newGold;
+            userSquad = newSquad;
+            
+            const goldAmount = document.getElementById('gold-amount');
+            if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
+            
+            displaySquadData(newSquad);
+            showSquadDetails();
+            
+            // Mostrar confeti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            Swal.fire({
+                title: '¡Escuadrón Creado!',
+                html: `
+                    <div style="text-align:left; margin:20px 0;">
+                        <p style="margin-bottom:10px;"><strong>Nombre:</strong> ${name}</p>
+                        <p style="margin-bottom:10px;"><strong>Miembros:</strong> ${members}</p>
+                        <p style="margin-bottom:10px;"><strong>Misión:</strong> ${mission}</p>
+                        <p style="margin-bottom:10px;"><strong>Rango:</strong> <span style="color:#cd7f32;">Bronce</span></p>
+                        <p style="margin-bottom:10px;"><strong>Costo:</strong> <span style="color:gold;">200 Oro</span></p>
                     </div>
                 `,
-                icon: 'info',
-                confirmButtonText: 'Entendido',
-                width: '800px'
+                icon: 'success',
+                confirmButtonColor: '#78ffd6',
+                confirmButtonText: '¡Empezar!',
+                background: '#1e3a47',
+                color: 'white'
             });
-        });
-        
-        // Botón Volver
-        document.getElementById('back-btn').addEventListener('click', function() {
-            window.location.href = 'dashboard.html';
-        });
-        
-        // Botón Reintentar
-        document.getElementById('retry-btn').addEventListener('click', function() {
-            initializeApp();
-        });
-        
-        // Botón Crear Nuevo desde mensaje vacío
-        document.getElementById('create-new-btn').addEventListener('click', function() {
-            showCreateSquadContainer();
-        });
-        
-        // Botón Buscar Escuadrones
-        document.getElementById('search-squads-btn').addEventListener('click', function() {
-            alert('Función de búsqueda de escuadrones en desarrollo');
-        });
-        
-        // Botón Ver Más (en el header del escuadrón)
-        document.getElementById('view-more-btn').addEventListener('click', function() {
-            window.location.href = 'equipo.html';
-        });
-        
-        // Botón Ver Más (en la parte inferior)
-        document.getElementById('view-more-button').addEventListener('click', function() {
-            window.location.href = 'equipo.html';
-        });
-        
-        // Crear escuadrón
-        document.getElementById('create-squad-btn').addEventListener('click', async function() {
-            const name = document.getElementById('squad-name').value;
-            const members = document.getElementById('squad-members').value;
-            const mission = document.getElementById('squad-mission').value;
             
-            if (!name || !members || !mission) {
-                showError('Campos incompletos', 'Por favor completa todos los campos');
-                return;
-            }
-            
-            // Verificar si tiene suficiente oro
-            if (userProfile.gold < 200) {
-                showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
-                return;
-            }
-            
-            try {
-                // 1. Restar el oro al usuario en la tabla profiles
-                const newGold = userProfile.gold - 200;
-                const { error: updateError } = await supabase
-                    .from('profiles')
-                    .update({ gold: newGold })
-                    .eq('id', currentUser.id);
-                
-                if (updateError) {
-                    console.error('Error al actualizar oro:', updateError);
-                    throw new Error('No se pudo actualizar el oro');
-                }
-                
-                // 2. Insertar el nuevo escuadrón en la tabla de squads
-                const squadData = {
-                    name: name,
-                    member_count: parseInt(members),
-                    max_members: 10,
-                    mission: mission,
-                    rank: 'Bronce',
-                    leader_id: currentUser.id,
-                    created_at: new Date().toISOString(),
-                    level: 2,
-                    total_points: 0
-                };
-                
-                const { data: newSquad, error: insertError } = await supabase
-                    .from('squads')
-                    .insert([squadData])
-                    .select()
-                    .single();
-                
-                if (insertError) {
-                    console.error('Error al crear escuadrón:', insertError);
-                    throw new Error('No se pudo crear el escuadrón');
-                }
-                
-                // Actualizar la UI
-                userProfile.gold = newGold;
-                userSquad = newSquad;
-                
-                const goldAmount = document.getElementById('gold-amount');
-                if (goldAmount) goldAmount.textContent = newGold.toLocaleString();
-                
-                displaySquadData(newSquad);
-                showSquadDetails();
-                
-                // Mostrar confeti
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
-                
-                Swal.fire({
-                    title: '¡Escuadrón Creado!',
-                    html: `
-                        <div style="text-align:left; margin:20px 0;">
-                            <p style="margin-bottom:10px;"><strong>Nombre:</strong> ${name}</p>
-                            <p style="margin-bottom:10px;"><strong>Miembros:</strong> ${members}</p>
-                            <p style="margin-bottom:10px;"><strong>Misión:</strong> ${mission}</p>
-                            <p style="margin-bottom:10px;"><strong>Rango:</strong> <span style="color:#cd7f32;">Bronce</span></p>
-                            <p style="margin-bottom:10px;"><strong>Costo:</strong> <span style="color:gold;">200 Oro</span></p>
-                        </div>
-                    `,
-                    icon: 'success',
-                    confirmButtonColor: '#78ffd6',
-                    confirmButtonText: '¡Empezar!',
-                    background: '#1e3a47',
-                    color: 'white'
-                });
-                
-            } catch (error) {
-                console.error('Error al crear escuadrón:', error);
-                showError('Error', error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.');
-            }
-        });
-        
-        // Botón Cancelar
-        document.getElementById('cancel-btn').addEventListener('click', function() {
-            document.getElementById('squad-name').value = '';
-            document.getElementById('squad-members').value = '1';
-            document.getElementById('squad-mission').selectedIndex = 0;
-            showEmptySquadMessage();
-        });
-    </script>
+        } catch (error) {
+            console.error('Error al crear escuadrón:', error);
+            showError('Error', error.message || 'No se pudo crear el escuadrón. Intenta nuevamente.');
+        }
+    });
+    
+    // Botón Cancelar
+    document.getElementById('cancel-btn').addEventListener('click', function() {
+        document.getElementById('squad-name').value = '';
+        document.getElementById('squad-members').value = '1';
+        document.getElementById('squad-mission').selectedIndex = 0;
+        showEmptySquadMessage();
+    });
+</script>
 </body>
 </html>
