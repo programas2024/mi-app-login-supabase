@@ -738,7 +738,7 @@
                 .select(`
                     user_id,
                     profiles!squad_requests_user_id_fkey(id, username, level, points),
-                    accepted_at
+                    created_at
                 `)
                 .eq('squad_id', userSquad.id)
                 .eq('status', 'accepted');
@@ -758,7 +758,7 @@
                             level: member.profiles.level,
                             points: member.profiles.points,
                             is_leader: false,
-                            joined_at: member.accepted_at
+                            joined_at: member.created_at
                         });
                     }
                 });
@@ -778,11 +778,11 @@
                 .from('squad_requests')
                 .select(`
                     profiles!squad_requests_user_id_fkey(username),
-                    accepted_at
+                    created_at
                 `)
                 .eq('squad_id', userSquad.id)
                 .eq('status', 'accepted')
-                .order('accepted_at', { ascending: false });
+                .order('created_at', { ascending: false });
             
             if (notificationsError) {
                 console.error('Error al cargar notificaciones:', notificationsError);
@@ -1166,7 +1166,7 @@
                 </div>
             </div>
             
-            <div class="mission-card">
+            <div class 'mission-card'>
                 <div class="mission-header">
                     <div class="mission-title">Reclutamiento</div>
                     <span class="mission-status status-progress">En Progreso</span>
@@ -1204,7 +1204,7 @@
         let notificationsHTML = '';
         
         squadNotifications.forEach(notification => {
-            const notificationDate = new Date(notification.accepted_at);
+            const notificationDate = new Date(notification.created_at);
             const formattedDate = notificationDate.toLocaleDateString('es-ES', {
                 day: 'numeric',
                 month: 'short',
