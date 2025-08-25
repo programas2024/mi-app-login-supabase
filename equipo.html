@@ -666,8 +666,6 @@
             
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
-                // Cargar amigos del líder
-                await loadLeaderFriends();
                 renderSquadDetails();
             } else {
                 showNoSquadMessage();
@@ -714,49 +712,35 @@
         }
     }
     
-    // Cargar amigos del líder desde la tabla de perfiles
+    // Cargar amigos del líder desde la tabla de friends
     async function loadLeaderFriends() {
         try {
-            // Obtener todos los perfiles (amigos) excepto el del líder
-            const { data: profiles, error } = await supabase
-                .from('profiles')
-                .select('id, username, level, points')
-                .neq('id', userSquad.leader_id)
-                .order('username', { ascending: true });
+            // Obtener amigos del usuario actual desde la tabla friends
+            const { data: friends, error } = await supabase
+                .from('friends')
+                .select(`
+                    friend:profiles!friends_friend_id_fkey(id, username, level, points)
+                `)
+                .eq('user_id', currentUser.id)
+                .eq('status', 'accepted');
             
             if (error) {
                 console.error('Error al cargar amigos:', error);
-                // Usar datos de ejemplo si hay error
-                friendsList = [
-                    { username: 'JavierLopez', level: 12, points: 980 },
-                    { username: 'MartaGarcia', level: 10, points: 750 },
-                    { username: 'CarlosRuiz', level: 8, points: 500 },
-                    { username: 'AnaTorres', level: 14, points: 1100 }
-                ];
-                return;
+                return [];
             }
             
-            if (profiles && profiles.length > 0) {
-                friendsList = profiles;
+            if (friends && friends.length > 0) {
+                // Extraer los perfiles de amigos
+                friendsList = friends.map(f => f.friend).filter(f => f !== null);
                 console.log('Amigos cargados:', friendsList);
+                return friendsList;
             } else {
-                // Datos de ejemplo si no hay amigos
-                friendsList = [
-                    { username: 'JavierLopez', level: 12, points: 980 },
-                    { username: 'MartaGarcia', level: 10, points: 750 },
-                    { username: 'CarlosRuiz', level: 8, points: 500 },
-                    { username: 'AnaTorres', level: 14, points: 1100 }
-                ];
+                console.log('El usuario no tiene amigos');
+                return [];
             }
         } catch (error) {
             console.error('Error inesperado al cargar amigos:', error);
-            // Datos de ejemplo en caso de error
-            friendsList = [
-                { username: 'JavierLopez', level: 12, points: 980 },
-                { username: 'MartaGarcia', level: 10, points: 750 },
-                { username: 'CarlosRuiz', level: 8, points: 500 },
-                { username: 'AnaTorres', level: 14, points: 1100 }
-            ];
+            return [];
         }
     }
     
@@ -1021,10 +1005,10 @@
         addEventListeners();
     }
     
-    // Cargar miembros del escuadrón - AHORA CON AMIGOS DEL LÍDER
+    // Cargar miembros del escuadrón
     async function loadSquadMembers() {
         try {
-            // Obtener el perfil del líder - AHORA CON level y points
+            // Obtener el perfil del líder
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('id, username, level, points')
@@ -1033,7 +1017,6 @@
             
             if (leaderError) {
                 console.error('Error al cargar el líder:', leaderError);
-                // Usar datos de ejemplo si hay error
                 renderExampleMembers();
                 return;
             }
@@ -1059,143 +1042,164 @@
                 </div>
             `;
             
-            // Mostrar amigos del líder
-            if (friendsList.length > 0) {
-                friendsList.forEach(friend => {
-                    membersHTML += `
-                        <div class="member-item">
-                            <div class="member-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="member-details">
-                                <div class="member-name">
-                                    ${friend.username}
-                                    <span class="member-role">Amigo</span>
-                                </div>
-                                <div class="member-stats">
-                                    <span class="stat">Nivel: <span class="stat-value">${friend.level || 1}</span></span>
-                                    <span class="stat">Puntos: <span class="stat-value">${friend.points || 0}</span></span>
-                                </div>
-                                <button class="invite-friend-btn" data-username="${friend.username}" style="margin-top: 8px; background: rgba(120, 255, 214, 0.2); border: none; padding: 5px 10px; border-radius: 10px; color: #78ffd6; cursor: pointer; font-size: 12px;">
-                                    <i class="fas fa-user-plus"></i> Invitar
-                                </button>
-                            </div>
+            // Mostrar miembros actuales (aquí solo mostramos un mensaje ya que no tenemos miembros reales)
+            membersHTML += `
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="member-details">
+                        <div class="member-name">
+                            Invita a más miembros
                         </div>
-                    `;
-                });
-            } else {
-                membersHTML += `
-                    <div class="member-item">
-                        <div class="member-avatar">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="member-details">
-                            <div class="member-name">
-                                Invita a más miembros
-                            </div>
-                            <div class="member-stats">
-                                <span class="stat">Usa el botón de invitación</span>
-                            </div>
+                        <div class="member-stats">
+                            <span class="stat">Usa el botón de invitación</span>
                         </div>
                     </div>
-                `;
-            }
+                </div>
+            `;
             
             document.getElementById('members-list').innerHTML = membersHTML;
-            
-            // Agregar event listeners a los botones de invitar amigos
-            document.querySelectorAll('.invite-friend-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const username = this.getAttribute('data-username');
-                    inviteFriend(username);
-                });
-            });
         } catch (error) {
             console.error('Error al cargar miembros:', error);
             renderExampleMembers();
         }
     }
     
-    // Función para invitar a un amigo
-    function inviteFriend(username) {
+    // Función para mostrar el modal de invitación
+    async function showInviteFriendsModal() {
+        // Cargar amigos antes de mostrar el modal
+        const friends = await loadLeaderFriends();
+        
+        if (friends.length === 0) {
+            Swal.fire({
+                title: 'No tienes amigos',
+                text: 'Aún no tienes amigos agregados. Agrega amigos para poder invitarlos a tu escuadrón.',
+                icon: 'info',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+            return;
+        }
+        
+        // Crear HTML para la lista de amigos
+        let friendsHTML = '';
+        friends.forEach(friend => {
+            friendsHTML += `
+                <div class="friend-item">
+                    <div class="friend-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="friend-details">
+                        <div class="friend-name">${friend.username}</div>
+                        <div class="friend-stats">
+                            <span class="stat">Nivel: ${friend.level || 1}</span>
+                            <span class="stat">Puntos: ${friend.points || 0}</span>
+                        </div>
+                    </div>
+                    <button class="invite-friend-btn" data-userid="${friend.id}" data-username="${friend.username}">
+                        <i class="fas fa-user-plus"></i> Invitar
+                    </button>
+                </div>
+            `;
+        });
+        
+        // Mostrar el modal con SweetAlert2
         Swal.fire({
-            title: `¿Invitar a ${username}?`,
-            text: `Se enviará una invitación a ${username} para unirse a tu escuadrón.`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#78ffd6',
-            cancelButtonColor: '#ff6b6b',
-            confirmButtonText: 'Sí, invitar',
-            cancelButtonText: 'Cancelar',
+            title: 'Invitar amigos a tu escuadrón',
+            html: `
+                <div class="friends-modal">
+                    <div class="friends-list">
+                        ${friendsHTML}
+                    </div>
+                </div>
+            `,
+            width: 600,
             background: '#1e3a47',
-            color: 'white'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Aquí iría la lógica para enviar la invitación
-                Swal.fire({
-                    title: '¡Invitación enviada!',
-                    text: `Se ha enviado una invitación a ${username}.`,
-                    icon: 'success',
-                    confirmButtonColor: '#78ffd6',
-                    background: '#1e3a47',
-                    color: 'white'
+            color: 'white',
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+                closeButton: 'modal-close-btn'
+            },
+            didOpen: () => {
+                // Agregar event listeners a los botones de invitación
+                document.querySelectorAll('.invite-friend-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-userid');
+                        const username = this.getAttribute('data-username');
+                        inviteFriend(userId, username);
+                    });
                 });
             }
         });
     }
     
-    // Función para mostrar miembros de ejemplo en caso de error
-    function renderExampleMembers() {
-        const exampleMembers = [
-            {
-                username: currentUser.email.split('@')[0],
-                level: 15,
-                points: 1250,
-                role: 'Líder'
-            },
-            {
-                username: 'JavierLopez',
-                level: 12,
-                points: 980,
-                role: 'Miembro'
-            },
-            {
-                username: 'MartaGarcia',
-                level: 10,
-                points: 750,
-                role: 'Miembro'
+    // Función para invitar a un amigo
+    async function inviteFriend(userId, username) {
+        try {
+            // Verificar si el usuario ya está en el escuadrón
+            // (Aquí deberías implementar la lógica para verificar si el usuario ya es miembro)
+            
+            // Enviar la invitación
+            const { error } = await supabase
+                .from('squad_invitations')
+                .insert({
+                    squad_id: userSquad.id,
+                    invited_user_id: userId,
+                    invited_by: currentUser.id,
+                    status: 'pending'
+                });
+            
+            if (error) {
+                console.error('Error al enviar invitación:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo enviar la invitación. Inténtalo de nuevo.',
+                    icon: 'error',
+                    confirmButtonColor: '#78ffd6',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                return;
             }
-        ];
-        
-        let membersHTML = '';
-        
-        exampleMembers.forEach((member, index) => {
-            membersHTML += `
-                <div class="member-item">
-                    <div class="member-avatar ${index === 0 ? 'leader-avatar' : ''}">
-                        ${index === 0 ? '<i class="fas fa-crown"></i>' : '<i class="fas fa-user"></i>'}
-                    </div>
-                    <div class="member-details">
-                        <div class="member-name">
-                            ${member.username}
-                            <span class="member-role">${member.role}</span>
+            
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Invitación enviada!',
+                html: `
+                    <div style="text-align: center;">
+                        <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                            <i class="fas fa-check-circle"></i>
                         </div>
-                        <div class="member-stats">
-                            <span class="stat">Nivel: <span class="stat-value">${member.level}</span></span>
-                            <span class="stat">Puntos: <span class="stat-value">${member.points}</span></span>
-                        </div>
+                        <p>Se ha enviado una invitación a <strong>${username}</strong> para unirse a tu escuadrón.</p>
+                        <p>Te notificaremos cuando acepte la invitación.</p>
                     </div>
-                </div>
-            `;
-        });
-        
-        document.getElementById('members-list').innerHTML = membersHTML;
+                `,
+                icon: 'success',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+            
+        } catch (error) {
+            console.error('Error al invitar amigo:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al enviar la invitación. Inténtalo de nuevo.',
+                icon: 'error',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+        }
     }
     
-    // Cargar clasificación interna - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
+    // Cargar clasificación interna
     async function loadLeaderboard() {
         try {
-            // Obtener el perfil del líder para la clasificación - AHORA CON points
+            // Obtener el perfil del líder para la clasificación
             const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('username, points')
@@ -1204,7 +1208,6 @@
             
             if (leaderError) {
                 console.error('Error al cargar la clasificación:', leaderError);
-                // Usar datos de ejemplo si hay error
                 renderExampleLeaderboard();
                 return;
             }
@@ -1234,29 +1237,6 @@
             console.error('Error al cargar la clasificación:', error);
             renderExampleLeaderboard();
         }
-    }
-    
-    // Función para mostrar clasificación de ejemplo en caso de error
-    function renderExampleLeaderboard() {
-        const exampleLeaderboard = [
-            { username: currentUser.email.split('@')[0], points: 1250 },
-            { username: 'JavierLopez', points: 980 },
-            { username: 'MartaGarcia', points: 750 }
-        ];
-        
-        let leaderboardHTML = '';
-        
-        exampleLeaderboard.forEach((player, index) => {
-            leaderboardHTML += `
-                <div class 'leaderboard-item'>
-                    <span class="leaderboard-rank rank-${index + 1}">${index + 1}</span>
-                    <div class="leaderboard-name">${player.username}</div>
-                    <span class="leaderboard-points">${player.points} pts</span>
-                </div>
-            `;
-        });
-        
-        document.getElementById('leaderboard').innerHTML = leaderboardHTML;
     }
     
     // Cargar misiones (datos de ejemplo)
@@ -1295,40 +1275,6 @@
                     <span>+150 Puntos</span>
                 </div>
             </div>
-            
-            <div class="mission-card">
-                <div class="mission-header">
-                    <div class="mission-title">Victorias Consecutivas</div>
-                    <span class="mission-status status-completed">Completada</span>
-                </div>
-                <div class="mission-details">
-                    Logra 5 victorias consecutivas en misiones del escuadrón.
-                </div>
-                <div class="mission-progress">
-                    <div class="progress-bar" style="width: 100%"></div>
-                </div>
-                <div class="mission-meta">
-                    <span>100% completado</span>
-                    <span>+100 Puntos</span>
-                </div>
-            </div>
-            
-            <div class="mission-card">
-                <div class="mission-header">
-                    <div class="mission-title">Ser Top 1</div>
-                    <span class="mission-status status-progress">En Progreso</span>
-                </div>
-                <div class="mission-details">
-                    Alcanza el primer puesto en el ranking de escuadrones.
-                </div>
-                <div class="mission-progress">
-                    <div class="progress-bar" style="width: 30%"></div>
-                </div>
-                <div class="mission-meta">
-                    <span>30% completado</span>
-                    <span>+500 Puntos</span>
-                </div>
-            </div>
         `;
         
         document.getElementById('missions-container').innerHTML = missionsHTML;
@@ -1346,15 +1292,15 @@
         // Funcionalidad para los botones de acción (solo visibles para el líder)
         if (isSquadLeader) {
             document.getElementById('invite-btn').addEventListener('click', function() {
-                alert('Función de invitación activada');
+                showInviteFriendsModal();
+            });
+            
+            document.getElementById('invite-players-btn').addEventListener('click', function() {
+                showInviteFriendsModal();
             });
             
             document.getElementById('edit-squad-btn').addEventListener('click', function() {
                 alert('Función de edición activada');
-            });
-            
-            document.getElementById('invite-players-btn').addEventListener('click', function() {
-                alert('Función de invitación activada');
             });
             
             document.getElementById('new-mission-btn').addEventListener('click', function() {
@@ -1386,5 +1332,80 @@
         `;
     }
 </script>
+
+<style>
+    /* Estilos para el modal de amigos */
+    .friends-modal {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .friend-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+    
+    .friend-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .friend-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #78ffd6, #a8ff78);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        color: #1e3a47;
+        font-size: 18px;
+    }
+    
+    .friend-details {
+        flex: 1;
+    }
+    
+    .friend-name {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+    
+    .friend-stats {
+        display: flex;
+        gap: 12px;
+        font-size: 12px;
+        opacity: 0.8;
+    }
+    
+    .invite-friend-btn {
+        background: linear-gradient(135deg, #78ffd6, #a8ff78);
+        border: none;
+        padding: 8px 12px;
+        border-radius: 20px;
+        color: #1e3a47;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .invite-friend-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(120, 255, 214, 0.3);
+    }
+    
+    .modal-close-btn {
+        color: #78ffd6;
+        font-size: 24px;
+    }
+</style>
 </body>
 </html>
