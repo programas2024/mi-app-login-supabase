@@ -839,10 +839,10 @@ async function loadSquadMissions() {
             console.log('✅ Misiones cargadas:', squadMissions);
         }
 
-        // Si no hay misiones, crear una por defecto
+        // Si no hay misiones, crear todas por defecto
         if (squadMissions.length === 0) {
-            console.log('📝 No hay misiones, creando por defecto...');
-            await createDefaultMission();
+            console.log('📝 No hay misiones, creando todas por defecto...');
+            await createAllDefaultMissions();
         }
 
         // Verificar progreso de misiones
@@ -852,6 +852,125 @@ async function loadSquadMissions() {
     } catch (error) {
         console.error('💀 Error inesperado al cargar misiones:', error);
         squadMissions = [];
+    }
+}
+
+// Crear TODAS las misiones por defecto
+async function createAllDefaultMissions() {
+    try {
+        console.log('🎯 Creando TODAS las misiones épicas por defecto...');
+        
+        // Array con todas las misiones épicas
+        const defaultMissions = [
+            {
+                title: 'Primera Sesión de Juego',
+                description: 'Inicia sesión en el juego para ganar puntos',
+                goal: 1,
+                reward_points: 10,
+                is_epic: false
+            },
+            {
+                title: '🏆 ¡10 MILLONES DE ORO! 🏆',
+                description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
+                goal: 10000000,
+                reward_points: 1000,
+                is_epic: true
+            },
+            {
+                title: '💎 ¡888K DIAMANTES! 💎',
+                description: '¡El escuadrón debe reunir 888,000 diamantes entre todos!',
+                goal: 888000,
+                reward_points: 888,
+                is_epic: true
+            },
+            {
+                title: '🐚 ¡10K PERLAS! 🐚',
+                description: '¡El escuadrón debe reunir 10,000 perlas entre todos!',
+                goal: 10000,
+                reward_points: 500,
+                is_epic: true
+            },
+            {
+                title: '🐚 ¡90K PERLAS! 🐚',
+                description: '¡DESAFÍO ÉPICO! El escuadrón debe reunir 90,000 perlas entre todos',
+                goal: 90000,
+                reward_points: 900,
+                is_epic: true
+            }
+        ];
+
+        const createdMissions = [];
+        
+        // Crear todas las misiones
+        for (const missionData of defaultMissions) {
+            try {
+                const { data: mission, error } = await supabase
+                    .from('squad_missions')
+                    .insert({
+                        squad_id: userSquad.id,
+                        title: missionData.title,
+                        description: missionData.description,
+                        goal: missionData.goal,
+                        progress: missionData.title === 'Primera Sesión de Juego' ? 1 : 0,
+                        reward_points: missionData.reward_points,
+                        status: 'active',
+                        created_by: currentUser.id,
+                        is_epic: missionData.is_epic,
+                        created_at: new Date().toISOString()
+                    })
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('Error al crear misión:', missionData.title, error);
+                    // Crear misión temporal local
+                    createdMissions.push({
+                        id: 'temp-' + Math.random().toString(36).substr(2, 9),
+                        squad_id: userSquad.id,
+                        title: missionData.title,
+                        description: missionData.description,
+                        goal: missionData.goal,
+                        progress: missionData.title === 'Primera Sesión de Juego' ? 1 : 0,
+                        reward_points: missionData.reward_points,
+                        status: 'active',
+                        created_by: currentUser.id,
+                        is_epic: missionData.is_epic,
+                        created_at: new Date().toISOString()
+                    });
+                } else {
+                    createdMissions.push(mission);
+                    console.log('✅ Misión creada:', missionData.title);
+                }
+            } catch (missionError) {
+                console.error('Error inesperado al crear misión:', missionData.title, missionError);
+            }
+        }
+
+        squadMissions = createdMissions;
+        console.log('🎉 Todas las misiones épicas creadas:', squadMissions);
+        
+        // Completar automáticamente la misión de inicio de sesión
+        const loginMission = squadMissions.find(m => m.title === 'Primera Sesión de Juego');
+        if (loginMission) {
+            await completeMission(loginMission);
+        }
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al crear misiones épicas:', error);
+        // Crear misión temporal básica como fallback
+        squadMissions = [{
+            id: 'temp-mission',
+            squad_id: userSquad.id,
+            title: 'Primera Sesión de Juego',
+            description: 'Inicia sesión en el juego para ganar puntos',
+            goal: 1,
+            progress: 1,
+            reward_points: 10,
+            status: 'active',
+            created_by: currentUser.id,
+            is_epic: false,
+            created_at: new Date().toISOString()
+        }];
     }
 }
 
@@ -869,8 +988,12 @@ async function checkMissionsProgress() {
             console.log(`✅ Verificando ${activeMissions.length} misión(es) activas`);
             
             for (const mission of activeMissions) {
-                // Verificar tipo de misión
-                if (isGoldMission(mission)) {
+                // Solo completar automáticamente la misión de login
+                if (mission.title === 'Primera Sesión de Juego') {
+                    await completeMission(mission);
+                }
+                // Las demás misiones se verifican según su tipo
+                else if (isGoldMission(mission)) {
                     await checkGoldMission(mission);
                 } 
                 else if (isDiamondMission(mission)) {
@@ -878,9 +1001,6 @@ async function checkMissionsProgress() {
                 }
                 else if (isPearlMission(mission)) {
                     await checkPearlMission(mission);
-                }
-                else {
-                    await completeMission(mission);
                 }
             }
         } else {
@@ -1065,55 +1185,6 @@ async function updateMissionProgress(missionId, progress) {
     }
 }
 
-// Crear misión por defecto si no existe
-async function createDefaultMission() {
-    try {
-        console.log('Intentando crear misión por defecto para squad:', userSquad.id);
-        
-        const { data: mission, error } = await supabase
-            .from('squad_missions')
-            .insert({
-                squad_id: userSquad.id,
-                title: 'Primera Sesión de Juego',
-                description: 'Inicia sesión en el juego para ganar puntos',
-                goal: 1,
-                progress: 1, // Ya inició sesión
-                reward_points: 10,
-                status: 'active',
-                created_by: currentUser.id
-            })
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Error al crear misión por defecto:', error);
-            // Crear misión temporal
-            squadMissions = [{
-                id: 'temp-mission',
-                squad_id: userSquad.id,
-                title: 'Primera Sesión de Juego',
-                description: 'Inicia sesión en el juego para ganar puntos',
-                goal: 1,
-                progress: 1,
-                reward_points: 10,
-                status: 'active',
-                created_by: currentUser.id,
-                created_at: new Date().toISOString()
-            }];
-            return;
-        }
-
-        squadMissions = [mission];
-        console.log('Misión por defecto creada:', mission);
-        
-        // Completar automáticamente la misión de inicio de sesión
-        await completeMission(mission);
-        
-    } catch (error) {
-        console.error('Error inesperado al crear misión:', error);
-    }
-}
-
 // Completar una misión y otorgar recompensa
 async function completeMission(mission) {
     try {
@@ -1125,7 +1196,7 @@ async function completeMission(mission) {
         console.log('Completando misión:', mission.title);
         
         // Si es una misión temporal
-        if (mission.id && mission.id === 'temp-mission') {
+        if (mission.id && mission.id.includes('temp-')) {
             mission.status = 'completed';
             mission.progress = mission.goal;
             userSquad.total_points = (userSquad.total_points || 0) + mission.reward_points;
@@ -1407,6 +1478,28 @@ async function updateGlobalRank() {
     }
 }
 
+// Mostrar notificación de misión completada
+function showMissionCompleteNotification(mission) {
+    Swal.fire({
+        title: '¡Misión Completada!',
+        html: `
+            <div style="text-align: center;">
+                <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <p>¡Felicidades! Has completado la misión:</p>
+                <p><strong>${mission.title}</strong></p>
+                <p>+${mission.reward_points} puntos para el escuadrón</p>
+            </div>
+        `,
+        icon: 'success',
+        confirmButtonColor: '#78ffd6',
+        background: '#1e3a47',
+        color: 'white',
+        timer: 5000,
+        timerProgressBar: true
+    });
+}
 // Mostrar notificación de misión completada
 function showMissionCompleteNotification(mission) {
     Swal.fire({
