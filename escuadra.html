@@ -299,6 +299,43 @@
             margin-bottom: 20px;
         }
 
+        .squad-selection {
+            background: rgba(30, 35, 48, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .squad-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .squad-item:hover {
+            background: rgba(120, 255, 214, 0.1);
+        }
+
+        .squad-item-info {
+            flex: 1;
+        }
+
+        .squad-item-name {
+            font-weight: bold;
+            color: #78ffd6;
+        }
+
+        .squad-item-mission {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         @media (max-width: 900px) {
             .content {
                 grid-template-columns: 1fr;
@@ -364,6 +401,13 @@
             <button class="btn" id="fix-rls-btn">
                 <i class="fas fa-tools"></i> Ver Instrucciones
             </button>
+        </div>
+
+        <!-- Contenedor de selección de escuadrón -->
+        <div class="squad-selection" id="squad-selection">
+            <h2>Tienes múltiples escuadrones</h2>
+            <p>Selecciona el escuadrón que deseas gestionar:</p>
+            <div id="squad-list"></div>
         </div>
 
         <div class="content">
@@ -503,6 +547,7 @@
         let currentUser = null;
         let userProfile = null;
         let userSquad = null;
+        let userSquads = [];
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
@@ -512,11 +557,12 @@
         // Inicializar la aplicación
         async function initializeApp() {
             hideApiError();
+            hideSquadSelection();
             
             try {
                 await checkUserStatus();
                 await loadUserData();
-                await checkExistingSquad();
+                await checkExistingSquads();
             } catch (error) {
                 console.error('Error al inicializar la aplicación:', error);
                 showApiError();
@@ -533,6 +579,18 @@
         function showApiError() {
             const apiError = document.getElementById('api-error');
             if (apiError) apiError.style.display = 'block';
+        }
+        
+        // Ocultar selección de escuadrón
+        function hideSquadSelection() {
+            const squadSelection = document.getElementById('squad-selection');
+            if (squadSelection) squadSelection.style.display = 'none';
+        }
+        
+        // Mostrar selección de escuadrón
+        function showSquadSelection() {
+            const squadSelection = document.getElementById('squad-selection');
+            if (squadSelection) squadSelection.style.display = 'block';
         }
         
         // Ocultar contenedor completo de creación de escuadrón
@@ -613,23 +671,21 @@
             }
         }
         
-        // Verificar si el usuario ya tiene un escuadrón - CORREGIDO
-        async function checkExistingSquad() {
+        // Verificar si el usuario ya tiene escuadrones - CORREGIDO
+        async function checkExistingSquads() {
             try {
                 if (!currentUser) return;
                 
-                console.log("Buscando escuadrón para el líder:", currentUser.id);
+                console.log("Buscando escuadrones para el líder:", currentUser.id);
                 
-                // Buscar si el usuario ya tiene un escuadrón
-                // USAR .maybeSingle() EN LUGAR DE .single() para evitar error 406
-                const { data: squad, error } = await supabase
+                // Buscar TODOS los escuadrones del usuario
+                const { data: squads, error } = await supabase
                     .from('squads')
                     .select('*')
-                    .eq('leader_id', currentUser.id)
-                    .maybeSingle();  // ¡CORRECCIÓN IMPORTANTE!
+                    .eq('leader_id', currentUser.id);
                 
                 if (error) {
-                    console.error('Error al verificar escuadrón:', error);
+                    console.error('Error al verificar escuadrones:', error);
                     // Mostrar error de RLS si es un error de permisos
                     if (error.code === '42501' || error.message.includes('permission')) {
                         showRLSError();
@@ -637,20 +693,57 @@
                     throw error;
                 }
                 
-                console.log("Resultado de la consulta de escuadrón:", squad);
+                console.log("Resultado de la consulta de escuadrones:", squads);
                 
-                if (squad) {
-                    userSquad = squad;
-                    displaySquadData(squad);
-                    hideCreateSquadContainer();
+                if (squads && squads.length > 0) {
+                    userSquads = squads;
+                    
+                    if (squads.length === 1) {
+                        // Si solo tiene un escuadrón, mostrarlo directamente
+                        userSquad = squads[0];
+                        displaySquadData(userSquad);
+                        hideCreateSquadContainer();
+                    } else {
+                        // Si tiene múltiples escuadrones, mostrar selector
+                        showSquadSelection();
+                        displaySquadList(squads);
+                    }
                 } else {
-                    console.log('El usuario no tiene escuadrón');
+                    console.log('El usuario no tiene escuadrones');
                     showEmptySquadMessage();
                 }
             } catch (error) {
-                console.error('Error al verificar escuadrón:', error);
+                console.error('Error al verificar escuadrones:', error);
                 throw error;
             }
+        }
+        
+        // Mostrar lista de escuadrones para selección
+        function displaySquadList(squads) {
+            const squadList = document.getElementById('squad-list');
+            squadList.innerHTML = '';
+            
+            squads.forEach(squad => {
+                const squadItem = document.createElement('div');
+                squadItem.className = 'squad-item';
+                squadItem.innerHTML = `
+                    <div class="squad-item-info">
+                        <div class="squad-item-name">${squad.name}</div>
+                        <div class="squad-item-mission">${squad.mission} - ${squad.member_count}/${squad.max_members} miembros</div>
+                    </div>
+                    <div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                `;
+                
+                squadItem.addEventListener('click', () => {
+                    userSquad = squad;
+                    displaySquadData(squad);
+                    hideSquadSelection();
+                });
+                
+                squadList.appendChild(squadItem);
+            });
         }
         
         // Mostrar datos del escuadrón
@@ -770,7 +863,7 @@ FOR UPDATE USING (auth.uid() = leader_id);
             
             // Verificar si tiene suficiente oro
             if (userProfile.gold < 200) {
-                showError('Oro insuficiente', 'Necesitas 200 oro para crear un escuadrón');
+                showError('Oro insuficiente', 'Necessitas 200 oro para crear un escuadrón');
                 return;
             }
             
