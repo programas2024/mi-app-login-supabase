@@ -712,37 +712,71 @@
         }
     }
     
-    // Cargar amigos del líder desde la tabla de friends
-    async function loadLeaderFriends() {
-        try {
-            // Obtener amigos del usuario actual desde la tabla friends
-            const { data: friends, error } = await supabase
-                .from('friends')
-                .select(`
-                    friend:profiles!friends_friend_id_fkey(id, username, level, points)
-                `)
-                .eq('user_id', currentUser.id)
-                .eq('status', 'accepted');
+    // Cargar amigos del líder (versión compatible con estructura actual)
+async function loadLeaderFriends() {
+    try {
+        // Primero intentamos con la estructura esperada por el código original
+        const { data: friends, error } = await supabase
+            .from('friends')
+            .select(`
+                friend:profiles!friends_friend_id_fkey(id, username, level, points)
+            `)
+            .eq('user_id', currentUser.id)
+            .eq('status', 'accepted');
+        
+        if (error) {
+            console.log('Intentando estructura alternativa debido a error:', error);
             
-            if (error) {
-                console.error('Error al cargar amigos:', error);
+            // Si falla, intentamos con la estructura de tu tabla actual
+            const { data: userFriends, error: userError } = await supabase
+                .from('friends')
+                .select('*')
+                .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
+                
+            if (userError) {
+                console.error('Error al cargar amigos:', userError);
                 return [];
             }
             
-            if (friends && friends.length > 0) {
-                // Extraer los perfiles de amigos
-                friendsList = friends.map(f => f.friend).filter(f => f !== null);
-                console.log('Amigos cargados:', friendsList);
-                return friendsList;
-            } else {
+            if (!userFriends || userFriends.length === 0) {
                 console.log('El usuario no tiene amigos');
                 return [];
             }
-        } catch (error) {
-            console.error('Error inesperado al cargar amigos:', error);
+            
+            // Obtener IDs de amigos
+            const friendIds = userFriends.map(friend => 
+                friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
+            );
+            
+            // Obtener información de perfiles de amigos
+            const { data: friendsProfiles, error: profilesError } = await supabase
+                .from('profiles')
+                .select('id, username, level, points')
+                .in('id', friendIds);
+                
+            if (profilesError) {
+                console.error('Error al cargar perfiles de amigos:', profilesError);
+                return [];
+            }
+            
+            console.log('Amigos cargados (estructura actual):', friendsProfiles);
+            return friendsProfiles || [];
+        }
+        
+        if (friends && friends.length > 0) {
+            // Extraer los perfiles de amigos
+            friendsList = friends.map(f => f.friend).filter(f => f !== null);
+            console.log('Amigos cargados:', friendsList);
+            return friendsList;
+        } else {
+            console.log('El usuario no tiene amigos');
             return [];
         }
+    } catch (error) {
+        console.error('Error inesperado al cargar amigos:', error);
+        return [];
     }
+}
     
     // Mostrar mensaje cuando el usuario no tiene escuadrón
     function showNoSquadMessage() {
@@ -1068,71 +1102,73 @@
     
     // Función para mostrar el modal de invitación
     async function showInviteFriendsModal() {
-        // Cargar amigos del líder (versión compatible con estructura actual)
-async function loadLeaderFriends() {
-    try {
-        // Primero intentamos con la estructura esperada por el código original
-        const { data: friends, error } = await supabase
-            .from('friends')
-            .select(`
-                friend:profiles!friends_friend_id_fkey(id, username, level, points)
-            `)
-            .eq('user_id', currentUser.id)
-            .eq('status', 'accepted');
+        // Cargar amigos antes de mostrar el modal
+        const friends = await loadLeaderFriends();
         
-        if (error) {
-            console.log('Intentando estructura alternativa debido a error:', error);
-            
-            // Si falla, intentamos con la estructura de tu tabla actual
-            const { data: userFriends, error: userError } = await supabase
-                .from('friends')
-                .select('*')
-                .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-                
-            if (userError) {
-                console.error('Error al cargar amigos:', userError);
-                return [];
-            }
-            
-            if (!userFriends || userFriends.length === 0) {
-                console.log('El usuario no tiene amigos');
-                return [];
-            }
-            
-            // Obtener IDs de amigos
-            const friendIds = userFriends.map(friend => 
-                friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
-            );
-            
-            // Obtener información de perfiles de amigos
-            const { data: friendsProfiles, error: profilesError } = await supabase
-                .from('profiles')
-                .select('id, username, level, points')
-                .in('id', friendIds);
-                
-            if (profilesError) {
-                console.error('Error al cargar perfiles de amigos:', profilesError);
-                return [];
-            }
-            
-            console.log('Amigos cargados (estructura actual):', friendsProfiles);
-            return friendsProfiles || [];
+        if (friends.length === 0) {
+            Swal.fire({
+                title: 'No tienes amigos',
+                text: 'Aún no tienes amigos agregados. Agrega amigos para poder invitarlos a tu escuadrón.',
+                icon: 'info',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+            return;
         }
         
-        if (friends && friends.length > 0) {
-            // Extraer los perfiles de amigos
-            friendsList = friends.map(f => f.friend).filter(f => f !== null);
-            console.log('Amigos cargados:', friendsList);
-            return friendsList;
-        } else {
-            console.log('El usuario no tiene amigos');
-            return [];
-        }
-    } catch (error) {
-        console.error('Error inesperado al cargar amigos:', error);
-        return [];
+        // Crear HTML para la lista de amigos
+        let friendsHTML = '';
+        friends.forEach(friend => {
+            friendsHTML += `
+                <div class="friend-item">
+                    <div class="friend-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="friend-details">
+                        <div class="friend-name">${friend.username}</div>
+                        <div class="friend-stats">
+                            <span class="stat">Nivel: ${friend.level || 1}</span>
+                            <span class="stat">Puntos: ${friend.points || 0}</span>
+                        </div>
+                    </div>
+                    <button class="invite-friend-btn" data-userid="${friend.id}" data-username="${friend.username}">
+                        <i class="fas fa-user-plus"></i> Invitar
+                    </button>
+                </div>
+            `;
+        });
+        
+        // Mostrar el modal con SweetAlert2
+        Swal.fire({
+            title: 'Invitar amigos a tu escuadrón',
+            html: `
+                <div class="friends-modal">
+                    <div class="friends-list">
+                        ${friendsHTML}
+                    </div>
+                </div>
+            `,
+            width: 600,
+            background: '#1e3a47',
+            color: 'white',
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+                closeButton: 'modal-close-btn'
+            },
+            didOpen: () => {
+                // Agregar event listeners a los botones de invitación
+                document.querySelectorAll('.invite-friend-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-userid');
+                        const username = this.getAttribute('data-username');
+                        inviteFriend(userId, username);
+                    });
+                });
+            }
+        });
     }
-}
     
     // Función para invitar a un amigo
     async function inviteFriend(userId, username) {
@@ -1236,7 +1272,6 @@ async function loadLeaderFriends() {
             renderExampleLeaderboard();
         }
     }
-}
     
     // Cargar misiones (datos de ejemplo)
     async function loadMissions() {
