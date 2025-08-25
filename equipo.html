@@ -633,12 +633,12 @@
     // Estado de la aplicación
     let currentUser = null;
     let userSquad = null;
-    let userSquadRequest = null;
     let isSquadLeader = false;
-    let isSquadMember = false;
+    let userSquadRequest = null;
     let friendsList = [];
     let squadMembers = [];
     let squadNotifications = [];
+    let squadMissions = [];
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
@@ -666,12 +666,13 @@
             console.log('Usuario actual:', currentUser);
             
             // Obtener el escuadrón del usuario (como líder o como miembro)
-            await loadUserSquadInfo();
+            await loadUserSquad();
             
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
                 await loadSquadMembers();
                 await loadSquadNotifications();
+                await loadSquadMissions();
                 renderSquadDetails();
             } else {
                 showNoSquadMessage();
@@ -682,30 +683,30 @@
         }
     });
     
-    // Cargar información del escuadrón del usuario (como líder o como miembro)
-    async function loadUserSquadInfo() {
+    // Cargar el escuadrón del usuario (como líder o como miembro)
+    async function loadUserSquad() {
         try {
             // Primero buscar si el usuario es líder de algún escuadrón
-            const { data: leaderSquad, error: leaderError } = await supabase
+            const { data: squad, error: squadError } = await supabase
                 .from('squads')
                 .select('*')
                 .eq('leader_id', currentUser.id)
                 .maybeSingle();
             
-            if (leaderError) {
-                console.error('Error al obtener el escuadrón del líder:', leaderError);
+            if (squadError) {
+                console.error('Error al obtener el escuadrón:', squadError);
+                // Continuar para buscar si es miembro
             }
             
-            if (leaderSquad) {
-                userSquad = leaderSquad;
+            if (squad) {
+                userSquad = squad;
                 isSquadLeader = true;
-                isSquadMember = true;
                 console.log('Usuario es líder del escuadrón:', userSquad);
                 return;
             }
             
             // Si no es líder, buscar si es miembro de algún escuadrón
-            const { data: memberRequest, error: memberError } = await supabase
+            const { data: squadRequest, error: requestError } = await supabase
                 .from('squad_requests')
                 .select(`
                     squad_id,
@@ -715,21 +716,17 @@
                 .eq('status', 'accepted')
                 .maybeSingle();
             
-            if (memberError) {
-                console.error('Error al obtener información de miembro:', memberError);
+            if (requestError) {
+                console.error('Error al obtener solicitud de escuadrón:', requestError);
                 return;
             }
             
-            if (memberRequest && memberRequest.squads) {
-                userSquad = memberRequest.squads;
-                userSquadRequest = memberRequest;
-                isSquadMember = true;
+            if (squadRequest && squadRequest.squads) {
+                userSquad = squadRequest.squads;
+                userSquadRequest = squadRequest;
+                isSquadLeader = false;
                 console.log('Usuario es miembro del escuadrón:', userSquad);
-                return;
             }
-            
-            console.log('El usuario no pertenece a ningún escuadrón');
-            
         } catch (error) {
             console.error('Error inesperado:', error);
         }
@@ -823,7 +820,168 @@
         }
     }
     
-    // Cargar amigos del usuario actual
+    // Cargar misiones del escuadrón
+    async function loadSquadMissions() {
+        try {
+            // Obtener misiones del escuadrón
+            const { data: missions, error: missionsError } = await supabase
+                .from('squad_missions')
+                .select('*')
+                .eq('squad_id', userSquad.id)
+                .order('created_at', { ascending: false });
+            
+            if (missionsError) {
+                console.error('Error al cargar misiones:', missionsError);
+                return;
+            }
+            
+            squadMissions = missions || [];
+            
+            // Si no hay misiones, crear una por defecto
+            if (squadMissions.length === 0) {
+                await createDefaultMission();
+            }
+            
+            console.log('Misiones del escuadrón:', squadMissions);
+        } catch (error) {
+            console.error('Error al cargar misiones:', error);
+        }
+    }
+    
+    // Crear misión por defecto si no existe
+    async function createDefaultMission() {
+        try {
+            const { data: mission, error } = await supabase
+                .from('squad_missions')
+                .insert({
+                    squad_id: userSquad.id,
+                    title: 'Primera Sesión de Juego',
+                    description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
+                    goal: 1, // 1 sesión de juego
+                    progress: 0,
+                    reward_points: 10,
+                    status: 'active',
+                    created_by: currentUser.id
+                })
+                .select()
+                .single();
+            
+            if (error) {
+                console.error('Error al crear misión por defecto:', error);
+                return;
+            }
+            
+            squadMissions = [mission];
+            console.log('Misión por defecto creada:', mission);
+        } catch (error) {
+            console.error('Error inesperado al crear misión:', error);
+        }
+    }
+    
+    // Verificar y actualizar el progreso de las misiones
+    async function checkMissionsProgress() {
+        try {
+            for (const mission of squadMissions) {
+                if (mission.status === 'active') {
+                    // Verificar si al menos un miembro ha iniciado sesión hoy
+                    const today = new Date().toISOString().split('T')[0];
+                    const { data: sessions, error } = await supabase
+                        .from('user_sessions')
+                        .select('user_id')
+                        .eq('squad_id', userSquad.id)
+                        .gte('login_date', today)
+                        .limit(1);
+                    
+                    if (error) {
+                        console.error('Error al verificar sesiones:', error);
+                        continue;
+                    }
+                    
+                    // Si hay al menos una sesión hoy, la misión está completada
+                    if (sessions && sessions.length > 0) {
+                        await completeMission(mission);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error al verificar progreso de misiones:', error);
+        }
+    }
+    
+    // Completar una misión y otorgar recompensa
+    async function completeMission(mission) {
+        try {
+            // Actualizar estado de la misión a completada
+            const { error: updateError } = await supabase
+                .from('squad_missions')
+                .update({
+                    status: 'completed',
+                    progress: mission.goal,
+                    completed_at: new Date().toISOString()
+                })
+                .eq('id', mission.id);
+            
+            if (updateError) {
+                console.error('Error al actualizar misión:', updateError);
+                return;
+            }
+            
+            // Otorgar puntos al escuadrón
+            const newTotalPoints = (userSquad.total_points || 0) + mission.reward_points;
+            
+            const { error: pointsError } = await supabase
+                .from('squads')
+                .update({ total_points: newTotalPoints })
+                .eq('id', userSquad.id);
+            
+            if (pointsError) {
+                console.error('Error al actualizar puntos del escuadrón:', pointsError);
+                return;
+            }
+            
+            // Actualizar el estado local
+            userSquad.total_points = newTotalPoints;
+            mission.status = 'completed';
+            mission.progress = mission.goal;
+            
+            console.log(`Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
+            
+            // Mostrar notificación de éxito
+            showMissionCompleteNotification(mission);
+            
+        } catch (error) {
+            console.error('Error al completar misión:', error);
+        }
+    }
+    
+    // Mostrar notificación de misión completada
+    function showMissionCompleteNotification(mission) {
+        // Usar Toast de SweetAlert2 para una notificación no intrusiva
+        Swal.fire({
+            title: '¡Misión Completada!',
+            html: `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <p>¡Felicidades! Has completado la misión:</p>
+                    <p><strong>${mission.title}</strong></p>
+                    <p>+${mission.reward_points} puntos para el escuadrón</p>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonColor: '#78ffd6',
+            background: '#1e3a47',
+            color: 'white',
+            timer: 5000,
+            timerProgressBar: true
+        });
+        
+        // Recargar la sección de misiones
+        renderMissionsSection();
+    }
+    
+    // Cargar amigos del usuario
     async function loadUserFriends() {
         try {
             // Intentar con la estructura actual de la tabla friends
@@ -1069,6 +1227,9 @@
         
         // Agregar event listeners
         addEventListeners();
+        
+        // Verificar progreso de misiones
+        checkMissionsProgress();
     }
     
     // Renderizar lista de miembros
@@ -1121,7 +1282,7 @@
             `;
         });
         
-        // Si hay espacio para más miembros y es el líder, mostrar opción para invitar
+        // Si hay espacio para más miembros, mostrar opción para invitar (solo para líder)
         if (squadMembers.length < (userSquad.max_members || 10) && isSquadLeader) {
             membersHTML += `
                 <div class="member-item invite-member-item" id="invite-member-btn">
@@ -1169,7 +1330,7 @@
                     <div class="leaderboard-name">
                         ${member.username || 'Miembro'}
                         ${member.is_leader ? '<span class="leader-flag">(Líder)</span>' : ''}
-                        ${isCurrentUser ? '<span class="current-user-flag">(Tú)</span>' : ''}
+                        ${isCurrentUser ? '<span class="user-flag">(Tú)</span>' : ''}
                     </div>
                     <span class="leaderboard-points">${member.points || 0} pts</span>
                 </div>
@@ -1181,41 +1342,51 @@
     
     // Renderizar misiones
     function renderMissions() {
-        return `
-            <div class="mission-card">
-                <div class="mission-header">
-                    <div class="mission-title">Subir de Rango</div>
-                    <span class="mission-status status-progress">En Progreso</span>
+        if (!squadMissions || squadMissions.length === 0) {
+            return `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando misiones...</p>
                 </div>
-                <div class="mission-details">
-                    Alcanza el rango Plata con al menos 5 miembros del escuadrón.
-                </div>
-                <div class="mission-progress">
-                    <div class="progress-bar" style="width: 65%"></div>
-                </div>
-                <div class="mission-meta">
-                    <span>65% completado</span>
-                    <span>+200 Puntos</span>
-                </div>
-            </div>
+            `;
+        }
+        
+        let missionsHTML = '';
+        
+        squadMissions.forEach(mission => {
+            const progressPercentage = Math.min(100, (mission.progress / mission.goal) * 100);
+            const statusClass = mission.status === 'completed' ? 'status-completed' : 'status-progress';
+            const statusText = mission.status === 'completed' ? 'Completada' : 'En Progreso';
             
-            <div class="mission-card">
-                <div class="mission-header">
-                    <div class="mission-title">Reclutamiento</div>
-                    <span class="mission-status status-progress">En Progreso</span>
+            missionsHTML += `
+                <div class="mission-card">
+                    <div class="mission-header">
+                        <div class="mission-title">${mission.title}</div>
+                        <span class="mission-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="mission-details">
+                        ${mission.description}
+                    </div>
+                    <div class="mission-progress">
+                        <div class="progress-bar" style="width: ${progressPercentage}%"></div>
+                    </div>
+                    <div class="mission-meta">
+                        <span>${mission.progress}/${mission.goal} (${Math.round(progressPercentage)}%)</span>
+                        <span>+${mission.reward_points} Puntos</span>
+                    </div>
                 </div>
-                <div class="mission-details">
-                    Consigue que el escuadrón tenga al menos 8 miembros activos.
-                </div>
-                <div class="mission-progress">
-                    <div class="progress-bar" style="width: ${(squadMembers.length / 8) * 100 || 50}%"></div>
-                </div>
-                <div class="mission-meta">
-                    <span>${Math.round((squadMembers.length / 8) * 100) || 50}% completado</span>
-                    <span>+150 Puntos</span>
-                </div>
-            </div>
-        `;
+            `;
+        });
+        
+        return missionsHTML;
+    }
+    
+    // Renderizar solo la sección de misiones (para actualizaciones)
+    function renderMissionsSection() {
+        const missionsContainer = document.getElementById('missions-container');
+        if (missionsContainer) {
+            missionsContainer.innerHTML = renderMissions();
+        }
     }
     
     // Renderizar notificaciones del buzón
@@ -1279,7 +1450,7 @@
         return notificationsHTML;
     }
     
-    // Función para mostrar el modal de invitación
+    // Función para mostrar el modal de invitación (solo para líderes)
     async function showInviteFriendsModal() {
         // Cargar amigos antes de mostrar el modal
         const friends = await loadUserFriends();
@@ -1389,7 +1560,7 @@
         });
     }
     
-    // Función para invitar a un amigo
+    // Función para invitar a un amigo (solo para líderes)
     async function inviteFriend(userId, username) {
         try {
             // PRIMERO: Verificar si ya existe una solicitud (pending o accepted)
@@ -1491,103 +1662,61 @@
     async function leaveSquad() {
         try {
             if (isSquadLeader) {
-                // Si es el líder, disolver el escuadrón
-                const result = await Swal.fire({
-                    title: '¿Disolver escuadrón?',
-                    text: 'Como líder, esta acción eliminará permanentemente el escuadrón y todos los miembros serán expulsados. ¿Estás seguro?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#78ffd6',
-                    confirmButtonText: 'Sí, disolver',
-                    cancelButtonText: 'Cancelar',
+                // Si es líder, disolver el escuadrón
+                const { error: deleteError } = await supabase
+                    .from('squads')
+                    .delete()
+                    .eq('id', userSquad.id);
+                
+                if (deleteError) {
+                    console.error('Error al disolver el escuadrón:', deleteError);
+                    throw deleteError;
+                }
+                
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Escuadrón disuelto',
+                    text: 'Tu escuadrón ha sido disuelto exitosamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#78ffd6',
                     background: '#1e3a47',
                     color: 'white'
+                }).then(() => {
+                    // Recargar la página
+                    window.location.reload();
                 });
-                
-                if (result.isConfirmed) {
-                    // Eliminar todas las solicitudes relacionadas con el escuadrón
-                    const { error: deleteRequestsError } = await supabase
-                        .from('squad_requests')
-                        .delete()
-                        .eq('squad_id', userSquad.id);
-                    
-                    if (deleteRequestsError) {
-                        console.error('Error al eliminar solicitudes:', deleteRequestsError);
-                        throw deleteRequestsError;
-                    }
-                    
-                    // Eliminar el escuadrón
-                    const { error: deleteSquadError } = await supabase
-                        .from('squads')
-                        .delete()
-                        .eq('id', userSquad.id);
-                    
-                    if (deleteSquadError) {
-                        console.error('Error al eliminar escuadrón:', deleteSquadError);
-                        throw deleteSquadError;
-                    }
-                    
-                    // Mostrar mensaje de éxito
-                    Swal.fire({
-                        title: 'Escuadrón disuelto',
-                        text: 'El escuadrón ha sido eliminado exitosamente.',
-                        icon: 'success',
-                        confirmButtonColor: '#78ffd6',
-                        background: '#1e3a47',
-                        color: 'white'
-                    }).then(() => {
-                        // Recargar la página
-                        window.location.reload();
-                    });
-                }
             } else {
-                // Si es miembro regular, abandonar el escuadrón
-                const result = await Swal.fire({
-                    title: '¿Abandonar escuadrón?',
-                    text: '¿Estás seguro de que quieres abandonar este escuadrón?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#78ffd6',
-                    confirmButtonText: 'Sí, abandonar',
-                    cancelButtonText: 'Cancelar',
+                // Si es miembro, eliminar la solicitud aceptada
+                const { error: deleteError } = await supabase
+                    .from('squad_requests')
+                    .delete()
+                    .eq('squad_id', userSquad.id)
+                    .eq('user_id', currentUser.id)
+                    .eq('status', 'accepted');
+                
+                if (deleteError) {
+                    console.error('Error al abandonar el escuadrón:', deleteError);
+                    throw deleteError;
+                }
+                
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    title: 'Escuadrón abandonado',
+                    text: 'Has abandonado el escuadrón exitosamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#78ffd6',
                     background: '#1e3a47',
                     color: 'white'
+                }).then(() => {
+                    // Recargar la página
+                    window.location.reload();
                 });
-                
-                if (result.isConfirmed) {
-                    // Eliminar la solicitud de membresía
-                    const { error } = await supabase
-                        .from('squad_requests')
-                        .delete()
-                        .eq('squad_id', userSquad.id)
-                        .eq('user_id', currentUser.id);
-                    
-                    if (error) {
-                        console.error('Error al abandonar escuadrón:', error);
-                        throw error;
-                    }
-                    
-                    // Mostrar mensaje de éxito
-                    Swal.fire({
-                        title: 'Escuadrón abandonado',
-                        text: 'Has abandonado el escuadrón exitosamente.',
-                        icon: 'success',
-                        confirmButtonColor: '#78ffd6',
-                        background: '#1e3a47',
-                        color: 'white'
-                    }).then(() => {
-                        // Recargar la página
-                        window.location.reload();
-                    });
-                }
             }
         } catch (error) {
-            console.error('Error al abandonar escuadrón:', error);
+            console.error('Error al abandonar el escuadrón:', error);
             Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo.',
+                text: 'Ocurrió un error al intentar abandonar el escuadrón. Inténtalo de nuevo.',
                 icon: 'error',
                 confirmButtonColor: '#78ffd6',
                 background: '#1e3a47',
@@ -1605,7 +1734,32 @@
             });
         });
         
-        // Funcionalidad para los botones de acción
+        // Botón de abandonar escuadrón (para todos los miembros)
+        document.getElementById('leave-squad-btn').addEventListener('click', function() {
+            const action = isSquadLeader ? 'disolver' : 'abandonar';
+            const message = isSquadLeader 
+                ? '¿Estás seguro de que quieres disolver el escuadrón? Esta acción no se puede deshacer y todos los miembros serán expulsados.' 
+                : '¿Estás seguro de que quieres abandonar el escuadrón?';
+            
+            Swal.fire({
+                title: `¿${action.charAt(0).toUpperCase() + action.slice(1)} escuadrón?`,
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#78ffd6',
+                cancelButtonColor: '#ff5e78',
+                background: '#1e3a47',
+                color: 'white',
+                confirmButtonText: `Sí, ${action}`,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    leaveSquad();
+                }
+            });
+        });
+        
+        // Funcionalidad para los botones de acción (solo visibles para el líder)
         if (isSquadLeader) {
             document.getElementById('invite-btn').addEventListener('click', function() {
                 showInviteFriendsModal();
@@ -1631,11 +1785,6 @@
                 alert('Función de nueva misión activada');
             });
         }
-        
-        // Botón para abandonar el escuadrón (disponible para todos)
-        document.getElementById('leave-squad-btn').addEventListener('click', function() {
-            leaveSquad();
-        });
     }
     
     // Mostrar error
