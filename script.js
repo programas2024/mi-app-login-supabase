@@ -616,7 +616,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-// Función para mostrar los mensajes con SweetAlert personalizado
+/ // Función para mostrar los mensajes con SweetAlert personalizado
         function showMessages() {
             // Crear el contenido HTML para el SweetAlert
             const content = document.createElement('div');
@@ -624,71 +624,106 @@ window.addEventListener('DOMContentLoaded', async () => {
             
             content.innerHTML = `
                 <div class="custom-swal-header">
-                    <h2 class="custom-swal-title">Tus Mensajes</h2>
+                    <h2 class="custom-swal-title"><i class="fas fa-envelope"></i> Tus Mensajes</h2>
                     <button class="custom-swal-close">&times;</button>
                 </div>
                 <div class="custom-swal-content">
                     <div class="message-list">
                         <div class="message">
                             <div class="message-header">
-                                <span>Ana María</span>
-                                <span>Hoy, 10:30 AM</span>
+                                <div class="message-sender">
+                                    <div class="sender-avatar">A</div>
+                                    <span>Ana María</span>
+                                </div>
+                                <span class="message-time">Hoy, 10:30 AM</span>
                             </div>
                             <div class="message-content">
-                                ¡Hola! ¿Te gustaría ir al cine este fin de semana? Hay una nueva película que creo que te encantará.
+                                ¡Hola! ¿Te gustaría ir al cine este fin de semana? Hay una nueva película de ciencia ficción que creo que te encantará.
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-btn"><i class="fas fa-reply"></i> Responder</button>
+                                <button class="message-btn"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         </div>
                         
                         <div class="message">
                             <div class="message-header">
-                                <span>Carlos Rodríguez</span>
-                                <span>Ayer, 4:15 PM</span>
+                                <div class="message-sender">
+                                    <div class="sender-avatar">C</div>
+                                    <span>Carlos Rodríguez</span>
+                                </div>
+                                <span class="message-time">Ayer, 4:15 PM</span>
                             </div>
                             <div class="message-content">
-                                ¿Podrías enviarme los documentos para la reunión de mañana? ¡Gracias!
+                                ¿Podrías enviarme los documentos para la reunión de mañana? Los necesito con urgencia. ¡Gracias!
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-btn"><i class="fas fa-reply"></i> Responder</button>
+                                <button class="message-btn"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         </div>
                         
                         <div class="message">
                             <div class="message-header">
-                                <span>Laura García</span>
-                                <span>15 Oct, 9:20 AM</span>
+                                <div class="message-sender">
+                                    <div class="sender-avatar">L</div>
+                                    <span>Laura García</span>
+                                </div>
+                                <span class="message-time">15 Oct, 9:20 AM</span>
                             </div>
                             <div class="message-content">
-                                ¡Feliz cumpleaños! Espero que tengas un día maravilloso. Nos vemos en la fiesta.
+                                ¡Feliz cumpleaños! Espero que tengas un día maravilloso lleno de alegría y bendiciones. Nos vemos en la fiesta esta noche.
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-btn"><i class="fas fa-reply"></i> Responder</button>
+                                <button class="message-btn"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         </div>
                         
                         <div class="message">
                             <div class="message-header">
-                                <span>Miguel Ángel</span>
-                                <span>14 Oct, 7:45 PM</span>
+                                <div class="message-sender">
+                                    <div class="sender-avatar">M</div>
+                                    <span>Miguel Ángel</span>
+                                </div>
+                                <span class="message-time">14 Oct, 7:45 PM</span>
                             </div>
                             <div class="message-content">
-                                ¿Viste el partido de ayer? ¡Fue increíble! Tenemos que hablar de la jugada final.
+                                ¿Viste el partido de ayer? ¡Fue increíble! La jugada final fue algo que no se ve todos los días. Tenemos que hablar de ello.
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-btn"><i class="fas fa-reply"></i> Responder</button>
+                                <button class="message-btn"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         </div>
                         
                         <div class="message">
                             <div class="message-header">
-                                <span>Sofía Ramírez</span>
-                                <span>13 Oct, 3:20 PM</span>
+                                <div class="message-sender">
+                                    <div class="sender-avatar">S</div>
+                                    <span>Sofía Ramírez</span>
+                                </div>
+                                <span class="message-time">13 Oct, 3:20 PM</span>
                             </div>
                             <div class="message-content">
-                                Te envié el informe final. Por favor, revísalo y dime qué opinas.
+                                Te envié el informe final con todos los datos actualizados. Por favor, revísalo y dime qué opinas. Necesito tu feedback antes del viernes.
+                            </div>
+                            <div class="message-actions">
+                                <button class="message-btn"><i class="fas fa-reply"></i> Responder</button>
+                                <button class="message-btn"><i class="fas fa-trash"></i> Eliminar</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="custom-swal-actions">
-                    <button class="custom-swal-confirm">Cerrar</button>
+                    <button class="custom-swal-confirm"><i class="fas fa-times"></i> Cerrar</button>
                 </div>
             `;
             
             // Mostrar el SweetAlert personalizado
             Swal.fire({
                 html: content,
-                width: 600,
+                width: 700,
                 padding: 0,
                 background: 'transparent',
                 showConfirmButton: false,
