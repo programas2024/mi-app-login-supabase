@@ -1966,29 +1966,107 @@
         
        
        
+        /* Estilos para el SweetAlert personalizado */
+        .custom-swal-container {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .custom-swal-popup {
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        
+        .custom-swal-header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .custom-swal-title {
+            font-weight: 600;
+            font-size: 24px;
+            color: white;
+            margin: 0;
+        }
+        
+        .custom-swal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s ease;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        .custom-swal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .custom-swal-content {
+            padding: 0;
+        }
+        
         .message-list {
             text-align: left;
-            max-height: 300px;
+            max-height: 50vh;
             overflow-y: auto;
-            margin: 20px 0;
-            padding: 10px;
+            margin: 0;
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(75, 108, 183, 0.5) transparent;
+        }
+        
+        /* Barra de desplazamiento invisible pero funcional */
+        .message-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .message-list::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 3px;
+        }
+        
+        .message-list::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 108, 183, 0.5);
+            border-radius: 3px;
+        }
+        
+        .message-list::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(75, 108, 183, 0.7);
         }
         
         .message {
-            background: #f8f9fa;
+            background: white;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #ff6b6b;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #4b6cb7;
+            transition: transform 0.2s ease;
+        }
+        
+        .message:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .message-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
-            color: #6c757d;
+            color: #4b6cb7;
             font-size: 14px;
+            font-weight: 500;
         }
         
         .message-content {
@@ -1996,14 +2074,28 @@
             line-height: 1.5;
         }
         
-        .swal2-popup {
-            border-radius: 16px;
-            padding: 2rem;
+        .custom-swal-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
         }
         
-        .swal2-title {
-            font-size: 24px;
-            color: #343a40;
+        .custom-swal-confirm {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-swal-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
         }
         
         @media (max-width: 600px) {
@@ -2014,6 +2106,11 @@
             .sidebar-btn {
                 padding: 12px 15px;
                 font-size: 16px;
+            }
+            
+            .custom-swal-popup {
+                width: 95% !important;
+                margin: 0 10px;
             }
         }
         

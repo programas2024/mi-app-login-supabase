@@ -616,11 +616,18 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-// Función para mostrar los mensajes con SweetAlert
+// Función para mostrar los mensajes con SweetAlert personalizado
         function showMessages() {
-            Swal.fire({
-                title: 'Tus Mensajes',
-                html: `
+            // Crear el contenido HTML para el SweetAlert
+            const content = document.createElement('div');
+            content.className = 'custom-swal-container';
+            
+            content.innerHTML = `
+                <div class="custom-swal-header">
+                    <h2 class="custom-swal-title">Tus Mensajes</h2>
+                    <button class="custom-swal-close">&times;</button>
+                </div>
+                <div class="custom-swal-content">
                     <div class="message-list">
                         <div class="message">
                             <div class="message-header">
@@ -651,17 +658,56 @@ window.addEventListener('DOMContentLoaded', async () => {
                                 ¡Feliz cumpleaños! Espero que tengas un día maravilloso. Nos vemos en la fiesta.
                             </div>
                         </div>
+                        
+                        <div class="message">
+                            <div class="message-header">
+                                <span>Miguel Ángel</span>
+                                <span>14 Oct, 7:45 PM</span>
+                            </div>
+                            <div class="message-content">
+                                ¿Viste el partido de ayer? ¡Fue increíble! Tenemos que hablar de la jugada final.
+                            </div>
+                        </div>
+                        
+                        <div class="message">
+                            <div class="message-header">
+                                <span>Sofía Ramírez</span>
+                                <span>13 Oct, 3:20 PM</span>
+                            </div>
+                            <div class="message-content">
+                                Te envié el informe final. Por favor, revísalo y dime qué opinas.
+                            </div>
+                        </div>
                     </div>
-                `,
+                </div>
+                <div class="custom-swal-actions">
+                    <button class="custom-swal-confirm">Cerrar</button>
+                </div>
+            `;
+            
+            // Mostrar el SweetAlert personalizado
+            Swal.fire({
+                html: content,
                 width: 600,
-                padding: '2em',
-                background: '#fff',
-                color: '#343a40',
-                showConfirmButton: true,
-                confirmButtonText: 'Cerrar',
-                confirmButtonColor: '#ff6b6b',
+                padding: 0,
+                background: 'transparent',
+                showConfirmButton: false,
+                showCloseButton: false,
                 customClass: {
                     popup: 'custom-swal-popup'
+                },
+                didOpen: () => {
+                    // Agregar funcionalidad al botón de cerrar
+                    const closeBtn = content.querySelector('.custom-swal-close');
+                    const confirmBtn = content.querySelector('.custom-swal-confirm');
+                    
+                    closeBtn.addEventListener('click', () => {
+                        Swal.close();
+                    });
+                    
+                    confirmBtn.addEventListener('click', () => {
+                        Swal.close();
+                    });
                 }
             });
         }
