@@ -622,7 +622,6 @@
         </div>
     </div>
 
-  
     <script>
     // Configuración de Supabase
     const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
@@ -635,7 +634,6 @@
     let currentUser = null;
     let userSquad = null;
     let isSquadLeader = false;
-    let globalRanking = null;
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
@@ -667,8 +665,6 @@
             
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
-                // Calcular ranking global antes de renderizar
-                await calculateGlobalRanking();
                 renderSquadDetails();
             } else {
                 showError('No perteneces a ningún escuadrón o no eres el líder.');
@@ -710,59 +706,7 @@
         }
     }
     
-    // Calcular ranking global de todos los escuadrones
-    async function calculateGlobalRanking() {
-        try {
-            // Obtener todos los escuadrones ordenados por puntos
-            const { data: allSquads, error } = await supabase
-                .from('squads')
-                .select('id, total_points')
-                .order('total_points', { ascending: false });
-            
-            if (error) {
-                console.error('Error al obtener escuadrones:', error);
-                return;
-            }
-            
-            // Calcular ranking manualmente
-            let currentRank = 1;
-            let previousPoints = null;
-            let skipCount = 0;
-            
-            const rankedSquads = allSquads.map((squad, index) => {
-                // Si los puntos son diferentes al anterior, actualizar el ranking
-                if (previousPoints !== null && squad.total_points !== previousPoints) {
-                    currentRank += skipCount + 1;
-                    skipCount = 0;
-                } else if (previousPoints !== null) {
-                    skipCount++;
-                }
-                
-                previousPoints = squad.total_points;
-                
-                return {
-                    id: squad.id,
-                    rank: currentRank,
-                    points: squad.total_points
-                };
-            });
-            
-            globalRanking = rankedSquads;
-            console.log('Ranking global calculado:', globalRanking);
-            
-            // Encontrar el ranking del escuadrón actual
-            const userSquadRank = rankedSquads.find(squad => squad.id === userSquad.id);
-            if (userSquadRank) {
-                userSquad.global_rank = userSquadRank.rank;
-                console.log('Escuadrón actual en posición:', userSquadRank.rank);
-            }
-            
-        } catch (error) {
-            console.error('Error al calcular ranking global:', error);
-        }
-    }
-    
-  
+    // Mostrar detalles del escuadrón
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
         
@@ -773,10 +717,6 @@
             month: 'short',
             year: 'numeric'
         });
-        
-        // Determinar el ranking a mostrar
-        const displayRank = userSquad.global_rank || (globalRanking ? 
-            globalRanking.find(s => s.id === userSquad.id)?.rank : 'N/A');
         
         contentEl.innerHTML = `
             <!-- Columna izquierda -->
@@ -849,7 +789,7 @@
                             <div class="stat-icon ranking-icon">
                                 <i class="fas fa-trophy"></i>
                             </div>
-                            <div class="stat-number">#${displayRank}</div>
+                            <div class="stat-number">#${userSquad.global_rank || 'N/A'}</div>
                             <div class="stat-label">Ranking Global</div>
                         </div>
                     </div>
@@ -981,10 +921,7 @@
         addEventListeners();
     }
     
-   
-
-    
-   
+    // Cargar miembros del escuadrón - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
     async function loadSquadMembers() {
         try {
             // Obtener el perfil del líder - AHORA CON level y points
