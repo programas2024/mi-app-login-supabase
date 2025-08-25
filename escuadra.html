@@ -704,31 +704,39 @@
                 throw leaderError;
             }
             
-            // Buscar escuadrones donde el usuario es MIEMBRO (aceptó invitación)
-            const { data: memberSquads, error: memberError } = await supabase
-                .from('squad_members')
-                .select('squad_id, squads(*)')
+            // Buscar escuadrones donde el usuario es MIEMBRO (aceptó invitación en squad_requests)
+            const { data: memberRequests, error: memberError } = await supabase
+                .from('squad_requests')
+                .select('squad_id, status')
                 .eq('user_id', currentUser.id)
                 .eq('status', 'accepted');
             
             if (memberError) {
-                console.error('Error al verificar escuadrones de miembro:', memberError);
+                console.error('Error al verificar solicitudes de escuadrón:', memberError);
                 if (memberError.code === '42501' || memberError.message.includes('permission')) {
                     showRLSError();
                 }
                 throw memberError;
             }
             
-            // Combinar ambos resultados
-            const allSquads = [...leaderSquads];
-            
-            if (memberSquads && memberSquads.length > 0) {
-                memberSquads.forEach(member => {
-                    if (member.squads) {
-                        allSquads.push(member.squads);
-                    }
-                });
+            // Obtener detalles de los escuadrones donde el usuario es miembro
+            let memberSquads = [];
+            if (memberRequests && memberRequests.length > 0) {
+                const squadIds = memberRequests.map(req => req.squad_id);
+                const { data: squadsData, error: squadsError } = await supabase
+                    .from('squads')
+                    .select('*')
+                    .in('id', squadIds);
+                
+                if (squadsError) {
+                    console.error('Error al obtener detalles de escuadrones:', squadsError);
+                } else {
+                    memberSquads = squadsData || [];
+                }
             }
+            
+            // Combinar ambos resultados
+            const allSquads = [...(leaderSquads || []), ...memberSquads];
             
             console.log("Todos los escuadrones del usuario:", allSquads);
             
@@ -758,6 +766,8 @@
     // Mostrar lista de escuadrones para selección
     function displaySquadList(squads) {
         const squadList = document.getElementById('squad-list');
+        if (!squadList) return;
+        
         squadList.innerHTML = '';
         
         squads.forEach(squad => {
@@ -846,7 +856,7 @@
     }
     
     // Botón para mostrar instrucciones de RLS
-    document.getElementById('fix-rls-btn').addEventListener('click', function() {
+    document.getElementById('fix-rls-btn')?.addEventListener('click', function() {
         Swal.fire({
             title: 'Configurar Políticas RLS',
             html: `
@@ -870,14 +880,14 @@ FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can update own squads" ON squads
 FOR UPDATE USING (auth.uid() = leader_id);
 
--- Políticas para la tabla 'squad_members'
-CREATE POLICY "Users can view their squad memberships" ON squad_members
+-- Políticas para la tabla 'squad_requests'
+CREATE POLICY "Users can view their squad requests" ON squad_requests
 FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can view members of their squads" ON squad_members
+CREATE POLICY "Leaders can view requests to their squads" ON squad_requests
 FOR SELECT USING (EXISTS (
     SELECT 1 FROM squads 
-    WHERE squads.id = squad_members.squad_id 
+    WHERE squads.id = squad_requests.squad_id 
     AND squads.leader_id = auth.uid()
 ));
                     </pre>
@@ -890,37 +900,37 @@ FOR SELECT USING (EXISTS (
     });
     
     // Botón Volver
-    document.getElementById('back-btn').addEventListener('click', function() {
+    document.getElementById('back-btn')?.addEventListener('click', function() {
         window.location.href = 'dashboard.html';
     });
     
     // Botón Reintentar
-    document.getElementById('retry-btn').addEventListener('click', function() {
+    document.getElementById('retry-btn')?.addEventListener('click', function() {
         initializeApp();
     });
     
     // Botón Crear Nuevo desde mensaje vacío
-    document.getElementById('create-new-btn').addEventListener('click', function() {
+    document.getElementById('create-new-btn')?.addEventListener('click', function() {
         showCreateSquadContainer();
     });
     
     // Botón Buscar Escuadrones
-    document.getElementById('search-squads-btn').addEventListener('click', function() {
+    document.getElementById('search-squads-btn')?.addEventListener('click', function() {
         alert('Función de búsqueda de escuadrones en desarrollo');
     });
     
     // Botón Ver Más (en el header del escuadrón)
-    document.getElementById('view-more-btn').addEventListener('click', function() {
+    document.getElementById('view-more-btn')?.addEventListener('click', function() {
         window.location.href = 'equipo.html';
     });
     
     // Botón Ver Más (en la parte inferior)
-    document.getElementById('view-more-button').addEventListener('click', function() {
+    document.getElementById('view-more-button')?.addEventListener('click', function() {
         window.location.href = 'equipo.html';
     });
     
     // Crear escuadrón
-    document.getElementById('create-squad-btn').addEventListener('click', async function() {
+    document.getElementById('create-squad-btn')?.addEventListener('click', async function() {
         const name = document.getElementById('squad-name').value;
         const members = document.getElementById('squad-members').value;
         const mission = document.getElementById('squad-mission').value;
@@ -973,19 +983,18 @@ FOR SELECT USING (EXISTS (
                 throw new Error('No se pudo crear el escuadrón');
             }
             
-            // 3. Agregar al líder como miembro del escuadrón
-            const { error: memberError } = await supabase
-                .from('squad_members')
+            // 3. Agregar al líder como miembro del escuadrón en squad_requests
+            const { error: requestError } = await supabase
+                .from('squad_requests')
                 .insert([{
                     squad_id: newSquad.id,
                     user_id: currentUser.id,
                     status: 'accepted',
-                    joined_at: new Date().toISOString(),
-                    role: 'leader'
+                    requested_at: new Date().toISOString()
                 }]);
             
-            if (memberError) {
-                console.error('Error al agregar líder como miembro:', memberError);
+            if (requestError) {
+                console.error('Error al agregar líder como miembro:', requestError);
                 // No lanzamos error aquí porque el escuadrón ya se creó
             }
             
@@ -1031,7 +1040,7 @@ FOR SELECT USING (EXISTS (
     });
     
     // Botón Cancelar
-    document.getElementById('cancel-btn').addEventListener('click', function() {
+    document.getElementById('cancel-btn')?.addEventListener('click', function() {
         document.getElementById('squad-name').value = '';
         document.getElementById('squad-members').value = '1';
         document.getElementById('squad-mission').selectedIndex = 0;
