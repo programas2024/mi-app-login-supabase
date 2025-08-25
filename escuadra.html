@@ -17,7 +17,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background: linear-gradient(135deg, #1a2a6c, #1f46b2, #2dc2fd);
             min-height: 100vh;
             padding: 20px;
             color: white;
@@ -218,7 +218,7 @@
         }
 
         .view-more {
-            display: none;
+            display: flex;
             justify-content: center;
             margin-top: 20px;
         }
@@ -458,7 +458,7 @@
                     </div>
                 </div>
 
-                <div class="view-more" id="view-more-container">
+                <div class="view-more">
                     <button class="btn" id="view-more-button">
                         <i class="fas fa-chevron-down"></i> Ver todos los miembros
                     </button>
@@ -855,6 +855,16 @@ FOR UPDATE USING (auth.uid() = leader_id);
             alert('Función de búsqueda de escuadrones en desarrollo');
         });
         
+        // Botón Ver Más (en el header del escuadrón)
+        document.getElementById('view-more-btn').addEventListener('click', function() {
+            window.location.href = 'equipo.html';
+        });
+        
+        // Botón Ver Más (en la parte inferior)
+        document.getElementById('view-more-button').addEventListener('click', function() {
+            window.location.href = 'equipo.html';
+        });
+        
         // Crear escuadrón
         document.getElementById('create-squad-btn').addEventListener('click', async function() {
             const name = document.getElementById('squad-name').value;
@@ -956,11 +966,6 @@ FOR UPDATE USING (auth.uid() = leader_id);
             document.getElementById('squad-members').value = '1';
             document.getElementById('squad-mission').selectedIndex = 0;
             showEmptySquadMessage();
-        });
-        
-        // Botón Ver Más
-        document.getElementById('view-more-button').addEventListener('click', function() {
-            window.location.href = 'equipo.html';
         });
     </script>
 </body>
