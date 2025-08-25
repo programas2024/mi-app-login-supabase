@@ -846,12 +846,169 @@ async function loadSquadMissions() {
         }
 
         // Verificar progreso de misiones con el método simple
-        console.log('🔍 Verificando progreso de misiones (simple)...');
-        await checkMissionsProgressSimple();
+        console.log('🔍 Verificando progreso de misiones...');
+        await checkMissionsProgress();
         
     } catch (error) {
         console.error('💀 Error inesperado al cargar misiones:', error);
         squadMissions = [];
+    }
+}
+
+// Verificación de misiones
+async function checkMissionsProgress() {
+    try {
+        console.log('🔍 Verificación de misiones...');
+        
+        const activeMissions = squadMissions.filter(mission => mission.status === 'active');
+        const userIsInSquad = squadMembers.some(member => member.id === currentUser.id);
+        
+        console.log(`Misiones activas: ${activeMissions.length}, Usuario en escuadrón: ${userIsInSquad}`);
+        
+        if (activeMissions.length > 0 && userIsInSquad) {
+            console.log(`✅ Verificando ${activeMissions.length} misión(es) activas`);
+            
+            for (const mission of activeMissions) {
+                // Verificar tipo de misión
+                if (isGoldMission(mission)) {
+                    await checkGoldMission(mission);
+                } 
+                else if (isDiamondMission(mission)) {
+                    await checkDiamondMission(mission);
+                }
+                else {
+                    await completeMission(mission);
+                }
+            }
+        } else {
+            console.log('ℹ️ No hay misiones para completar o usuario no está en el escuadrón');
+        }
+        
+    } catch (error) {
+        console.error('Error en verificación de misiones:', error);
+    }
+}
+
+// Detectar misión de oro
+function isGoldMission(mission) {
+    return mission.title.includes('Oro') || mission.title.includes('oro') || 
+           mission.description.includes('oro') || mission.description.includes('Oro') ||
+           mission.title.includes('Gold') || mission.title.includes('gold');
+}
+
+// Detectar misión de diamantes
+function isDiamondMission(mission) {
+    return mission.title.includes('Diamante') || mission.title.includes('diamante') || 
+           mission.title.includes('Diamond') || mission.title.includes('diamond') ||
+           mission.description.includes('diamante') || mission.description.includes('Diamante') ||
+           mission.description.includes('diamond') || mission.description.includes('Diamond');
+}
+
+// Función para verificar misiones de ORO
+async function checkGoldMission(mission) {
+    try {
+        console.log(`💰 Verificando misión de ORO: ${mission.title}`);
+        
+        const memberIds = squadMembers.map(member => member.id);
+        const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('id, username, gold')
+            .in('id', memberIds);
+        
+        if (error) {
+            console.error('❌ Error al obtener gold de miembros:', error);
+            return;
+        }
+        
+        const totalGold = profiles.reduce((sum, profile) => sum + (profile.gold || 0), 0);
+        console.log(`💰 Oro total del escuadrón: ${formatNumber(totalGold)}`);
+        
+        // Mostrar detalle por miembro
+        profiles.forEach(profile => {
+            console.log(`   👤 ${profile.username}: ${formatNumber(profile.gold || 0)} oro`);
+        });
+        
+        // Actualizar progreso
+        await updateMissionProgress(mission.id, totalGold);
+        
+        // Verificar si se completó
+        if (totalGold >= mission.goal) {
+            console.log(`🎯 ¡Misión de ORO completada! ${formatNumber(totalGold)}/${formatNumber(mission.goal)}`);
+            await completeMission(mission);
+        } else {
+            console.log(`📊 Progreso de ORO: ${formatNumber(totalGold)}/${formatNumber(mission.goal)}`);
+            mission.progress = totalGold;
+            renderMissionsSection();
+        }
+        
+    } catch (error) {
+        console.error('💀 Error en misión de ORO:', error);
+    }
+}
+
+// Función para verificar misiones de DIAMANTES
+async function checkDiamondMission(mission) {
+    try {
+        console.log(`💎 Verificando misión de DIAMANTES: ${mission.title}`);
+        
+        const memberIds = squadMembers.map(member => member.id);
+        const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('id, username, diamonds')
+            .in('id', memberIds);
+        
+        if (error) {
+            console.error('❌ Error al obtener diamantes de miembros:', error);
+            return;
+        }
+        
+        const totalDiamonds = profiles.reduce((sum, profile) => sum + (profile.diamonds || 0), 0);
+        console.log(`💎 Diamantes total del escuadrón: ${formatNumber(totalDiamonds)}`);
+        
+        // Mostrar detalle por miembro
+        profiles.forEach(profile => {
+            console.log(`   👤 ${profile.username}: ${formatNumber(profile.diamonds || 0)} diamantes`);
+        });
+        
+        // Actualizar progreso
+        await updateMissionProgress(mission.id, totalDiamonds);
+        
+        // Verificar si se completó
+        if (totalDiamonds >= mission.goal) {
+            console.log(`🎯 ¡Misión de DIAMANTES completada! ${formatNumber(totalDiamonds)}/${formatNumber(mission.goal)}`);
+            await completeMission(mission);
+        } else {
+            console.log(`📊 Progreso de DIAMANTES: ${formatNumber(totalDiamonds)}/${formatNumber(mission.goal)}`);
+            mission.progress = totalDiamonds;
+            renderMissionsSection();
+        }
+        
+    } catch (error) {
+        console.error('💀 Error en misión de DIAMANTES:', error);
+    }
+}
+
+// Función para formatear números grandes
+function formatNumber(num) {
+    if (num >= 1000000000) return `${(num / 1000000000).toFixed(1)}B`;
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toLocaleString();
+}
+
+// Actualizar progreso de misión
+async function updateMissionProgress(missionId, progress) {
+    try {
+        const { error } = await supabase
+            .from('squad_missions')
+            .update({ progress: progress })
+            .eq('id', missionId);
+            
+        if (error) {
+            console.error('❌ Error al actualizar progreso:', error);
+        }
+    } catch (error) {
+        console.error('💀 Error inesperado al actualizar progreso:', error);
     }
 }
 
@@ -865,9 +1022,9 @@ async function createDefaultMission() {
             .insert({
                 squad_id: userSquad.id,
                 title: 'Primera Sesión de Juego',
-                description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
+                description: 'Inicia sesión en el juego para ganar puntos',
                 goal: 1,
-                progress: 0,
+                progress: 1, // Ya inició sesión
                 reward_points: 10,
                 status: 'active',
                 created_by: currentUser.id
@@ -876,16 +1033,15 @@ async function createDefaultMission() {
             .single();
 
         if (error) {
-            console.error('Error detallado al crear misión:', error);
-            
-            // Crear objeto de misión localmente aunque falle en la BD
+            console.error('Error al crear misión por defecto:', error);
+            // Crear misión temporal
             squadMissions = [{
                 id: 'temp-mission',
                 squad_id: userSquad.id,
                 title: 'Primera Sesión de Juego',
-                description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
+                description: 'Inicia sesión en el juego para ganar puntos',
                 goal: 1,
-                progress: 0,
+                progress: 1,
                 reward_points: 10,
                 status: 'active',
                 created_by: currentUser.id,
@@ -897,109 +1053,17 @@ async function createDefaultMission() {
         squadMissions = [mission];
         console.log('Misión por defecto creada:', mission);
         
+        // Completar automáticamente la misión de inicio de sesión
+        await completeMission(mission);
+        
     } catch (error) {
         console.error('Error inesperado al crear misión:', error);
-        // Crear objeto de misión localmente
-        squadMissions = [{
-            id: 'temp-mission',
-            squad_id: userSquad.id,
-            title: 'Primera Sesión de Juego',
-            description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
-            goal: 1,
-            progress: 0,
-            reward_points: 10,
-            status: 'active',
-            created_by: currentUser.id,
-            created_at: new Date().toISOString()
-        }];
-    }
-}
-
-// Verificación ultra-simple de misiones
-async function checkMissionsProgressSimple() {
-    try {
-        console.log('🔍 Verificación ultra-simple de misiones...');
-        
-        // 1. Primero verificar misiones normales
-        const activeMissions = squadMissions.filter(mission => mission.status === 'active');
-        const userIsInSquad = squadMembers.some(member => member.id === currentUser.id);
-        
-        console.log(`Misiones activas: ${activeMissions.length}, Usuario en escuadrón: ${userIsInSquad}`);
-        
-        if (activeMissions.length > 0 && userIsInSquad) {
-            console.log(`✅ Completando ${activeMissions.length} misión(es) activas`);
-            
-            for (const mission of activeMissions) {
-                // Si es misión de oro, usar verificación especial
-                if (mission.title.includes('Oro') || mission.title.includes('oro') || 
-                    mission.description.includes('oro') || mission.description.includes('Oro')) {
-                    await checkGoldMission(mission);
-                } else {
-                    await completeMission(mission);
-                }
-            }
-        } else {
-            console.log('ℹ️ No hay misiones para completar o usuario no está en el escuadrón');
-        }
-        
-    } catch (error) {
-        console.error('Error en verificación simple:', error);
-    }
-}
-
-// Función ESPECIAL para verificar misiones de oro
-async function checkGoldMission(mission) {
-    try {
-        console.log(`💰 Verificando misión de oro: ${mission.title}`);
-        
-        // 1. Obtener todos los IDs de los miembros del escuadrón
-        const memberIds = squadMembers.map(member => member.id);
-        
-        // 2. Obtener el gold de cada miembro desde la tabla profiles
-        const { data: profiles, error } = await supabase
-            .from('profiles')
-            .select('id, gold')
-            .in('id', memberIds);
-        
-        if (error) {
-            console.error('❌ Error al obtener gold de miembros:', error);
-            return;
-        }
-        
-        // 3. Sumar todo el gold del escuadrón
-        const totalGold = profiles.reduce((sum, profile) => sum + (profile.gold || 0), 0);
-        console.log(`💰 Oro total del escuadrón: ${totalGold}`);
-        
-        // 4. Actualizar el progreso de la misión
-        const { error: updateError } = await supabase
-            .from('squad_missions')
-            .update({ progress: totalGold })
-            .eq('id', mission.id);
-        
-        if (updateError) {
-            console.error('❌ Error al actualizar progreso:', updateError);
-        }
-        
-        // 5. Verificar si se completó la misión
-        if (totalGold >= mission.goal) {
-            console.log(`🎯 ¡Misión de oro completada! ${totalGold}/${mission.goal}`);
-            await completeMission(mission);
-        } else {
-            console.log(`📊 Progreso de oro: ${totalGold}/${mission.goal}`);
-            // Actualizar la UI para mostrar el progreso
-            mission.progress = totalGold;
-            renderMissionsSection();
-        }
-        
-    } catch (error) {
-        console.error('💀 Error inesperado en misión de oro:', error);
     }
 }
 
 // Completar una misión y otorgar recompensa
 async function completeMission(mission) {
     try {
-        // Si ya está completada, no hacer nada
         if (mission.status === 'completed') {
             console.log('Misión ya completada anteriormente');
             return;
@@ -1007,7 +1071,7 @@ async function completeMission(mission) {
 
         console.log('Completando misión:', mission.title);
         
-        // Si es una misión temporal, solo actualizar UI
+        // Si es una misión temporal
         if (mission.id && mission.id === 'temp-mission') {
             mission.status = 'completed';
             mission.progress = mission.goal;
@@ -1019,7 +1083,7 @@ async function completeMission(mission) {
             return;
         }
         
-        // Actualizar estado de la misión a completada en la base de datos
+        // Actualizar en base de datos
         const { error: updateError } = await supabase
             .from('squad_missions')
             .update({
@@ -1047,24 +1111,118 @@ async function completeMission(mission) {
             return;
         }
 
-        // Actualizar el estado local
+        // Actualizar estado local
         userSquad.total_points = newTotalPoints;
         mission.status = 'completed';
         mission.progress = mission.goal;
 
         console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
         
-        // Mostrar notificación de éxito
+        // Mostrar notificación
         showMissionCompleteNotification(mission);
         
-        // Actualizar la UI
+        // Actualizar UI
         renderMissionsSection();
 
-        // Actualizar el ranking global después de completar misión
+        // Actualizar ranking global
         await updateGlobalRank();
         
     } catch (error) {
         console.error('Error al completar misión:', error);
+    }
+}
+
+// Función para crear misión de 10 MILLONES de ORO
+async function create10MGoldMission() {
+    try {
+        const { data: mission, error } = await supabase
+            .from('squad_missions')
+            .insert({
+                squad_id: userSquad.id,
+                title: '🏆 ¡10 MILLONES DE ORO! 🏆',
+                description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
+                goal: 10000000,
+                progress: 0,
+                reward_points: 1000,
+                status: 'active',
+                created_by: currentUser.id,
+                is_epic: true
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        
+        squadMissions.unshift(mission);
+        renderMissionsSection();
+        
+        Swal.fire({
+            title: '¡MISIÓN ÉPICA CREADA!',
+            html: `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; color: #ffd700; margin-bottom: 16px;">
+                        💰🔥
+                    </div>
+                    <p><strong>¡10 MILLONES DE ORO!</strong></p>
+                    <p>¿Podrá tu escuadrón alcanzar esta locura?</p>
+                    <p style="color: #ffd700;">Recompensa: +1000 puntos</p>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonColor: '#ffd700',
+            background: '#1e3a47',
+            color: 'white'
+        });
+        
+    } catch (error) {
+        console.error('Error al crear misión de 10M oro:', error);
+    }
+}
+
+// Función para crear misión de 888K DIAMANTES
+async function create888KDiamondsMission() {
+    try {
+        const { data: mission, error } = await supabase
+            .from('squad_missions')
+            .insert({
+                squad_id: userSquad.id,
+                title: '💎 ¡888K DIAMANTES! 💎',
+                description: '¡El escuadrón debe reunir 888,000 diamantes entre todos!',
+                goal: 888000,
+                progress: 0,
+                reward_points: 888,
+                status: 'active',
+                created_by: currentUser.id,
+                is_epic: true
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+        
+        squadMissions.unshift(mission);
+        renderMissionsSection();
+        
+        Swal.fire({
+            title: '¡MISIÓN DE DIAMANTES CREADA!',
+            html: `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; color: #b9f2ff; margin-bottom: 16px;">
+                        💎✨
+                    </div>
+                    <p><strong>¡888K DIAMANTES!</strong></p>
+                    <p>El escuadrón debe reunir 888,000 diamantes</p>
+                    <p style="color: #b9f2ff;">Recompensa: +888 puntos</p>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonColor: '#b9f2ff',
+            background: '#1e3a47',
+            color: 'white'
+        });
+        
+    } catch (error) {
+        console.error('Error al crear misión de diamantes:', error);
     }
 }
 
@@ -1073,7 +1231,6 @@ async function updateGlobalRank() {
     try {
         console.log('🔄 Actualizando ranking global...');
         
-        // Obtener todos los escuadrones ordenados por puntos (descendente)
         const { data: allSquads, error } = await supabase
             .from('squads')
             .select('id, total_points')
@@ -1084,7 +1241,6 @@ async function updateGlobalRank() {
             return;
         }
         
-        // Actualizar el ranking de cada escuadrón
         for (let i = 0; i < allSquads.length; i++) {
             const squad = allSquads[i];
             const { error: updateError } = await supabase
@@ -1106,7 +1262,6 @@ async function updateGlobalRank() {
 
 // Mostrar notificación de misión completada
 function showMissionCompleteNotification(mission) {
-    // Usar Toast de SweetAlert2 para una notificación no intrusiva
     Swal.fire({
         title: '¡Misión Completada!',
         html: `
