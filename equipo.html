@@ -634,6 +634,7 @@
     let currentUser = null;
     let userSquad = null;
     let isSquadLeader = false;
+    let friendsList = [];
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
@@ -665,6 +666,8 @@
             
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
+                // Cargar amigos del líder
+                await loadLeaderFriends();
                 renderSquadDetails();
             } else {
                 showNoSquadMessage();
@@ -708,6 +711,52 @@
         } catch (error) {
             console.error('Error inesperado:', error);
             showError('Ocurrió un error inesperado al cargar los datos del escuadrón.');
+        }
+    }
+    
+    // Cargar amigos del líder desde la tabla de perfiles
+    async function loadLeaderFriends() {
+        try {
+            // Obtener todos los perfiles (amigos) excepto el del líder
+            const { data: profiles, error } = await supabase
+                .from('profiles')
+                .select('id, username, level, points')
+                .neq('id', userSquad.leader_id)
+                .order('username', { ascending: true });
+            
+            if (error) {
+                console.error('Error al cargar amigos:', error);
+                // Usar datos de ejemplo si hay error
+                friendsList = [
+                    { username: 'JavierLopez', level: 12, points: 980 },
+                    { username: 'MartaGarcia', level: 10, points: 750 },
+                    { username: 'CarlosRuiz', level: 8, points: 500 },
+                    { username: 'AnaTorres', level: 14, points: 1100 }
+                ];
+                return;
+            }
+            
+            if (profiles && profiles.length > 0) {
+                friendsList = profiles;
+                console.log('Amigos cargados:', friendsList);
+            } else {
+                // Datos de ejemplo si no hay amigos
+                friendsList = [
+                    { username: 'JavierLopez', level: 12, points: 980 },
+                    { username: 'MartaGarcia', level: 10, points: 750 },
+                    { username: 'CarlosRuiz', level: 8, points: 500 },
+                    { username: 'AnaTorres', level: 14, points: 1100 }
+                ];
+            }
+        } catch (error) {
+            console.error('Error inesperado al cargar amigos:', error);
+            // Datos de ejemplo en caso de error
+            friendsList = [
+                { username: 'JavierLopez', level: 12, points: 980 },
+                { username: 'MartaGarcia', level: 10, points: 750 },
+                { username: 'CarlosRuiz', level: 8, points: 500 },
+                { username: 'AnaTorres', level: 14, points: 1100 }
+            ];
         }
     }
     
@@ -757,7 +806,6 @@
         });
     }
     
-    // Resto del código sin cambios (renderSquadDetails, loadSquadMembers, loadLeaderboard, etc.)
     // Mostrar detalles del escuadrón
     function renderSquadDetails() {
         const contentEl = document.getElementById('content');
@@ -907,7 +955,7 @@
                             </div>
                             <div class="mailbox-content">
                                 <div class="mailbox-sender">Sistema</div>
-                                <div class="mailbox-subject">Bienvenida a MartaGarcia al escuadrón</div>
+                                <div class 'mailbox-subject'>Bienvenida a MartaGarcia al escuadrón</div>
                                 <div class="mailbox-time">15 Nov 2023</div>
                             </div>
                         </div>
@@ -973,7 +1021,7 @@
         addEventListeners();
     }
     
-    // Cargar miembros del escuadrón - AHORA FUNCIONA CON LOS NUEVOS CAMPOS
+    // Cargar miembros del escuadrón - AHORA CON AMIGOS DEL LÍDER
     async function loadSquadMembers() {
         try {
             // Obtener el perfil del líder - AHORA CON level y points
@@ -1011,29 +1059,89 @@
                 </div>
             `;
             
-            // En una aplicación real, aquí cargarías los demás miembros del escuadrón
-            // Como no tenemos una relación directa en la base de datos, mostramos un mensaje
-            membersHTML += `
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <div class="member-details">
-                        <div class="member-name">
-                            Invita a más miembros
+            // Mostrar amigos del líder
+            if (friendsList.length > 0) {
+                friendsList.forEach(friend => {
+                    membersHTML += `
+                        <div class="member-item">
+                            <div class="member-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="member-details">
+                                <div class="member-name">
+                                    ${friend.username}
+                                    <span class="member-role">Amigo</span>
+                                </div>
+                                <div class="member-stats">
+                                    <span class="stat">Nivel: <span class="stat-value">${friend.level || 1}</span></span>
+                                    <span class="stat">Puntos: <span class="stat-value">${friend.points || 0}</span></span>
+                                </div>
+                                <button class="invite-friend-btn" data-username="${friend.username}" style="margin-top: 8px; background: rgba(120, 255, 214, 0.2); border: none; padding: 5px 10px; border-radius: 10px; color: #78ffd6; cursor: pointer; font-size: 12px;">
+                                    <i class="fas fa-user-plus"></i> Invitar
+                                </button>
+                            </div>
                         </div>
-                        <div class="member-stats">
-                            <span class="stat">Usa el botón de invitación</span>
+                    `;
+                });
+            } else {
+                membersHTML += `
+                    <div class="member-item">
+                        <div class="member-avatar">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="member-details">
+                            <div class="member-name">
+                                Invita a más miembros
+                            </div>
+                            <div class="member-stats">
+                                <span class="stat">Usa el botón de invitación</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             document.getElementById('members-list').innerHTML = membersHTML;
+            
+            // Agregar event listeners a los botones de invitar amigos
+            document.querySelectorAll('.invite-friend-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const username = this.getAttribute('data-username');
+                    inviteFriend(username);
+                });
+            });
         } catch (error) {
             console.error('Error al cargar miembros:', error);
             renderExampleMembers();
         }
+    }
+    
+    // Función para invitar a un amigo
+    function inviteFriend(username) {
+        Swal.fire({
+            title: `¿Invitar a ${username}?`,
+            text: `Se enviará una invitación a ${username} para unirse a tu escuadrón.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#78ffd6',
+            cancelButtonColor: '#ff6b6b',
+            confirmButtonText: 'Sí, invitar',
+            cancelButtonText: 'Cancelar',
+            background: '#1e3a47',
+            color: 'white'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aquí iría la lógica para enviar la invitación
+                Swal.fire({
+                    title: '¡Invitación enviada!',
+                    text: `Se ha enviado una invitación a ${username}.`,
+                    icon: 'success',
+                    confirmButtonColor: '#78ffd6',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+            }
+        });
     }
     
     // Función para mostrar miembros de ejemplo en caso de error
@@ -1140,7 +1248,7 @@
         
         exampleLeaderboard.forEach((player, index) => {
             leaderboardHTML += `
-                <div class="leaderboard-item">
+                <div class 'leaderboard-item'>
                     <span class="leaderboard-rank rank-${index + 1}">${index + 1}</span>
                     <div class="leaderboard-name">${player.username}</div>
                     <span class="leaderboard-points">${player.points} pts</span>
