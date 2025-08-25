@@ -615,8 +615,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
-/ // Función para mostrar los mensajes con SweetAlert personalizado
+ // Función para mostrar los mensajes con SweetAlert personalizado
         function showMessages() {
             // Crear el contenido HTML para el SweetAlert
             const content = document.createElement('div');
