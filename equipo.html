@@ -633,7 +633,9 @@
     // Estado de la aplicación
     let currentUser = null;
     let userSquad = null;
+    let userSquadRequest = null;
     let isSquadLeader = false;
+    let isSquadMember = false;
     let friendsList = [];
     let squadMembers = [];
     let squadNotifications = [];
@@ -663,8 +665,8 @@
             currentUser = session.user;
             console.log('Usuario actual:', currentUser);
             
-            // Obtener el escuadrón del usuario
-            await loadUserSquad();
+            // Obtener el escuadrón del usuario (como líder o como miembro)
+            await loadUserSquadInfo();
             
             // Si el usuario tiene un escuadrón, cargar los datos
             if (userSquad) {
@@ -680,29 +682,54 @@
         }
     });
     
-    // Cargar el escuadrón del usuario
-    async function loadUserSquad() {
+    // Cargar información del escuadrón del usuario (como líder o como miembro)
+    async function loadUserSquadInfo() {
         try {
-            // Buscar escuadrones donde el usuario sea el líder
-            const { data: squad, error: squadError } = await supabase
+            // Primero buscar si el usuario es líder de algún escuadrón
+            const { data: leaderSquad, error: leaderError } = await supabase
                 .from('squads')
                 .select('*')
                 .eq('leader_id', currentUser.id)
                 .maybeSingle();
             
-            if (squadError) {
-                console.error('Error al obtener el escuadrón:', squadError);
+            if (leaderError) {
+                console.error('Error al obtener el escuadrón del líder:', leaderError);
+            }
+            
+            if (leaderSquad) {
+                userSquad = leaderSquad;
+                isSquadLeader = true;
+                isSquadMember = true;
+                console.log('Usuario es líder del escuadrón:', userSquad);
                 return;
             }
             
-            if (!squad) {
-                console.log('El usuario no es líder de ningún escuadrón');
+            // Si no es líder, buscar si es miembro de algún escuadrón
+            const { data: memberRequest, error: memberError } = await supabase
+                .from('squad_requests')
+                .select(`
+                    squad_id,
+                    squads(*)
+                `)
+                .eq('user_id', currentUser.id)
+                .eq('status', 'accepted')
+                .maybeSingle();
+            
+            if (memberError) {
+                console.error('Error al obtener información de miembro:', memberError);
                 return;
             }
             
-            userSquad = squad;
-            isSquadLeader = true;
-            console.log('Escuadrón cargado:', userSquad);
+            if (memberRequest && memberRequest.squads) {
+                userSquad = memberRequest.squads;
+                userSquadRequest = memberRequest;
+                isSquadMember = true;
+                console.log('Usuario es miembro del escuadrón:', userSquad);
+                return;
+            }
+            
+            console.log('El usuario no pertenece a ningún escuadrón');
+            
         } catch (error) {
             console.error('Error inesperado:', error);
         }
@@ -748,10 +775,10 @@
                 return;
             }
             
-            // Agregar miembros al array
+            // Agregar miembros al array (excluyendo al líder)
             if (members && members.length > 0) {
                 members.forEach(member => {
-                    if (member.profiles) {
+                    if (member.profiles && member.profiles.id !== userSquad.leader_id) {
                         squadMembers.push({
                             id: member.profiles.id,
                             username: member.profiles.username,
@@ -796,8 +823,8 @@
         }
     }
     
-    // Cargar amigos del líder
-    async function loadLeaderFriends() {
+    // Cargar amigos del usuario actual
+    async function loadUserFriends() {
         try {
             // Intentar con la estructura actual de la tabla friends
             const { data: userFriends, error: userError } = await supabase
@@ -851,7 +878,7 @@
                         <i class="fas fa-users-slash"></i>
                     </div>
                     <h2>No tienes un escuadrón</h2>
-                    <p>Actualmente no eres el líder de ningún escuadrón. Puedes unirte a uno existente o crear uno nuevo.</p>
+                    <p>Actualmente no perteneces a ningún escuadrón. Puedes unirte a uno existente o crear uno nuevo.</p>
                     
                     <div class="no-squad-actions">
                         <button class="action-btn primary" id="create-squad-btn">
@@ -1002,11 +1029,11 @@
                 </div>
                 
                 <!-- Acciones -->
-                ${isSquadLeader ? `
                 <div class="container">
                     <h3 class="section-title"><i class="fas fa-cog"></i> Acciones</h3>
                     
                     <div class="actions-grid">
+                        ${isSquadLeader ? `
                         <button class="action-btn" id="edit-squad-btn">
                             <div class="action-icon action-edit">
                                 <i class="fas fa-edit"></i>
@@ -1027,16 +1054,16 @@
                             </div>
                             Nueva Misión
                         </button>
+                        ` : ''}
                         
                         <button class="action-btn" id="leave-squad-btn">
                             <div class="action-icon action-leave">
                                 <i class="fas fa-sign-out-alt"></i>
                             </div>
-                            Abandonar Escuadrón
+                            ${isSquadLeader ? 'Disolver Escuadrón' : 'Abandonar Escuadrón'}
                         </button>
                     </div>
                 </div>
-                ` : ''}
             </div>
         `;
         
@@ -1070,8 +1097,11 @@
                 joinDateInfo = `<div class="member-joined">Se unió: ${formattedJoinDate}</div>`;
             }
             
+            // Verificar si es el usuario actual
+            const isCurrentUser = member.id === currentUser.id;
+            
             membersHTML += `
-                <div class="member-item">
+                <div class="member-item ${isCurrentUser ? 'current-user' : ''}">
                     <div class="member-avatar ${member.is_leader ? 'leader-avatar' : ''}">
                         ${member.is_leader ? '<i class="fas fa-crown"></i>' : '<i class="fas fa-user"></i>'}
                     </div>
@@ -1079,6 +1109,7 @@
                         <div class="member-name">
                             ${member.username || 'Miembro'}
                             ${member.is_leader ? '<span class="member-role">Líder</span>' : ''}
+                            ${isCurrentUser ? '<span class="member-role">Tú</span>' : ''}
                         </div>
                         <div class="member-stats">
                             <span class="stat">Nivel: <span class="stat-value">${member.level || 1}</span></span>
@@ -1090,7 +1121,7 @@
             `;
         });
         
-        // Si hay espacio para más miembros, mostrar opción para invitar
+        // Si hay espacio para más miembros y es el líder, mostrar opción para invitar
         if (squadMembers.length < (userSquad.max_members || 10) && isSquadLeader) {
             membersHTML += `
                 <div class="member-item invite-member-item" id="invite-member-btn">
@@ -1130,13 +1161,15 @@
         
         sortedMembers.forEach((member, index) => {
             const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+            const isCurrentUser = member.id === currentUser.id;
             
             leaderboardHTML += `
-                <div class="leaderboard-item">
+                <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
                     <span class="leaderboard-rank ${rankClass}">${index + 1}</span>
                     <div class="leaderboard-name">
                         ${member.username || 'Miembro'}
                         ${member.is_leader ? '<span class="leader-flag">(Líder)</span>' : ''}
+                        ${isCurrentUser ? '<span class="current-user-flag">(Tú)</span>' : ''}
                     </div>
                     <span class="leaderboard-points">${member.points || 0} pts</span>
                 </div>
@@ -1166,7 +1199,7 @@
                 </div>
             </div>
             
-            <div class 'mission-card'>
+            <div class="mission-card">
                 <div class="mission-header">
                     <div class="mission-title">Reclutamiento</div>
                     <span class="mission-status status-progress">En Progreso</span>
@@ -1249,7 +1282,7 @@
     // Función para mostrar el modal de invitación
     async function showInviteFriendsModal() {
         // Cargar amigos antes de mostrar el modal
-        const friends = await loadLeaderFriends();
+        const friends = await loadUserFriends();
         
         if (friends.length === 0) {
             Swal.fire({
@@ -1454,6 +1487,115 @@
         }
     }
     
+    // Función para abandonar el escuadrón
+    async function leaveSquad() {
+        try {
+            if (isSquadLeader) {
+                // Si es el líder, disolver el escuadrón
+                const result = await Swal.fire({
+                    title: '¿Disolver escuadrón?',
+                    text: 'Como líder, esta acción eliminará permanentemente el escuadrón y todos los miembros serán expulsados. ¿Estás seguro?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#78ffd6',
+                    confirmButtonText: 'Sí, disolver',
+                    cancelButtonText: 'Cancelar',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                
+                if (result.isConfirmed) {
+                    // Eliminar todas las solicitudes relacionadas con el escuadrón
+                    const { error: deleteRequestsError } = await supabase
+                        .from('squad_requests')
+                        .delete()
+                        .eq('squad_id', userSquad.id);
+                    
+                    if (deleteRequestsError) {
+                        console.error('Error al eliminar solicitudes:', deleteRequestsError);
+                        throw deleteRequestsError;
+                    }
+                    
+                    // Eliminar el escuadrón
+                    const { error: deleteSquadError } = await supabase
+                        .from('squads')
+                        .delete()
+                        .eq('id', userSquad.id);
+                    
+                    if (deleteSquadError) {
+                        console.error('Error al eliminar escuadrón:', deleteSquadError);
+                        throw deleteSquadError;
+                    }
+                    
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        title: 'Escuadrón disuelto',
+                        text: 'El escuadrón ha sido eliminado exitosamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#78ffd6',
+                        background: '#1e3a47',
+                        color: 'white'
+                    }).then(() => {
+                        // Recargar la página
+                        window.location.reload();
+                    });
+                }
+            } else {
+                // Si es miembro regular, abandonar el escuadrón
+                const result = await Swal.fire({
+                    title: '¿Abandonar escuadrón?',
+                    text: '¿Estás seguro de que quieres abandonar este escuadrón?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#78ffd6',
+                    confirmButtonText: 'Sí, abandonar',
+                    cancelButtonText: 'Cancelar',
+                    background: '#1e3a47',
+                    color: 'white'
+                });
+                
+                if (result.isConfirmed) {
+                    // Eliminar la solicitud de membresía
+                    const { error } = await supabase
+                        .from('squad_requests')
+                        .delete()
+                        .eq('squad_id', userSquad.id)
+                        .eq('user_id', currentUser.id);
+                    
+                    if (error) {
+                        console.error('Error al abandonar escuadrón:', error);
+                        throw error;
+                    }
+                    
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        title: 'Escuadrón abandonado',
+                        text: 'Has abandonado el escuadrón exitosamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#78ffd6',
+                        background: '#1e3a47',
+                        color: 'white'
+                    }).then(() => {
+                        // Recargar la página
+                        window.location.reload();
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error al abandonar escuadrón:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo.',
+                icon: 'error',
+                confirmButtonColor: '#78ffd6',
+                background: '#1e3a47',
+                color: 'white'
+            });
+        }
+    }
+    
     // Agregar event listeners a los botones
     function addEventListeners() {
         // Funcionalidad para los elementos del buzón
@@ -1463,7 +1605,7 @@
             });
         });
         
-        // Funcionalidad para los botones de acción (solo visibles para el líder)
+        // Funcionalidad para los botones de acción
         if (isSquadLeader) {
             document.getElementById('invite-btn').addEventListener('click', function() {
                 showInviteFriendsModal();
@@ -1488,13 +1630,12 @@
             document.getElementById('new-mission-btn').addEventListener('click', function() {
                 alert('Función de nueva misión activada');
             });
-            
-            document.getElementById('leave-squad-btn').addEventListener('click', function() {
-                if (confirm('¿Estás seguro de que quieres abandonar el escuadrón? Como líder, esta acción disolverá el escuadrón.')) {
-                    alert('Función de abandonar escuadrón activada');
-                }
-            });
         }
+        
+        // Botón para abandonar el escuadrón (disponible para todos)
+        document.getElementById('leave-squad-btn').addEventListener('click', function() {
+            leaveSquad();
+        });
     }
     
     // Mostrar error
@@ -1514,7 +1655,6 @@
         `;
     }
 </script>
-
 <style>
     /* Estilos para el modal de amigos */
     .friends-modal {
