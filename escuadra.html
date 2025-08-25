@@ -851,40 +851,27 @@
         memberList.innerHTML = '';
         
         try {
-            // Obtener miembros aceptados del escuadrón
-            const { data: squadMembers, error } = await supabase
-                .from('squad_requests')
-                .select('user_id, status, profiles(username, level, points)')
-                .eq('squad_id', squadId)
-                .eq('status', 'accepted');
-            
-            if (error) {
-                console.error('Error al cargar miembros del escuadrón:', error);
-                memberList.innerHTML = '<div class="no-members">Error al cargar miembros</div>';
-                return;
-            }
-            
             // Obtener información del líder
-            const { data: leaderData, error: leaderError } = await supabase
+            const { data: squadData, error: squadError } = await supabase
                 .from('squads')
                 .select('leader_id')
                 .eq('id', squadId)
                 .single();
             
-            if (leaderError) {
-                console.error('Error al obtener información del líder:', leaderError);
+            if (squadError) {
+                console.error('Error al obtener información del escuadrón:', squadError);
                 return;
             }
             
             // Obtener perfil del líder
-            const { data: leaderProfile, error: profileError } = await supabase
+            const { data: leaderProfile, error: leaderError } = await supabase
                 .from('profiles')
                 .select('username, level, points')
-                .eq('id', leaderData.leader_id)
+                .eq('id', squadData.leader_id)
                 .single();
             
-            if (profileError) {
-                console.error('Error al obtener perfil del líder:', profileError);
+            if (leaderError) {
+                console.error('Error al obtener perfil del líder:', leaderError);
                 return;
             }
             
@@ -902,12 +889,26 @@
             `;
             memberList.appendChild(leaderItem);
             
-            // Mostrar miembros (excluyendo al líder)
+            // Obtener miembros aceptados del escuadrón (excluyendo al líder)
+            const { data: squadMembers, error } = await supabase
+                .from('squad_requests')
+                .select('user_id, status, profiles(username, level, points)')
+                .eq('squad_id', squadId)
+                .eq('status', 'accepted')
+                .neq('user_id', squadData.leader_id); // Excluir al líder
+            
+            if (error) {
+                console.error('Error al cargar miembros del escuadrón:', error);
+                const noMembers = document.createElement('div');
+                noMembers.className = 'no-members';
+                noMembers.textContent = 'No hay otros miembros en el escuadrón';
+                memberList.appendChild(noMembers);
+                return;
+            }
+            
+            // Mostrar miembros
             if (squadMembers && squadMembers.length > 0) {
                 squadMembers.forEach(member => {
-                    // Saltar si es el líder
-                    if (member.user_id === leaderData.leader_id) return;
-                    
                     if (member.profiles) {
                         const memberItem = document.createElement('div');
                         memberItem.className = 'member-item';
@@ -923,10 +924,8 @@
                         memberList.appendChild(memberItem);
                     }
                 });
-            }
-            
-            // Si no hay miembros además del líder
-            if (memberList.children.length <= 1) {
+            } else {
+                // Si no hay miembros además del líder
                 const noMembers = document.createElement('div');
                 noMembers.className = 'no-members';
                 noMembers.textContent = 'No hay otros miembros en el escuadrón';
