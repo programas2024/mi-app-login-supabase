@@ -775,6 +775,7 @@ async function fetchSquadInvitations(userId) {
                 requested_by,
                 status,
                 created_at,
+                
                 updated_at,
                 squads: squad_id (name),
                 profiles!squad_requests_requested_by_fkey (username)
