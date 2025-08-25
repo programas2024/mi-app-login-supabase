@@ -820,86 +820,65 @@
         }
     }
     
- // Cargar misiones del escuadrón
-    async function loadSquadMissions() {
-        try {
-            console.log('🔄 Cargando misiones del escuadrón...');
-            
-            const { data: missions, error } = await supabase
-                .from('squad_missions')
-                .select('*')
-                .eq('squad_id', userSquad.id)
-                .order('created_at', { ascending: false });
+// Cargar misiones del escuadrón
+async function loadSquadMissions() {
+    try {
+        console.log('🔄 Cargando misiones del escuadrón...');
+        
+        const { data: missions, error } = await supabase
+            .from('squad_missions')
+            .select('*')
+            .eq('squad_id', userSquad.id)
+            .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('❌ Error al cargar misiones:', error);
-                squadMissions = [];
-            } else {
-                squadMissions = missions || [];
-                console.log('✅ Misiones cargadas:', squadMissions);
-            }
-
-            // Si no hay misiones, crear una por defecto
-            if (squadMissions.length === 0) {
-                console.log('📝 No hay misiones, creando por defecto...');
-                await createDefaultMission();
-            }
-
-            // Verificar progreso de misiones con el método simple
-            console.log('🔍 Verificando progreso de misiones (simple)...');
-            await checkMissionsProgressSimple();
-            
-        } catch (error) {
-            console.error('💀 Error inesperado al cargar misiones:', error);
+        if (error) {
+            console.error('❌ Error al cargar misiones:', error);
             squadMissions = [];
+        } else {
+            squadMissions = missions || [];
+            console.log('✅ Misiones cargadas:', squadMissions);
         }
+
+        // Si no hay misiones, crear una por defecto
+        if (squadMissions.length === 0) {
+            console.log('📝 No hay misiones, creando por defecto...');
+            await createDefaultMission();
+        }
+
+        // Verificar progreso de misiones con el método simple
+        console.log('🔍 Verificando progreso de misiones (simple)...');
+        await checkMissionsProgressSimple();
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al cargar misiones:', error);
+        squadMissions = [];
     }
-    
-    // Crear misión por defecto si no existe
-    async function createDefaultMission() {
-        try {
-            console.log('Intentando crear misión por defecto para squad:', userSquad.id);
-            
-            const { data: mission, error } = await supabase
-                .from('squad_missions')
-                .insert({
-                    squad_id: userSquad.id,
-                    title: 'Primera Sesión de Juego',
-                    description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
-                    goal: 1,
-                    progress: 0,
-                    reward_points: 10,
-                    status: 'active',
-                    created_by: currentUser.id
-                })
-                .select()
-                .single();
+}
 
-            if (error) {
-                console.error('Error detallado al crear misión:', error);
-                
-                // Crear objeto de misión localmente aunque falle en la BD
-                squadMissions = [{
-                    id: 'temp-mission',
-                    squad_id: userSquad.id,
-                    title: 'Primera Sesión de Juego',
-                    description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
-                    goal: 1,
-                    progress: 0,
-                    reward_points: 10,
-                    status: 'active',
-                    created_by: currentUser.id,
-                    created_at: new Date().toISOString()
-                }];
-                return;
-            }
+// Crear misión por defecto si no existe
+async function createDefaultMission() {
+    try {
+        console.log('Intentando crear misión por defecto para squad:', userSquad.id);
+        
+        const { data: mission, error } = await supabase
+            .from('squad_missions')
+            .insert({
+                squad_id: userSquad.id,
+                title: 'Primera Sesión de Juego',
+                description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
+                goal: 1,
+                progress: 0,
+                reward_points: 10,
+                status: 'active',
+                created_by: currentUser.id
+            })
+            .select()
+            .single();
 
-            squadMissions = [mission];
-            console.log('Misión por defecto creada:', mission);
+        if (error) {
+            console.error('Error detallado al crear misión:', error);
             
-        } catch (error) {
-            console.error('Error inesperado al crear misión:', error);
-            // Crear objeto de misión localmente
+            // Crear objeto de misión localmente aunque falle en la BD
             squadMissions = [{
                 id: 'temp-mission',
                 squad_id: userSquad.id,
@@ -912,130 +891,242 @@
                 created_by: currentUser.id,
                 created_at: new Date().toISOString()
             }];
+            return;
         }
+
+        squadMissions = [mission];
+        console.log('Misión por defecto creada:', mission);
+        
+    } catch (error) {
+        console.error('Error inesperado al crear misión:', error);
+        // Crear objeto de misión localmente
+        squadMissions = [{
+            id: 'temp-mission',
+            squad_id: userSquad.id,
+            title: 'Primera Sesión de Juego',
+            description: 'Al menos un miembro del escuadrón debe iniciar sesión y jugar una partida',
+            goal: 1,
+            progress: 0,
+            reward_points: 10,
+            status: 'active',
+            created_by: currentUser.id,
+            created_at: new Date().toISOString()
+        }];
     }
-    
-    // Verificación ultra-simple de misiones
-    async function checkMissionsProgressSimple() {
-        try {
-            console.log('🔍 Verificación ultra-simple de misiones...');
+}
+
+// Verificación ultra-simple de misiones
+async function checkMissionsProgressSimple() {
+    try {
+        console.log('🔍 Verificación ultra-simple de misiones...');
+        
+        // 1. Primero verificar misiones normales
+        const activeMissions = squadMissions.filter(mission => mission.status === 'active');
+        const userIsInSquad = squadMembers.some(member => member.id === currentUser.id);
+        
+        console.log(`Misiones activas: ${activeMissions.length}, Usuario en escuadrón: ${userIsInSquad}`);
+        
+        if (activeMissions.length > 0 && userIsInSquad) {
+            console.log(`✅ Completando ${activeMissions.length} misión(es) activas`);
             
-            // Si hay misiones activas y el usuario está en el escuadrón, completar todas
-            const activeMissions = squadMissions.filter(mission => mission.status === 'active');
-            const userIsInSquad = squadMembers.some(member => member.id === currentUser.id);
-            
-            console.log(`Misiones activas: ${activeMissions.length}, Usuario en escuadrón: ${userIsInSquad}`);
-            
-            if (activeMissions.length > 0 && userIsInSquad) {
-                console.log(`✅ Completando ${activeMissions.length} misión(es) activas`);
-                
-                for (const mission of activeMissions) {
+            for (const mission of activeMissions) {
+                // Si es misión de oro, usar verificación especial
+                if (mission.title.includes('Oro') || mission.title.includes('oro') || 
+                    mission.description.includes('oro') || mission.description.includes('Oro')) {
+                    await checkGoldMission(mission);
+                } else {
                     await completeMission(mission);
                 }
-            } else {
-                console.log('ℹ️ No hay misiones para completar o usuario no está en el escuadrón');
             }
-        } catch (error) {
-            console.error('Error en verificación simple:', error);
+        } else {
+            console.log('ℹ️ No hay misiones para completar o usuario no está en el escuadrón');
         }
+        
+    } catch (error) {
+        console.error('Error en verificación simple:', error);
     }
-    
-    // Completar una misión y otorgar recompensa
-    async function completeMission(mission) {
-        try {
-            // Si ya está completada, no hacer nada
-            if (mission.status === 'completed') {
-                console.log('Misión ya completada anteriormente');
-                return;
-            }
+}
 
-            console.log('Completando misión:', mission.title);
-            
-            // Si es una misión temporal, solo actualizar UI
-            if (mission.id && mission.id === 'temp-mission') {
-                mission.status = 'completed';
-                mission.progress = mission.goal;
-                userSquad.total_points = (userSquad.total_points || 0) + mission.reward_points;
-                
-                console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
-                showMissionCompleteNotification(mission);
-                renderMissionsSection();
-                return;
-            }
-            
-            // Actualizar estado de la misión a completada en la base de datos
-            const { error: updateError } = await supabase
-                .from('squad_missions')
-                .update({
-                    status: 'completed',
-                    progress: mission.goal,
-                    completed_at: new Date().toISOString()
-                })
-                .eq('id', mission.id);
+// Función ESPECIAL para verificar misiones de oro
+async function checkGoldMission(mission) {
+    try {
+        console.log(`💰 Verificando misión de oro: ${mission.title}`);
+        
+        // 1. Obtener todos los IDs de los miembros del escuadrón
+        const memberIds = squadMembers.map(member => member.id);
+        
+        // 2. Obtener el gold de cada miembro desde la tabla profiles
+        const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('id, gold')
+            .in('id', memberIds);
+        
+        if (error) {
+            console.error('❌ Error al obtener gold de miembros:', error);
+            return;
+        }
+        
+        // 3. Sumar todo el gold del escuadrón
+        const totalGold = profiles.reduce((sum, profile) => sum + (profile.gold || 0), 0);
+        console.log(`💰 Oro total del escuadrón: ${totalGold}`);
+        
+        // 4. Actualizar el progreso de la misión
+        const { error: updateError } = await supabase
+            .from('squad_missions')
+            .update({ progress: totalGold })
+            .eq('id', mission.id);
+        
+        if (updateError) {
+            console.error('❌ Error al actualizar progreso:', updateError);
+        }
+        
+        // 5. Verificar si se completó la misión
+        if (totalGold >= mission.goal) {
+            console.log(`🎯 ¡Misión de oro completada! ${totalGold}/${mission.goal}`);
+            await completeMission(mission);
+        } else {
+            console.log(`📊 Progreso de oro: ${totalGold}/${mission.goal}`);
+            // Actualizar la UI para mostrar el progreso
+            mission.progress = totalGold;
+            renderMissionsSection();
+        }
+        
+    } catch (error) {
+        console.error('💀 Error inesperado en misión de oro:', error);
+    }
+}
 
-            if (updateError) {
-                console.error('Error al actualizar misión:', updateError);
-                return;
-            }
+// Completar una misión y otorgar recompensa
+async function completeMission(mission) {
+    try {
+        // Si ya está completada, no hacer nada
+        if (mission.status === 'completed') {
+            console.log('Misión ya completada anteriormente');
+            return;
+        }
 
-            // Otorgar puntos al escuadrón
-            const newTotalPoints = (userSquad.total_points || 0) + mission.reward_points;
-            
-            const { error: pointsError } = await supabase
-                .from('squads')
-                .update({ total_points: newTotalPoints })
-                .eq('id', userSquad.id);
-
-            if (pointsError) {
-                console.error('Error al actualizar puntos del escuadrón:', pointsError);
-                return;
-            }
-
-            // Actualizar el estado local
-            userSquad.total_points = newTotalPoints;
+        console.log('Completando misión:', mission.title);
+        
+        // Si es una misión temporal, solo actualizar UI
+        if (mission.id && mission.id === 'temp-mission') {
             mission.status = 'completed';
             mission.progress = mission.goal;
-
+            userSquad.total_points = (userSquad.total_points || 0) + mission.reward_points;
+            
             console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
-            
-            // Mostrar notificación de éxito
             showMissionCompleteNotification(mission);
-            
-            // Actualizar la UI
             renderMissionsSection();
+            return;
+        }
+        
+        // Actualizar estado de la misión a completada en la base de datos
+        const { error: updateError } = await supabase
+            .from('squad_missions')
+            .update({
+                status: 'completed',
+                progress: mission.goal,
+                completed_at: new Date().toISOString()
+            })
+            .eq('id', mission.id);
 
-            // DESPUÉS de actualizar los puntos, actualizar el ranking
+        if (updateError) {
+            console.error('Error al actualizar misión:', updateError);
+            return;
+        }
+
+        // Otorgar puntos al escuadrón
+        const newTotalPoints = (userSquad.total_points || 0) + mission.reward_points;
+        
+        const { error: pointsError } = await supabase
+            .from('squads')
+            .update({ total_points: newTotalPoints })
+            .eq('id', userSquad.id);
+
+        if (pointsError) {
+            console.error('Error al actualizar puntos del escuadrón:', pointsError);
+            return;
+        }
+
+        // Actualizar el estado local
+        userSquad.total_points = newTotalPoints;
+        mission.status = 'completed';
+        mission.progress = mission.goal;
+
+        console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
+        
+        // Mostrar notificación de éxito
+        showMissionCompleteNotification(mission);
+        
+        // Actualizar la UI
+        renderMissionsSection();
+
+        // Actualizar el ranking global después de completar misión
         await updateGlobalRank();
         
-            
-        } catch (error) {
-            console.error('Error al completar misión:', error);
+    } catch (error) {
+        console.error('Error al completar misión:', error);
+    }
+}
+
+// Función para actualizar el ranking global
+async function updateGlobalRank() {
+    try {
+        console.log('🔄 Actualizando ranking global...');
+        
+        // Obtener todos los escuadrones ordenados por puntos (descendente)
+        const { data: allSquads, error } = await supabase
+            .from('squads')
+            .select('id, total_points')
+            .order('total_points', { ascending: false });
+        
+        if (error) {
+            console.error('❌ Error al obtener escuadrones:', error);
+            return;
         }
+        
+        // Actualizar el ranking de cada escuadrón
+        for (let i = 0; i < allSquads.length; i++) {
+            const squad = allSquads[i];
+            const { error: updateError } = await supabase
+                .from('squads')
+                .update({ global_rank: i + 1 })
+                .eq('id', squad.id);
+            
+            if (updateError) {
+                console.error('❌ Error al actualizar ranking:', updateError);
+            }
+        }
+        
+        console.log('✅ Ranking global actualizado');
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al actualizar ranking:', error);
     }
-    
-    // Mostrar notificación de misión completada
-    function showMissionCompleteNotification(mission) {
-        // Usar Toast de SweetAlert2 para una notificación no intrusiva
-        Swal.fire({
-            title: '¡Misión Completada!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <p>¡Felicidades! Has completado la misión:</p>
-                    <p><strong>${mission.title}</strong></p>
-                    <p>+${mission.reward_points} puntos para el escuadrón</p>
+}
+
+// Mostrar notificación de misión completada
+function showMissionCompleteNotification(mission) {
+    // Usar Toast de SweetAlert2 para una notificación no intrusiva
+    Swal.fire({
+        title: '¡Misión Completada!',
+        html: `
+            <div style="text-align: center;">
+                <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
+                    <i class="fas fa-trophy"></i>
                 </div>
-            `,
-            icon: 'success',
-            confirmButtonColor: '#78ffd6',
-            background: '#1e3a47',
-            color: 'white',
-            timer: 5000,
-            timerProgressBar: true
-        });
-    }
+                <p>¡Felicidades! Has completado la misión:</p>
+                <p><strong>${mission.title}</strong></p>
+                <p>+${mission.reward_points} puntos para el escuadrón</p>
+            </div>
+        `,
+        icon: 'success',
+        confirmButtonColor: '#78ffd6',
+        background: '#1e3a47',
+        color: 'white',
+        timer: 5000,
+        timerProgressBar: true
+    });
+}
     // Cargar amigos del usuario
     async function loadUserFriends() {
         try {
