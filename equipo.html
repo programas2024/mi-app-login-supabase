@@ -1628,6 +1628,194 @@ function showMissionCompleteNotification(mission) {
     });
 }
 
+// Cargar notificaciones del escuadrón
+async function loadSquadNotifications() {
+    try {
+        console.log('🔔 Cargando notificaciones del escuadrón...');
+        
+        const { data: notifications, error } = await supabase
+            .from('squad_notifications')
+            .select(`
+                *,
+                profiles:user_id (username, avatar_url)
+            `)
+            .eq('squad_id', userSquad.id)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+        if (error) {
+            console.error('❌ Error al cargar notificaciones:', error);
+            squadNotifications = [];
+        } else {
+            squadNotifications = notifications || [];
+            console.log('✅ Notificaciones cargadas:', squadNotifications.length);
+            
+            // Actualizar la UI con las notificaciones
+            renderNotificationsSection();
+        }
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al cargar notificaciones:', error);
+        squadNotifications = [];
+    }
+}
+
+// Renderizar sección de notificaciones
+function renderNotificationsSection() {
+    const notificationsContainer = document.getElementById('notifications-container');
+    if (!notificationsContainer) return;
+    
+    if (squadNotifications.length === 0) {
+        notificationsContainer.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <p>No hay notificaciones aún</p>
+            </div>
+        `;
+        return;
+    }
+    
+    notificationsContainer.innerHTML = squadNotifications.map(notification => `
+        <div class="notification-item ${notification.is_read ? 'read' : 'unread'}">
+            <div class="notification-avatar">
+                <img src="${notification.profiles?.avatar_url || 'https://via.placeholder.com/40'}" 
+                     alt="${notification.profiles?.username || 'Usuario'}">
+            </div>
+            <div class="notification-content">
+                <p class="notification-text">${formatNotificationText(notification)}</p>
+                <span class="notification-time">${formatTimeAgo(notification.created_at)}</span>
+            </div>
+            ${!notification.is_read ? '<div class="notification-dot"></div>' : ''}
+        </div>
+    `).join('');
+}
+
+// Formatear texto de notificación
+function formatNotificationText(notification) {
+    const username = notification.profiles?.username || 'Un usuario';
+    
+    switch (notification.type) {
+        case 'mission_completed':
+            return `🎉 <strong>${username}</strong> completó la misión: "${notification.data?.mission_title || 'una misión'}"`;
+        
+        case 'member_joined':
+            return `👋 <strong>${username}</strong> se unió al escuadrón`;
+        
+        case 'member_left':
+            return `👋 <strong>${username}</strong> abandonó el escuadrón`;
+        
+        case 'new_mission':
+            return `🎯 Nueva misión: "${notification.data?.mission_title || 'Misión disponible'}"`;
+        
+        case 'squad_level_up':
+            return `⬆️ <strong>El escuadrón subió al nivel ${notification.data?.level || '1'}</strong>`;
+        
+        case 'reward_received':
+            return `🏆 <strong>${username}</strong> recibió una recompensa: ${notification.data?.reward || 'Recompensa'}`;
+        
+        default:
+            return notification.message || `Nueva actividad de <strong>${username}</strong>`;
+    }
+}
+
+// Formatear tiempo relativo (hace x tiempo)
+function formatTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+    
+    if (diffInSeconds < 60) {
+        return 'hace unos segundos';
+    }
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+        return `hace ${diffInMinutes} minuto${diffInMinutes !== 1 ? 's' : ''}`;
+    }
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+        return `hace ${diffInHours} hora${diffInHours !== 1 ? 's' : ''}`;
+    }
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+        return `hace ${diffInDays} día${diffInDays !== 1 ? 's' : ''}`;
+    }
+    
+    return time.toLocaleDateString();
+}
+
+// Marcar notificaciones como leídas
+async function markNotificationsAsRead() {
+    try {
+        const unreadNotifications = squadNotifications.filter(n => !n.is_read);
+        
+        if (unreadNotifications.length === 0) return;
+        
+        const notificationIds = unreadNotifications.map(n => n.id);
+        
+        const { error } = await supabase
+            .from('squad_notifications')
+            .update({ is_read: true })
+            .in('id', notificationIds);
+        
+        if (error) {
+            console.error('❌ Error al marcar notificaciones como leídas:', error);
+            return;
+        }
+        
+        // Actualizar estado local
+        squadNotifications.forEach(notification => {
+            if (!notification.is_read) {
+                notification.is_read = true;
+            }
+        });
+        
+        // Actualizar UI
+        renderNotificationsSection();
+        
+        console.log('✅ Notificaciones marcadas como leídas');
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al marcar notificaciones:', error);
+    }
+}
+
+// Crear una nueva notificación
+async function createSquadNotification(type, data = {}) {
+    try {
+        const { error } = await supabase
+            .from('squad_notifications')
+            .insert({
+                squad_id: userSquad.id,
+                user_id: currentUser.id,
+                type: type,
+                data: data,
+                is_read: false,
+                created_at: new Date().toISOString()
+            });
+        
+        if (error) {
+            console.error('❌ Error al crear notificación:', error);
+            return false;
+        }
+        
+        console.log('✅ Notificación creada:', type);
+        
+        // Recargar notificaciones si estamos en la página correcta
+        if (window.location.pathname.includes('equipo.html')) {
+            await loadSquadNotifications();
+        }
+        
+        return true;
+        
+    } catch (error) {
+        console.error('💀 Error inesperado al crear notificación:', error);
+        return false;
+    }
+}
+
 // Ejecutar una sola vez para migrar escuadrones antiguos
 // await addEpicMissionsToExistingSquads();
     // Cargar amigos del usuario
