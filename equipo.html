@@ -820,698 +820,95 @@
         }
     }
     
-// Cargar misiones del escuadrón
-async function loadSquadMissions() {
+
+// Función de respaldo si el trigger falla
+async function ensureEpicMissions() {
     try {
-        console.log('🔄 Cargando misiones del escuadrón...');
-        
-        const { data: missions, error } = await supabase
+        // Verificar si hay misiones épicas
+        const { data: existingMissions, error } = await supabase
             .from('squad_missions')
-            .select('*')
+            .select('id')
             .eq('squad_id', userSquad.id)
-            .order('created_at', { ascending: false });
-
+            .eq('is_epic', true)
+            .limit(1);
+        
         if (error) {
-            console.error('❌ Error al cargar misiones:', error);
-            squadMissions = [];
-        } else {
-            squadMissions = missions || [];
-            console.log('✅ Misiones cargadas:', squadMissions);
+            console.error('Error al verificar misiones épicas:', error);
+            return;
         }
-
-        // Si no hay misiones, crear todas por defecto
-        if (squadMissions.length === 0) {
-            console.log('📝 No hay misiones, creando todas por defecto...');
-            await createAllDefaultMissions();
-        }
-
-        // Verificar progreso de misiones
-        console.log('🔍 Verificando progreso de misiones...');
-        await checkMissionsProgress();
         
-    } catch (error) {
-        console.error('💀 Error inesperado al cargar misiones:', error);
-        squadMissions = [];
-    }
-}
-
-// Crear TODAS las misiones por defecto
-async function createAllDefaultMissions() {
-    try {
-        console.log('🎯 Creando TODAS las misiones épicas por defecto...');
-        
-        // Array con todas las misiones épicas
-        const defaultMissions = [
-            {
-                title: 'Primera Sesión de Juego',
-                description: 'Inicia sesión en el juego para ganar puntos',
-                goal: 1,
-                reward_points: 10,
-                is_epic: false
-            },
-            {
-                title: '🏆 ¡10 MILLONES DE ORO! 🏆',
-                description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
-                goal: 10000000,
-                reward_points: 1000,
-                is_epic: true
-            },
-            {
-                title: '💎 ¡888K DIAMANTES! 💎',
-                description: '¡El escuadrón debe reunir 888,000 diamantes entre todos!',
-                goal: 888000,
-                reward_points: 888,
-                is_epic: true
-            },
-            {
-                title: '🐚 ¡10K PERLAS! 🐚',
-                description: '¡El escuadrón debe reunir 10,000 perlas entre todos!',
-                goal: 10000,
-                reward_points: 500,
-                is_epic: true
-            },
-            {
-                title: '🐚 ¡90K PERLAS! 🐚',
-                description: '¡DESAFÍO ÉPICO! El escuadrón debe reunir 90,000 perlas entre todos',
-                goal: 90000,
-                reward_points: 900,
-                is_epic: true
-            }
-        ];
-
-        const createdMissions = [];
-        
-        // Crear todas las misiones
-        for (const missionData of defaultMissions) {
-            try {
-                const { data: mission, error } = await supabase
+        // Si no hay misiones épicas, crearlas
+        if (!existingMissions || existingMissions.length === 0) {
+            console.log('🔄 El trigger falló, creando misiones épicas manualmente...');
+            
+            const epicMissions = [
+                {
+                    title: '🏆 ¡10 MILLONES DE ORO! 🏆',
+                    description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
+                    goal: 10000000,
+                    reward_points: 1000,
+                    is_epic: true
+                },
+                {
+                    title: '💎 ¡888K DIAMANTES! 💎',
+                    description: '¡El escuadrón debe reunir 888,000 diamantes entre todos!',
+                    goal: 888000,
+                    reward_points: 888,
+                    is_epic: true
+                },
+                {
+                    title: '🐚 ¡10K PERLAS! 🐚',
+                    description: '¡El escuadrón debe reunir 10,000 perlas entre todos!',
+                    goal: 10000,
+                    reward_points: 500,
+                    is_epic: true
+                },
+                {
+                    title: '🐚 ¡90K PERLAS! 🐚',
+                    description: '¡DESAFÍO ÉPICO! El escuadrón debe reunir 90,000 perlas entre todos',
+                    goal: 90000,
+                    reward_points: 900,
+                    is_epic: true
+                }
+            ];
+            
+            for (const missionData of epicMissions) {
+                await supabase
                     .from('squad_missions')
                     .insert({
                         squad_id: userSquad.id,
                         title: missionData.title,
                         description: missionData.description,
                         goal: missionData.goal,
-                        progress: missionData.title === 'Primera Sesión de Juego' ? 1 : 0,
+                        progress: 0,
                         reward_points: missionData.reward_points,
                         status: 'active',
                         created_by: currentUser.id,
-                        is_epic: missionData.is_epic,
-                        created_at: new Date().toISOString()
-                    })
-                    .select()
-                    .single();
-
-                if (error) {
-                    console.error('Error al crear misión:', missionData.title, error);
-                    // Crear misión temporal local
-                    createdMissions.push({
-                        id: 'temp-' + Math.random().toString(36).substr(2, 9),
-                        squad_id: userSquad.id,
-                        title: missionData.title,
-                        description: missionData.description,
-                        goal: missionData.goal,
-                        progress: missionData.title === 'Primera Sesión de Juego' ? 1 : 0,
-                        reward_points: missionData.reward_points,
-                        status: 'active',
-                        created_by: currentUser.id,
-                        is_epic: missionData.is_epic,
-                        created_at: new Date().toISOString()
+                        is_epic: true
                     });
-                } else {
-                    createdMissions.push(mission);
-                    console.log('✅ Misión creada:', missionData.title);
-                }
-            } catch (missionError) {
-                console.error('Error inesperado al crear misión:', missionData.title, missionError);
             }
-        }
-
-        squadMissions = createdMissions;
-        console.log('🎉 Todas las misiones épicas creadas:', squadMissions);
-        
-        // Completar automáticamente la misión de inicio de sesión
-        const loginMission = squadMissions.find(m => m.title === 'Primera Sesión de Juego');
-        if (loginMission) {
-            await completeMission(loginMission);
-        }
-        
-    } catch (error) {
-        console.error('💀 Error inesperado al crear misiones épicas:', error);
-        // Crear misión temporal básica como fallback
-        squadMissions = [{
-            id: 'temp-mission',
-            squad_id: userSquad.id,
-            title: 'Primera Sesión de Juego',
-            description: 'Inicia sesión en el juego para ganar puntos',
-            goal: 1,
-            progress: 1,
-            reward_points: 10,
-            status: 'active',
-            created_by: currentUser.id,
-            is_epic: false,
-            created_at: new Date().toISOString()
-        }];
-    }
-}
-
-// Para escuadrones existentes que no tienen misiones épicas
-async function addEpicMissionsToExistingSquads() {
-    try {
-        // 1. Obtener todos los escuadrones
-        const { data: allSquads, error: squadsError } = await supabase
-            .from('squads')
-            .select('id, leader_id');
-        
-        if (squadsError) throw squadsError;
-        
-        // 2. Para cada escuadrón, verificar si tiene misiones épicas
-        for (const squad of allSquads) {
-            const { data: existingMissions, error: missionsError } = await supabase
-                .from('squad_missions')
-                .select('id')
-                .eq('squad_id', squad.id)
-                .eq('is_epic', true)
-                .limit(1);
             
-            if (missionsError) continue;
-            
-            // 3. Si no tiene misiones épicas, crearlas
-            if (!existingMissions || existingMissions.length === 0) {
-                console.log('➕ Agregando misiones épicas al escuadrón:', squad.id);
-                await createAllEpicMissionsForSquad(squad.id);
-            }
+            console.log('✅ Misiones épicas creadas manualmente');
+            // Recargar misiones
+            await loadSquadMissions();
         }
         
-        console.log('✅ Todos los escuadrones tienen misiones épicas');
-        
     } catch (error) {
-        console.error('Error al agregar misiones a escuadrones existentes:', error);
+        console.error('Error en ensureEpicMissions:', error);
     }
 }
 
-// Ejecutar una sola vez para migrar escuadrones antiguos
-// await addEpicMissionsToExistingSquads();
-// Verificación de misiones
-async function checkMissionsProgress() {
+// Llamar a esta función en loadSquadMissions
+async function loadSquadMissions() {
     try {
-        console.log('🔍 Verificación de misiones...');
+        // ... código anterior ...
         
-        const activeMissions = squadMissions.filter(mission => mission.status === 'active');
-        const userIsInSquad = squadMembers.some(member => member.id === currentUser.id);
-        
-        console.log(`Misiones activas: ${activeMissions.length}, Usuario en escuadrón: ${userIsInSquad}`);
-        
-        if (activeMissions.length > 0 && userIsInSquad) {
-            console.log(`✅ Verificando ${activeMissions.length} misión(es) activas`);
-            
-            for (const mission of activeMissions) {
-                // Solo completar automáticamente la misión de login
-                if (mission.title === 'Primera Sesión de Juego') {
-                    await completeMission(mission);
-                }
-                // Las demás misiones se verifican según su tipo
-                else if (isGoldMission(mission)) {
-                    await checkGoldMission(mission);
-                } 
-                else if (isDiamondMission(mission)) {
-                    await checkDiamondMission(mission);
-                }
-                else if (isPearlMission(mission)) {
-                    await checkPearlMission(mission);
-                }
-            }
-        } else {
-            console.log('ℹ️ No hay misiones para completar o usuario no está en el escuadrón');
-        }
+        // Después de cargar misiones, verificar que hay épicas
+        await ensureEpicMissions();
         
     } catch (error) {
-        console.error('Error en verificación de misiones:', error);
-    }
-}
-
-// Detectar misión de oro
-function isGoldMission(mission) {
-    return mission.title.includes('Oro') || mission.title.includes('oro') || 
-           mission.description.includes('oro') || mission.description.includes('Oro') ||
-           mission.title.includes('Gold') || mission.title.includes('gold');
-}
-
-// Detectar misión de diamantes
-function isDiamondMission(mission) {
-    return mission.title.includes('Diamante') || mission.title.includes('diamante') || 
-           mission.title.includes('Diamond') || mission.title.includes('diamond') ||
-           mission.description.includes('diamante') || mission.description.includes('Diamante') ||
-           mission.description.includes('diamond') || mission.description.includes('Diamond');
-}
-
-// Detectar misión de perlas
-function isPearlMission(mission) {
-    return mission.title.includes('Perla') || mission.title.includes('perla') || 
-           mission.title.includes('Pearl') || mission.title.includes('pearl') ||
-           mission.description.includes('perla') || mission.description.includes('Perla') ||
-           mission.description.includes('pearl') || mission.description.includes('Pearl');
-}
-
-// Función para verificar misiones de ORO
-async function checkGoldMission(mission) {
-    try {
-        console.log(`💰 Verificando misión de ORO: ${mission.title}`);
-        
-        const memberIds = squadMembers.map(member => member.id);
-        const { data: profiles, error } = await supabase
-            .from('profiles')
-            .select('id, username, gold')
-            .in('id', memberIds);
-        
-        if (error) {
-            console.error('❌ Error al obtener gold de miembros:', error);
-            return;
-        }
-        
-        const totalGold = profiles.reduce((sum, profile) => sum + (profile.gold || 0), 0);
-        console.log(`💰 Oro total del escuadrón: ${formatNumber(totalGold)}`);
-        
-        // Mostrar detalle por miembro
-        profiles.forEach(profile => {
-            console.log(`   👤 ${profile.username}: ${formatNumber(profile.gold || 0)} oro`);
-        });
-        
-        // Actualizar progreso
-        await updateMissionProgress(mission.id, totalGold);
-        
-        // Verificar si se completó
-        if (totalGold >= mission.goal) {
-            console.log(`🎯 ¡Misión de ORO completada! ${formatNumber(totalGold)}/${formatNumber(mission.goal)}`);
-            await completeMission(mission);
-        } else {
-            console.log(`📊 Progreso de ORO: ${formatNumber(totalGold)}/${formatNumber(mission.goal)}`);
-            mission.progress = totalGold;
-            renderMissionsSection();
-        }
-        
-    } catch (error) {
-        console.error('💀 Error en misión de ORO:', error);
-    }
-}
-
-// Función para verificar misiones de DIAMANTES
-async function checkDiamondMission(mission) {
-    try {
-        console.log(`💎 Verificando misión de DIAMANTES: ${mission.title}`);
-        
-        const memberIds = squadMembers.map(member => member.id);
-        const { data: profiles, error } = await supabase
-            .from('profiles')
-            .select('id, username, diamonds')
-            .in('id', memberIds);
-        
-        if (error) {
-            console.error('❌ Error al obtener diamantes de miembros:', error);
-            return;
-        }
-        
-        const totalDiamonds = profiles.reduce((sum, profile) => sum + (profile.diamonds || 0), 0);
-        console.log(`💎 Diamantes total del escuadrón: ${formatNumber(totalDiamonds)}`);
-        
-        // Mostrar detalle por miembro
-        profiles.forEach(profile => {
-            console.log(`   👤 ${profile.username}: ${formatNumber(profile.diamonds || 0)} diamantes`);
-        });
-        
-        // Actualizar progreso
-        await updateMissionProgress(mission.id, totalDiamonds);
-        
-        // Verificar si se completó
-        if (totalDiamonds >= mission.goal) {
-            console.log(`🎯 ¡Misión de DIAMANTES completada! ${formatNumber(totalDiamonds)}/${formatNumber(mission.goal)}`);
-            await completeMission(mission);
-        } else {
-            console.log(`📊 Progreso de DIAMANTES: ${formatNumber(totalDiamonds)}/${formatNumber(mission.goal)}`);
-            mission.progress = totalDiamonds;
-            renderMissionsSection();
-        }
-        
-    } catch (error) {
-        console.error('💀 Error en misión de DIAMANTES:', error);
-    }
-}
-
-// Función para verificar misiones de PERLAS
-async function checkPearlMission(mission) {
-    try {
-        console.log(`🐚 Verificando misión de PERLAS: ${mission.title}`);
-        
-        const memberIds = squadMembers.map(member => member.id);
-        const { data: profiles, error } = await supabase
-            .from('profiles')
-            .select('id, username, perla')
-            .in('id', memberIds);
-        
-        if (error) {
-            console.error('❌ Error al obtener perlas de miembros:', error);
-            return;
-        }
-        
-        const totalPearls = profiles.reduce((sum, profile) => sum + (profile.perla || 0), 0);
-        console.log(`🐚 Perlas totales del escuadrón: ${formatNumber(totalPearls)}`);
-        
-        // Mostrar detalle por miembro
-        profiles.forEach(profile => {
-            console.log(`   👤 ${profile.username}: ${formatNumber(profile.perla || 0)} perlas`);
-        });
-        
-        // Actualizar progreso
-        await updateMissionProgress(mission.id, totalPearls);
-        
-        // Verificar si se completó
-        if (totalPearls >= mission.goal) {
-            console.log(`🎯 ¡Misión de PERLAS completada! ${formatNumber(totalPearls)}/${formatNumber(mission.goal)}`);
-            await completeMission(mission);
-        } else {
-            console.log(`📊 Progreso de PERLAS: ${formatNumber(totalPearls)}/${formatNumber(mission.goal)}`);
-            mission.progress = totalPearls;
-            renderMissionsSection();
-        }
-        
-    } catch (error) {
-        console.error('💀 Error en misión de PERLAS:', error);
-    }
-}
-
-// Función para formatear números grandes
-function formatNumber(num) {
-    if (num >= 1000000000) return `${(num / 1000000000).toFixed(1)}B`;
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toLocaleString();
-}
-
-// Actualizar progreso de misión
-async function updateMissionProgress(missionId, progress) {
-    try {
-        const { error } = await supabase
-            .from('squad_missions')
-            .update({ progress: progress })
-            .eq('id', missionId);
-            
-        if (error) {
-            console.error('❌ Error al actualizar progreso:', error);
-        }
-    } catch (error) {
-        console.error('💀 Error inesperado al actualizar progreso:', error);
-    }
-}
-
-// Completar una misión y otorgar recompensa
-async function completeMission(mission) {
-    try {
-        if (mission.status === 'completed') {
-            console.log('Misión ya completada anteriormente');
-            return;
-        }
-
-        console.log('Completando misión:', mission.title);
-        
-        // Si es una misión temporal
-        if (mission.id && mission.id.includes('temp-')) {
-            mission.status = 'completed';
-            mission.progress = mission.goal;
-            userSquad.total_points = (userSquad.total_points || 0) + mission.reward_points;
-            
-            console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
-            showMissionCompleteNotification(mission);
-            renderMissionsSection();
-            return;
-        }
-        
-        // Actualizar en base de datos
-        const { error: updateError } = await supabase
-            .from('squad_missions')
-            .update({
-                status: 'completed',
-                progress: mission.goal,
-                completed_at: new Date().toISOString()
-            })
-            .eq('id', mission.id);
-
-        if (updateError) {
-            console.error('Error al actualizar misión:', updateError);
-            return;
-        }
-
-        // Otorgar puntos al escuadrón
-        const newTotalPoints = (userSquad.total_points || 0) + mission.reward_points;
-        
-        const { error: pointsError } = await supabase
-            .from('squads')
-            .update({ total_points: newTotalPoints })
-            .eq('id', userSquad.id);
-
-        if (pointsError) {
-            console.error('Error al actualizar puntos del escuadrón:', pointsError);
-            return;
-        }
-
-        // Actualizar estado local
-        userSquad.total_points = newTotalPoints;
-        mission.status = 'completed';
-        mission.progress = mission.goal;
-
-        console.log(`¡Misión completada! ${mission.reward_points} puntos añadidos al escuadrón.`);
-        
-        // Mostrar notificación
-        showMissionCompleteNotification(mission);
-        
-        // Actualizar UI
-        renderMissionsSection();
-
-        // Actualizar ranking global
-        await updateGlobalRank();
-        
-    } catch (error) {
-        console.error('Error al completar misión:', error);
-    }
-}
-
-// Función para crear misión de 10 MILLONES de ORO
-async function create10MGoldMission() {
-    try {
-        const { data: mission, error } = await supabase
-            .from('squad_missions')
-            .insert({
-                squad_id: userSquad.id,
-                title: '🏆 ¡10 MILLONES DE ORO! 🏆',
-                description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
-                goal: 10000000,
-                progress: 0,
-                reward_points: 1000,
-                status: 'active',
-                created_by: currentUser.id,
-                is_epic: true
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-        
-        squadMissions.unshift(mission);
-        renderMissionsSection();
-        
-        Swal.fire({
-            title: '¡MISIÓN ÉPICA CREADA!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #ffd700; margin-bottom: 16px;">
-                        💰🔥
-                    </div>
-                    <p><strong>¡10 MILLONES DE ORO!</strong></p>
-                    <p>¿Podrá tu escuadrón alcanzar esta locura?</p>
-                    <p style="color: #ffd700;">Recompensa: +1000 puntos</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#ffd700',
-            background: '#1e3a47',
-            color: 'white'
-        });
-        
-    } catch (error) {
-        console.error('Error al crear misión de 10M oro:', error);
-    }
-}
-
-// Función para crear misión de 888K DIAMANTES
-async function create888KDiamondsMission() {
-    try {
-        const { data: mission, error } = await supabase
-            .from('squad_missions')
-            .insert({
-                squad_id: userSquad.id,
-                title: '💎 ¡888K DIAMANTES! 💎',
-                description: '¡El escuadrón debe reunir 888,000 diamantes entre todos!',
-                goal: 888000,
-                progress: 0,
-                reward_points: 888,
-                status: 'active',
-                created_by: currentUser.id,
-                is_epic: true
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-        
-        squadMissions.unshift(mission);
-        renderMissionsSection();
-        
-        Swal.fire({
-            title: '¡MISIÓN DE DIAMANTES CREADA!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #b9f2ff; margin-bottom: 16px;">
-                        💎✨
-                    </div>
-                    <p><strong>¡888K DIAMANTES!</strong></p>
-                    <p>El escuadrón debe reunir 888,000 diamantes</p>
-                    <p style="color: #b9f2ff;">Recompensa: +888 puntos</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#b9f2ff',
-            background: '#1e3a47',
-            color: 'white'
-        });
-        
-    } catch (error) {
-        console.error('Error al crear misión de diamantes:', error);
-    }
-}
-
-// Función para crear misión de 10K PERLAS
-async function create10KPearlsMission() {
-    try {
-        const { data: mission, error } = await supabase
-            .from('squad_missions')
-            .insert({
-                squad_id: userSquad.id,
-                title: '🐚 ¡10K PERLAS! 🐚',
-                description: '¡El escuadrón debe reunir 10,000 perlas entre todos!',
-                goal: 10000,
-                progress: 0,
-                reward_points: 500,
-                status: 'active',
-                created_by: currentUser.id,
-                is_epic: true
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-        
-        squadMissions.unshift(mission);
-        renderMissionsSection();
-        
-        Swal.fire({
-            title: '¡MISIÓN DE PERLAS CREADA!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #ffb6c1; margin-bottom: 16px;">
-                        🐚✨
-                    </div>
-                    <p><strong>¡10K PERLAS!</strong></p>
-                    <p>El escuadrón debe reunir 10,000 perlas</p>
-                    <p style="color: #ffb6c1;">Recompensa: +500 puntos</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#ffb6c1',
-            background: '#1e3a47',
-            color: 'white'
-        });
-        
-    } catch (error) {
-        console.error('Error al crear misión de 10K perlas:', error);
-    }
-}
-
-// Función para crear misión de 90K PERLAS
-async function create90KPearlsMission() {
-    try {
-        const { data: mission, error } = await supabase
-            .from('squad_missions')
-            .insert({
-                squad_id: userSquad.id,
-                title: '🐚 ¡90K PERLAS! 🐚',
-                description: '¡DESAFÍO ÉPICO! El escuadrón debe reunir 90,000 perlas entre todos',
-                goal: 90000,
-                progress: 0,
-                reward_points: 900,
-                status: 'active',
-                created_by: currentUser.id,
-                is_epic: true
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-        
-        squadMissions.unshift(mission);
-        renderMissionsSection();
-        
-        Swal.fire({
-            title: '¡MISIÓN ÉPICA DE PERLAS CREADA!',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; color: #e6e6fa; margin-bottom: 16px;">
-                        🐚🔥
-                    </div>
-                    <p><strong>¡90K PERLAS ÉPICAS!</strong></p>
-                    <p>Desafío máximo: 90,000 perlas para el escuadrón</p>
-                    <p style="color: #e6e6fa;">Recompensa: +900 puntos</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#e6e6fa',
-            background: '#1e3a47',
-            color: 'white'
-        });
-        
-    } catch (error) {
-        console.error('Error al crear misión de 90K perlas:', error);
-    }
-}
-
-// Función para actualizar el ranking global
-async function updateGlobalRank() {
-    try {
-        console.log('🔄 Actualizando ranking global...');
-        
-        const { data: allSquads, error } = await supabase
-            .from('squads')
-            .select('id, total_points')
-            .order('total_points', { ascending: false });
-        
-        if (error) {
-            console.error('❌ Error al obtener escuadrones:', error);
-            return;
-        }
-        
-        for (let i = 0; i < allSquads.length; i++) {
-            const squad = allSquads[i];
-            const { error: updateError } = await supabase
-                .from('squads')
-                .update({ global_rank: i + 1 })
-                .eq('id', squad.id);
-            
-            if (updateError) {
-                console.error('❌ Error al actualizar ranking:', updateError);
-            }
-        }
-        
-        console.log('✅ Ranking global actualizado');
-        
-    } catch (error) {
-        console.error('💀 Error inesperado al actualizar ranking:', error);
+        console.error('💀 Error inesperado al cargar misiones:', error);
+        squadMissions = [];
     }
 }
 
