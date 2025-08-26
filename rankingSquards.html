@@ -387,6 +387,33 @@
             margin-bottom: 10px;
         }
         
+        .leader-info {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .leader-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .leader-details h3 {
+            color: #fdbb2d;
+            margin-bottom: 5px;
+        }
+        
         .created-date {
             text-align: right;
             font-style: italic;
@@ -419,13 +446,18 @@
                 text-align: center;
             }
             
+            .leader-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
             .modal-content {
                 margin: 5% auto;
                 padding: 20px;
             }
         }
 
-          /* Estilos personalizados para SweetAlert */
+        /* Estilos personalizados para SweetAlert */
         .swal2-popup {
             background: linear-gradient(135deg, #a1c4fd, #c2e9fb) !important;
             border-radius: 15px !important;
@@ -755,6 +787,29 @@
             });
         }
         
+        // Obtener información del líder (creador del escuadrón)
+        async function getLeaderInfo(leaderId) {
+            try {
+                const { data: leader, error } = await supabase
+                    .from('profiles')
+                    .select('username, avatar_url')
+                    .eq('id', leaderId)
+                    .single();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                return leader;
+            } catch (error) {
+                console.error('Error loading leader info:', error);
+                return {
+                    username: 'Desconocido',
+                    avatar_url: null
+                };
+            }
+        }
+        
         // Mostrar detalles del escuadrón
         async function showSquadDetails(squadId) {
             try {
@@ -768,6 +823,9 @@
                 if (error) {
                     throw error;
                 }
+                
+                // Obtener información del líder
+                const leaderInfo = await getLeaderInfo(squad.leader_id);
                 
                 // Formatear fecha de creación
                 const createdDate = new Date(squad.created_at).toLocaleDateString('es-ES', {
@@ -804,6 +862,18 @@
                         <div class="stat-card">
                             <div class="stat-value">${squad.global_rank || 'N/A'}</div>
                             <div class="stat-label">Ranking Global</div>
+                        </div>
+                    </div>
+                    
+                    <div class="leader-info">
+                        <div class="leader-avatar">
+                            ${leaderInfo.avatar_url ? 
+                                `<img src="${leaderInfo.avatar_url}" alt="${leaderInfo.username}" style="width: 100%; height: 100%; border-radius: 50%;">` : 
+                                leaderInfo.username.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="leader-details">
+                            <h3>Líder del Escuadrón</h3>
+                            <p>${leaderInfo.username}</p>
                         </div>
                     </div>
                     
