@@ -974,6 +974,43 @@ async function createAllDefaultMissions() {
     }
 }
 
+// Para escuadrones existentes que no tienen misiones épicas
+async function addEpicMissionsToExistingSquads() {
+    try {
+        // 1. Obtener todos los escuadrones
+        const { data: allSquads, error: squadsError } = await supabase
+            .from('squads')
+            .select('id, leader_id');
+        
+        if (squadsError) throw squadsError;
+        
+        // 2. Para cada escuadrón, verificar si tiene misiones épicas
+        for (const squad of allSquads) {
+            const { data: existingMissions, error: missionsError } = await supabase
+                .from('squad_missions')
+                .select('id')
+                .eq('squad_id', squad.id)
+                .eq('is_epic', true)
+                .limit(1);
+            
+            if (missionsError) continue;
+            
+            // 3. Si no tiene misiones épicas, crearlas
+            if (!existingMissions || existingMissions.length === 0) {
+                console.log('➕ Agregando misiones épicas al escuadrón:', squad.id);
+                await createAllEpicMissionsForSquad(squad.id);
+            }
+        }
+        
+        console.log('✅ Todos los escuadrones tienen misiones épicas');
+        
+    } catch (error) {
+        console.error('Error al agregar misiones a escuadrones existentes:', error);
+    }
+}
+
+// Ejecutar una sola vez para migrar escuadrones antiguos
+// await addEpicMissionsToExistingSquads();
 // Verificación de misiones
 async function checkMissionsProgress() {
     try {
