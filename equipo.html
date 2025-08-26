@@ -1634,7 +1634,7 @@ async function loadSquadNotifications() {
         console.log('🔔 Cargando notificaciones del escuadrón...');
         
         const { data: notifications, error } = await supabase
-            .from('squad_notifications')
+            .from('squad_requests')
             .select(`
                 *,
                 profiles:user_id (username, avatar_url)
@@ -1756,7 +1756,7 @@ async function markNotificationsAsRead() {
         const notificationIds = unreadNotifications.map(n => n.id);
         
         const { error } = await supabase
-            .from('squad_notifications')
+            .from('squad_requests')
             .update({ is_read: true })
             .in('id', notificationIds);
         
@@ -1786,7 +1786,7 @@ async function markNotificationsAsRead() {
 async function createSquadNotification(type, data = {}) {
     try {
         const { error } = await supabase
-            .from('squad_notifications')
+            .from('squad_requests')
             .insert({
                 squad_id: userSquad.id,
                 user_id: currentUser.id,
