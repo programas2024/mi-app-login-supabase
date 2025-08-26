@@ -1818,50 +1818,119 @@ async function createSquadNotification(type, data = {}) {
 
 // Ejecutar una sola vez para migrar escuadrones antiguos
 // await addEpicMissionsToExistingSquads();
-    // Cargar amigos del usuario
-    async function loadUserFriends() {
-        try {
-            // Intentar con la estructura actual de la tabla friends
-            const { data: userFriends, error: userError } = await supabase
-                .from('friends')
-                .select('*')
-                .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
-                .eq('status', 'accepted');
-                
-            if (userError) {
-                console.error('Error al cargar amigos:', userError);
-                return [];
-            }
-            
-            if (!userFriends || userFriends.length === 0) {
-                console.log('El usuario no tiene amigos');
-                return [];
-            }
-            
-            // Obtener IDs de amigos
-            const friendIds = userFriends.map(friend => 
-                friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
-            );
-            
-            // Obtener información de perfiles de amigos
-            const { data: friendsProfiles, error: profilesError } = await supabase
-                .from('profiles')
-                .select('id, username, level, points')
-                .in('id', friendIds);
-                
-            if (profilesError) {
-                console.error('Error al cargar perfiles de amigos:', profilesError);
-                return [];
-            }
-            
-            console.log('Amigos cargados:', friendsProfiles);
-            return friendsProfiles || [];
-            
-        } catch (error) {
-            console.error('Error inesperado al cargar amigos:', error);
+   // Cargar amigos del usuario
+async function loadUserFriends() {
+    try {
+        // Verificar que currentUser existe
+        if (!currentUser || !currentUser.id) {
+            console.error('Usuario no autenticado');
             return [];
         }
+
+        // Consulta más segura usando .or() con sintaxis correcta
+        const { data: userFriends, error: userError } = await supabase
+            .from('friends')
+            .select('*')
+            .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
+            .eq('status', 'accepted');
+            
+        if (userError) {
+            console.error('Error al cargar amigos:', userError);
+            // Mostrar más detalles del error
+            console.error('Detalles del error:', userError.message, userError.details);
+            return [];
+        }
+        
+        if (!userFriends || userFriends.length === 0) {
+            console.log('El usuario no tiene amigos');
+            return [];
+        }
+        
+        // Obtener IDs de amigos
+        const friendIds = userFriends.map(friend => 
+            friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id
+        );
+        
+        // Verificar que hay IDs para consultar
+        if (friendIds.length === 0) {
+            console.log('No se encontraron IDs de amigos');
+            return [];
+        }
+        
+        // Obtener información de perfiles de amigos
+        const { data: friendsProfiles, error: profilesError } = await supabase
+            .from('profiles')
+            .select('id, username, level, points')
+            .in('id', friendIds);
+            
+        if (profilesError) {
+            console.error('Error al cargar perfiles de amigos:', profilesError);
+            return [];
+        }
+        
+        console.log('Amigos cargados:', friendsProfiles);
+        return friendsProfiles || [];
+        
+    } catch (error) {
+        console.error('Error inesperado al cargar amigos:', error);
+        return [];
     }
+}
+
+// Función para invitar amigos al squad
+async function inviteFriendToSquad(friendId, squadId) {
+    try {
+        if (!currentUser || !currentUser.id) {
+            throw new Error('Usuario no autenticado');
+        }
+
+        const { data, error } = await supabase
+            .from('squad_requests')
+            .insert({
+                squad_id: squadId,
+                user_id: friendId,
+                requested_by: currentUser.id,
+                status: 'pending'
+            })
+            .select();
+
+        if (error) {
+            console.error('Error al enviar invitación:', error);
+            throw error;
+        }
+
+        console.log('Invitación enviada:', data);
+        return data;
+
+    } catch (error) {
+        console.error('Error inesperado al invitar amigo:', error);
+        throw error;
+    }
+}
+
+// Función para verificar si ya existe una invitación pendiente
+async function checkPendingInvitation(friendId, squadId) {
+    try {
+        const { data, error } = await supabase
+            .from('squad_requests')
+            .select('*')
+            .eq('squad_id', squadId)
+            .eq('user_id', friendId)
+            .eq('status', 'pending')
+            .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 es "no rows returned"
+            console.error('Error al verificar invitación:', error);
+            return false;
+        }
+
+        return !!data; // Devuelve true si existe una invitación pendiente
+
+    } catch (error) {
+        console.error('Error al verificar invitación:', error);
+        return false;
+    }
+}
     
     // Mostrar mensaje cuando el usuario no tiene escuadrón
     function showNoSquadMessage() {
