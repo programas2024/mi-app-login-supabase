@@ -795,6 +795,7 @@
     }
     
     
+    
 // Cargar misiones del escuadrón
 async function loadSquadMissions() {
     try {
@@ -811,15 +812,15 @@ async function loadSquadMissions() {
             squadMissions = [];
         } else {
             squadMissions = missions || [];
-            console.log('✅ Misiones cargadas:', squadMissions.length);
+            console.log('✅ Misiones cargadas:', squadMissions);
         }
 
-        // Verificar si necesitamos crear misiones por defecto
+        // Si no hay misiones, crear todas por defecto
         if (squadMissions.length === 0) {
             console.log('📝 No hay misiones, creando todas por defecto...');
             await createAllDefaultMissions();
         } else {
-            // Asegurar que tenemos misiones épicas (para escuadrones existentes)
+            // Verificar si faltan misiones épicas (para migración)
             await ensureEpicMissions();
         }
 
@@ -836,9 +837,9 @@ async function loadSquadMissions() {
 // Crear TODAS las misiones por defecto
 async function createAllDefaultMissions() {
     try {
-        console.log('🎯 Creando TODAS las misiones por defecto...');
+        console.log('🎯 Creando TODAS las misiones épicas por defecto...');
         
-        // Array con todas las misiones
+        // Array con todas las misiones épicas
         const defaultMissions = [
             {
                 title: 'Primera Sesión de Juego',
@@ -925,7 +926,7 @@ async function createAllDefaultMissions() {
         }
 
         squadMissions = createdMissions;
-        console.log('🎉 Todas las misiones creadas:', squadMissions.length);
+        console.log('🎉 Todas las misiones épicas creadas:', squadMissions);
         
         // Completar automáticamente la misión de inicio de sesión
         const loginMission = squadMissions.find(m => m.title === 'Primera Sesión de Juego');
@@ -934,7 +935,7 @@ async function createAllDefaultMissions() {
         }
         
     } catch (error) {
-        console.error('💀 Error inesperado al crear misiones:', error);
+        console.error('💀 Error inesperado al crear misiones épicas:', error);
         // Crear misión temporal básica como fallback
         squadMissions = [{
             id: 'temp-mission',
@@ -952,11 +953,13 @@ async function createAllDefaultMissions() {
     }
 }
 
-// Función de respaldo para asegurar misiones épicas
-async function ensureEpicMissions() {
+// Función para crear misiones épicas para un escuadrón específico
+async function createAllEpicMissionsForSquad(squadId) {
     try {
-        // Definir las misiones épicas requeridas
-        const requiredEpicMissions = [
+        console.log(`🎯 Creando misiones épicas para el escuadrón ${squadId}...`);
+        
+        // Array con todas las misiones épicas
+        const epicMissions = [
             {
                 title: '🏆 ¡10 MILLONES DE ORO! 🏆',
                 description: '¡LOCURA TOTAL! El escuadrón debe juntar 10,000,000 de oro entre todos',
@@ -986,101 +989,51 @@ async function ensureEpicMissions() {
                 is_epic: true
             }
         ];
-        
-        let needToCreate = false;
-        const existingEpicMissions = squadMissions.filter(m => m.is_epic);
-        
-        // Verificar si faltan misiones épicas
-        if (existingEpicMissions.length < requiredEpicMissions.length) {
-            needToCreate = true;
-            console.log(`⚠️ Faltan misiones épicas: ${existingEpicMissions.length}/${requiredEpicMissions.length}`);
+
+        // Obtener el líder del escuadrón para created_by
+        const { data: squad, error: squadError } = await supabase
+            .from('squads')
+            .select('leader_id')
+            .eq('id', squadId)
+            .single();
+            
+        if (squadError) {
+            console.error('Error al obtener líder del escuadrón:', squadError);
+            return;
         }
         
-        // Si faltan misiones épicas, crearlas
-        if (needToCreate) {
-            console.log('🔄 Creando misiones épicas faltantes...');
-            
-            for (const missionData of requiredEpicMissions) {
-                // Verificar si ya existe esta misión
-                const exists = squadMissions.some(m => m.title === missionData.title);
-                
-                if (!exists) {
-                    try {
-                        const { data: mission, error } = await supabase
-                            .from('squad_missions')
-                            .insert({
-                                squad_id: userSquad.id,
-                                title: missionData.title,
-                                description: missionData.description,
-                                goal: missionData.goal,
-                                progress: 0,
-                                reward_points: missionData.reward_points,
-                                status: 'active',
-                                created_by: currentUser.id,
-                                is_epic: true,
-                                created_at: new Date().toISOString()
-                            })
-                            .select()
-                            .single();
+        // Crear todas las misiones épicas
+        for (const missionData of epicMissions) {
+            try {
+                const { error } = await supabase
+                    .from('squad_missions')
+                    .insert({
+                        squad_id: squadId,
+                        title: missionData.title,
+                        description: missionData.description,
+                        goal: missionData.goal,
+                        progress: 0,
+                        reward_points: missionData.reward_points,
+                        status: 'active',
+                        created_by: squad.leader_id,
+                        is_epic: true,
+                        created_at: new Date().toISOString()
+                    });
 
-                        if (error) {
-                            console.error('Error al crear misión épica:', missionData.title, error);
-                        } else {
-                            squadMissions.push(mission);
-                            console.log('✅ Misión épica creada:', missionData.title);
-                        }
-                    } catch (missionError) {
-                        console.error('Error inesperado al crear misión épica:', missionData.title, missionError);
-                    }
+                if (error) {
+                    console.error('Error al crear misión épica:', missionData.title, error);
+                } else {
+                    console.log('✅ Misión épica creada:', missionData.title);
                 }
+            } catch (missionError) {
+                console.error('Error inesperado al crear misión épica:', missionData.title, missionError);
             }
-            
-            console.log('✅ Todas las misiones épicas verificadas');
         }
         
     } catch (error) {
-        console.error('Error en ensureEpicMissions:', error);
+        console.error('💀 Error inesperado al crear misiones épicas para el escuadrón:', error);
     }
 }
-
-// El resto de tus funciones permanecen igual (checkMissionsProgress, isGoldMission, etc.)
-// ... [Todas las demás funciones] ...
-// Cargar misiones del escuadrón
-async function loadSquadMissions() {
-    try {
-        console.log('🔄 Cargando misiones del escuadrón...');
-        
-        const { data: missions, error } = await supabase
-            .from('squad_missions')
-            .select('*')
-            .eq('squad_id', userSquad.id)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('❌ Error al cargar misiones:', error);
-            squadMissions = [];
-        } else {
-            squadMissions = missions || [];
-            console.log('✅ Misiones cargadas:', squadMissions);
-        }
-
-        // Si no hay misiones, crear todas por defecto
-        if (squadMissions.length === 0) {
-            console.log('📝 No hay misiones, creando todas por defecto...');
-            await createAllDefaultMissions();
-        }
-
-        // Verificar progreso de misiones
-        console.log('🔍 Verificando progreso de misiones...');
-        await checkMissionsProgress();
-        
-    } catch (error) {
-        console.error('💀 Error inesperado al cargar misiones:', error);
-        squadMissions = [];
-    }
-}
-
-
 
 // Para escuadrones existentes que no tienen misiones épicas
 async function addEpicMissionsToExistingSquads() {
@@ -1117,8 +1070,37 @@ async function addEpicMissionsToExistingSquads() {
     }
 }
 
-// Ejecutar una sola vez para migrar escuadrones antiguos
-// await addEpicMissionsToExistingSquads();
+// Función de respaldo si el trigger falla
+async function ensureEpicMissions() {
+    try {
+        // Verificar si hay misiones épicas
+        const { data: existingMissions, error } = await supabase
+            .from('squad_missions')
+            .select('id')
+            .eq('squad_id', userSquad.id)
+            .eq('is_epic', true)
+            .limit(1);
+        
+        if (error) {
+            console.error('Error al verificar misiones épicas:', error);
+            return;
+        }
+        
+        // Si no hay misiones épicas, crearlas
+        if (!existingMissions || existingMissions.length === 0) {
+            console.log('🔄 El trigger falló, creando misiones épicas manualmente...');
+            await createAllEpicMissionsForSquad(userSquad.id);
+            
+            console.log('✅ Misiones épicas creadas manualmente');
+            // Recargar misiones
+            await loadSquadMissions();
+        }
+        
+    } catch (error) {
+        console.error('Error en ensureEpicMissions:', error);
+    }
+}
+
 // Verificación de misiones
 async function checkMissionsProgress() {
     try {
@@ -1645,28 +1627,9 @@ function showMissionCompleteNotification(mission) {
         timerProgressBar: true
     });
 }
-// Mostrar notificación de misión completada
-function showMissionCompleteNotification(mission) {
-    Swal.fire({
-        title: '¡Misión Completada!',
-        html: `
-            <div style="text-align: center;">
-                <div style="font-size: 48px; color: #78ffd6; margin-bottom: 16px;">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <p>¡Felicidades! Has completado la misión:</p>
-                <p><strong>${mission.title}</strong></p>
-                <p>+${mission.reward_points} puntos para el escuadrón</p>
-            </div>
-        `,
-        icon: 'success',
-        confirmButtonColor: '#78ffd6',
-        background: '#1e3a47',
-        color: 'white',
-        timer: 5000,
-        timerProgressBar: true
-    });
-}
+
+// Ejecutar una sola vez para migrar escuadrones antiguos
+// await addEpicMissionsToExistingSquads();
     // Cargar amigos del usuario
     async function loadUserFriends() {
         try {
