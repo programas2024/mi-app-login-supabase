@@ -395,7 +395,9 @@
         
         // Ofrecer crear un nuevo escuadrón
         function offerCreateNewSquad() {
-            document.getElementById('loading').style.display = 'none';
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) loadingElement.style.display = 'none';
+            
             document.getElementById('form-container').innerHTML = `
                 <div class="create-options">
                     <i class="fas fa-plus-circle" style="font-size: 4rem; margin-bottom: 20px; color: #9b59b6;"></i>
@@ -451,7 +453,9 @@
         
         // Mostrar mensaje de error
         function showError(message) {
-            document.getElementById('loading').style.display = 'none';
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) loadingElement.style.display = 'none';
+            
             document.getElementById('form-container').innerHTML = `
                 <div class="error-message">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
@@ -532,16 +536,23 @@
             document.getElementById('max-members').value = 10;
             
             // Ocultar loading
-            document.getElementById('loading').style.display = 'none';
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) loadingElement.style.display = 'none';
         }
         
         // Configurar event listeners
         function setupEventListeners() {
             // Avatar upload
-            document.getElementById('avatar-upload').addEventListener('change', handleAvatarUpload);
+            const avatarUpload = document.getElementById('avatar-upload');
+            if (avatarUpload) {
+                avatarUpload.addEventListener('change', handleAvatarUpload);
+            }
             
             // Form submission
-            document.getElementById('edit-squad-form').addEventListener('submit', handleFormSubmit);
+            const editForm = document.getElementById('edit-squad-form');
+            if (editForm) {
+                editForm.addEventListener('submit', handleFormSubmit);
+            }
         }
         
         // Cargar datos del escuadrón en el formulario
@@ -553,15 +564,19 @@
             document.getElementById('max-members').value = squad.max_members || 10;
             
             // Establecer avatar inicial si existe
-            if (squad.avatar_url) {
-                document.getElementById('avatar-preview').innerHTML = `<img src="${squad.avatar_url}" alt="Avatar del escuadrón">`;
-            } else {
-                const avatarText = squad.name ? squad.name.substring(0, 2).toUpperCase() : 'DR';
-                document.getElementById('avatar-preview').innerHTML = `<span>${avatarText}</span>`;
+            const avatarPreview = document.getElementById('avatar-preview');
+            if (avatarPreview) {
+                if (squad.avatar_url) {
+                    avatarPreview.innerHTML = `<img src="${squad.avatar_url}" alt="Avatar del escuadrón">`;
+                } else {
+                    const avatarText = squad.name ? squad.name.substring(0, 2).toUpperCase() : 'DR';
+                    avatarPreview.innerHTML = `<span>${avatarText}</span>`;
+                }
             }
             
             // Ocultar loading
-            document.getElementById('loading').style.display = 'none';
+            const loadingElement = document.getElementById('loading');
+            if (loadingElement) loadingElement.style.display = 'none';
         }
         
         // Manejar la subida del avatar
@@ -595,7 +610,10 @@
             // Mostrar vista previa
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('avatar-preview').innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+                const avatarPreview = document.getElementById('avatar-preview');
+                if (avatarPreview) {
+                    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+                }
             };
             reader.readAsDataURL(file);
         }
