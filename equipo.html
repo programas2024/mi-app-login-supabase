@@ -756,6 +756,123 @@ function getRankIcon(level) {
         default: return '<img src="https://cdn-icons-png.flaticon.com/128/7645/7645366.png" class="rank-icon-img" alt="Bronce">';
     }
 }
+
+// Función para aplicar estilos a la visualización de rangos
+function applyRankStyles() {
+    // Verificar si los estilos ya están aplicados
+    if (document.getElementById('rank-styles')) return;
+    
+    const styles = `
+        <style id="rank-styles">
+            .rank-details-card {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 15px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .rank-display {
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .rank-icon-img {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 15px;
+                display: block;
+            }
+            
+            .rank-name {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            
+            .rank-level {
+                font-size: 16px;
+                opacity: 0.8;
+                margin-bottom: 15px;
+            }
+            
+            .progress-container {
+                margin: 20px 0;
+            }
+            
+            .progress-label {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            .progress-bar {
+                height: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 5px;
+                overflow: hidden;
+            }
+            
+            .progress {
+                height: 100%;
+                border-radius: 5px;
+                transition: width 0.5s ease;
+            }
+            
+            .bronze-progress { background: linear-gradient(90deg, #cd7f32, #b5651d); }
+            .silver-progress { background: linear-gradient(90deg, #c0c0c0, #a8a8a8); }
+            .gold-progress { background: linear-gradient(90deg, #ffd700, #daa520); }
+            .emerald-progress { background: linear-gradient(90deg, #50c878, #3cb371); }
+            .mystic-progress { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+            
+            .next-rank-info {
+                margin-top: 8px;
+                font-size: 12px;
+                opacity: 0.8;
+            }
+            
+            .rank-benefits {
+                margin-top: 20px;
+            }
+            
+            .rank-benefits h4 {
+                margin-bottom: 10px;
+                color: #78ffd6;
+            }
+            
+            .rank-benefits ul {
+                list-style: none;
+                padding: 0;
+            }
+            
+            .rank-benefits li {
+                padding: 8px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+            }
+            
+            .rank-benefits li:last-child {
+                border-bottom: none;
+            }
+            
+            .rank-benefits li i {
+                color: #78ffd6;
+                margin-right: 10px;
+            }
+            
+            /* Colores para los rangos */
+            .bronze-rank { color: #cd7f32; }
+            .silver-rank { color: #c0c0c0; }
+            .gold-rank { color: #ffd700; }
+            .emerald-rank { color: #50c878; }
+            .mystic-rank { color: #9b59b6; }
+        </style>
+    `;
+    
+    document.head.insertAdjacentHTML('beforeend', styles);
+}
 // Función para calcular el progreso hacia el siguiente nivel
 function calculateRankProgress(points, level) {
     const rankInfo = getRankInfo(level);
