@@ -207,6 +207,13 @@
             justify-content: center;
             font-weight: bold;
             font-size: 1.2rem;
+            overflow: hidden;
+        }
+        
+        .squad-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .squad-name {
@@ -340,6 +347,13 @@
             justify-content: center;
             font-weight: bold;
             font-size: 2rem;
+            overflow: hidden;
+        }
+        
+        .squad-detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .squad-detail-info h2 {
@@ -762,11 +776,16 @@
                 const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
                 const levelClass = getLevelClass(squad.rank);
                 
+                // Mostrar avatar si existe, si no mostrar iniciales
+                const avatarHTML = squad.avatar_url 
+                    ? `<img src="${squad.avatar_url}" alt="${squad.name}">`
+                    : squad.name.substring(0, 2).toUpperCase();
+                
                 squadsHTML += `
                     <div class="squad-item" data-id="${squad.id}">
                         <div class="rank ${rankClass}">${rank}</div>
                         <div class="squad-info">
-                            <div class="squad-avatar">${squad.name.substring(0, 2).toUpperCase()}</div>
+                            <div class="squad-avatar">${avatarHTML}</div>
                             <div class="squad-name">${squad.name}</div>
                         </div>
                         <div class="squad-score">${squad.total_points?.toLocaleString() || '0'}</div>
@@ -837,9 +856,14 @@
                 // Generar HTML para el modal
                 const levelClass = getLevelClass(squad.rank);
                 
+                // Mostrar avatar si existe, si no mostrar iniciales
+                const avatarHTML = squad.avatar_url 
+                    ? `<img src="${squad.avatar_url}" alt="${squad.name}">`
+                    : squad.name.substring(0, 2).toUpperCase();
+                
                 modalContent.innerHTML = `
                     <div class="squad-detail-header">
-                        <div class="squad-detail-avatar">${squad.name.substring(0, 2).toUpperCase()}</div>
+                        <div class="squad-detail-avatar">${avatarHTML}</div>
                         <div class="squad-detail-info">
                             <h2>${squad.name}</h2>
                             <div class="level-badge ${levelClass}">${squad.rank}</div>
