@@ -672,15 +672,19 @@
          window.location.href = 'escuadra.html';
     });
     
-    /// Función para determinar el rango basado en los puntos totales
+// Función para determinar el rango basado en los puntos totales
 function determineSquadRank(points) {
-    if (points >= 900) return 'Oro';  // Cambiado de 'Maestro' a 'Oro'
+    if (points >= 2500) return 'Místico';
+    if (points >= 1500) return 'Esmeralda';
+    if (points >= 900) return 'Oro';
     if (points >= 500) return 'Plata';
     return 'Bronce';
 }
 
 // Función para determinar el nivel basado en los puntos totales
 function determineSquadLevel(points) {
+    if (points >= 2500) return 5;
+    if (points >= 1500) return 4;
     if (points >= 900) return 3;
     if (points >= 500) return 2;
     return 1;
@@ -689,6 +693,8 @@ function determineSquadLevel(points) {
 // Función para obtener la clase CSS según el nivel
 function getRankClass(level) {
     switch(level) {
+        case 5: return 'mystic-rank';
+        case 4: return 'emerald-rank';
         case 3: return 'gold-rank';
         case 2: return 'silver-rank';
         default: return 'bronze-rank';
@@ -698,43 +704,251 @@ function getRankClass(level) {
 // Función para obtener el icono según el nivel
 function getRankIcon(level) {
     switch(level) {
-        case 3: return '🥇'; // Medalla de oro
-        case 2: return '🥈'; // Medalla de plata
-        default: return '🥉'; // Medalla de bronce
+        case 5: return 'https://cdn-icons-png.flaticon.com/128/10607/10607850.png'; // Místico
+        case 4: return 'https://cdn-icons-png.flaticon.com/128/3138/3138806.png'; // Esmeralda
+        case 3: return 'https://cdn-icons-png.flaticon.com/128/7645/7645279.png'; // Oro
+        case 2: return 'https://cdn-icons-png.flaticon.com/128/2374/2374861.png'; // Plata
+        default: return 'https://cdn-icons-png.flaticon.com/128/7645/7645366.png'; // Bronce
     }
 }
-    
-    // Función para actualizar el rango del escuadrón en la base de datos
-    async function updateSquadRank(squadId, points) {
-        try {
-            const newRank = determineSquadRank(points);
-            const newLevel = determineSquadLevel(points);
-            
-            const { error } = await supabase
-                .from('squads')
-                .update({ 
-                    rank: newRank,
-                    level: newLevel
-                })
-                .eq('id', squadId);
-                
-            if (error) {
-                console.error('Error al actualizar rango del escuadrón:', error);
-                return;
-            }
-            
-            // Actualizar el objeto local
-            if (userSquad && userSquad.id === squadId) {
-                userSquad.rank = newRank;
-                userSquad.level = newLevel;
-            }
-            
-            console.log(`Rango actualizado a: ${newRank}, Nivel: ${newLevel}`);
-            
-        } catch (error) {
-            console.error('Error inesperado al actualizar rango:', error);
-        }
+
+// Función para obtener el nombre del rango según el nivel
+function getRankName(level) {
+    switch(level) {
+        case 5: return 'Místico';
+        case 4: return 'Esmeralda';
+        case 3: return 'Oro';
+        case 2: return 'Plata';
+        default: return 'Bronce';
     }
+}
+
+// Función para actualizar el rango del escuadrón en la base de datos
+async function updateSquadRank(squadId, points) {
+    try {
+        const newRank = determineSquadRank(points);
+        const newLevel = determineSquadLevel(points);
+        
+        const { error } = await supabase
+            .from('squads')
+            .update({ 
+                rank: newRank,
+                level: newLevel
+            })
+            .eq('id', squadId);
+            
+        if (error) {
+            console.error('Error al actualizar rango del escuadrón:', error);
+            return;
+        }
+        
+        // Actualizar el objeto local
+        if (userSquad && userSquad.id === squadId) {
+            userSquad.rank = newRank;
+            userSquad.level = newLevel;
+        }
+        
+        console.log(`Rango actualizado a: ${newRank}, Nivel: ${newLevel}`);
+        
+    } catch (error) {
+        console.error('Error inesperado al actualizar rango:', error);
+    }
+}
+
+// Función para obtener información detallada del rango
+function getRankInfo(level) {
+    const rankInfo = {
+        1: {
+            name: 'Bronce',
+            icon: 'https://cdn-icons-png.flaticon.com/128/7645/7645366.png',
+            class: 'bronze-rank',
+            nextLevelPoints: 500,
+            benefits: ['Acceso a chat de escuadrón', 'Misiones básicas']
+        },
+        2: {
+            name: 'Plata',
+            icon: 'https://cdn-icons-png.flaticon.com/128/2374/2374861.png',
+            class: 'silver-rank',
+            nextLevelPoints: 900,
+            benefits: ['Recompensas de misiones +10%', 'Emblema de plata']
+        },
+        3: {
+            name: 'Oro',
+            icon: 'https://cdn-icons-png.flaticon.com/128/7645/7645279.png',
+            class: 'gold-rank',
+            nextLevelPoints: 1500,
+            benefits: ['Recompensas de misiones +25%', 'Emblema de oro', 'Cofre semanal']
+        },
+        4: {
+            name: 'Esmeralda',
+            icon: 'https://cdn-icons-png.flaticon.com/128/3138/3138806.png',
+            class: 'emerald-rank',
+            nextLevelPoints: 2500,
+            benefits: ['Recompensas de misiones +40%', 'Emblema de esmeralda', 'Cofre semanal premium']
+        },
+        5: {
+            name: 'Místico',
+            icon: 'https://cdn-icons-png.flaticon.com/128/10607/10607850.png',
+            class: 'mystic-rank',
+            nextLevelPoints: null,
+            benefits: ['Recompensas de misiones +60%', 'Emblema místico', 'Cofre semanal místico', 'Título exclusivo']
+        }
+    };
+    
+    return rankInfo[level] || rankInfo[1];
+}
+
+// Función para calcular el progreso hacia el siguiente nivel
+function calculateRankProgress(points, level) {
+    const rankInfo = getRankInfo(level);
+    
+    if (!rankInfo.nextLevelPoints) {
+        return 100; // Nivel máximo
+    }
+    
+    const currentLevelMinPoints = level === 1 ? 0 : getMinPointsForLevel(level);
+    const nextLevelMinPoints = rankInfo.nextLevelPoints;
+    const pointsInCurrentLevel = points - currentLevelMinPoints;
+    const pointsNeeded = nextLevelMinPoints - currentLevelMinPoints;
+    
+    return Math.min(100, Math.round((pointsInCurrentLevel / pointsNeeded) * 100));
+}
+
+// Función para obtener los puntos mínimos requeridos para un nivel
+function getMinPointsForLevel(level) {
+    switch(level) {
+        case 5: return 2500;
+        case 4: return 1500;
+        case 3: return 900;
+        case 2: return 500;
+        default: return 0;
+    }
+}
+
+// Función para obtener el siguiente nivel
+function getNextLevel(currentLevel) {
+    if (currentLevel >= 5) return null;
+    return currentLevel + 1;
+}
+
+// Función para mostrar información detallada del rango en la UI
+function renderRankDetails() {
+    if (!userSquad) return;
+    
+    const rankInfo = getRankInfo(userSquad.level || 1);
+    const progress = calculateRankProgress(userSquad.total_points || 0, userSquad.level || 1);
+    const nextLevel = getNextLevel(userSquad.level || 1);
+    const nextRankInfo = nextLevel ? getRankInfo(nextLevel) : null;
+    
+    // Actualizar la UI con la información del rango
+    const rankElement = document.getElementById('squad-rank');
+    if (rankElement) {
+        rankElement.innerHTML = `
+            <img src="${rankInfo.icon}" class="rank-icon" alt="${rankInfo.name}">
+            <span>${rankInfo.name}</span>
+            <span class="rank-badge">Nivel ${userSquad.level || 1}</span>
+        `;
+        rankElement.className = `info-value ${rankInfo.class}`;
+    }
+    
+    // Actualizar la barra de progreso
+    const progressElement = document.getElementById('rank-progress');
+    if (progressElement) {
+        progressElement.innerHTML = `
+            <span>${progress}% completado</span>
+            <div class="progress-bar">
+                <div class="progress ${rankInfo.class.replace('-rank', '-progress')}" style="width: ${progress}%"></div>
+            </div>
+            ${nextRankInfo ? `
+            <div class="next-rank-info">
+                <small>Próximo rango: ${nextRankInfo.name} (${userSquad.total_points || 0}/${nextRankInfo.nextLevelPoints} puntos)</small>
+            </div>
+            ` : ''}
+        `;
+    }
+    
+    // Actualizar los beneficios del rango
+    const benefitsElement = document.getElementById('rank-benefits');
+    if (benefitsElement) {
+        benefitsElement.innerHTML = `
+            <h4>Beneficios del Rango ${rankInfo.name}</h4>
+            <ul>
+                ${rankInfo.benefits.map(benefit => `<li><i class="fas fa-check"></i> ${benefit}</li>`).join('')}
+            </ul>
+        `;
+    }
+}
+
+// Función para verificar y actualizar el rango cuando se obtienen puntos
+async function checkRankAfterPointsUpdate(squadId, newPoints) {
+    try {
+        const { data: squad, error } = await supabase
+            .from('squads')
+            .select('level, total_points')
+            .eq('id', squadId)
+            .single();
+            
+        if (error) {
+            console.error('Error al obtener información del escuadrón:', error);
+            return;
+        }
+        
+        const currentLevel = squad.level || 1;
+        const newLevel = determineSquadLevel(newPoints);
+        
+        // Si el nivel cambió, actualizar el rango
+        if (newLevel !== currentLevel) {
+            await updateSquadRank(squadId, newPoints);
+            
+            // Mostrar notificación de nuevo rango
+            if (newLevel > currentLevel) {
+                const newRankInfo = getRankInfo(newLevel);
+                showRankUpNotification(currentLevel, newLevel, newRankInfo.name);
+                
+                // Crear notificación para el escuadrón
+                await createSquadNotification('squad_level_up', {
+                    level: newLevel,
+                    rank: newRankInfo.name
+                });
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error al verificar rango después de actualizar puntos:', error);
+    }
+}
+
+// Función para mostrar notificación de subida de rango
+function showRankUpNotification(oldLevel, newLevel, rankName) {
+    const oldRankInfo = getRankInfo(oldLevel);
+    const newRankInfo = getRankInfo(newLevel);
+    
+    Swal.fire({
+        title: '¡Rango Mejorado!',
+        html: `
+            <div style="text-align: center;">
+                <div style="display: flex; justify-content: center; margin: 20px 0;">
+                    <img src="${oldRankInfo.icon}" style="width: 64px; height: 64px; opacity: 0.6;">
+                    <div style="display: flex; align-items: center; margin: 0 15px; font-size: 24px;">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <img src="${newRankInfo.icon}" style="width: 64px; height: 64px;">
+                </div>
+                <h3>¡Tu escuadrón alcanzó el rango ${rankName}!</h3>
+                <p>Desbloqueaste nuevos beneficios:</p>
+                <ul style="text-align: left; margin: 15px 0;">
+                    ${newRankInfo.benefits.map(benefit => `<li>${benefit}</li>`).join('')}
+                </ul>
+            </div>
+        `,
+        icon: 'success',
+        confirmButtonColor: '#78ffd6',
+        background: '#1e3a47',
+        color: 'white',
+        timer: 7000,
+        timerProgressBar: true
+    });
+}
     
     // Inicializar la aplicación
     document.addEventListener('DOMContentLoaded', async function() {
