@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Estilos anteriores (se mantienen igual) */
         * {
             margin: 0;
             padding: 0;
@@ -86,6 +85,11 @@
         
         .btn-create {
             background: linear-gradient(135deg, #834d9b, #d04ed6);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            margin-top: 20px;
         }
         
         .page-title {
@@ -261,6 +265,20 @@
             margin-top: 5px;
             font-weight: bold;
             display: none;
+        }
+        
+        .success-container {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: #2ecc71;
+            margin-bottom: 20px;
         }
         
         @media (max-width: 768px) {
@@ -690,18 +708,47 @@
         // Descontar oro del usuario
         async function deductUserGold() {
             try {
-                const { error } = await supabase.rpc('decrement_gold', {
-                    user_id: currentUserId,
-                    amount: 400
-                });
+                // Obtener el oro actual del usuario
+                const { data: profile, error: fetchError } = await supabase
+                    .from('profiles')
+                    .select('gold')
+                    .eq('id', currentUserId)
+                    .single();
                 
-                if (error) throw error;
+                if (fetchError) throw fetchError;
+                
+                // Calcular el nuevo valor de oro
+                const newGold = profile.gold - 400;
+                
+                // Actualizar el campo gold en la tabla profiles
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({ gold: newGold })
+                    .eq('id', currentUserId);
+                
+                if (updateError) throw updateError;
                 
                 return true;
             } catch (error) {
                 console.error('Error deducting gold:', error);
                 return false;
             }
+        }
+        
+        // Mostrar pantalla de éxito
+        function showSuccess(message) {
+            document.getElementById('form-container').innerHTML = `
+                <div class="success-container">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>¡Éxito!</h2>
+                    <p>${message}</p>
+                    <a href="equipo.html" class="btn btn-success">
+                        <i class="fas fa-check"></i> Volver al Equipo
+                    </a>
+                </div>
+            `;
         }
         
         // Manejar el envío del formulario
@@ -831,16 +878,13 @@
                     }
                 }
                 
+                // Cerrar el diálogo de carga
+                Swal.close();
+                
                 // Mostrar mensaje de éxito
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: isCreatingNew ? 'Escuadrón creado correctamente' : 'Escuadrón actualizado correctamente',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.href = 'equipo.html';
-                });
+                showSuccess(isCreatingNew ? 
+                    'Escuadrón creado correctamente' : 
+                    'Escuadrón actualizado correctamente');
                 
             } catch (error) {
                 console.error('Error saving squad:', error);
