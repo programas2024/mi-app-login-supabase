@@ -6,7 +6,9 @@
     <title>Editar Escuadrón - GameHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Estilos anteriores se mantienen igual */
         * {
             margin: 0;
             padding: 0;
@@ -196,6 +198,13 @@
             margin-top: 30px;
         }
         
+        .error-message {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+            font-size: 1.2rem;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -228,57 +237,13 @@
 
         <h1 class="page-title">Editar Escuadrón</h1>
         
-        <form id="edit-squad-form" class="edit-form">
-            <div class="avatar-upload">
-                <div class="avatar-preview" id="avatar-preview">
-                    <span>DR</span>
-                </div>
-                <input type="file" id="avatar-upload" class="file-input" accept="image/*">
-                <label for="avatar-upload" class="file-label">
-                    <i class="fas fa-upload"></i> Seleccionar Avatar
-                </label>
+        <div id="form-container">
+            <!-- El formulario se cargará aquí dinámicamente -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Cargando datos del escuadrón...</p>
             </div>
-            
-            <div class="form-group">
-                <label for="squad-name">Nombre del Escuadrón</label>
-                <input type="text" id="squad-name" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="squad-motto">Lema del Escuadrón</label>
-                <input type="text" id="squad-motto" class="form-control">
-            </div>
-            
-            <div class="form-group">
-                <label for="squad-mission">Misión del Escuadrón</label>
-                <textarea id="squad-mission" class="form-control" required></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="squad-rank">Rango</label>
-                <select id="squad-rank" class="form-control" required>
-                    <option value="Bronce">Bronce</option>
-                    <option value="Plata">Plata</option>
-                    <option value="Oro">Oro</option>
-                    <option value="Platino">Platino</option>
-                    <option value="Diamante">Diamante</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="max-members">Máximo de Miembros</label>
-                <input type="number" id="max-members" class="form-control" min="1" max="20" required>
-            </div>
-            
-            <div class="form-actions">
-                <a href="rankingSquards.html" class="btn btn-back">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-                <button type="submit" class="btn btn-save">
-                    <i class="fas fa-save"></i> Guardar Cambios
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
 
     <script>
@@ -289,44 +254,39 @@
         // Inicializar Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Elementos DOM
-        const editForm = document.getElementById('edit-squad-form');
-        const avatarUpload = document.getElementById('avatar-upload');
-        const avatarPreview = document.getElementById('avatar-preview');
-        const squadName = document.getElementById('squad-name');
-        const squadMotto = document.getElementById('squad-motto');
-        const squadMission = document.getElementById('squad-mission');
-        const squadRank = document.getElementById('squad-rank');
-        const maxMembers = document.getElementById('max-members');
-        
         // Variables de estado
         let currentSquadId = null;
+        let currentUserId = null;
         let avatarFile = null;
         
         // Cargar datos al iniciar
-        document.addEventListener('DOMContentLoaded', () => {
-            // Obtener el ID del escuadrón de la URL (simulado)
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Obtener el ID del escuadrón de la URL
             const urlParams = new URLSearchParams(window.location.search);
-            currentSquadId = urlParams.get('id') || 'default-id';
+            currentSquadId = urlParams.get('id');
             
-            // Cargar datos del escuadrón
-            loadSquadData();
-            setupEventListeners();
+            if (!currentSquadId) {
+                showError('No se ha especificado un escuadrón para editar');
+                return;
+            }
+            
+            // Obtener el usuario actualmente autenticado
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                showError('Debes iniciar sesión para editar un escuadrón');
+                return;
+            }
+            
+            currentUserId = user.id;
+            
+            // Verificar si el usuario es el líder del escuadrón
+            await checkSquadLeadership();
         });
         
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Avatar upload
-            avatarUpload.addEventListener('change', handleAvatarUpload);
-            
-            // Form submission
-            editForm.addEventListener('submit', handleFormSubmit);
-        }
-        
-        // Cargar datos del escuadrón desde Supabase
-        async function loadSquadData() {
+        // Verificar si el usuario es el líder del escuadrón
+        async function checkSquadLeadership() {
             try {
-                // Obtener datos de Supabase
+                // Obtener datos del escuadrón
                 const { data: squad, error } = await supabase
                     .from('squads')
                     .select('*')
@@ -337,21 +297,123 @@
                     throw error;
                 }
                 
-                // Llenar el formulario con los datos
-                squadName.value = squad.name || '';
-                squadMotto.value = squad.motto || '';
-                squadMission.value = squad.mission || '';
-                squadRank.value = squad.rank || 'Bronce';
-                maxMembers.value = squad.max_members || 10;
+                // Verificar si el usuario actual es el líder
+                if (squad.leader_id !== currentUserId) {
+                    showError('No tienes permisos para editar este escuadrón. Solo el líder puede editarlo.');
+                    return;
+                }
                 
-                // Establecer avatar inicial
-                const avatarText = squad.name ? squad.name.substring(0, 2).toUpperCase() : 'DR';
-                avatarPreview.innerHTML = `<span>${avatarText}</span>`;
+                // Si es el líder, cargar el formulario
+                loadForm();
+                loadSquadData(squad);
                 
             } catch (error) {
-                console.error('Error loading squad data:', error);
-                alert('Error al cargar los datos del escuadrón');
+                console.error('Error checking squad leadership:', error);
+                showError('Error al verificar los permisos del escuadrón: ' + error.message);
             }
+        }
+        
+        // Mostrar mensaje de error
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('form-container').innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p>${message}</p>
+                    <a href="rankingSquards.html" class="btn btn-back" style="margin-top: 20px;">
+                        <i class="fas fa-arrow-left"></i> Volver al Ranking
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Cargar el formulario en el DOM
+        function loadForm() {
+            document.getElementById('form-container').innerHTML = `
+                <form id="edit-squad-form" class="edit-form">
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="avatar-preview">
+                            <span>DR</span>
+                        </div>
+                        <input type="file" id="avatar-upload" class="file-input" accept="image/*">
+                        <label for="avatar-upload" class="file-label">
+                            <i class="fas fa-upload"></i> Seleccionar Avatar
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="squad-name">Nombre del Escuadrón</label>
+                        <input type="text" id="squad-name" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="squad-motto">Lema del Escuadrón</label>
+                        <input type="text" id="squad-motto" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="squad-mission">Misión del Escuadrón</label>
+                        <textarea id="squad-mission" class="form-control" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="squad-rank">Rango</label>
+                        <select id="squad-rank" class="form-control" required>
+                            <option value="Bronce">Bronce</option>
+                            <option value="Plata">Plata</option>
+                            <option value="Oro">Oro</option>
+                            <option value="Platino">Platino</option>
+                            <option value="Diamante">Diamante</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="max-members">Máximo de Miembros</label>
+                        <input type="number" id="max-members" class="form-control" min="1" max="20" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="rankingSquards.html" class="btn btn-back">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-save">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            // Configurar event listeners después de cargar el formulario
+            setupEventListeners();
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Avatar upload
+            document.getElementById('avatar-upload').addEventListener('change', handleAvatarUpload);
+            
+            // Form submission
+            document.getElementById('edit-squad-form').addEventListener('submit', handleFormSubmit);
+        }
+        
+        // Cargar datos del escuadrón en el formulario
+        function loadSquadData(squad) {
+            document.getElementById('squad-name').value = squad.name || '';
+            document.getElementById('squad-motto').value = squad.motto || '';
+            document.getElementById('squad-mission').value = squad.mission || '';
+            document.getElementById('squad-rank').value = squad.rank || 'Bronce';
+            document.getElementById('max-members').value = squad.max_members || 10;
+            
+            // Establecer avatar inicial si existe
+            if (squad.avatar_url) {
+                document.getElementById('avatar-preview').innerHTML = `<img src="${squad.avatar_url}" alt="Avatar del escuadrón">`;
+            } else {
+                const avatarText = squad.name ? squad.name.substring(0, 2).toUpperCase() : 'DR';
+                document.getElementById('avatar-preview').innerHTML = `<span>${avatarText}</span>`;
+            }
+            
+            // Ocultar loading
+            document.getElementById('loading').style.display = 'none';
         }
         
         // Manejar la subida del avatar
@@ -371,7 +433,7 @@
             // Mostrar vista previa
             const reader = new FileReader();
             reader.onload = function(e) {
-                avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+                document.getElementById('avatar-preview').innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
             };
             reader.readAsDataURL(file);
         }
@@ -421,11 +483,11 @@
                 
                 // Preparar datos para actualizar
                 const updates = {
-                    name: squadName.value,
-                    motto: squadMotto.value,
-                    mission: squadMission.value,
-                    rank: squadRank.value,
-                    max_members: parseInt(maxMembers.value),
+                    name: document.getElementById('squad-name').value,
+                    motto: document.getElementById('squad-motto').value,
+                    mission: document.getElementById('squad-mission').value,
+                    rank: document.getElementById('squad-rank').value,
+                    max_members: parseInt(document.getElementById('max-members').value),
                     updated_at: new Date().toISOString()
                 };
                 
@@ -438,7 +500,8 @@
                 const { data, error } = await supabase
                     .from('squads')
                     .update(updates)
-                    .eq('id', currentSquadId);
+                    .eq('id', currentSquadId)
+                    .eq('leader_id', currentUserId); // Solo actualizar si el usuario es el líder
                 
                 if (error) {
                     throw error;
@@ -449,7 +512,7 @@
                 
             } catch (error) {
                 console.error('Error updating squad:', error);
-                alert('Error al actualizar el escuadrón');
+                alert('Error al actualizar el escuadrón: ' + error.message);
             }
         }
     </script>
