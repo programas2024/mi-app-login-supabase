@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* Estilos anteriores se mantienen igual */
         * {
             margin: 0;
             padding: 0;
@@ -82,6 +81,10 @@
         
         .btn-save {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
         }
         
         .page-title {
@@ -205,6 +208,14 @@
             font-size: 1.2rem;
         }
         
+        .create-options {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
         .loading {
             text-align: center;
             padding: 40px;
@@ -223,6 +234,22 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 20px;
+            color: #2ecc71;
+            font-size: 1.2rem;
+        }
+        
+        .debug-info {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #aaa;
         }
         
         @media (max-width: 768px) {
@@ -264,6 +291,13 @@
                 <p>Cargando datos del escuadrón...</p>
             </div>
         </div>
+        
+        <div class="debug-info" id="debug-info">
+            <p><strong>Información de depuración:</strong></p>
+            <p id="url-info">Parámetros de URL: </p>
+            <p id="squad-info">ID del escuadrón: No especificado</p>
+            <p id="user-info">ID de usuario: No autenticado</p>
+        </div>
     </div>
 
     <script>
@@ -278,7 +312,7 @@
         let currentSquadId = null;
         let currentUserId = null;
         let avatarFile = null;
-        let currentAvatarUrl = null;
+        let isCreatingNew = false;
         
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -286,8 +320,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             currentSquadId = urlParams.get('id');
             
+            // Actualizar información de depuración
+            document.getElementById('url-info').textContent = 
+                `Parámetros de URL: ${window.location.search || 'Ninguno'}`;
+            document.getElementById('squad-info').textContent = 
+                `ID del escuadrón: ${currentSquadId || 'No especificado'}`;
+            
+            // Si no hay ID, ofrecer crear nuevo escuadrón
             if (!currentSquadId) {
-                showError('No se ha especificado un escuadrón para editar');
+                offerCreateNewSquad();
                 return;
             }
             
@@ -295,14 +336,42 @@
             const { data: { user }, error: authError } = await supabase.auth.getUser();
             if (authError || !user) {
                 showError('Debes iniciar sesión para editar un escuadrón');
+                document.getElementById('user-info').textContent = 'ID de usuario: Error de autenticación';
                 return;
             }
             
             currentUserId = user.id;
+            document.getElementById('user-info').textContent = `ID de usuario: ${currentUserId}`;
             
             // Verificar si el usuario es el líder del escuadrón
             await checkSquadLeadership();
         });
+        
+        // Ofrecer crear un nuevo escuadrón
+        function offerCreateNewSquad() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('form-container').innerHTML = `
+                <div class="create-options">
+                    <i class="fas fa-plus-circle" style="font-size: 4rem; margin-bottom: 20px; color: #9b59b6;"></i>
+                    <h2 style="margin-bottom: 15px;">No se ha especificado un escuadrón para editar</h2>
+                    <p style="margin-bottom: 25px;">Puedes crear un nuevo escuadrón o volver al ranking para seleccionar uno.</p>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <a href="rankingSquards.html" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> Volver al Ranking
+                        </a>
+                        <button id="create-new-btn" class="btn btn-create">
+                            <i class="fas fa-plus"></i> Crear Nuevo Escuadrón
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('create-new-btn').addEventListener('click', () => {
+                isCreatingNew = true;
+                loadForm();
+                initializeNewSquadForm();
+            });
+        }
         
         // Verificar si el usuario es el líder del escuadrón
         async function checkSquadLeadership() {
@@ -390,7 +459,7 @@
                     
                     <div class="form-group">
                         <label for="max-members">Máximo de Miembros</label>
-                        <input type="number" id="max-members" class="form-control" min="1" max="20" required>
+                        <input type="number" id="max-members" class="form-control" min="1" max="20" value="10" required>
                     </div>
                     
                     <div class="form-actions">
@@ -398,7 +467,7 @@
                             <i class="fas fa-times"></i> Cancelar
                         </a>
                         <button type="submit" class="btn btn-save">
-                            <i class="fas fa-save"></i> Guardar Cambios
+                            <i class="fas fa-save"></i> ${isCreatingNew ? 'Crear Escuadrón' : 'Guardar Cambios'}
                         </button>
                     </div>
                 </form>
@@ -406,6 +475,18 @@
             
             // Configurar event listeners después de cargar el formulario
             setupEventListeners();
+        }
+        
+        // Inicializar formulario para nuevo escuadrón
+        function initializeNewSquadForm() {
+            document.getElementById('squad-name').value = 'Mi Nuevo Escuadrón';
+            document.getElementById('squad-motto').value = '¡Juntos somos más fuertes!';
+            document.getElementById('squad-mission').value = 'Dominar todos los juegos y alcanzar el top del ranking.';
+            document.getElementById('squad-rank').value = 'Bronce';
+            document.getElementById('max-members').value = 10;
+            
+            // Ocultar loading
+            document.getElementById('loading').style.display = 'none';
         }
         
         // Configurar event listeners
@@ -424,9 +505,6 @@
             document.getElementById('squad-mission').value = squad.mission || '';
             document.getElementById('squad-rank').value = squad.rank || 'Bronce';
             document.getElementById('max-members').value = squad.max_members || 10;
-            
-            // Guardar la URL actual del avatar
-            currentAvatarUrl = squad.avatar_url;
             
             // Establecer avatar inicial si existe
             if (squad.avatar_url) {
@@ -478,21 +556,21 @@
         
         // Subir avatar a Supabase Storage
         async function uploadAvatar() {
-            if (!avatarFile) return currentAvatarUrl;
+            if (!avatarFile) return null;
             
             try {
                 // Generar un nombre único para el archivo
                 const fileExt = avatarFile.name.split('.').pop();
-                const fileName = `${currentSquadId}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+                const fileName = `${Math.random()}.${fileExt}`;
                 const filePath = `squad-avatars/${fileName}`;
                 
                 // Subir el archivo
-                const { error: uploadError } = await supabase.storage
+                const { data, error } = await supabase.storage
                     .from('avatars')
-                    .upload(filePath, avatarFile, { upsert: true });
+                    .upload(filePath, avatarFile);
                 
-                if (uploadError) {
-                    throw uploadError;
+                if (error) {
+                    throw error;
                 }
                 
                 // Obtener la URL pública del archivo
@@ -514,7 +592,7 @@
             try {
                 // Mostrar indicador de carga
                 Swal.fire({
-                    title: 'Guardando cambios...',
+                    title: isCreatingNew ? 'Creando escuadrón...' : 'Guardando cambios...',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
@@ -534,8 +612,8 @@
                     return;
                 }
                 
-                // Preparar datos para actualizar
-                const updates = {
+                // Preparar datos para actualizar o crear
+                const squadData = {
                     name: document.getElementById('squad-name').value,
                     motto: document.getElementById('squad-motto').value,
                     mission: document.getElementById('squad-mission').value,
@@ -546,25 +624,40 @@
                 
                 // Añadir avatar URL si se subió una imagen
                 if (avatarUrl) {
-                    updates.avatar_url = avatarUrl;
+                    squadData.avatar_url = avatarUrl;
                 }
                 
-                // Actualizar en Supabase
-                const { error } = await supabase
-                    .from('squads')
-                    .update(updates)
-                    .eq('id', currentSquadId)
-                    .eq('leader_id', currentUserId); // Solo actualizar si el usuario es el líder
+                let result;
                 
-                if (error) {
-                    throw error;
+                if (isCreatingNew) {
+                    // Crear nuevo escuadrón
+                    squadData.leader_id = currentUserId;
+                    squadData.member_count = 1;
+                    squadData.level = 1;
+                    squadData.total_points = 0;
+                    
+                    result = await supabase
+                        .from('squads')
+                        .insert([squadData])
+                        .select();
+                } else {
+                    // Actualizar escuadrón existente
+                    result = await supabase
+                        .from('squads')
+                        .update(squadData)
+                        .eq('id', currentSquadId)
+                        .eq('leader_id', currentUserId); // Solo actualizar si el usuario es el líder
+                }
+                
+                if (result.error) {
+                    throw result.error;
                 }
                 
                 // Mostrar mensaje de éxito
                 Swal.fire({
                     icon: 'success',
                     title: '¡Éxito!',
-                    text: 'Escuadrón actualizado correctamente',
+                    text: isCreatingNew ? 'Escuadrón creado correctamente' : 'Escuadrón actualizado correctamente',
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
@@ -572,11 +665,11 @@
                 });
                 
             } catch (error) {
-                console.error('Error updating squad:', error);
+                console.error('Error saving squad:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Error al actualizar el escuadrón: ' + error.message
+                    text: 'Error al guardar el escuadrón: ' + error.message
                 });
             }
         }
