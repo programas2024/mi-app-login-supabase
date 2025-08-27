@@ -603,6 +603,33 @@
             color: var(--color-danger);
             margin-bottom: 1rem;
         }
+
+        /* Estilos para los rangos */
+.gold-rank {
+    color: #FFD700 !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.silver-rank {
+    color: #C0C0C0 !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(192, 192, 192, 0.5);
+}
+
+.bronze-rank {
+    color: #CD7F32 !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(205, 127, 50, 0.5);
+}
+
+.rank-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-left: 8px;
+}
     </style>
 </head>
 <body>
@@ -645,19 +672,37 @@
          window.location.href = 'escuadra.html';
     });
     
-    // Función para determinar el rango basado en los puntos totales
-    function determineSquadRank(points) {
-        if (points >= 900) return 'Maestro';
-        if (points >= 500) return 'Plata';
-        return 'Bronce';
+    /// Función para determinar el rango basado en los puntos totales
+function determineSquadRank(points) {
+    if (points >= 900) return 'Oro';  // Cambiado de 'Maestro' a 'Oro'
+    if (points >= 500) return 'Plata';
+    return 'Bronce';
+}
+
+// Función para determinar el nivel basado en los puntos totales
+function determineSquadLevel(points) {
+    if (points >= 900) return 3;
+    if (points >= 500) return 2;
+    return 1;
+}
+
+// Función para obtener la clase CSS según el nivel
+function getRankClass(level) {
+    switch(level) {
+        case 3: return 'gold-rank';
+        case 2: return 'silver-rank';
+        default: return 'bronze-rank';
     }
-    
-    // Función para determinar el nivel basado en los puntos totales
-    function determineSquadLevel(points) {
-        if (points >= 900) return 3;
-        if (points >= 500) return 2;
-        return 1;
+}
+
+// Función para obtener el icono según el nivel
+function getRankIcon(level) {
+    switch(level) {
+        case 3: return '🥇'; // Medalla de oro
+        case 2: return '🥈'; // Medalla de plata
+        default: return '🥉'; // Medalla de bronce
     }
+}
     
     // Función para actualizar el rango del escuadrón en la base de datos
     async function updateSquadRank(squadId, points) {
@@ -2176,11 +2221,15 @@
                                 <span class="info-label">Misión Actual</span>
                                 <span class="info-value">${userSquad.mission || 'Ser top 1'}</span>
                             </div>
+                           // En la función renderSquadDetails, actualiza esta parte:
                             <div class="info-item">
                                 <span class="info-label">Rango</span>
-                                <span class="info-value">${userSquad.rank || 'Bronce'} <span class="rank-badge">Nivel ${userSquad.level || 1}</span></span>
+                                <span class="info-value ${getRankClass(userSquad.level || 1)}">
+                                    ${getRankIcon(userSquad.level || 1)} ${userSquad.rank || 'Bronce'} 
+                                    <span class="rank-badge">Nivel ${userSquad.level || 1}</span>
+                                </span>
                             </div>
-                            <div class="info-item">
+                                                        <div class="info-item">
                                 <span class="info-label">Miembros</span>
                                 <span class="info-value">${squadMembers.length || 1}/${userSquad.max_members || 10}</span>
                             </div>
