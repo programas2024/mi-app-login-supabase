@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Estilos anteriores (se mantienen igual) */
         * {
             margin: 0;
             padding: 0;
@@ -311,6 +312,7 @@
         // Variables de estado
         let currentSquadId = null;
         let currentUserId = null;
+        let currentUserProfile = null;
         let avatarFile = null;
         let isCreatingNew = false;
         
@@ -326,12 +328,6 @@
             document.getElementById('squad-info').textContent = 
                 `ID del escuadrón: ${currentSquadId || 'No especificado'}`;
             
-            // Si no hay ID, ofrecer crear nuevo escuadrón
-            if (!currentSquadId) {
-                offerCreateNewSquad();
-                return;
-            }
-            
             // Obtener el usuario actualmente autenticado
             const { data: { user }, error: authError } = await supabase.auth.getUser();
             if (authError || !user) {
@@ -343,9 +339,59 @@
             currentUserId = user.id;
             document.getElementById('user-info').textContent = `ID de usuario: ${currentUserId}`;
             
-            // Verificar si el usuario es el líder del escuadrón
+            // Obtener el perfil del usuario
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUserId)
+                .single();
+                
+            if (profileError) {
+                console.error('Error al obtener perfil:', profileError);
+                showError('Error al cargar el perfil de usuario');
+                return;
+            }
+            
+            currentUserProfile = profile;
+            
+            // Si no hay ID en la URL, buscar si el usuario ya tiene un escuadrón
+            if (!currentSquadId) {
+                await checkUserSquad();
+                return;
+            }
+            
+            // Si hay ID, verificar si el usuario es el líder del escuadrón
             await checkSquadLeadership();
         });
+        
+        // Verificar si el usuario ya tiene un escuadrón
+        async function checkUserSquad() {
+            try {
+                // Buscar escuadrones donde el usuario sea el líder
+                const { data: userSquads, error } = await supabase
+                    .from('squads')
+                    .select('*')
+                    .eq('leader_id', currentUserId);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Si el usuario ya tiene un escuadrón, redirigir a la edición de ese escuadrón
+                if (userSquads && userSquads.length > 0) {
+                    currentSquadId = userSquads[0].id;
+                    document.getElementById('squad-info').textContent = `ID del escuadrón: ${currentSquadId}`;
+                    await checkSquadLeadership();
+                } else {
+                    // Si no tiene escuadrón, ofrecer crear uno nuevo
+                    offerCreateNewSquad();
+                }
+                
+            } catch (error) {
+                console.error('Error checking user squad:', error);
+                showError('Error al verificar el escuadrón del usuario: ' + error.message);
+            }
+        }
         
         // Ofrecer crear un nuevo escuadrón
         function offerCreateNewSquad() {
@@ -353,8 +399,8 @@
             document.getElementById('form-container').innerHTML = `
                 <div class="create-options">
                     <i class="fas fa-plus-circle" style="font-size: 4rem; margin-bottom: 20px; color: #9b59b6;"></i>
-                    <h2 style="margin-bottom: 15px;">No se ha especificado un escuadrón para editar</h2>
-                    <p style="margin-bottom: 25px;">Puedes crear un nuevo escuadrón o volver al ranking para seleccionar uno.</p>
+                    <h2 style="margin-bottom: 15px;">No tienes un escuadrón creado</h2>
+                    <p style="margin-bottom: 25px;">Puedes crear un nuevo escuadrón o volver al ranking.</p>
                     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                         <a href="rankingSquards.html" class="btn btn-back">
                             <i class="fas fa-arrow-left"></i> Volver al Ranking
@@ -479,7 +525,7 @@
         
         // Inicializar formulario para nuevo escuadrón
         function initializeNewSquadForm() {
-            document.getElementById('squad-name').value = 'Mi Nuevo Escuadrón';
+            document.getElementById('squad-name').value = currentUserProfile?.username ? `Escuadrón de ${currentUserProfile.username}` : 'Mi Nuevo Escuadrón';
             document.getElementById('squad-motto').value = '¡Juntos somos más fuertes!';
             document.getElementById('squad-mission').value = 'Dominar todos los juegos y alcanzar el top del ranking.';
             document.getElementById('squad-rank').value = 'Bronce';
@@ -651,6 +697,21 @@
                 
                 if (result.error) {
                     throw result.error;
+                }
+                
+                // Si es creación nueva, actualizar el perfil del usuario con el squad_id
+                if (isCreatingNew && result.data && result.data.length > 0) {
+                    const newSquadId = result.data[0].id;
+                    
+                    // Actualizar el perfil del usuario con el nuevo squad_id
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({ squad_id: newSquadId })
+                        .eq('id', currentUserId);
+                    
+                    if (profileError) {
+                        console.error('Error updating profile with squad id:', profileError);
+                    }
                 }
                 
                 // Mostrar mensaje de éxito
