@@ -497,17 +497,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="squad-rank">Rango</label>
-                        <select id="squad-rank" class="form-control" required>
-                            <option value="Bronce">Bronce</option>
-                            <option value="Plata">Plata</option>
-                            <option value="Oro">Oro</option>
-                            <option value="Platino">Platino</option>
-                            <option value="Diamante">Diamante</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
                         <label for="max-members">Máximo de Miembros</label>
                         <input type="number" id="max-members" class="form-control" min="1" max="20" value="10" required>
                     </div>
@@ -532,7 +521,6 @@
             document.getElementById('squad-name').value = currentUserProfile?.username ? `Escuadrón de ${currentUserProfile.username}` : 'Mi Nuevo Escuadrón';
             document.getElementById('squad-motto').value = '¡Juntos somos más fuertes!';
             document.getElementById('squad-mission').value = 'Dominar todos los juegos y alcanzar el top del ranking.';
-            document.getElementById('squad-rank').value = 'Bronce';
             document.getElementById('max-members').value = 10;
             
             // Ocultar loading
@@ -560,7 +548,6 @@
             document.getElementById('squad-name').value = squad.name || '';
             document.getElementById('squad-motto').value = squad.motto || '';
             document.getElementById('squad-mission').value = squad.mission || '';
-            document.getElementById('squad-rank').value = squad.rank || 'Bronce';
             document.getElementById('max-members').value = squad.max_members || 10;
             
             // Establecer avatar inicial si existe
@@ -681,9 +668,7 @@
                     name: document.getElementById('squad-name').value,
                     motto: document.getElementById('squad-motto').value,
                     mission: document.getElementById('squad-mission').value,
-                    rank: document.getElementById('squad-rank').value,
-                    max_members: parseInt(document.getElementById('max-members').value),
-                    updated_at: new Date().toISOString()
+                    max_members: parseInt(document.getElementById('max-members').value)
                 };
                 
                 // Añadir avatar URL si se subió una imagen
