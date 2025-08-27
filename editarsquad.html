@@ -77,15 +77,15 @@
         }
         
         .btn-back {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
         }
         
         .btn-save {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            background: linear-gradient(135deg, #00b09b, #96c93d);
         }
         
         .btn-create {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            background: linear-gradient(135deg, #834d9b, #d04ed6);
         }
         
         .page-title {
@@ -177,7 +177,7 @@
         }
         
         .file-label {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            background: linear-gradient(135deg, #834d9b, #d04ed6);
             color: white;
             padding: 10px 20px;
             border-radius: 50px;
@@ -253,6 +253,16 @@
             color: #aaa;
         }
         
+        .gold-cost {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-top: 5px;
+            font-weight: bold;
+            display: none;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -278,8 +288,8 @@
                 <i class="fas fa-users"></i>
                 <span>GameHub Escuadrones</span>
             </div>
-            <a href="rankingSquards.html" class="btn btn-back">
-                <i class="fas fa-arrow-left"></i> Volver al Ranking
+            <a href="equipo.html" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
 
@@ -402,10 +412,10 @@
                 <div class="create-options">
                     <i class="fas fa-plus-circle" style="font-size: 4rem; margin-bottom: 20px; color: #9b59b6;"></i>
                     <h2 style="margin-bottom: 15px;">No tienes un escuadrón creado</h2>
-                    <p style="margin-bottom: 25px;">Puedes crear un nuevo escuadrón o volver al ranking.</p>
+                    <p style="margin-bottom: 25px;">Puedes crear un nuevo escuadrón o volver al equipo.</p>
                     <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                        <a href="rankingSquards.html" class="btn btn-back">
-                            <i class="fas fa-arrow-left"></i> Volver al Ranking
+                        <a href="equipo.html" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> Volver
                         </a>
                         <button id="create-new-btn" class="btn btn-create">
                             <i class="fas fa-plus"></i> Crear Nuevo Escuadrón
@@ -460,8 +470,8 @@
                 <div class="error-message">
                     <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
                     <p>${message}</p>
-                    <a href="rankingSquards.html" class="btn btn-back" style="margin-top: 20px;">
-                        <i class="fas fa-arrow-left"></i> Volver al Ranking
+                    <a href="equipo.html" class="btn btn-back" style="margin-top: 20px;">
+                        <i class="fas fa-arrow-left"></i> Volver
                     </a>
                 </div>
             `;
@@ -499,10 +509,13 @@
                     <div class="form-group">
                         <label for="max-members">Máximo de Miembros</label>
                         <input type="number" id="max-members" class="form-control" min="1" max="20" value="10" required>
+                        <div id="gold-cost-message" class="gold-cost">
+                            <i class="fas fa-coins"></i> Costo adicional: 400 de oro
+                        </div>
                     </div>
                     
                     <div class="form-actions">
-                        <a href="rankingSquards.html" class="btn btn-back">
+                        <a href="equipo.html" class="btn btn-back">
                             <i class="fas fa-times"></i> Cancelar
                         </a>
                         <button type="submit" class="btn btn-save">
@@ -541,6 +554,20 @@
             if (editForm) {
                 editForm.addEventListener('submit', handleFormSubmit);
             }
+            
+            // Mostrar costo de oro si se excede el límite de miembros
+            const maxMembersInput = document.getElementById('max-members');
+            const goldCostMessage = document.getElementById('gold-cost-message');
+            
+            if (maxMembersInput && goldCostMessage) {
+                maxMembersInput.addEventListener('input', function() {
+                    if (parseInt(this.value) > 10) {
+                        goldCostMessage.style.display = 'block';
+                    } else {
+                        goldCostMessage.style.display = 'none';
+                    }
+                });
+            }
         }
         
         // Cargar datos del escuadrón en el formulario
@@ -549,6 +576,12 @@
             document.getElementById('squad-motto').value = squad.motto || '';
             document.getElementById('squad-mission').value = squad.mission || '';
             document.getElementById('max-members').value = squad.max_members || 10;
+            
+            // Mostrar costo de oro si es necesario
+            const goldCostMessage = document.getElementById('gold-cost-message');
+            if (goldCostMessage && squad.max_members > 10) {
+                goldCostMessage.style.display = 'block';
+            }
             
             // Establecer avatar inicial si existe
             const avatarPreview = document.getElementById('avatar-preview');
@@ -636,11 +669,79 @@
             }
         }
         
+        // Verificar si el usuario tiene suficiente oro
+        async function checkUserGold() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('gold')
+                    .eq('id', currentUserId)
+                    .single();
+                
+                if (error) throw error;
+                
+                return profile.gold >= 400;
+            } catch (error) {
+                console.error('Error checking user gold:', error);
+                return false;
+            }
+        }
+        
+        // Descontar oro del usuario
+        async function deductUserGold() {
+            try {
+                const { error } = await supabase.rpc('decrement_gold', {
+                    user_id: currentUserId,
+                    amount: 400
+                });
+                
+                if (error) throw error;
+                
+                return true;
+            } catch (error) {
+                console.error('Error deducting gold:', error);
+                return false;
+            }
+        }
+        
         // Manejar el envío del formulario
         async function handleFormSubmit(event) {
             event.preventDefault();
             
             try {
+                // Obtener el número de miembros
+                const maxMembers = parseInt(document.getElementById('max-members').value);
+                
+                // Verificar si se necesita cobrar oro adicional
+                if (maxMembers > 10) {
+                    const hasEnoughGold = await checkUserGold();
+                    
+                    if (!hasEnoughGold) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oro insuficiente',
+                            text: 'No tienes suficiente oro (400) para aumentar la capacidad de miembros más allá de 10.'
+                        });
+                        return;
+                    }
+                    
+                    // Preguntar confirmación para el cobro
+                    const result = await Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: 'Aumentar la capacidad de miembros más allá de 10 costará 400 de oro. ¿Deseas continuar?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#00b09b',
+                        cancelButtonColor: '#FF416C',
+                        confirmButtonText: 'Sí, pagar 400 de oro',
+                        cancelButtonText: 'Cancelar'
+                    });
+                    
+                    if (!result.isConfirmed) {
+                        return;
+                    }
+                }
+                
                 // Mostrar indicador de carga
                 Swal.fire({
                     title: isCreatingNew ? 'Creando escuadrón...' : 'Guardando cambios...',
@@ -668,7 +769,7 @@
                     name: document.getElementById('squad-name').value,
                     motto: document.getElementById('squad-motto').value,
                     mission: document.getElementById('squad-mission').value,
-                    max_members: parseInt(document.getElementById('max-members').value)
+                    max_members: maxMembers
                 };
                 
                 // Añadir avatar URL si se subió una imagen
@@ -702,6 +803,19 @@
                     throw result.error;
                 }
                 
+                // Cobrar oro si es necesario
+                if (maxMembers > 10) {
+                    const goldDeducted = await deductUserGold();
+                    
+                    if (!goldDeducted) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Escuadrón actualizado',
+                            text: 'El escuadrón se actualizó pero hubo un error al cobrar el oro. Contacta con soporte.'
+                        });
+                    }
+                }
+                
                 // Si es creación nueva, actualizar el perfil del usuario con el squad_id
                 if (isCreatingNew && result.data && result.data.length > 0) {
                     const newSquadId = result.data[0].id;
@@ -725,7 +839,7 @@
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
-                    window.location.href = 'rankingSquards.html';
+                    window.location.href = 'equipo.html';
                 });
                 
             } catch (error) {
