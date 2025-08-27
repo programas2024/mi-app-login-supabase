@@ -205,6 +205,26 @@
             font-size: 1.2rem;
         }
         
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fdbb2d;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -258,6 +278,7 @@
         let currentSquadId = null;
         let currentUserId = null;
         let avatarFile = null;
+        let currentAvatarUrl = null;
         
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -271,8 +292,8 @@
             }
             
             // Obtener el usuario actualmente autenticado
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
                 showError('Debes iniciar sesión para editar un escuadrón');
                 return;
             }
@@ -404,6 +425,9 @@
             document.getElementById('squad-rank').value = squad.rank || 'Bronce';
             document.getElementById('max-members').value = squad.max_members || 10;
             
+            // Guardar la URL actual del avatar
+            currentAvatarUrl = squad.avatar_url;
+            
             // Establecer avatar inicial si existe
             if (squad.avatar_url) {
                 document.getElementById('avatar-preview').innerHTML = `<img src="${squad.avatar_url}" alt="Avatar del escuadrón">`;
@@ -423,7 +447,21 @@
             
             // Validar que sea una imagen
             if (!file.type.match('image.*')) {
-                alert('Por favor, selecciona solo archivos de imagen');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor, selecciona solo archivos de imagen'
+                });
+                return;
+            }
+            
+            // Validar tamaño del archivo (máximo 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La imagen no debe superar los 5MB'
+                });
                 return;
             }
             
@@ -440,21 +478,21 @@
         
         // Subir avatar a Supabase Storage
         async function uploadAvatar() {
-            if (!avatarFile) return null;
+            if (!avatarFile) return currentAvatarUrl;
             
             try {
                 // Generar un nombre único para el archivo
                 const fileExt = avatarFile.name.split('.').pop();
-                const fileName = `${Math.random()}.${fileExt}`;
+                const fileName = `${currentSquadId}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
                 const filePath = `squad-avatars/${fileName}`;
                 
                 // Subir el archivo
-                const { data, error } = await supabase.storage
+                const { error: uploadError } = await supabase.storage
                     .from('avatars')
-                    .upload(filePath, avatarFile);
+                    .upload(filePath, avatarFile, { upsert: true });
                 
-                if (error) {
-                    throw error;
+                if (uploadError) {
+                    throw uploadError;
                 }
                 
                 // Obtener la URL pública del archivo
@@ -465,8 +503,7 @@
                 return publicUrl;
             } catch (error) {
                 console.error('Error uploading avatar:', error);
-                alert('Error al subir la imagen');
-                return null;
+                throw new Error('Error al subir la imagen: ' + error.message);
             }
         }
         
@@ -475,10 +512,26 @@
             event.preventDefault();
             
             try {
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: 'Guardando cambios...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
                 // Subir avatar si se seleccionó uno
                 let avatarUrl = null;
-                if (avatarFile) {
+                try {
                     avatarUrl = await uploadAvatar();
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message
+                    });
+                    return;
                 }
                 
                 // Preparar datos para actualizar
@@ -497,7 +550,7 @@
                 }
                 
                 // Actualizar en Supabase
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('squads')
                     .update(updates)
                     .eq('id', currentSquadId)
@@ -507,12 +560,24 @@
                     throw error;
                 }
                 
-                alert('Escuadrón actualizado correctamente');
-                window.location.href = 'rankingSquards.html';
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Escuadrón actualizado correctamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = 'rankingSquards.html';
+                });
                 
             } catch (error) {
                 console.error('Error updating squad:', error);
-                alert('Error al actualizar el escuadrón: ' + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al actualizar el escuadrón: ' + error.message
+                });
             }
         }
     </script>
