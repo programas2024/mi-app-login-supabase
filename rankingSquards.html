@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
-        * {
+        {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -237,36 +237,45 @@
         }
         
         .level-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 0.9rem;
             font-weight: bold;
         }
         
-        .level-bronze {
-            background: linear-gradient(135deg, #cd7f32, #8c4c1d);
+        .rank-icon-img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        
+        /* Nuevos estilos para los rangos */
+        .bronze-rank {
+            background: linear-gradient(135deg, #ff8000, #eeaf82);
             color: white;
         }
         
-        .level-silver {
+        .silver-rank {
             background: linear-gradient(135deg, #c0c0c0, #7a7a7a);
             color: black;
         }
         
-        .level-gold {
+        .gold-rank {
             background: linear-gradient(135deg, #ffd700, #b8860b);
             color: black;
         }
         
-        .level-platinum {
-            background: linear-gradient(135deg, #e5e4e2, #7f7f7f);
-            color: black;
+        .emerald-rank {
+            background: linear-gradient(135deg, #018059, #00ff55);
+            color: white;
         }
         
-        .level-diamond {
-            background: linear-gradient(135deg, #b9f2ff, #4fb0c6);
-            color: black;
+        .mystic-rank {
+            background: linear-gradient(135deg, #9b30ff, #6a0dad);
+            color: white;
         }
         
         .loading {
@@ -436,42 +445,24 @@
             margin-top: 20px;
         }
         
-        @media (max-width: 768px) {
-            .ranking-header, .squad-item {
-                grid-template-columns: 50px 1fr 80px 80px;
-            }
-            
-            .squad-level {
-                display: none;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .header-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .squad-detail-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .leader-info {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .modal-content {
-                margin: 5% auto;
-                padding: 20px;
-            }
+        /* Estilos para el rango en el modal */
+        .detail-rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
         }
-
-        /* Estilos personalizados para SweetAlert */
+        
+        .detail-rank-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+        
+        /* Estilos para SweetAlert */
         .swal2-popup {
             background: linear-gradient(135deg, #a1c4fd, #c2e9fb) !important;
             border-radius: 15px !important;
@@ -537,6 +528,103 @@
             color: rgb(255, 255, 255);
             font-weight: bold;
             font-size: 1.1rem;
+        }
+
+        /* MODIFICACIÓN PRINCIPAL: Ajustes responsivos para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .ranking-header, .squad-item {
+                grid-template-columns: 50px 1fr 80px 80px;
+            }
+            
+            /* Ocultamos la columna de miembros en lugar de la de nivel */
+            .squad-members {
+                display: none;
+            }
+            
+            /* Aseguramos que la columna de nivel sea visible */
+            .squad-level {
+                display: block;
+                text-align: center;
+            }
+            
+            /* Ajustamos el badge de nivel para pantallas pequeñas */
+            .level-badge {
+                padding: 4px 8px;
+                font-size: 0.8rem;
+                flex-direction: column;
+                gap: 2px;
+            }
+            
+            .rank-icon-img {
+                width: 16px;
+                height: 16px;
+            }
+            
+            /* Ajustes adicionales para el header */
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .squad-detail-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .leader-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .modal-content {
+                margin: 5% auto;
+                padding: 20px;
+            }
+            
+            /* Ajustamos el texto del header para pantallas pequeñas */
+            .ranking-header div:nth-child(4) {
+                display: none;
+            }
+            
+            .ranking-header div:nth-child(5) {
+                text-align: center;
+            }
+        }
+
+        /* Estilos para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .ranking-header, .squad-item {
+                grid-template-columns: 40px 1fr 70px 60px;
+                padding: 10px;
+            }
+            
+            .squad-info {
+                gap: 8px;
+            }
+            
+            .squad-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .squad-name {
+                font-size: 0.9rem;
+            }
+            
+            .squad-score {
+                font-size: 0.9rem;
+            }
+            
+            .level-badge {
+                font-size: 0.7rem;
+                padding: 3px 5px;
+            }
         }
     </style>
 </head>
@@ -674,7 +762,7 @@
                             </div>
                             <div class="info-content">
                                 <div class="info-title">Sistema de Niveles</div>
-                                <div class="info-desc">Los escuadrones avanzan de Bronce a Plata, Oro, Platino y Diamante según sus logros y puntos.</div>
+                                <div class="info-desc">Los escuadrones avanzan de Bronce a Plata, Oro, Esmeralda y Místico según sus logros y puntos.</div>
                             </div>
                         </div>
                         
@@ -774,7 +862,13 @@
             filteredSquads.forEach((squad, index) => {
                 const rank = index + 1;
                 const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
-                const levelClass = getLevelClass(squad.rank);
+                
+                // Determinar nivel y rango basado en puntos
+                const points = squad.total_points || 0;
+                const squadLevel = determineSquadLevel(points);
+                const squadRank = determineSquadRank(points);
+                const rankClassCSS = getRankClass(squadLevel);
+                const rankIcon = getRankIcon(squadLevel);
                 
                 // Mostrar avatar si existe, si no mostrar iniciales
                 const avatarHTML = squad.avatar_url 
@@ -788,9 +882,9 @@
                             <div class="squad-avatar">${avatarHTML}</div>
                             <div class="squad-name">${squad.name}</div>
                         </div>
-                        <div class="squad-score">${squad.total_points?.toLocaleString() || '0'}</div>
+                        <div class="squad-score">${points.toLocaleString() || '0'}</div>
                         <div class="squad-members">${squad.member_count}/${squad.max_members}</div>
-                        <div class="squad-level"><span class="level-badge ${levelClass}">${squad.rank}</span></div>
+                        <div class="squad-level"><span class="level-badge ${rankClassCSS}">${rankIcon} ${squadRank}</span></div>
                     </div>
                 `;
             });
@@ -853,9 +947,14 @@
                     day: 'numeric'
                 });
                 
-                // Generar HTML para el modal
-                const levelClass = getLevelClass(squad.rank);
+                // Determinar nivel y rango basado en puntos
+                const points = squad.total_points || 0;
+                const squadLevel = determineSquadLevel(points);
+                const squadRank = determineSquadRank(points);
+                const rankClassCSS = getRankClass(squadLevel);
+                const rankIcon = getRankIcon(squadLevel);
                 
+                // Generar HTML para el modal
                 // Mostrar avatar si existe, si no mostrar iniciales
                 const avatarHTML = squad.avatar_url 
                     ? `<img src="${squad.avatar_url}" alt="${squad.name}">`
@@ -866,13 +965,13 @@
                         <div class="squad-detail-avatar">${avatarHTML}</div>
                         <div class="squad-detail-info">
                             <h2>${squad.name}</h2>
-                            <div class="level-badge ${levelClass}">${squad.rank}</div>
+                            <div class="detail-rank-badge ${rankClassCSS}">${rankIcon} ${squadRank}</div>
                         </div>
                     </div>
                     
                     <div class="squad-stats">
                         <div class="stat-card">
-                            <div class="stat-value">${squad.total_points || '0'}</div>
+                            <div class="stat-value">${points.toLocaleString() || '0'}</div>
                             <div class="stat-label">Puntos Totales</div>
                         </div>
                         <div class="stat-card">
@@ -880,7 +979,7 @@
                             <div class="stat-label">Miembros</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">${squad.level || '1'}</div>
+                            <div class="stat-value">${squadLevel}</div>
                             <div class="stat-label">Nivel</div>
                         </div>
                         <div class="stat-card">
@@ -925,17 +1024,43 @@
             }
         }
         
-        // Obtener clase CSS para el nivel
-        function getLevelClass(level) {
-            if (!level) return 'level-bronze';
-            
-            switch(level.toLowerCase()) {
-                case 'bronce': return 'level-bronze';
-                case 'plata': return 'level-silver';
-                case 'oro': return 'level-gold';
-                case 'platino': return 'level-platinum';
-                case 'diamante': return 'level-diamond';
-                default: return 'level-bronze';
+        // Función para determinar el rango basado en los puntos totales
+        function determineSquadRank(points) {
+            if (points >= 2500) return 'Místico';
+            if (points >= 1500) return 'Esmeralda';
+            if (points >= 900) return 'Oro';
+            if (points >= 500) return 'Plata';
+            return 'Bronce';
+        }
+
+        // Función para determinar el nivel basado en los puntos totales
+        function determineSquadLevel(points) {
+            if (points >= 2500) return 5;
+            if (points >= 1500) return 4;
+            if (points >= 900) return 3;
+            if (points >= 500) return 2;
+            return 1;
+        }
+
+        // Función para obtener la clase CSS según el nivel
+        function getRankClass(level) {
+            switch(level) {
+                case 5: return 'mystic-rank';
+                case 4: return 'emerald-rank';
+                case 3: return 'gold-rank';
+                case 2: return 'silver-rank';
+                default: return 'bronze-rank';
+            }
+        }
+
+        // Función para obtener el icono según el nivel
+        function getRankIcon(level) {
+            switch(level) {
+                case 5: return '<img src="https://cdn-icons-png.flaticon.com/128/546/546582.png" class="rank-icon-img" alt="Místico">';
+                case 4: return '<img src="https://cdn-icons-png.flaticon.com/128/4932/4932398.png" class="rank-icon-img" alt="Esmeralda">';
+                case 3: return '<img src="https://cdn-icons-png.flaticon.com/128/7645/7645279.png" class="rank-icon-img" alt="Oro">';
+                case 2: return '<img src="https://cdn-icons-png.flaticon.com/128/2374/2374861.png" class="rank-icon-img" alt="Plata">';
+                default: return '<img src="https://cdn-icons-png.flaticon.com/128/7645/7645366.png" class="rank-icon-img" alt="Bronce">';
             }
         }
     </script>
