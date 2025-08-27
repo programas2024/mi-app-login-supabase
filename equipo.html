@@ -642,7 +642,7 @@
     
     // Funcionalidad básica para el botón de volver
     document.getElementById('back-btn').addEventListener('click', function() {
-        window.history.back();
+         window.location.href = 'escuadra.html';
     });
     
     // Inicializar la aplicación
@@ -2838,7 +2838,7 @@ async function updateGlobalRank() {
             
             document.getElementById('edit-squad-btn').addEventListener('click', function() {
                 window.location.href = 'editarsquad.html';
-                
+
             });
             
             document.getElementById('new-mission-btn').addEventListener('click', function() {
