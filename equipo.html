@@ -701,16 +701,7 @@ function getRankClass(level) {
     }
 }
 
-// Función para obtener el icono según el nivel
-function getRankIcon(level) {
-    switch(level) {
-        case 5: return 'https://cdn-icons-png.flaticon.com/128/10607/10607850.png'; // Místico
-        case 4: return 'https://cdn-icons-png.flaticon.com/128/6701/6701532.png'; // Esmeralda
-        case 3: return 'https://cdn-icons-png.flaticon.com/128/7645/7645279.png'; // Oro
-        case 2: return 'https://cdn-icons-png.flaticon.com/128/2374/2374861.png'; // Plata
-        default: return 'https://cdn-icons-png.flaticon.com/128/7645/7645366.png'; // Bronce
-    }
-}
+
 
 // Función para obtener el nombre del rango según el nivel
 function getRankName(level) {
@@ -755,49 +746,16 @@ async function updateSquadRank(squadId, points) {
     }
 }
 
-// Función para obtener información detallada del rango
-function getRankInfo(level) {
-    const rankInfo = {
-        1: {
-            name: 'Bronce',
-            icon: 'https://cdn-icons-png.flaticon.com/128/7645/7645366.png',
-            class: 'bronze-rank',
-            nextLevelPoints: 500,
-            benefits: ['Acceso a chat de escuadrón', 'Misiones básicas']
-        },
-        2: {
-            name: 'Plata',
-            icon: 'https://cdn-icons-png.flaticon.com/128/2374/2374861.png',
-            class: 'silver-rank',
-            nextLevelPoints: 900,
-            benefits: ['Recompensas de misiones +10%', 'Emblema de plata']
-        },
-        3: {
-            name: 'Oro',
-            icon: 'https://cdn-icons-png.flaticon.com/128/7645/7645279.png',
-            class: 'gold-rank',
-            nextLevelPoints: 1500,
-            benefits: ['Recompensas de misiones +25%', 'Emblema de oro', 'Cofre semanal']
-        },
-        4: {
-            name: 'Esmeralda',
-            icon: 'https://cdn-icons-png.flaticon.com/128/6701/6701532.png',
-            class: 'emerald-rank',
-            nextLevelPoints: 2500,
-            benefits: ['Recompensas de misiones +40%', 'Emblema de esmeralda', 'Cofre semanal premium']
-        },
-        5: {
-            name: 'Místico',
-            icon: 'https://cdn-icons-png.flaticon.com/128/10607/10607850.png',
-            class: 'mystic-rank',
-            nextLevelPoints: null,
-            benefits: ['Recompensas de misiones +60%', 'Emblema místico', 'Cofre semanal místico', 'Título exclusivo']
-        }
-    };
-    
-    return rankInfo[level] || rankInfo[1];
+// Función para obtener el icono según el nivel (MODIFICADA para corregir Esmeralda)
+function getRankIcon(level) {
+    switch(level) {
+        case 5: return '<img src="https://cdn-icons-png.flaticon.com/128/10607/10607850.png" class="rank-icon-img" alt="Místico">';
+        case 4: return '<img src="https://cdn-icons-png.flaticon.com/128/3138/3138806.png" class="rank-icon-img" alt="Esmeralda">';
+        case 3: return '<img src="https://cdn-icons-png.flaticon.com/128/7645/7645279.png" class="rank-icon-img" alt="Oro">';
+        case 2: return '<img src="https://cdn-icons-png.flaticon.com/128/2374/2374861.png" class="rank-icon-img" alt="Plata">';
+        default: return '<img src="https://cdn-icons-png.flaticon.com/128/7645/7645366.png" class="rank-icon-img" alt="Bronce">';
+    }
 }
-
 // Función para calcular el progreso hacia el siguiente nivel
 function calculateRankProgress(points, level) {
     const rankInfo = getRankInfo(level);
@@ -2436,13 +2394,13 @@ function showRankUpNotification(oldLevel, newLevel, rankName) {
                                 <span class="info-value">${userSquad.mission || 'Ser top 1'}</span>
                             </div>
                           
-                            <div class="info-item">
-                                <span class="info-label">Rango</span>
-                                <span class="info-value ${getRankClass(userSquad.level || 1)}">
-                                    ${getRankIcon(userSquad.level || 1)} ${userSquad.rank || 'Bronce'} 
-                                    <span class="rank-badge">Nivel ${userSquad.level || 1}</span>
-                                </span>
-                            </div>
+                             <div class="info-item">
+                            <span class="info-label">Rango</span>
+                            <span class="info-value ${getRankClass(userSquad.level || 1)}">
+                                ${getRankIcon(userSquad.level || 1)} ${userSquad.rank || 'Bronce'} 
+                                <span class="rank-badge">Nivel ${userSquad.level || 1}</span>
+                            </span>
+                        </div>
                                                         <div class="info-item">
                                 <span class="info-label">Miembros</span>
                                 <span class="info-value">${squadMembers.length || 1}/${userSquad.max_members || 10}</span>
@@ -2568,6 +2526,8 @@ function showRankUpNotification(oldLevel, newLevel, rankName) {
         
         // Agregar event listeners
         addEventListeners();
+
+
     }
     
     // Renderizar lista de miembros
