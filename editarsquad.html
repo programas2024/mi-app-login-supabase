@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Escuadrón - GameHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #fdbb2d;
+            font-size: 2.2rem;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-back {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .page-title {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            background: linear-gradient(to right, #fdbb2d, #ff5e62, #c2e9fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .edit-form {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fdbb2d;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #fdbb2d;
+            box-shadow: 0 0 0 2px rgba(253, 187, 45, 0.3);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fdbb2d, #ff5e62);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-preview span {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .file-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .file-label i {
+            margin-right: 8px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>GameHub Escuadrones</span>
+            </div>
+            <a href="rankingSquards.html" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al Ranking
+            </a>
+        </div>
+
+        <h1 class="page-title">Editar Escuadrón</h1>
+        
+        <form id="edit-squad-form" class="edit-form">
+            <div class="avatar-upload">
+                <div class="avatar-preview" id="avatar-preview">
+                    <span>DR</span>
+                </div>
+                <input type="file" id="avatar-upload" class="file-input" accept="image/*">
+                <label for="avatar-upload" class="file-label">
+                    <i class="fas fa-upload"></i> Seleccionar Avatar
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label for="squad-name">Nombre del Escuadrón</label>
+                <input type="text" id="squad-name" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="squad-motto">Lema del Escuadrón</label>
+                <input type="text" id="squad-motto" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="squad-mission">Misión del Escuadrón</label>
+                <textarea id="squad-mission" class="form-control" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="squad-rank">Rango</label>
+                <select id="squad-rank" class="form-control" required>
+                    <option value="Bronce">Bronce</option>
+                    <option value="Plata">Plata</option>
+                    <option value="Oro">Oro</option>
+                    <option value="Platino">Platino</option>
+                    <option value="Diamante">Diamante</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="max-members">Máximo de Miembros</label>
+                <input type="number" id="max-members" class="form-control" min="1" max="20" required>
+            </div>
+            
+            <div class="form-actions">
+                <a href="rankingSquards.html" class="btn btn-back">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        // Inicializar Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Elementos DOM
+        const editForm = document.getElementById('edit-squad-form');
+        const avatarUpload = document.getElementById('avatar-upload');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const squadName = document.getElementById('squad-name');
+        const squadMotto = document.getElementById('squad-motto');
+        const squadMission = document.getElementById('squad-mission');
+        const squadRank = document.getElementById('squad-rank');
+        const maxMembers = document.getElementById('max-members');
+        
+        // Variables de estado
+        let currentSquadId = null;
+        let avatarFile = null;
+        
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtener el ID del escuadrón de la URL (simulado)
+            const urlParams = new URLSearchParams(window.location.search);
+            currentSquadId = urlParams.get('id') || 'default-id';
+            
+            // Cargar datos del escuadrón
+            loadSquadData();
+            setupEventListeners();
+        });
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Avatar upload
+            avatarUpload.addEventListener('change', handleAvatarUpload);
+            
+            // Form submission
+            editForm.addEventListener('submit', handleFormSubmit);
+        }
+        
+        // Cargar datos del escuadrón desde Supabase
+        async function loadSquadData() {
+            try {
+                // Obtener datos de Supabase
+                const { data: squad, error } = await supabase
+                    .from('squads')
+                    .select('*')
+                    .eq('id', currentSquadId)
+                    .single();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Llenar el formulario con los datos
+                squadName.value = squad.name || '';
+                squadMotto.value = squad.motto || '';
+                squadMission.value = squad.mission || '';
+                squadRank.value = squad.rank || 'Bronce';
+                maxMembers.value = squad.max_members || 10;
+                
+                // Establecer avatar inicial
+                const avatarText = squad.name ? squad.name.substring(0, 2).toUpperCase() : 'DR';
+                avatarPreview.innerHTML = `<span>${avatarText}</span>`;
+                
+            } catch (error) {
+                console.error('Error loading squad data:', error);
+                alert('Error al cargar los datos del escuadrón');
+            }
+        }
+        
+        // Manejar la subida del avatar
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validar que sea una imagen
+            if (!file.type.match('image.*')) {
+                alert('Por favor, selecciona solo archivos de imagen');
+                return;
+            }
+            
+            // Guardar el archivo para luego subirlo
+            avatarFile = file;
+            
+            // Mostrar vista previa
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Subir avatar a Supabase Storage
+        async function uploadAvatar() {
+            if (!avatarFile) return null;
+            
+            try {
+                // Generar un nombre único para el archivo
+                const fileExt = avatarFile.name.split('.').pop();
+                const fileName = `${Math.random()}.${fileExt}`;
+                const filePath = `squad-avatars/${fileName}`;
+                
+                // Subir el archivo
+                const { data, error } = await supabase.storage
+                    .from('avatars')
+                    .upload(filePath, avatarFile);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Obtener la URL pública del archivo
+                const { data: { publicUrl } } = supabase.storage
+                    .from('avatars')
+                    .getPublicUrl(filePath);
+                
+                return publicUrl;
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                alert('Error al subir la imagen');
+                return null;
+            }
+        }
+        
+        // Manejar el envío del formulario
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            try {
+                // Subir avatar si se seleccionó uno
+                let avatarUrl = null;
+                if (avatarFile) {
+                    avatarUrl = await uploadAvatar();
+                }
+                
+                // Preparar datos para actualizar
+                const updates = {
+                    name: squadName.value,
+                    motto: squadMotto.value,
+                    mission: squadMission.value,
+                    rank: squadRank.value,
+                    max_members: parseInt(maxMembers.value),
+                    updated_at: new Date().toISOString()
+                };
+                
+                // Añadir avatar URL si se subió una imagen
+                if (avatarUrl) {
+                    updates.avatar_url = avatarUrl;
+                }
+                
+                // Actualizar en Supabase
+                const { data, error } = await supabase
+                    .from('squads')
+                    .update(updates)
+                    .eq('id', currentSquadId);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                alert('Escuadrón actualizado correctamente');
+                window.location.href = 'rankingSquards.html';
+                
+            } catch (error) {
+                console.error('Error updating squad:', error);
+                alert('Error al actualizar el escuadrón');
+            }
+        }
+    </script>
+</body>
+</html>
