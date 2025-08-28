@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Amigos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            gap: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button i {
+            margin-right: 8px;
+        }
+
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 1.2rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .room-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .users-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+        }
+
+        .user-name {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .user-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .status-online {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .status-away {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.3);
+        }
+
+        .status-busy {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .friends-table-container {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .friends-table-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .friends-table {
+            width: 100%;
+            border-collapse: collapse;
+            flex-grow: 1;
+        }
+
+        .friends-table th {
+            text-align: left;
+            padding: 15px 12px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .friends-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .friends-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .friends-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .friend-name {
+            font-weight: 500;
+        }
+
+        .friend-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-online-indicator {
+            background: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+        }
+
+        .status-away-indicator {
+            background: #f1c40f;
+            box-shadow: 0 0 8px #f1c40f;
+        }
+
+        .status-offline-indicator {
+            background: #95a5a6;
+        }
+
+        .invite-btn {
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .invite-online {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+        }
+
+        .invite-online:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .invite-offline {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.2rem;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .room-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .friends-table-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                gap: 15px;
+            }
+            
+            .users-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .friends-table th, 
+            .friends-table td {
+                padding: 10px 8px;
+            }
+            
+            .invite-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .user-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .user-name {
+                font-size: 1.2rem;
+            }
+            
+            .friends-table {
+                font-size: 0.9rem;
+            }
+            
+            .friends-table-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            
+            <h1 class="page-title">Sala de Amigos</h1>
+            
+            <button class="action-btn" onclick="showRoomInfo()">
+                <i class="fas fa-info"></i>
+            </button>
+        </div>
+        
+        <p class="page-subtitle">Conecta con tus amigos y disfruten juntos de una experiencia de juego única</p>
+        
+        <div class="room-content">
+            <div class="users-container">
+                <!-- Usuario 1 -->
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="user-name">Cargando...</h3>
+                    <div class="user-status status-online">Conectando...</div>
+                    <p>Esperando datos</p>
+                </div>
+                
+                <!-- Usuario 2 -->
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="user-name">Cargando...</h3>
+                    <div class="user-status status-away">Conectando...</div>
+                    <p>Esperando datos</p>
+                </div>
+            </div>
+            
+            <div class="friends-table-container">
+                <h3 class="friends-table-title">Friends</h3>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>Cargando amigos...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Estado de la aplicación
+        let currentUser = null;
+        let userFriends = [];
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUserSession();
+            await loadUserFriends();
+            await updateRoomOccupancy();
+        });
+        
+        // Verificar la sesión del usuario
+        async function checkUserSession() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    console.error('Error obteniendo sesión:', error);
+                    showError('Error al verificar la sesión');
+                    return;
+                }
+                
+                if (!session) {
+                    showError('No hay sesión activa. Redirigiendo al login...');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log('Usuario actual:', currentUser.id);
+            } catch (error) {
+                console.error('Error inesperado:', error);
+                showError('Error inesperado al verificar sesión');
+            }
+        }
+        
+        // Cargar amigos del usuario
+        async function loadUserFriends() {
+            if (!currentUser) return;
+            
+            try {
+                // Obtener amigos donde el usuario actual es user1_id o user2_id
+                const { data: friends, error } = await supabase
+                    .from('friends')
+                    .select(`
+                        *,
+                        user1:profiles!user1_id(id, username, avatar_url, online_status),
+                        user2:profiles!user2_id(id, username, avatar_url, online_status)
+                    `)
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
+                
+                if (error) {
+                    console.error('Error cargando amigos:', error);
+                    showError('Error al cargar la lista de amigos');
+                    return;
+                }
+                
+                userFriends = friends || [];
+                renderFriendsList();
+            } catch (error) {
+                console.error('Error inesperado:', error);
+                showError('Error inesperado al cargar amigos');
+            }
+        }
+        
+        // Renderizar la lista de amigos
+        function renderFriendsList() {
+            const friendsTable = document.createElement('table');
+            friendsTable.className = 'friends-table';
+            
+            // Crear encabezado de la tabla
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>Invitar</th>
+                </tr>
+            `;
+            friendsTable.appendChild(thead);
+            
+            // Crear cuerpo de la tabla
+            const tbody = document.createElement('tbody');
+            
+            if (userFriends.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">
+                            No tienes amigos aún. ¡Agrega algunos para jugar juntos!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                userFriends.forEach(friend => {
+                    // Determinar qué usuario es el amigo (no el usuario actual)
+                    const friendProfile = friend.user1_id === currentUser.id ? friend.user2 : friend.user1;
+                    const isOnline = friendProfile.online_status === 'online';
+                    const isAway = friendProfile.online_status === 'away';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
+                        <td class="friend-status">
+                            <span class="status-indicator ${isOnline ? 'status-online-indicator' : isAway ? 'status-away-indicator' : 'status-offline-indicator'}"></span>
+                            ${isOnline ? 'En línea' : isAway ? 'Ausente' : 'Desconectado'}
+                        </td>
+                        <td>
+                            <button class="invite-btn ${isOnline ? 'invite-online' : 'invite-offline'}" ${isOnline ? '' : 'disabled'}>
+                                <i class="fas fa-plus"></i> Invitar
+                            </button>
+                        </td>
+                    `;
+                    
+                    // Agregar evento al botón de invitar
+                    if (isOnline) {
+                        const inviteBtn = row.querySelector('.invite-btn');
+                        inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
+                    }
+                    
+                    tbody.appendChild(row);
+                });
+            }
+            
+            friendsTable.appendChild(tbody);
+            
+            // Reemplazar el contenido de loading con la tabla
+            const friendsContainer = document.querySelector('.friends-table-container');
+            const loadingElement = friendsContainer.querySelector('.loading');
+            friendsContainer.replaceChild(friendsTable, loadingElement);
+        }
+        
+        // Actualizar la ocupación de la sala
+        async function updateRoomOccupancy() {
+            if (!currentUser) return;
+            
+            try {
+                // Obtener usuarios que están actualmente en la sala
+                const { data: roomOccupants, error } = await supabase
+                    .from('room_occupants')
+                    .select(`
+                        profile:profiles(id, username, avatar_url, online_status)
+                    `)
+                    .limit(2);
+                
+                if (error) {
+                    console.error('Error cargando ocupantes:', error);
+                    return;
+                }
+                
+                renderRoomOccupants(roomOccupants);
+                
+                // Ocupar un cupo en la sala para el usuario actual
+                await occupyRoomSlot();
+            } catch (error) {
+                console.error('Error inesperado:', error);
+            }
+        }
+        
+        // Renderizar los ocupantes de la sala
+        function renderRoomOccupants(occupants) {
+            const userCards = document.querySelectorAll('.user-card');
+            
+            // Limpiar las tarjetas existentes
+            userCards.forEach(card => {
+                card.querySelector('.user-name').textContent = 'Disponible';
+                card.querySelector('.user-status').textContent = 'Libre';
+                card.querySelector('.user-status').className = 'user-status status-away';
+                card.querySelector('p').textContent = 'Esperando jugador...';
+            });
+            
+            // Llenar con los ocupantes reales
+            occupants.forEach((occupant, index) => {
+                if (index < userCards.length && occupant.profile) {
+                    const profile = occupant.profile;
+                    const isCurrentUser = profile.id === currentUser.id;
+                    
+                    userCards[index].querySelector('.user-name').textContent = 
+                        isCurrentUser ? `${profile.username} (Tú)` : profile.username;
+                    
+                    const statusElement = userCards[index].querySelector('.user-status');
+                    statusElement.textContent = isCurrentUser ? 'Conectado' : 
+                                              profile.online_status === 'online' ? 'En línea' : 
+                                              profile.online_status === 'away' ? 'Ausente' : 'Desconectado';
+                    
+                    statusElement.className = `user-status ${isCurrentUser ? 'status-online' : 
+                                            profile.online_status === 'online' ? 'status-online' : 
+                                            profile.online_status === 'away' ? 'status-away' : 'status-busy'}`;
+                    
+                    userCards[index].querySelector('p').textContent = 
+                        isCurrentUser ? '¡Estás en la sala!' : 'Jugando en la sala';
+                }
+            });
+        }
+        
+        // Ocupar un cupo en la sala para el usuario actual
+        async function occupyRoomSlot() {
+            if (!currentUser) return;
+            
+            try {
+                // Verificar si el usuario ya está en la sala
+                const { data: existingEntry, error: checkError } = await supabase
+                    .from('room_occupants')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (checkError && checkError.code !== 'PGRST116') {
+                    console.error('Error verificando ocupación:', checkError);
+                    return;
+                }
+                
+                // Si no existe, agregar al usuario a la sala
+                if (!existingEntry) {
+                    const { error: insertError } = await supabase
+                        .from('room_occupants')
+                        .insert([{ user_id: currentUser.id }]);
+                    
+                    if (insertError) {
+                        console.error('Error ocupando sala:', insertError);
+                    }
+                }
+            } catch (error) {
+                console.error('Error inesperado:', error);
+            }
+        }
+        
+        // Enviar invitación a un amigo
+        async function sendInvitation(friend) {
+            try {
+                // Aquí iría la lógica para enviar una invitación
+                // Por ahora mostramos un mensaje de confirmación
+                
+                Swal.fire({
+                    title: 'Invitación enviada',
+                    html: `Se ha enviado una invitación a <strong>${friend.username}</strong>`,
+                    icon: 'success',
+                    confirmButtonColor: '#43cea2',
+                    confirmButtonText: 'OK'
+                });
+            } catch (error) {
+                console.error('Error enviando invitación:', error);
+                showError('Error al enviar la invitación');
+            }
+        }
+        
+        // Mostrar información de la sala
+        function showRoomInfo() {
+            Swal.fire({
+                title: 'Sala de Amigos',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="margin-bottom: 15px;">Bienvenido a la sala de amigos, un espacio donde puedes:</p>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="margin-bottom: 8px;"><i class="fas fa-users" style="margin-right: 8px;"></i> Conectar con tus amigos</p>
+                            <p style="margin-bottom: 8px;"><i class="fas fa-gamepad" style="margin-right: 8px;"></i> Jugar juntos</p>
+                            <p><i class="fas fa-trophy" style="margin-right: 8px;"></i> Competir y ganar premios</p>
+                        </div>
+                        
+                        <p>¡Invita a más amigos y diviértanse!</p>
+                    </div>
+                `,
+                icon: 'info',
+                iconColor: '#667eea',
+                background: '#764ba2',
+                color: '#ffffff',
+                confirmButtonColor: '#43cea2',
+                confirmButtonText: '¡Entendido!',
+                width: '600px'
+            });
+        }
+        
+        // Mostrar error
+        function showError(message) {
+            Swal.fire({
+                title: 'Error',
+                text: message,
+                icon: 'error',
+                confirmButtonColor: '#e74c3c',
+                confirmButtonText: 'OK'
+            });
+        }
+    </script>
+    
+</body>
+</html>

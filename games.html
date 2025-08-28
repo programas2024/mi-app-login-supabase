@@ -3,422 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juegos - Tu Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Nuestros Juegos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos específicos para la página de juegos */
-        body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
 
-        .games-container {
+        body {
             background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            width: 90%;
-            max-width: 1200px;
-            text-align: center;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
             position: relative;
         }
 
-        .games-container h1 {
-            font-family: 'Montserrat', sans-serif;
-            color: #333;
-            font-size: 2.8em;
-            margin-bottom: 30px;
-            font-weight: 800;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .game-card-wrapper {
+        .header-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .game-card {
-            background: linear-gradient(145deg, #e0f2f7, #c1e4ed);
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            padding: 25px;
-            width: 280px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid #a7d9f0;
-        }
-
-        .game-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(145deg, #c1e4ed, #9ddaf3);
-        }
-
-        .game-card-icon {
-            font-size: 4em;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            transition: color 0.3s ease;
-        }
-
-        .game-card:hover .game-card-icon {
-            color: #3498db;
-        }
-
-        .game-card h3 {
-            font-family: 'Montserrat', sans-serif;
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .game-card p {
-            color: #555;
-            font-size: 1em;
-            line-height: 1.5;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 20px;
         }
 
-        .game-card button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .game-card button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Estilos para la tarjeta de Sopa de Letras */
-        .game-card.word-search {
-            background: linear-gradient(145deg, #FFD1DC, #FFABAB);
-            border: 2px solid #FF69B4;
-        }
-
-        .game-card.word-search:hover {
-            background: linear-gradient(145deg, #FFABAB, #FF69B4);
-        }
-
-        .game-card.word-search .game-card-icon {
-            color: #E91E63;
-        }
-
-        .game-card.word-search:hover .game-card-icon {
-            color: #C2185B;
-        }
-
-        /* Estilos para la tarjeta de Preguntados */
-        .game-card.quiz {
-            background: linear-gradient(145deg, #FFF9C4, #FFEE58);
-            border: 2px solid #FFD600;
-        }
-
-        .game-card.quiz:hover {
-            background: linear-gradient(145deg, #FFEE58, #FFD600);
-        }
-
-        .game-card.quiz .game-card-icon {
-            color: #F57F17;
-        }
-
-        .game-card.quiz:hover .game-card-icon {
-            color: #FF6F00;
-        }
-
-        .game-card.quiz button {
-            background-color: #FFA000;
-        }
-
-        .game-card.quiz button:hover {
-            background-color: #FF8F00;
-        }
-
-        /* ================================================= */
-/* ESTILOS MEJORADOS PARA LA TARJETA DE CRUCIGRAMA */
-/* ================================================= */
-.game-card.crossword {
-    /* Fondo con gradiente más sutil y elegante */
-    background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
-    border: none; /* Eliminar el borde sólido para un look más limpio */
-    color: #4a4a4a;
-    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.game-card.crossword:hover {
-    /* Invertir el gradiente y aplicar un efecto de "presionado" */
-    background: linear-gradient(315deg, #b7fff9, #f0f0f0);
-    transform: scale(1.03); /* Ligeramente más grande al pasar el mouse */
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.crossword .game-card-icon {
-    color: #0077c2; /* Un azul vibrante que contrasta bien */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.game-card.crossword:hover .game-card-icon {
-    transform: translateY(-5px) scale(1.1);
-    color: #005a9c;
-}
-
-/* ================================================= */
-/* ESTILOS MEJORADOS PARA EL BOTÓN DENTRO DE LA TARJETA */
-/* ================================================= */
-.game-card.crossword button {
-    background-color: #0077c2;
-    color: white;
-    border: none; /* Borde más grueso y oscuro */
-    border-radius: 5px;
-    padding: 10px 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
-}
-
-.game-card.crossword button:hover {
-    background-color: #005a9c;
-    transform: translateY(-2px);
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.crossword button:active {
-    transform: translateY(0);
-    box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
-}
-        /* Botón de regreso */
         .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background-color: #f39c12;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
         }
 
         .back-button:hover {
-            background-color: #e67e22;
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
         }
 
-        /* Media queries para responsividad */
+        .back-button i {
+            margin-right: 8px;
+        }
+
+        .info-button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            font-size: 1.2rem;
+        }
+
+        .info-button:hover {
+            transform: translateY(-3px) rotate(15deg);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border-radius: 2px;
+        }
+
+        .game-card-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .game-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .game-card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover .game-card-icon {
+            transform: scale(1.1);
+        }
+
+        .game-card-info {
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .game-card-title {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .game-card-description {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .game-card button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: auto;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+            width: 80%;
+        }
+
+        .game-card button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+        }
+
+        /* Estilos específicos para cada juego */
+        #spelling-game-card::before {
+            background: linear-gradient(90deg, #FF416C, #FF4B2B);
+        }
+
+        #spelling-game-card .game-card-icon {
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
+            color: white;
+        }
+
+        #word-search-game-card::before {
+            background: linear-gradient(90deg, #38ef7d, #11998e);
+        }
+
+        #word-search-game-card .game-card-icon {
+            background: linear-gradient(135deg, #38ef7d, #11998e);
+            color: white;
+        }
+
+        #quiz-game-card::before {
+            background: linear-gradient(90deg, #f5af19, #f12711);
+        }
+
+        #quiz-game-card .game-card-icon {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: white;
+        }
+
+        #crossword-game-card::before {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+        }
+
+        #crossword-game-card .game-card-icon {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+        }
+
+        #caminito-game-card::before {
+            background: linear-gradient(90deg, #8E2DE2, #4A00E0);
+        }
+
+        #caminito-game-card .game-card-icon {
+            background: linear-gradient(135deg, #8E2DE2, #4A00E0);
+            color: white;
+        }
+
+        #sala-game-card::before {
+            background: linear-gradient(90deg, #f857a6, #ff5858);
+        }
+
+        #sala-game-card .game-card-icon {
+            background: linear-gradient(135deg, #f857a6, #ff5858);
+            color: white;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .games-container {
-                padding: 20px;
-                width: 95%;
+            .game-card-wrapper {
+                grid-template-columns: 1fr;
             }
-            .games-container h1 {
-                font-size: 2em;
-                margin-bottom: 20px;
+            
+            h1 {
+                font-size: 2.2rem;
             }
-            .game-card {
-                width: 90%;
-                max-width: 350px;
+            
+            .header-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
             }
-            .back-button {
-                top: 10px;
-                left: 10px;
-                padding: 8px 15px;
-                font-size: 0.9em;
+            
+            .info-button {
+                position: static;
+                margin-top: 10px;
             }
         }
-
-        /* ================================================= */
-/* ESTILOS PARA LA TARJETA DE SUDOKU */
-/* ================================================= */
-.game-card.sudoku {
-    /* Fondo con gradiente sutil */
-    background: linear-gradient(145deg, #e0f2f1, #b2dfdb);
-    border: none;
-    color: #004d40;
-    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.game-card.sudoku:hover {
-    background: linear-gradient(315deg, #b2dfdb, #e0f2f1);
-    transform: scale(1.03);
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.sudoku .game-card-icon {
-    color: #00897b; /* Color verde azulado que simboliza orden y lógica */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.game-card.sudoku:hover .game-card-icon {
-    transform: translateY(-5px) scale(1.1);
-    color: #004d40;
-}
-
-.game-card.sudoku button {
-    background-color: #00897b;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 10px 25px;
-    font-weight: 600;
-    cursor: pointer; /* Añadir cursor para indicar que es un botón */
-    transition: all 0.3s ease;
-    box-shadow: 4px 4px 8px #d1d9e6, -4px -4px 8px #ffffff;
-}
-
-.game-card.sudoku button:hover {
-    background-color: #00695c;
-    transform: translateY(-2px);
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.sudoku button:active {
-    transform: translateY(0);
-    box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
-}
-
-/* ================================================= */
-/* ESTILOS PARA LA TARJETA DE CAMINITO */
-/* ================================================= */
-.game-card.caminito {
-    /* Fondo con gradiente cálido */
-    background: linear-gradient(145deg, #ffd700, #ffa500);
-    border: none;
-    
-    color: #cc5500;
-    box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.game-card.caminito:hover {
-    background: linear-gradient(315deg, #ff9a02, #fdd06e);
-    transform: scale(1.03);
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.caminito .game-card-icon {
-    color: #ff6a00;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-.game-card.caminito:hover .game-card-icon {
-    transform: translateY(-5px) scale(1.1);
-    color: #f5883a;
-}
-
-.game-card.caminito button {
-    background-color: #a3600e;
-    color: white;
-    border: none;
-    
-    padding: 10px 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-}
-
-.game-card.caminito button:hover {
-    background-color: #e57c00;
-    transform: translateY(-2px);
-    box-shadow: 6px 6px 12px #d1d9e6, -6px -6px 12px #ffffff;
-}
-
-.game-card.caminito button:active {
-    transform: translateY(0);
-    box-shadow: inset 2px 2px 5px #d1d9e6, inset -2px -2px 5px #ffffff;
-}
     </style>
 </head>
 <body>
     <div class="games-container">
-        <button class="back-button" onclick="window.location.href='dashboard.html'">
-            <i class="fas fa-arrow-left"></i> Volver al Dashboard
-        </button>
+        <div class="header-container">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </button>
+            
+            <button class="info-button" onclick="showInfo()">
+                <i class="fas fa-info"></i>
+            </button>
+        </div>
 
         <h1>Nuestros Juegos</h1>
 
         <div class="game-card-wrapper">
             <!-- Juego 1: Orcado -->
             <div class="game-card" id="spelling-game-card">
-                <i class="fas fa-gavel game-card-icon"></i>
-                <h3>Orcado</h3>
-                <p>¡Demuestra tu dominio del lenguaje! Encuentra la palabra correcta y gana.</p>
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Orcado</h3>
+                        <p class="game-card-description">¡Demuestra tu dominio del lenguaje! Encuentra la palabra correcta y gana.</p>
+                    </div>
+                </div>
                 <button onclick="window.location.href='games2.html'">Jugar Ahora</button>
             </div>
 
             <!-- Juego 2: Sopa de Letras -->
-            <div class="game-card word-search" id="word-search-game-card">
-                <i class="fas fa-search game-card-icon"></i>
-                <h3>Sopa de Letras</h3>
-                <p>¡Encuentra todas las palabras ocultas en la cuadrícula antes de que se agote el tiempo!</p>
+            <div class="game-card" id="word-search-game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Sopa de Letras</h3>
+                        <p class="game-card-description">¡Encuentra todas las palabras ocultas en la cuadrícula antes de que se agote el tiempo!</p>
+                    </div>
+                </div>
                 <button onclick="window.location.href='games3.html'">Jugar Ahora</button>
             </div>
 
             <!-- Juego 3: Preguntados -->
-            <div class="game-card quiz" id="quiz-game-card">
-                <i class="fas fa-question-circle game-card-icon"></i>
-                <h3>Preguntados</h3>
-                <p>Demuestra cuánto sabes respondiendo preguntas de diferentes categorías. ¡El conocimiento es poder!</p>
+            <div class="game-card" id="quiz-game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Preguntados</h3>
+                        <p class="game-card-description">Demuestra cuánto sabes respondiendo preguntas de diferentes categorías. ¡El conocimiento es poder!</p>
+                    </div>
+                </div>
                 <button onclick="window.location.href='games4.html'">Jugar Ahora</button>
             </div>
 
             <!-- Juego 4: Crucigrama -->
-            <div class="game-card crossword" id="crossword-game-card">
-                <i class="fas fa-th game-card-icon"></i>
-                <h3>Suduku</h3>
-                <p>Completa el Suduku entre las casillas faltantes  horizontales y verticales. ¡Un clásico que nunca pasa de moda!</p>
+            <div class="game-card" id="crossword-game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-th"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Suduku</h3>
+                        <p class="game-card-description">Completa el Suduku entre las casillas faltantes horizontales y verticales. ¡Un clásico que nunca pasa de moda!</p>
+                    </div>
+                </div>
                 <button onclick="window.location.href='cruzigrama.html'">Jugar Ahora</button>
             </div>
-       
         
-        <div class="game-card caminito" id="caminito-game-card">
-            <div class="game-card-content">
-                <div class="game-card-icon">
-                    <i class="fas fa-route"></i>
+            <!-- Juego 5: Caminito -->
+            <div class="game-card" id="caminito-game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Caminito</h3>
+                        <p class="game-card-description">Conquista la cima y gana recompensas. ¡Un juego de estrategia y suerte!</p>
+                    </div>
                 </div>
-                <div class="game-card-info">
-                    <h3 class="game-card-title">Caminito</h3>
-                    <p class="game-card-description">Conquista la cima y gana recompensas. ¡Un juego de estrategia y suerte!</p>
-                </div>
+                <button onclick="window.location.href='caminito.html'">Jugar Ahora</button>
             </div>
-            <button onclick="window.location.href='caminito.html'">Jugar Ahora</button>
+
+            <!-- Juego 6: Sala (NUEVO) -->
+            <div class="game-card" id="sala-game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">Sala</h3>
+                        <p class="game-card-description">¡Juega con tus amigos en tiempo real! Diversión asegurada en un espacio multijugador elegante.</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='sala.html'">Jugar Ahora</button>
+            </div>
         </div>
-        
     </div>
 
-    
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function showInfo() {
+            Swal.fire({
+                title: '¿Qué hace esta página?',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="margin-bottom: 15px;"><i class="fas fa-gamepad" style="color: #6a11cb; margin-right: 10px;"></i> <strong>Plataforma de Juegos Educativos</strong></p>
+                        <p style="margin-bottom: 15px;">Nuestra página ofrece una colección de juegos diseñados para entretener y estimular tu mente.</p>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: #38ef7d; margin-right: 8px;"></i> Mejora tus habilidades cognitivas</p>
+                            <p style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: #38ef7d; margin-right: 8px;"></i> Amplía tu vocabulario</p>
+                            <p style="margin-bottom: 8px;"><i class="fas fa-check-circle" style="color: #38ef7d; margin-right: 8px;"></i> Desafía tu capacidad de resolución de problemas</p>
+                            <p><i class="fas fa-check-circle" style="color: #38ef7d; margin-right: 8px;"></i> Juega solo o con amigos</p>
+                        </div>
+                        
+                        <p>¡Selecciona cualquier juego y comienza a divertirte!</p>
+                    </div>
+                `,
+                icon: 'info',
+                iconColor: '#6a11cb',
+                background: '#ffffff',
+                confirmButtonColor: '#6a11cb',
+                confirmButtonText: '¡Entendido!',
+                customClass: {
+                    popup: 'info-popup'
+                },
+                width: '600px'
+            });
+        }
+    </script>
 </body>
 </html>
