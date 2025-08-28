@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Tus estilos CSS anteriores aquí */
         * {
             margin: 0;
             padding: 0;
@@ -338,6 +337,24 @@
             font-size: 0.9rem;
         }
 
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -415,9 +432,14 @@
             
             <h1 class="page-title">Sala de Amigos</h1>
             
-            <button class="action-btn" onclick="showRoomInfo()">
-                <i class="fas fa-info"></i>
-            </button>
+            <div>
+                <button class="action-btn" onclick="showRoomInfo()">
+                    <i class="fas fa-info"></i>
+                </button>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
         </div>
         
         <p class="page-subtitle">Conecta con tus amigos y disfruten juntos de una experiencia de juego única</p>
@@ -475,12 +497,16 @@
         // Estado de la aplicación
         let currentUser = null;
         let userFriends = [];
+        let refreshInterval = null;
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
             await checkUserSession();
             await loadUserFriends();
             await updateRoomOccupancy();
+            
+            // Iniciar actualización automática cada 30 segundos
+            startAutoRefresh();
         });
         
         // Verificar la sesión del usuario
@@ -506,6 +532,9 @@
                 currentUser = session.user;
                 console.log('Usuario actual:', currentUser.id);
                 updateDebugInfo('Usuario actual', currentUser);
+                
+                // Actualizar last_sign_in_at del usuario actual
+                await updateUserLastSignIn();
             } catch (error) {
                 console.error('Error inesperado:', error);
                 showError('Error inesperado al verificar sesión: ' + error.message);
@@ -513,40 +542,38 @@
             }
         }
         
-        // Cargar amigos del usuario - Versión mejorada que maneja la falta de online_status
+        // Actualizar last_sign_in_at del usuario actual
+        async function updateUserLastSignIn() {
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ last_sign_in_at: new Date().toISOString() })
+                    .eq('id', currentUser.id);
+                
+                if (error) {
+                    console.error('Error actualizando last_sign_in_at:', error);
+                }
+            } catch (error) {
+                console.error('Error inesperado actualizando last_sign_in_at:', error);
+            }
+        }
+        
+        // Cargar amigos del usuario
         async function loadUserFriends() {
             if (!currentUser) return;
             
             try {
                 console.log('Cargando amigos para usuario:', currentUser.id);
                 
-                // Primero intentamos cargar con online_status
-                let query = supabase
+                // Consulta directa a la tabla friends
+                const { data: friends, error } = await supabase
                     .from('friends')
                     .select(`
                         *,
-                        user1:profiles!user1_id(id, username, avatar_url, online_status),
-                        user2:profiles!user2_id(id, username, avatar_url, online_status)
+                        user1:profiles!user1_id(id, username, avatar_url, last_sign_in_at),
+                        user2:profiles!user2_id(id, username, avatar_url, last_sign_in_at)
                     `)
                     .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-                
-                let { data: friends, error } = await query;
-                
-                // Si falla debido a que online_status no existe, intentamos sin ella
-                if (error && error.message.includes('online_status')) {
-                    console.log('Columna online_status no encontrada, intentando sin ella...');
-                    
-                    query = supabase
-                        .from('friends')
-                        .select(`
-                            *,
-                            user1:profiles!user1_id(id, username, avatar_url),
-                            user2:profiles!user2_id(id, username, avatar_url)
-                        `)
-                        .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-                    
-                    ({ data: friends, error } = await query);
-                }
                 
                 if (error) {
                     console.error('Error cargando amigos:', error);
@@ -575,6 +602,17 @@
             }
         }
         
+        // Determinar si un usuario está en línea (últimos 2 minutos)
+        function isUserOnline(lastSignInAt) {
+            if (!lastSignInAt) return false;
+            
+            const lastSignInTime = new Date(lastSignInAt).getTime();
+            const currentTime = new Date().getTime();
+            const twoMinutesAgo = currentTime - (2 * 60 * 1000); // 2 minutos en milisegundos
+            
+            return lastSignInTime >= twoMinutesAgo;
+        }
+        
         // Datos de ejemplo para desarrollo cuando hay errores
         function getSampleFriends() {
             return [
@@ -585,7 +623,7 @@
                         id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
                         username: 'Amigo Ejemplo',
                         avatar_url: null,
-                        online_status: 'online'
+                        last_sign_in_at: new Date().toISOString() // En línea
                     }
                 },
                 {
@@ -595,33 +633,10 @@
                         id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
                         username: 'Otro Amigo',
                         avatar_url: null,
-                        online_status: 'away'
+                        last_sign_in_at: new Date(Date.now() - 3 * 60 * 1000).toISOString() // Desconectado
                     }
                 }
             ];
-        }
-        
-        // Determinar estado en línea (usa online_status si existe, sino simula)
-        function getOnlineStatus(friendProfile) {
-            // Si existe online_status en el perfil, usarlo
-            if (friendProfile.online_status !== undefined) {
-                return friendProfile.online_status;
-            }
-            
-            // Si no existe, simular un estado aleatorio
-            const statuses = ['online', 'away', 'offline'];
-            const weights = [0.6, 0.3, 0.1];
-            let random = Math.random();
-            let weightSum = 0;
-            
-            for (let i = 0; i < statuses.length; i++) {
-                weightSum += weights[i];
-                if (random <= weightSum) {
-                    return statuses[i];
-                }
-            }
-            
-            return 'online';
         }
         
         // Renderizar la lista de amigos
@@ -662,26 +677,26 @@
                         friendProfile = friend.user2 || { 
                             id: friend.user2_id, 
                             username: 'Usuario ' + friend.user2_id.substring(0, 8),
-                            avatar_url: null
+                            avatar_url: null,
+                            last_sign_in_at: null
                         };
                     } else {
                         friendProfile = friend.user1 || { 
                             id: friend.user1_id, 
                             username: 'Usuario ' + friend.user1_id.substring(0, 8),
-                            avatar_url: null
+                            avatar_url: null,
+                            last_sign_in_at: null
                         };
                     }
                     
-                    const onlineStatus = getOnlineStatus(friendProfile);
-                    const isOnline = onlineStatus === 'online';
-                    const isAway = onlineStatus === 'away';
+                    const isOnline = isUserOnline(friendProfile.last_sign_in_at);
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
                         <td class="friend-status">
-                            <span class="status-indicator ${isOnline ? 'status-online-indicator' : isAway ? 'status-away-indicator' : 'status-offline-indicator'}"></span>
-                            ${isOnline ? 'En línea' : isAway ? 'Ausente' : 'Desconectado'}
+                            <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
+                            ${isOnline ? 'En línea' : 'Desconectado'}
                         </td>
                         <td>
                             <button class="invite-btn ${isOnline ? 'invite-online' : 'invite-offline'}" ${isOnline ? '' : 'disabled'}>
@@ -709,40 +724,42 @@
             if (!currentUser) return;
             
             try {
-                // Simular ocupantes de sala
-                const roomOccupants = [
-                    { profile: { 
-                        id: currentUser.id, 
-                        username: 'Tú', 
-                        online_status: 'online' 
-                    }},
-                    { profile: { 
-                        id: 'demo-user-2', 
-                        username: 'Invitado', 
-                        online_status: 'away' 
-                    }}
-                ];
+                // Obtener usuarios que han iniciado sesión en los últimos 2 minutos
+                const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
                 
-                renderRoomOccupants(roomOccupants);
+                const { data: onlineUsers, error } = await supabase
+                    .from('profiles')
+                    .select('id, username, last_sign_in_at')
+                    .gte('last_sign_in_at', twoMinutesAgo)
+                    .order('last_sign_in_at', { ascending: false })
+                    .limit(2);
+                
+                if (error) {
+                    console.error('Error cargando usuarios en línea:', error);
+                    // Usar datos de ejemplo si hay error
+                    renderRoomOccupants([
+                        { profile: { 
+                            id: currentUser.id, 
+                            username: 'Tú', 
+                            last_sign_in_at: new Date().toISOString()
+                        }}
+                    ]);
+                    return;
+                }
+                
+                renderRoomOccupants(onlineUsers.map(user => ({ profile: user })));
             } catch (error) {
                 console.error('Error actualizando ocupación:', error);
                 updateDebugInfo('Error ocupación', error);
                 
                 // Renderizar con datos de ejemplo
-                const roomOccupants = [
+                renderRoomOccupants([
                     { profile: { 
                         id: currentUser.id, 
                         username: 'Tú', 
-                        online_status: 'online' 
-                    }},
-                    { profile: { 
-                        id: 'demo-user-2', 
-                        username: 'Invitado', 
-                        online_status: 'away' 
+                        last_sign_in_at: new Date().toISOString()
                     }}
-                ];
-                
-                renderRoomOccupants(roomOccupants);
+                ]);
             }
         }
         
@@ -763,23 +780,51 @@
                 if (index < userCards.length && occupant.profile) {
                     const profile = occupant.profile;
                     const isCurrentUser = profile.id === currentUser.id;
+                    const isOnline = isUserOnline(profile.last_sign_in_at);
                     
                     userCards[index].querySelector('.user-name').textContent = 
                         isCurrentUser ? `${profile.username} (Tú)` : profile.username;
                     
                     const statusElement = userCards[index].querySelector('.user-status');
                     statusElement.textContent = isCurrentUser ? 'Conectado' : 
-                                              profile.online_status === 'online' ? 'En línea' : 
-                                              profile.online_status === 'away' ? 'Ausente' : 'Desconectado';
+                                              isOnline ? 'En línea' : 'Desconectado';
                     
                     statusElement.className = `user-status ${isCurrentUser ? 'status-online' : 
-                                            profile.online_status === 'online' ? 'status-online' : 
-                                            profile.online_status === 'away' ? 'status-away' : 'status-busy'}`;
+                                            isOnline ? 'status-online' : 'status-busy'}`;
                     
                     userCards[index].querySelector('p').textContent = 
-                        isCurrentUser ? '¡Estás en la sala!' : 'Jugando en la sala';
+                        isCurrentUser ? '¡Estás en la sala!' : 
+                        isOnline ? 'Disponible para jugar' : 'Inactivo';
                 }
             });
+        }
+        
+        // Iniciar actualización automática
+        function startAutoRefresh() {
+            // Limpiar intervalo existente
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            // Actualizar cada 30 segundos
+            refreshInterval = setInterval(async () => {
+                console.log('Actualizando datos automáticamente...');
+                await loadUserFriends();
+                await updateRoomOccupancy();
+            }, 30000); // 30 segundos
+        }
+        
+        // Refrescar datos manualmente
+        async function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            await loadUserFriends();
+            await updateRoomOccupancy();
+            
+            setTimeout(() => {
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            }, 1000);
         }
         
         // Enviar invitación a un amigo
@@ -813,6 +858,7 @@
                             <p><i class="fas fa-trophy" style="margin-right: 8px;"></i> Competir y ganar premios</p>
                         </div>
                         
+                        <p>Los usuarios aparecen como "En línea" si han iniciado sesión en los últimos 2 minutos.</p>
                         <p>¡Invita a más amigos y diviértanse!</p>
                     </div>
                 `,
