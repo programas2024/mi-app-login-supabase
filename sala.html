@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Tus estilos CSS aquí (se mantienen igual) */
         * {
             margin: 0;
             padding: 0;
@@ -492,7 +493,7 @@
                 </div>
             </div>
             
-            <div class="friends-table-container">
+            <div class="friends-table-container" id="friends-container">
                 <h3 class="friends-table-title">Friends</h3>
                 <div class="loading" id="friends-loading">
                     <div class="loading-spinner"></div>
@@ -513,7 +514,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHTahYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -522,6 +523,7 @@
         let userFriends = [];
         let refreshInterval = null;
         let currentGuest = null;
+        let friendsTableRendered = false;
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
@@ -663,19 +665,20 @@
             ];
         }
         
-        // Renderizar la lista de amigos - CORREGIDO
+        // Renderizar la lista de amigos - VERSIÓN CORREGIDA
         function renderFriendsList(friends) {
-            const friendsContainer = document.querySelector('.friends-table-container');
-            const loadingElement = document.getElementById('friends-loading');
+            const friendsContainer = document.getElementById('friends-container');
             
-            // Si el elemento de carga ya no existe, no hacer nada
-            if (!loadingElement) {
-                console.log('Elemento de carga no encontrado, probablemente ya se renderizó');
+            // Si ya se renderizó la tabla, actualizarla en lugar de reemplazar
+            if (friendsTableRendered) {
+                updateFriendsTable(friends);
                 return;
             }
             
+            // Crear la tabla por primera vez
             const friendsTable = document.createElement('table');
             friendsTable.className = 'friends-table';
+            friendsTable.id = 'friends-table';
             
             // Crear encabezado de la tabla
             const thead = document.createElement('thead');
@@ -690,6 +693,7 @@
             
             // Crear cuerpo de la tabla
             const tbody = document.createElement('tbody');
+            tbody.id = 'friends-tbody';
             
             if (friends.length === 0) {
                 tbody.innerHTML = `
@@ -700,63 +704,88 @@
                     </tr>
                 `;
             } else {
-                friends.forEach(friend => {
-                    // Determinar qué usuario es el amigo (no el usuario actual)
-                    let friendProfile;
-                    if (friend.user1_id === currentUser.id) {
-                        friendProfile = friend.user2 || { 
-                            id: friend.user2_id, 
-                            username: 'Usuario ' + friend.user2_id.substring(0, 8),
-                            avatar_url: null,
-                            last_sign_in_at: null
-                        };
-                    } else {
-                        friendProfile = friend.user1 || { 
-                            id: friend.user1_id, 
-                            username: 'Usuario ' + friend.user1_id.substring(0, 8),
-                            avatar_url: null,
-                            last_sign_in_at: null
-                        };
-                    }
-                    
-                    const isOnline = isUserOnline(friendProfile.last_sign_in_at);
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
-                        <td class="friend-status">
-                            <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
-                            ${isOnline ? 'En línea' : 'Desconectado'}
-                        </td>
-                        <td>
-                            <button class="invite-btn ${isOnline ? 'invite-online' : 'invite-offline'}" ${isOnline ? '' : 'disabled'}>
-                                <i class="fas fa-plus"></i> Invitar
-                            </button>
-                        </td>
-                    `;
-                    
-                    // Agregar evento al botón de invitar
-                    if (isOnline) {
-                        const inviteBtn = row.querySelector('.invite-btn');
-                        inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
-                    }
-                    
-                    tbody.appendChild(row);
-                });
+                renderFriendsRows(tbody, friends);
             }
             
             friendsTable.appendChild(tbody);
             
-            // Reemplazar el elemento de carga con la tabla
-            try {
-                friendsContainer.replaceChild(friendsTable, loadingElement);
-            } catch (error) {
-                console.error('Error al reemplazar elemento:', error);
-                // Si falla, simplemente agregar la tabla
-                friendsContainer.appendChild(friendsTable);
-                if (loadingElement.parentNode === friendsContainer) {
-                    friendsContainer.removeChild(loadingElement);
+            // Eliminar el elemento de carga si existe
+            const loadingElement = document.getElementById('friends-loading');
+            if (loadingElement && loadingElement.parentNode === friendsContainer) {
+                friendsContainer.removeChild(loadingElement);
+            }
+            
+            // Agregar la tabla al contenedor
+            friendsContainer.appendChild(friendsTable);
+            friendsTableRendered = true;
+        }
+        
+        // Renderizar filas de amigos
+        function renderFriendsRows(tbody, friends) {
+            friends.forEach(friend => {
+                // Determinar qué usuario es el amigo (no el usuario actual)
+                let friendProfile;
+                if (friend.user1_id === currentUser.id) {
+                    friendProfile = friend.user2 || { 
+                        id: friend.user2_id, 
+                        username: 'Usuario ' + friend.user2_id.substring(0, 8),
+                        avatar_url: null,
+                        last_sign_in_at: null
+                    };
+                } else {
+                    friendProfile = friend.user1 || { 
+                        id: friend.user1_id, 
+                        username: 'Usuario ' + friend.user1_id.substring(0, 8),
+                        avatar_url: null,
+                        last_sign_in_at: null
+                    };
                 }
+                
+                const isOnline = isUserOnline(friendProfile.last_sign_in_at);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
+                    <td class="friend-status">
+                        <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
+                        ${isOnline ? 'En línea' : 'Desconectado'}
+                    </td>
+                    <td>
+                        <button class="invite-btn ${isOnline ? 'invite-online' : 'invite-offline'}" ${isOnline ? '' : 'disabled'}>
+                            <i class="fas fa-plus"></i> Invitar
+                        </button>
+                    </td>
+                `;
+                
+                // Agregar evento al botón de invitar
+                if (isOnline) {
+                    const inviteBtn = row.querySelector('.invite-btn');
+                    inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Actualizar la tabla de amigos existente
+        function updateFriendsTable(friends) {
+            const tbody = document.getElementById('friends-tbody');
+            if (!tbody) return;
+            
+            // Limpiar el cuerpo de la tabla
+            tbody.innerHTML = '';
+            
+            // Volver a renderizar las filas
+            if (friends.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">
+                            No tienes amigos aún. ¡Agrega algunos para jugar juntos!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                renderFriendsRows(tbody, friends);
             }
         }
         
