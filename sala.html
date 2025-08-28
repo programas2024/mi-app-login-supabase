@@ -182,6 +182,27 @@
             border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
+        .empty-room {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .empty-room-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-room-text {
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+
         .friends-table-container {
             background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
             border-radius: 15px;
@@ -448,30 +469,32 @@
         
         <div class="room-content">
             <div class="users-container">
-                <!-- Usuario 1 -->
-                <div class="user-card">
+                <!-- Usuario actual -->
+                <div class="user-card" id="current-user-card">
                     <div class="user-avatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h3 class="user-name">Cargando...</h3>
-                    <div class="user-status status-online">Conectando...</div>
-                    <p>Esperando datos</p>
+                    <h3 class="user-name">Tú</h3>
+                    <div class="user-status status-online">Conectado</div>
+                    <p>Esperando amigos...</p>
                 </div>
                 
-                <!-- Usuario 2 -->
-                <div class="user-card">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+                <!-- Espacio para invitado -->
+                <div class="user-card" id="guest-user-card">
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            Invita a un amigo para jugar juntos
+                        </div>
                     </div>
-                    <h3 class="user-name">Cargando...</h3>
-                    <div class="user-status status-away">Conectando...</div>
-                    <p>Esperando datos</p>
                 </div>
             </div>
             
             <div class="friends-table-container">
                 <h3 class="friends-table-title">Friends</h3>
-                <div class="loading">
+                <div class="loading" id="friends-loading">
                     <div class="loading-spinner"></div>
                     <span>Cargando amigos...</span>
                 </div>
@@ -490,7 +513,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHTahYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -498,6 +521,7 @@
         let currentUser = null;
         let userFriends = [];
         let refreshInterval = null;
+        let currentGuest = null;
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
@@ -639,10 +663,16 @@
             ];
         }
         
-        // Renderizar la lista de amigos
+        // Renderizar la lista de amigos - CORREGIDO
         function renderFriendsList(friends) {
             const friendsContainer = document.querySelector('.friends-table-container');
-            const loadingElement = friendsContainer.querySelector('.loading');
+            const loadingElement = document.getElementById('friends-loading');
+            
+            // Si el elemento de carga ya no existe, no hacer nada
+            if (!loadingElement) {
+                console.log('Elemento de carga no encontrado, probablemente ya se renderizó');
+                return;
+            }
             
             const friendsTable = document.createElement('table');
             friendsTable.className = 'friends-table';
@@ -716,7 +746,18 @@
             }
             
             friendsTable.appendChild(tbody);
-            friendsContainer.replaceChild(friendsTable, loadingElement);
+            
+            // Reemplazar el elemento de carga con la tabla
+            try {
+                friendsContainer.replaceChild(friendsTable, loadingElement);
+            } catch (error) {
+                console.error('Error al reemplazar elemento:', error);
+                // Si falla, simplemente agregar la tabla
+                friendsContainer.appendChild(friendsTable);
+                if (loadingElement.parentNode === friendsContainer) {
+                    friendsContainer.removeChild(loadingElement);
+                }
+            }
         }
         
         // Actualizar la ocupación de la sala
@@ -736,30 +777,17 @@
                 
                 if (error) {
                     console.error('Error cargando usuarios en línea:', error);
-                    // Usar datos de ejemplo si hay error
-                    renderRoomOccupants([
-                        { profile: { 
-                            id: currentUser.id, 
-                            username: 'Tú', 
-                            last_sign_in_at: new Date().toISOString()
-                        }}
-                    ]);
                     return;
                 }
                 
-                renderRoomOccupants(onlineUsers.map(user => ({ profile: user })));
+                // Solo mostrar el usuario actual en la sala
+                const currentUserInRoom = onlineUsers.find(user => user.id === currentUser.id);
+                if (currentUserInRoom) {
+                    renderRoomOccupants([{ profile: currentUserInRoom }]);
+                }
             } catch (error) {
                 console.error('Error actualizando ocupación:', error);
                 updateDebugInfo('Error ocupación', error);
-                
-                // Renderizar con datos de ejemplo
-                renderRoomOccupants([
-                    { profile: { 
-                        id: currentUser.id, 
-                        username: 'Tú', 
-                        last_sign_in_at: new Date().toISOString()
-                    }}
-                ]);
             }
         }
         
@@ -767,36 +795,29 @@
         function renderRoomOccupants(occupants) {
             const userCards = document.querySelectorAll('.user-card');
             
-            // Limpiar las tarjetas existentes
-            userCards.forEach(card => {
-                card.querySelector('.user-name').textContent = 'Disponible';
-                card.querySelector('.user-status').textContent = 'Libre';
-                card.querySelector('.user-status').className = 'user-status status-away';
-                card.querySelector('p').textContent = 'Esperando jugador...';
-            });
+            // Siempre mostrar el usuario actual en la primera tarjeta
+            const currentUserCard = document.getElementById('current-user-card');
+            if (currentUserCard) {
+                currentUserCard.querySelector('.user-name').textContent = 'Tú';
+                currentUserCard.querySelector('.user-status').textContent = 'Conectado';
+                currentUserCard.querySelector('.user-status').className = 'user-status status-online';
+                currentUserCard.querySelector('p').textContent = '¡Estás en la sala!';
+            }
             
-            // Llenar con los ocupantes reales
-            occupants.forEach((occupant, index) => {
-                if (index < userCards.length && occupant.profile) {
-                    const profile = occupant.profile;
-                    const isCurrentUser = profile.id === currentUser.id;
-                    const isOnline = isUserOnline(profile.last_sign_in_at);
-                    
-                    userCards[index].querySelector('.user-name').textContent = 
-                        isCurrentUser ? `${profile.username} (Tú)` : profile.username;
-                    
-                    const statusElement = userCards[index].querySelector('.user-status');
-                    statusElement.textContent = isCurrentUser ? 'Conectado' : 
-                                              isOnline ? 'En línea' : 'Desconectado';
-                    
-                    statusElement.className = `user-status ${isCurrentUser ? 'status-online' : 
-                                            isOnline ? 'status-online' : 'status-busy'}`;
-                    
-                    userCards[index].querySelector('p').textContent = 
-                        isCurrentUser ? '¡Estás en la sala!' : 
-                        isOnline ? 'Disponible para jugar' : 'Inactivo';
-                }
-            });
+            // La segunda tarjeta permanece vacía hasta que se invite a alguien
+            const guestCard = document.getElementById('guest-user-card');
+            if (guestCard && !currentGuest) {
+                guestCard.innerHTML = `
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            Invita a un amigo para jugar juntos
+                        </div>
+                    </div>
+                `;
+            }
         }
         
         // Iniciar actualización automática
@@ -817,30 +838,74 @@
         // Refrescar datos manualmente
         async function refreshData() {
             const refreshBtn = document.querySelector('.refresh-btn');
+            const originalHtml = refreshBtn.innerHTML;
             refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             await loadUserFriends();
             await updateRoomOccupancy();
             
             setTimeout(() => {
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+                refreshBtn.innerHTML = originalHtml;
             }, 1000);
         }
         
         // Enviar invitación a un amigo
         async function sendInvitation(friend) {
             try {
-                Swal.fire({
-                    title: 'Invitación enviada',
-                    html: `Se ha enviado una invitación a <strong>${friend.username}</strong>`,
-                    icon: 'success',
+                // Simular envío de invitación
+                const { value: accept } = await Swal.fire({
+                    title: 'Enviar invitación',
+                    html: `¿Quieres invitar a <strong>${friend.username}</strong> a la sala?`,
+                    icon: 'question',
+                    showCancelButton: true,
                     confirmButtonColor: '#43cea2',
-                    confirmButtonText: 'OK'
+                    cancelButtonColor: '#e74c3c',
+                    confirmButtonText: 'Sí, invitar',
+                    cancelButtonText: 'Cancelar'
                 });
+                
+                if (accept) {
+                    // Simular que el amigo acepta la invitación después de 2 segundos
+                    setTimeout(() => {
+                        currentGuest = friend;
+                        addGuestToRoom(friend);
+                        
+                        Swal.fire({
+                            title: '¡Invitación aceptada!',
+                            html: `<strong>${friend.username}</strong> se ha unido a la sala`,
+                            icon: 'success',
+                            confirmButtonColor: '#43cea2',
+                            confirmButtonText: 'OK'
+                        });
+                    }, 2000);
+                    
+                    Swal.fire({
+                        title: 'Invitación enviada',
+                        html: `Esperando respuesta de <strong>${friend.username}</strong>...`,
+                        icon: 'info',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
             } catch (error) {
                 console.error('Error enviando invitación:', error);
                 showError('Error al enviar la invitación: ' + error.message);
                 updateDebugInfo('Error invitación', error);
+            }
+        }
+        
+        // Añadir invitado a la sala
+        function addGuestToRoom(guest) {
+            const guestCard = document.getElementById('guest-user-card');
+            if (guestCard) {
+                guestCard.innerHTML = `
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="user-name">${guest.username}</h3>
+                    <div class="user-status status-online">Conectado</div>
+                    <p>Jugando contigo</p>
+                `;
             }
         }
         
