@@ -512,44 +512,22 @@
             }
         }
         
-        // Cargar amigos del usuario
+        // Cargar amigos del usuario - CORREGIDO: Ya no intenta usar RPC
         async function loadUserFriends() {
             if (!currentUser) return;
             
             try {
-                // Primero intentamos obtener los amigos usando RPC si las políticas RLS están habilitadas
-                let friendsData = [];
-                let error = null;
+                console.log('Cargando amigos para usuario:', currentUser.id);
                 
-                // Intentar con función RPC personalizada si existe
-                try {
-                    const { data, error: rpcError } = await supabase
-                        .rpc('get_user_friends', { user_id: currentUser.id });
-                    
-                    if (!rpcError) {
-                        friendsData = data;
-                    } else {
-                        error = rpcError;
-                    }
-                } catch (rpcError) {
-                    console.log('Función RPC no disponible, intentando con consulta directa');
-                    
-                    // Si la función RPC falla, intentar con consulta directa
-                    const { data, error: queryError } = await supabase
-                        .from('friends')
-                        .select(`
-                            *,
-                            user1:profiles!user1_id(id, username, avatar_url, online_status),
-                            user2:profiles!user2_id(id, username, avatar_url, online_status)
-                        `)
-                        .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-                    
-                    if (queryError) {
-                        error = queryError;
-                    } else {
-                        friendsData = data;
-                    }
-                }
+                // Consulta directa a la tabla friends
+                const { data: friends, error } = await supabase
+                    .from('friends')
+                    .select(`
+                        *,
+                        user1:profiles!user1_id(id, username, avatar_url, online_status),
+                        user2:profiles!user2_id(id, username, avatar_url, online_status)
+                    `)
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
                 
                 if (error) {
                     console.error('Error cargando amigos:', error);
@@ -569,7 +547,8 @@
                     return;
                 }
                 
-                userFriends = friendsData || [];
+                console.log('Amigos cargados:', friends);
+                userFriends = friends || [];
                 renderFriendsList(userFriends);
             } catch (error) {
                 console.error('Error inesperado:', error);
@@ -787,7 +766,7 @@
                 title: 'Sala de Amigos',
                 html: `
                     <div style="text-align: left; padding: 10px;">
-                        <p style="margin-bottom: 15px;">Bienvenido a la sala de amigos, un espacio donde puedes:</p>
+                        <p style="margin-bottom: 15px;">Bienvenido to la sala de amigos, un espacio donde puedes:</p>
                         
                         <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                             <p style="margin-bottom: 8px;"><i class="fas fa-users" style="margin-right: 8px;"></i> Conectar con tus amigos</p>
@@ -842,6 +821,7 @@
                 debugToggle.textContent = 'Mostrar información de depuración';
             }
         }
+        
     </script>
 </body>
 </html>
