@@ -541,6 +541,7 @@ let currentRoomId = null;
 let roomsTableExists = false;
 let invitationsSubscription = null;
 let pendingInvitations = new Map();
+let isRoomCreator = false;
 
 // Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', async function() {
@@ -667,6 +668,9 @@ async function setupRoom() {
             // El usuario ya está en una sala
             currentRoomId = existingRoom.id;
             
+            // Determinar si el usuario actual es el creador de la sala
+            isRoomCreator = existingRoom.user1_id === currentUser.id;
+            
             // Determinar quién es el otro usuario en la sala
             const otherUserId = existingRoom.user1_id === currentUser.id 
                 ? existingRoom.user2_id 
@@ -702,9 +706,10 @@ async function setupRoom() {
             }
             
             currentRoomId = newRoom.id;
+            isRoomCreator = true;
         }
         
-        updateDebugInfo('Sala configurada', { roomId: currentRoomId, guest: currentGuest });
+        updateDebugInfo('Sala configurada', { roomId: currentRoomId, guest: currentGuest, isRoomCreator });
     } catch (error) {
         console.error('Error configurando sala:', error);
         updateDebugInfo('Error configurando sala', error);
@@ -757,13 +762,64 @@ function subscribeToRoomChanges() {
                     }
                 } else if (!otherUserId && currentGuest) {
                     // El otro usuario salió de la sala
+                    const guestName = currentGuest.username;
                     currentGuest = null;
-                    clearGuestFromRoom();
+                    clearGuestFromRoom(guestName);
                     await loadUserFriends(); // Actualizar lista de amigos
+                }
+                
+                // Verificar si la sala fue desactivada (ambos usuarios salieron)
+                if (!room.is_active) {
+                    handleRoomDeactivated();
                 }
             }
         )
         .subscribe();
+}
+
+// Manejar cuando la sala se desactiva
+function handleRoomDeactivated() {
+    if (currentGuest) {
+        const guestName = currentGuest.username;
+        currentGuest = null;
+        clearGuestFromRoom(guestName, true);
+    } else {
+        clearGuestFromRoom(null, true);
+    }
+    
+    // Crear una nueva sala para el usuario actual
+    setTimeout(async () => {
+        await createNewRoom();
+    }, 2000);
+}
+
+// Crear una nueva sala para el usuario
+async function createNewRoom() {
+    try {
+        const { data: newRoom, error: createError } = await supabase
+            .from('rooms')
+            .insert([{ 
+                user1_id: currentUser.id, 
+                is_active: true 
+            }])
+            .select()
+            .single();
+        
+        if (createError) {
+            console.error('Error creando nueva sala:', createError);
+            return;
+        }
+        
+        currentRoomId = newRoom.id;
+        isRoomCreator = true;
+        
+        // Resuscribirse a cambios en la nueva sala
+        subscribeToRoomChanges();
+        
+        console.log('Nueva sala creada:', currentRoomId);
+    } catch (error) {
+        console.error('Error creando nueva sala:', error);
+    }
 }
 
 // Suscribirse a invitaciones en tiempo real
@@ -860,6 +916,7 @@ async function acceptInvitation(invitationId, inviter) {
             
             // Actualizar la interfaz
             currentGuest = inviter;
+            isRoomCreator = false; // Ya no es el creador de la sala
             addGuestToRoom(inviter);
             
             Swal.fire({
@@ -1180,20 +1237,155 @@ function addGuestToRoom(guest) {
     }
 }
 
-// Limpiar invitado de la sala
-function clearGuestFromRoom() {
+// Limpiar invitado de la sala con mensaje personalizado
+function clearGuestFromRoom(guestName = null, roomDeactivated = false) {
     const guestCard = document.getElementById('guest-user-card');
     if (guestCard) {
-        guestCard.innerHTML = `
-            <div class="empty-room">
-                <div class="empty-room-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="empty-room-text">
-                    Invita a un amigo para jugar juntos
-                </div>
-            </div>
-        `;
+        if (roomDeactivated) {
+            // Mostrar mensaje específico si la sala fue desactivada
+            if (guestName) {
+                guestCard.innerHTML = `
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            <strong>${guestName}</strong> salió de la sala
+                        </div>
+                        <div class="empty-room-subtext">
+                            La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
+                        </div>
+                    </div>
+                `;
+            } else {
+                guestCard.innerHTML = `
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            El usuario salió de la sala
+                        </div>
+                        <div class="empty-room-subtext">
+                            La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            // Mensaje normal para cuando un usuario sale pero la sala sigue activa
+            if (guestName) {
+                guestCard.innerHTML = `
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            <strong>${guestName}</strong> salió de la sala
+                        </div>
+                        <div class="empty-room-subtext">
+                            Invita a otro amigo para continuar jugando
+                        </div>
+                    </div>
+                `;
+            } else {
+                guestCard.innerHTML = `
+                    <div class="empty-room">
+                        <div class="empty-room-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="empty-room-text">
+                            Invita a un amigo para jugar juntos
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    }
+}
+
+// Salir de la sala actual
+async function leaveRoom() {
+    if (!currentRoomId || !currentGuest) return;
+    
+    try {
+        // Mostrar confirmación
+        const result = await Swal.fire({
+            title: '¿Salir de la sala?',
+            text: 'Al salir, tu amigo quedará solo en la sala',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#43cea2',
+            cancelButtonColor: '#e74c3c',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Cancelar'
+        });
+        
+        if (result.isConfirmed) {
+            // Si el usuario actual es el invitado (user2), removerlo de la sala
+            if (!isRoomCreator) {
+                const { error } = await supabase
+                    .from('rooms')
+                    .update({ 
+                        user2_id: null,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentRoomId);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Limpiar el estado local
+                const guestName = currentGuest.username;
+                currentGuest = null;
+                clearGuestFromRoom(guestName);
+                
+                Swal.fire({
+                    title: 'Has salido de la sala',
+                    icon: 'success',
+                    confirmButtonColor: '#43cea2',
+                    timer: 2000
+                });
+            } 
+            // Si el usuario actual es el creador de la sala, desactivar toda la sala
+            else {
+                const { error } = await supabase
+                    .from('rooms')
+                    .update({ 
+                        is_active: false,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentRoomId);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Limpiar el estado local
+                const guestName = currentGuest.username;
+                currentGuest = null;
+                clearGuestFromRoom(guestName, true);
+                
+                Swal.fire({
+                    title: 'Sala cerrada',
+                    text: 'Has cerrado la sala. Tu amigo ya no podrá jugar contigo.',
+                    icon: 'info',
+                    confirmButtonColor: '#43cea2',
+                    timer: 3000
+                });
+            }
+            
+            await loadUserFriends();
+        }
+    } catch (error) {
+        console.error('Error saliendo de la sala:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudo salir de la sala',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
