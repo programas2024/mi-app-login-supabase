@@ -5,462 +5,355 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sala de Amigos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos CSS anteriores (se mantienen igual) */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
-
+        
         .container {
             max-width: 1200px;
-            width: 100%;
             margin: 0 auto;
         }
-
+        
         .header {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            gap: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-
+        
         .back-button {
-            display: inline-flex;
-            align-items: center;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: none;
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
+            padding: 10px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            white-space: nowrap;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .back-button i {
-            margin-right: 8px;
-        }
-
-        .page-title {
-            font-size: 2.8rem;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            margin: 0;
-        }
-
-        .action-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            font-size: 1.2rem;
+            gap: 8px;
+            transition: background 0.3s;
         }
-
-        .action-btn:hover {
+        
+        .back-button:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
         }
-
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+        }
+        
+        .action-btn, .refresh-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+        
+        .action-btn:hover, .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
         .page-subtitle {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 1.2rem;
+            margin-bottom: 30px;
             opacity: 0.9;
+            font-size: 18px;
         }
-
+        
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
         .room-content {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 30px;
-            align-items: start;
+            margin-bottom: 30px;
         }
-
+        
+        @media (max-width: 768px) {
+            .room-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         .users-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
+        
+        @media (max-width: 480px) {
+            .users-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         .user-card {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100%;
+            position: relative;
         }
-
-        .user-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
+        
         .user-avatar {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            margin: 0 auto 15px;
-            overflow: hidden;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
-        }
-
-        .user-name {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .user-status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
             margin-bottom: 15px;
+            font-size: 32px;
         }
-
+        
+        .user-name {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .user-status {
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
         .status-online {
             background: rgba(46, 204, 113, 0.2);
             color: #2ecc71;
-            border: 1px solid rgba(46, 204, 113, 0.3);
         }
-
-        .status-away {
-            background: rgba(241, 196, 15, 0.2);
-            color: #f1c40f;
-            border: 1px solid rgba(241, 196, 15, 0.3);
+        
+        .status-offline {
+            background: rgba(149, 165, 166, 0.2);
+            color: #95a5a6;
         }
-
-        .status-busy {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.3);
-        }
-
-        .status-pending {
-            background: rgba(155, 89, 182, 0.2);
-            color: #9b59b6;
-            border: 1px solid rgba(155, 89, 182, 0.3);
-        }
-
+        
         .empty-room {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             height: 100%;
-            padding: 20px;
         }
-
+        
         .empty-room-icon {
-            font-size: 3rem;
+            font-size: 40px;
             margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .empty-room-text {
-            font-size: 1.1rem;
             opacity: 0.7;
         }
-
-        .friends-table-container {
-            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .friends-table-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+        
+        .empty-room-text {
+            font-size: 16px;
             text-align: center;
-            font-weight: 700;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            margin-bottom: 5px;
         }
-
+        
+        .empty-room-subtext {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .friends-table-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .friends-table-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
         .friends-table {
             width: 100%;
             border-collapse: collapse;
-            flex-grow: 1;
         }
-
+        
         .friends-table th {
             text-align: left;
-            padding: 15px 12px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .friends-table td {
-            padding: 12px;
+            padding: 12px 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
         }
-
+        
+        .friends-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
         .friends-table tr:last-child td {
             border-bottom: none;
         }
-
-        .friends-table tr:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .friend-name {
-            font-weight: 500;
-        }
-
-        .friend-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
+            margin-right: 8px;
         }
-
+        
         .status-online-indicator {
             background: #2ecc71;
-            box-shadow: 0 0 8px #2ecc71;
         }
-
-        .status-away-indicator {
-            background: #f1c40f;
-            box-shadow: 0 0 8px #f1c40f;
-        }
-
+        
         .status-offline-indicator {
             background: #95a5a6;
         }
-
+        
         .invite-btn {
             padding: 8px 12px;
-            border-radius: 20px;
             border: none;
-            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-            white-space: nowrap;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
         }
-
+        
         .invite-online {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            background: #43cea2;
             color: white;
-            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
         }
-
+        
         .invite-online:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+            background: #38b592;
         }
-
+        
         .invite-offline {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-            cursor: not-allowed;
-        }
-
-        .invite-pending {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            background: #95a5a6;
             color: white;
             cursor: not-allowed;
         }
-
+        
+        .invite-pending {
+            background: #f39c12;
+            color: white;
+            cursor: not-allowed;
+        }
+        
         .loading {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 200px;
-            font-size: 1.2rem;
+            padding: 30px;
+            gap: 15px;
         }
-
+        
         .loading-spinner {
+            width: 40px;
+            height: 40px;
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top: 4px solid #fff;
-            width: 30px;
-            height: 30px;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
         }
-
-        .error-message {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid rgba(231, 76, 60, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: center;
-        }
-
-        .debug-info {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .debug-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-
-        .refresh-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .room-content {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            
-            .friends-table-container {
-                max-width: 100%;
-            }
+        
+        .debug-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            width: 100%;
+            text-align: left;
         }
-
-        @media (max-width: 768px) {
-            .header {
-                grid-template-columns: 1fr;
-                justify-items: center;
-                gap: 15px;
-            }
-            
-            .users-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .page-title {
-                font-size: 2.2rem;
-            }
-            
-            .friends-table th, 
-            .friends-table td {
-                padding: 10px 8px;
-            }
-            
-            .invite-btn {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
+        
+        .debug-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
         }
-
-        @media (max-width: 480px) {
-            .page-title {
-                font-size: 1.8rem;
-            }
-            
-            .user-avatar {
-                width: 80px;
-                height: 80px;
-                font-size: 2rem;
-            }
-            
-            .user-name {
-                font-size: 1.2rem;
-            }
-            
-            .friends-table {
-                font-size: 0.9rem;
-            }
-            
-            .friends-table-title {
-                font-size: 1.5rem;
-            }
+        
+        .debug-info h4 {
+            margin-bottom: 10px;
+        }
+        
+        .debug-info pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            overflow: auto;
+            font-size: 12px;
+            max-height: 200px;
+        }
+        
+        .expel-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.3);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .expel-btn:hover {
+            background: rgba(231, 76, 60, 0.5);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-button" onclick="window.location.href='dashboard.html'">
+            <button class="back-button" onclick="handleBackButton()">
                 <i class="fas fa-arrow-left"></i> Volver
             </button>
             
@@ -524,7 +417,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-       // Configuración de Supabase - VERIFICAR ESTAS CREDENCIALES
+       // Configuración de Supabase
 const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
@@ -1226,7 +1119,7 @@ async function sendInvitation(friend) {
 function addGuestToRoom(guest) {
     const guestCard = document.getElementById('guest-user-card');
     if (guestCard) {
-        guestCard.innerHTML = `
+        let guestContent = `
             <div class="user-avatar">
                 <i class="fas fa-user"></i>
             </div>
@@ -1234,6 +1127,81 @@ function addGuestToRoom(guest) {
             <div class="user-status status-online">Conectado</div>
             <p>Jugando contigo</p>
         `;
+        
+        // Si es el creador de la sala, agregar botón de expulsión
+        if (isRoomCreator) {
+            guestContent += `
+                <button class="expel-btn" onclick="expelGuest('${guest.id}', '${guest.username}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+        }
+        
+        guestCard.innerHTML = guestContent;
+    }
+}
+
+// Expulsar a un invitado de la sala
+async function expelGuest(guestId, guestName) {
+    try {
+        const result = await Swal.fire({
+            title: '¿Expulsar al invitado?',
+            html: `¿Estás seguro de que quieres expulsar a <strong>${guestName}</strong> de la sala?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#95a5a6',
+            confirmButtonText: 'Sí, expulsar',
+            cancelButtonText: 'Cancelar'
+        });
+        
+        if (result.isConfirmed) {
+            // Expulsar al invitado de la sala
+            const { error } = await supabase
+                .from('rooms')
+                .update({ 
+                    user2_id: null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', currentRoomId);
+            
+            if (error) {
+                throw error;
+            }
+            
+            // Mostrar mensaje de expulsión en el lado del invitado
+            await supabase
+                .from('notifications')
+                .insert([{
+                    user_id: guestId,
+                    title: 'Has sido expulsado',
+                    message: `El anfitrión te ha expulsado de la sala`,
+                    type: 'expulsion',
+                    room_id: currentRoomId
+                }]);
+            
+            // Actualizar la interfaz local
+            currentGuest = null;
+            clearGuestFromRoom(guestName);
+            
+            Swal.fire({
+                title: 'Invitado expulsado',
+                html: `<strong>${guestName}</strong> ha sido expulsado de la sala.`,
+                icon: 'success',
+                confirmButtonColor: '#43cea2',
+                timer: 2000
+            });
+            
+            await loadUserFriends();
+        }
+    } catch (error) {
+        console.error('Error expulsando invitado:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudo expulsar al invitado',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
@@ -1304,80 +1272,86 @@ function clearGuestFromRoom(guestName = null, roomDeactivated = false) {
     }
 }
 
-// Salir de la sala actual
-async function leaveRoom() {
-    if (!currentRoomId || !currentGuest) return;
-    
-    try {
-        // Mostrar confirmación
+// Manejar el botón de volver
+async function handleBackButton() {
+    if (currentGuest) {
+        // Si hay un invitado, preguntar si quiere salir de la sala
         const result = await Swal.fire({
             title: '¿Salir de la sala?',
-            text: 'Al salir, tu amigo quedará solo en la sala',
+            html: `Al salir, ${isRoomCreator ? 'la sala se cerrará y tu invitado será expulsado' : 'abandonarás la sala'}.`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#43cea2',
-            cancelButtonColor: '#e74c3c',
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#95a5a6',
             confirmButtonText: 'Sí, salir',
             cancelButtonText: 'Cancelar'
         });
         
         if (result.isConfirmed) {
-            // Si el usuario actual es el invitado (user2), removerlo de la sala
-            if (!isRoomCreator) {
-                const { error } = await supabase
-                    .from('rooms')
-                    .update({ 
-                        user2_id: null,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', currentRoomId);
-                
-                if (error) {
-                    throw error;
-                }
-                
-                // Limpiar el estado local
-                const guestName = currentGuest.username;
-                currentGuest = null;
-                clearGuestFromRoom(guestName);
-                
-                Swal.fire({
-                    title: 'Has salido de la sala',
-                    icon: 'success',
-                    confirmButtonColor: '#43cea2',
-                    timer: 2000
-                });
-            } 
-            // Si el usuario actual es el creador de la sala, desactivar toda la sala
-            else {
-                const { error } = await supabase
-                    .from('rooms')
-                    .update({ 
-                        is_active: false,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', currentRoomId);
-                
-                if (error) {
-                    throw error;
-                }
-                
-                // Limpiar el estado local
-                const guestName = currentGuest.username;
-                currentGuest = null;
-                clearGuestFromRoom(guestName, true);
-                
-                Swal.fire({
-                    title: 'Sala cerrada',
-                    text: 'Has cerrado la sala. Tu amigo ya no podrá jugar contigo.',
-                    icon: 'info',
-                    confirmButtonColor: '#43cea2',
-                    timer: 3000
-                });
+            await leaveRoom();
+            window.location.href = 'dashboard.html';
+        }
+    } else {
+        // Si no hay invitado, simplemente redirigir
+        window.location.href = 'dashboard.html';
+    }
+}
+
+// Salir de la sala actual
+async function leaveRoom() {
+    if (!currentRoomId) return;
+    
+    try {
+        // Si el usuario actual es el creador de la sala, desactivar toda la sala
+        if (isRoomCreator) {
+            const { error } = await supabase
+                .from('rooms')
+                .update({ 
+                    is_active: false,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', currentRoomId);
+            
+            if (error) {
+                throw error;
             }
             
-            await loadUserFriends();
+            // Notificar al invitado si existe
+            if (currentGuest) {
+                await supabase
+                    .from('notifications')
+                    .insert([{
+                        user_id: currentGuest.id,
+                        title: 'Sala cerrada',
+                        message: 'El anfitrión ha cerrado la sala',
+                        type: 'room_closed',
+                        room_id: currentRoomId
+                    }]);
+            }
+        } 
+        // Si el usuario actual es el invitado, simplemente salir
+        else {
+            const { error } = await supabase
+                .from('rooms')
+                .update({ 
+                    user2_id: null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', currentRoomId);
+            
+            if (error) {
+                throw error;
+            }
         }
+        
+        // Limpiar el estado local
+        if (currentGuest) {
+            const guestName = currentGuest.username;
+            currentGuest = null;
+            clearGuestFromRoom(guestName, isRoomCreator);
+        }
+        
+        await loadUserFriends();
     } catch (error) {
         console.error('Error saliendo de la sala:', error);
         Swal.fire({
