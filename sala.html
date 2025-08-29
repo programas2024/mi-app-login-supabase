@@ -183,6 +183,12 @@
             border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
+        .status-pending {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
         .empty-room {
             display: flex;
             flex-direction: column;
@@ -309,6 +315,12 @@
         .invite-offline {
             background: rgba(255, 255, 255, 0.2);
             color: rgba(255, 255, 255, 0.7);
+            cursor: not-allowed;
+        }
+
+        .invite-pending {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
             cursor: not-allowed;
         }
 
@@ -494,7 +506,7 @@
             </div>
             
             <div class="friends-table-container" id="friends-container">
-                <h3 class="friends-table-title">Friends</h3>
+                <h3 class="friends-table-title">Amigos</h3>
                 <div class="loading" id="friends-loading">
                     <div class="loading-spinner"></div>
                     <span>Cargando amigos...</span>
@@ -514,7 +526,7 @@
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
@@ -527,6 +539,8 @@
         let roomSubscription = null;
         let currentRoomId = null;
         let roomsTableExists = false;
+        let invitationsSubscription = null;
+        let pendingInvitations = new Map();
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
@@ -537,6 +551,7 @@
             if (roomsTableExists) {
                 await setupRoom();
                 subscribeToRoomChanges();
+                subscribeToInvitations();
             } else {
                 showError('La funcionalidad de salas no está disponible. Contacta al administrador.');
             }
@@ -611,7 +626,7 @@
                     .select('*')
                     .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
                     .eq('is_active', true)
-                    .maybeSingle();  // Usar maybeSingle en lugar de single
+                    .maybeSingle();
                 
                 if (roomError) {
                     console.error('Error buscando sala:', roomError);
@@ -666,7 +681,7 @@
             }
         }
         
-        // Suscribirse a cambios en la sala en tiempo real (solo si la tabla existe)
+        // Suscribirse a cambios en la sala en tiempo real
         function subscribeToRoomChanges() {
             if (!currentRoomId || !roomsTableExists) return;
             
@@ -719,6 +734,141 @@
                     }
                 )
                 .subscribe();
+        }
+        
+        // Suscribirse a invitaciones en tiempo real
+        function subscribeToInvitations() {
+            if (!currentUser || !roomsTableExists) return;
+            
+            // Cancelar suscripción anterior si existe
+            if (invitationsSubscription) {
+                supabase.removeChannel(invitationsSubscription);
+            }
+            
+            // Suscribirse a invitaciones dirigidas a este usuario
+            invitationsSubscription = supabase
+                .channel('invitations-channel')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'invitations',
+                        filter: `invited_id=eq.${currentUser.id}`
+                    },
+                    async (payload) => {
+                        console.log('Nueva invitación recibida:', payload);
+                        const invitation = payload.new;
+                        
+                        // Obtener información del usuario que invitó
+                        const { data: inviter } = await supabase
+                            .from('profiles')
+                            .select('id, username')
+                            .eq('id', invitation.inviter_id)
+                            .single();
+                        
+                        if (inviter) {
+                            showInvitationAlert(inviter, invitation.id);
+                        }
+                    }
+                )
+                .subscribe();
+        }
+        
+        // Mostrar alerta de invitación
+        function showInvitationAlert(inviter, invitationId) {
+            Swal.fire({
+                title: '¡Invitación a Sala!',
+                html: `<strong>${inviter.username}</strong> te invita a su sala de amigos. ¿Quieres unirte?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#43cea2',
+                cancelButtonColor: '#e74c3c',
+                confirmButtonText: '¡Sí, unirme!',
+                cancelButtonText: 'Rechazar',
+                allowOutsideClick: false
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // Aceptar la invitación
+                    await acceptInvitation(invitationId, inviter);
+                } else {
+                    // Rechazar la invitación
+                    await rejectInvitation(invitationId);
+                }
+            });
+        }
+        
+        // Aceptar invitación
+        async function acceptInvitation(invitationId, inviter) {
+            try {
+                // Actualizar la sala del usuario actual para unirse a la sala del invitador
+                const { data: invitation } = await supabase
+                    .from('invitations')
+                    .select('room_id')
+                    .eq('id', invitationId)
+                    .single();
+                
+                if (invitation) {
+                    // Unirse a la sala
+                    const { error } = await supabase
+                        .from('rooms')
+                        .update({ 
+                            user2_id: currentUser.id,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', invitation.room_id);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // Marcar la invitación como aceptada
+                    await supabase
+                        .from('invitations')
+                        .update({ status: 'accepted' })
+                        .eq('id', invitationId);
+                    
+                    // Actualizar la interfaz
+                    currentGuest = inviter;
+                    addGuestToRoom(inviter);
+                    
+                    Swal.fire({
+                        title: '¡Bienvenido a la sala!',
+                        html: `Te has unido a la sala de <strong>${inviter.username}</strong>`,
+                        icon: 'success',
+                        confirmButtonColor: '#43cea2'
+                    });
+                    
+                    await loadUserFriends();
+                }
+            } catch (error) {
+                console.error('Error aceptando invitación:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo aceptar la invitación',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+        
+        // Rechazar invitación
+        async function rejectInvitation(invitationId) {
+            try {
+                await supabase
+                    .from('invitations')
+                    .update({ status: 'rejected' })
+                    .eq('id', invitationId);
+                
+                Swal.fire({
+                    title: 'Invitación rechazada',
+                    text: 'Has rechazado la invitación a la sala',
+                    icon: 'info',
+                    confirmButtonColor: '#43cea2'
+                });
+            } catch (error) {
+                console.error('Error rechazando invitación:', error);
+            }
         }
         
         // Actualizar last_sign_in_at del usuario actual
@@ -896,7 +1046,8 @@
                 
                 const isOnline = isUserOnline(friendProfile.last_sign_in_at);
                 const isAlreadyInRoom = currentGuest && currentGuest.id === friendProfile.id;
-                const canInvite = isOnline && !isAlreadyInRoom && roomsTableExists;
+                const hasPendingInvitation = pendingInvitations.has(friendProfile.id);
+                const canInvite = isOnline && !isAlreadyInRoom && !hasPendingInvitation && roomsTableExists;
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -905,12 +1056,13 @@
                         <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
                         ${isOnline ? 'En línea' : 'Desconectado'}
                         ${isAlreadyInRoom ? ' (En sala)' : ''}
+                        ${hasPendingInvitation ? ' (Invitación pendiente)' : ''}
                     </td>
                     <td>
-                        <button class="invite-btn ${canInvite ? 'invite-online' : 'invite-offline'}" 
+                        <button class="invite-btn ${canInvite ? 'invite-online' : hasPendingInvitation ? 'invite-pending' : 'invite-offline'}" 
                                 ${canInvite ? '' : 'disabled'}>
-                            <i class="fas fa-plus"></i> 
-                            ${isAlreadyInRoom ? 'En sala' : 'Invitar'}
+                            <i class="fas ${isAlreadyInRoom ? 'fa-check' : hasPendingInvitation ? 'fa-clock' : 'fa-plus'}"></i> 
+                            ${isAlreadyInRoom ? 'En sala' : hasPendingInvitation ? 'Pendiente' : 'Invitar'}
                         </button>
                     </td>
                 `;
@@ -950,54 +1102,43 @@
         // Enviar invitación a un amigo
         async function sendInvitation(friend) {
             try {
-                // Simular envío de invitación
-                const { value: accept } = await Swal.fire({
-                    title: 'Enviar invitación',
-                    html: `¿Quieres invitar a <strong>${friend.username}</strong> a la sala?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#43cea2',
-                    cancelButtonColor: '#e74c3c',
-                    confirmButtonText: 'Sí, invitar',
-                    cancelButtonText: 'Cancelar'
+                // Crear una invitación en la base de datos
+                const { data: invitation, error } = await supabase
+                    .from('invitations')
+                    .insert([{
+                        inviter_id: currentUser.id,
+                        invited_id: friend.id,
+                        room_id: currentRoomId,
+                        status: 'pending'
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error('Error creando invitación:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo enviar la invitación',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Agregar a invitaciones pendientes
+                pendingInvitations.set(friend.id, invitation.id);
+                
+                // Actualizar la interfaz
+                await loadUserFriends();
+                
+                Swal.fire({
+                    title: 'Invitación enviada',
+                    html: `Se ha enviado una invitación a <strong>${friend.username}</strong>. Esperando respuesta...`,
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false
                 });
                 
-                if (accept) {
-                    // Actualizar la sala para incluir al amigo invitado
-                    const { error } = await supabase
-                        .from('rooms')
-                        .update({ 
-                            user2_id: friend.id,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('id', currentRoomId);
-                    
-                    if (error) {
-                        console.error('Error actualizando sala:', error);
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'No se pudo enviar la invitación',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
-                    
-                    // Actualizar la interfaz localmente
-                    currentGuest = friend;
-                    addGuestToRoom(friend);
-                    
-                    Swal.fire({
-                        title: 'Invitación enviada',
-                        html: `<strong>${friend.username}</strong> puede unirse a la sala`,
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    
-                    // Recargar la lista de amigos para actualizar los botones
-                    await loadUserFriends();
-                }
             } catch (error) {
                 console.error('Error enviando invitación:', error);
                 showError('Error al enviar la invitación: ' + error.message);
