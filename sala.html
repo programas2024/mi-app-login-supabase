@@ -23,7 +23,6 @@
             justify-content: center;
             padding: 20px;
             color: #fff;
-            transition: background 1s ease;
         }
         
         .container {
@@ -70,7 +69,6 @@
             padding: 20px 30px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s ease;
         }
         
         .stats {
@@ -87,7 +85,6 @@
             border-radius: 16px;
             min-width: 140px;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.5s ease;
         }
         
         .stat-box i {
@@ -113,7 +110,6 @@
             padding: 35px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s ease;
         }
         
         .memory-game {
@@ -168,7 +164,6 @@
             background: linear-gradient(45deg, #0ff7ff, #16004b);
             font-size: 2.8rem;
             color: white;
-            transition: all 0.5s ease;
         }
         
         .card-back:hover {
@@ -356,7 +351,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
-            transition: all 0.5s ease;
         }
         
         .horizontal-stats {
@@ -373,7 +367,6 @@
             border-radius: 16px;
             min-width: 140px;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.5s ease;
         }
         
         .horizontal-stat i {
@@ -390,6 +383,53 @@
         .horizontal-stat .label {
             font-size: 0.9rem;
             opacity: 0.8;
+        }
+        
+        /* Ranking modal */
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .ranking-table th, .ranking-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .ranking-table th {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .ranking-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .ranking-position {
+            font-weight: bold;
+            text-align: center;
+            width: 50px;
+        }
+        
+        .top-1 {
+            color: gold;
+            font-size: 1.2em;
+        }
+        
+        .top-2 {
+            color: silver;
+        }
+        
+        .top-3 {
+            color: #cd7f32; /* Bronze */
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
         }
         
         @media (max-width: 900px) {
@@ -500,7 +540,7 @@
             font-size: 0.9rem;
         }
         
-        .theme-btn {
+        .ranking-btn {
             position: absolute;
             top: 20px;
             left: 20px;
@@ -516,12 +556,38 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .theme-btn:hover {
+        .ranking-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
         
-        .theme-btn i {
+        .ranking-btn i {
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .dashboard-btn {
+            position: absolute;
+            top: 85px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dashboard-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .dashboard-btn i {
             font-size: 24px;
             color: #fff;
         }
@@ -535,8 +601,11 @@
             <div class="info-btn" id="info-btn">
                 <i class="fas fa-info"></i>
             </div>
-            <div class="theme-btn" id="theme-btn">
-                <i class="fas fa-palette"></i>
+            <div class="ranking-btn" id="ranking-btn">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="dashboard-btn" id="dashboard-btn">
+                <i class="fas fa-home"></i>
             </div>
         </header>
         
@@ -577,7 +646,11 @@
         <div class="win-content">
             <h2>¡Felicidades!</h2>
             <p>Has encontrado todos los pares en <span id="final-moves">0</span> movimientos.</p>
-            <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
+            <p id="score-saved-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación guardada en el ranking!</p>
+            <div class="nav-buttons">
+                <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
+                <button id="ranking-btn-2"><i class="fas fa-trophy"></i> Ver Ranking</button>
+            </div>
         </div>
     </div>
     
@@ -595,9 +668,33 @@
             <p>¡Desafía tu memoria y diviértete!</p>
         </div>
     </div>
+    
+    <!-- Modal de ranking -->
+    <div class="modal" id="ranking-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-ranking-modal">&times;</span>
+            <h2><i class="fas fa-trophy"></i> Ranking de Jugadores</h2>
+            <div id="ranking-content">
+                <p>Cargando ranking...</p>
+            </div>
+            <div class="nav-buttons">
+                <button id="close-ranking-btn"><i class="fas fa-times"></i> Cerrar</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Scripts externos -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Configuración de Supabase
+            const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
             const movesElement = document.getElementById('moves-count');
             const pairsElement = document.getElementById('pairs-found');
             const finalMovesElement = document.getElementById('final-moves');
@@ -608,103 +705,31 @@
             const infoBtn = document.getElementById('info-btn');
             const infoModal = document.getElementById('info-modal');
             const closeModal = document.getElementById('close-modal');
-            const themeBtn = document.getElementById('theme-btn');
-            const statsContainer = document.getElementById('stats-container');
-            const gameContainerElement = document.getElementById('game-container');
-            const movesStat = document.getElementById('moves-stat');
-            const pairsStat = document.getElementById('pairs-stat');
+            const rankingBtn = document.getElementById('ranking-btn');
+            const rankingBtn2 = document.getElementById('ranking-btn-2');
+            const rankingModal = document.getElementById('ranking-modal');
+            const closeRankingModal = document.getElementById('close-ranking-modal');
+            const closeRankingBtn = document.getElementById('close-ranking-btn');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            const rankingContent = document.getElementById('ranking-content');
+            const scoreSavedMessage = document.getElementById('score-saved-message');
             
             let moves = 0;
             let pairsFound = 0;
             let firstCard, secondCard;
             let lockBoard = false;
+            let currentUserId = null;
             
-            // Lista de iconos FontAwesome para las tarjetas (más variedad)
+            // Obtener el ID de usuario de la URL (simulado para este ejemplo)
+            // En una aplicación real, esto vendría de la autenticación
+            const urlParams = new URLSearchParams(window.location.search);
+            currentUserId = urlParams.get('user_id') || 'default-user';
+            
+            // Lista de iconos FontAwesome para las tarjetas
             const allIcons = [
                 'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
-                'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire',
-                'fa-bell', 'fa-key', 'fa-flag', 'fa-heartbeat', 'fa-globe', 'fa-book',
-                'fa-camera', 'fa-gift', 'fa-clock', 'fa-paper-plane', 'fa-trophy', 'fa-umbrella'
+                'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
             ];
-            
-            // Lista de colores para los fondos
-            const colorSchemes = [
-                { 
-                    body: ['#0f2027', '#203a43', '#2c5364'],
-                    cardBack: ['#fdbb2d', '#ff5e62'],
-                    cardFront: ['#834d9b', '#d04ed6'],
-                    matched: ['#00b09b', '#96c93d'],
-                    button: ['#834d9b', '#d04ed6'],
-                    statBox: ['rgba(0, 0, 0, 0.25)'],
-                    container: ['rgba(255, 255, 255, 0.08)']
-                },
-                { 
-                    body: ['#4b79a1', '#283e51'],
-                    cardBack: ['#FF5F6D', '#FFC371'],
-                    cardFront: ['#7b4397', '#dc2430'],
-                    matched: ['#56ab2f', '#a8e6cf'],
-                    button: ['#7b4397', '#dc2430'],
-                    statBox: ['rgba(0, 0, 0, 0.3)'],
-                    container: ['rgba(255, 255, 255, 0.1)']
-                },
-                { 
-                    body: ['#ff6e7f', '#bfe9ff'],
-                    cardBack: ['#C06C84', '#6C5B7B'],
-                    cardFront: ['#355C7D', '#F67280'],
-                    matched: ['#11998e', '#38ef7d'],
-                    button: ['#355C7D', '#F67280'],
-                    statBox: ['rgba(0, 0, 0, 0.2)'],
-                    container: ['rgba(255, 255, 255, 0.12)']
-                },
-                { 
-                    body: ['#3a7bd5', '#00d2ff'],
-                    cardBack: ['#FF9966', '#FF5E62'],
-                    cardFront: ['#654ea3', '#eaafc8'],
-                    matched: ['#56ccf2', '#2f80ed'],
-                    button: ['#654ea3', '#eaafc8'],
-                    statBox: ['rgba(0, 0, 0, 0.35)'],
-                    container: ['rgba(255, 255, 255, 0.09)']
-                }
-            ];
-            
-            let currentColorScheme = 0;
-            
-            // Función para cambiar el esquema de colores
-            function changeColorScheme() {
-                currentColorScheme = (currentColorScheme + 1) % colorSchemes.length;
-                const scheme = colorSchemes[currentColorScheme];
-                
-                // Aplicar nuevos colores
-                document.body.style.background = `linear-gradient(135deg, ${scheme.body[0]}, ${scheme.body[1]}, ${scheme.body[2] || scheme.body[1]})`;
-                
-                // Actualizar colores de las cartas
-                document.querySelectorAll('.card-back').forEach(card => {
-                    card.style.background = `linear-gradient(45deg, ${scheme.cardBack[0]}, ${scheme.cardBack[1]})`;
-                });
-                
-                document.querySelectorAll('.card-front').forEach(card => {
-                    card.style.background = `linear-gradient(135deg, ${scheme.cardFront[0]}, ${scheme.cardFront[1]})`;
-                });
-                
-                document.querySelectorAll('.card.matched .card-front').forEach(card => {
-                    card.style.background = `linear-gradient(135deg, ${scheme.matched[0]}, ${scheme.matched[1]})`;
-                });
-                
-                // Actualizar botones
-                document.querySelectorAll('button').forEach(btn => {
-                    btn.style.background = `linear-gradient(to right, ${scheme.button[0]}, ${scheme.button[1]})`;
-                });
-                
-                // Actualizar cajas de estadísticas
-                document.querySelectorAll('.stat-box, .horizontal-stat').forEach(box => {
-                    box.style.background = scheme.statBox[0];
-                });
-                
-                // Actualizar contenedores
-                document.querySelectorAll('.game-info, .game-container, .stats-container').forEach(container => {
-                    container.style.background = scheme.container[0];
-                });
-            }
             
             // Función para obtener iconos aleatorios
             function getRandomIcons() {
@@ -827,29 +852,100 @@
             }
             
             // Mostrar mensaje de victoria
-            function showWinMessage() {
+            async function showWinMessage() {
                 finalMovesElement.textContent = moves;
                 winMessage.style.display = 'flex';
                 createConfetti();
+                
+                // Guardar la puntuación en Supabase
+                const { data, error } = await supabase
+                    .from('scores')
+                    .insert([
+                        { 
+                            user_id: currentUserId, 
+                            movements: moves, 
+                            pairs_found: pairsFound,
+                            completion_time: new Date().toISOString()
+                        }
+                    ]);
+                
+                if (error) {
+                    console.error('Error guardando puntuación:', error);
+                } else {
+                    scoreSavedMessage.style.display = 'block';
+                }
             }
             
             // Crear efecto de confeti
             function createConfetti() {
-                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'];
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+            
+            // Cargar y mostrar ranking
+            async function loadRanking() {
+                rankingContent.innerHTML = '<p>Cargando ranking...</p>';
+                rankingModal.style.display = 'flex';
                 
-                for (let i = 0; i < 150; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.classList.add('confetti');
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = (Math.random() * 12 + 8) + 'px';
-                    confetti.style.height = (Math.random() * 12 + 8) + 'px';
-                    confetti.style.animationDelay = Math.random() * 5 + 's';
-                    document.body.appendChild(confetti);
+                const { data, error } = await supabase
+                    .from('scores')
+                    .select(`
+                        movements,
+                        pairs_found,
+                        completion_time,
+                        profiles:user_id (username)
+                    `)
+                    .order('movements', { ascending: true })
+                    .limit(10);
+                
+                if (error) {
+                    console.error('Error cargando ranking:', error);
+                    rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
+                    return;
+                }
+                
+                if (data && data.length > 0) {
+                    let tableHtml = `
+                        <table class="ranking-table">
+                            <thead>
+                                <tr>
+                                    <th>Pos.</th>
+                                    <th>Jugador</th>
+                                    <th>Movimientos</th>
+                                    <th>Pares</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
                     
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 5000);
+                    data.forEach((score, index) => {
+                        const username = score.profiles?.username || 'Anónimo';
+                        const date = new Date(score.completion_time).toLocaleDateString();
+                        const positionClass = index < 3 ? `top-${index + 1}` : '';
+                        
+                        tableHtml += `
+                            <tr>
+                                <td class="ranking-position ${positionClass}">${index + 1}</td>
+                                <td>${username}</td>
+                                <td>${score.movements}</td>
+                                <td>${score.pairs_found}</td>
+                                <td>${date}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableHtml += `
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    rankingContent.innerHTML = tableHtml;
+                } else {
+                    rankingContent.innerHTML = '<p>No hay puntuaciones aún. ¡Sé el primero en jugar!</p>';
                 }
             }
             
@@ -860,9 +956,7 @@
                 movesElement.textContent = moves;
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
-                
-                // Cambiar colores
-                changeColorScheme();
+                scoreSavedMessage.style.display = 'none';
                 
                 // Volver a generar las cartas con iconos aleatorios
                 generateCards();
@@ -879,13 +973,31 @@
                 infoModal.style.display = 'none';
             });
             
-            // Cambiar tema de colores
-            themeBtn.addEventListener('click', changeColorScheme);
+            // Mostrar modal de ranking
+            rankingBtn.addEventListener('click', loadRanking);
+            rankingBtn2.addEventListener('click', loadRanking);
             
-            // Cerrar modal al hacer clic fuera del contenido
+            // Cerrar modal de ranking
+            closeRankingModal.addEventListener('click', () => {
+                rankingModal.style.display = 'none';
+            });
+            
+            closeRankingBtn.addEventListener('click', () => {
+                rankingModal.style.display = 'none';
+            });
+            
+            // Ir al dashboard
+            dashboardBtn.addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+            
+            // Cerrar modales al hacer clic fuera del contenido
             window.addEventListener('click', (e) => {
                 if (e.target === infoModal) {
                     infoModal.style.display = 'none';
+                }
+                if (e.target === rankingModal) {
+                    rankingModal.style.display = 'none';
                 }
             });
             
@@ -895,6 +1007,7 @@
             
             // Inicializar el juego
             generateCards();
+            
         });
     </script>
 </body>
