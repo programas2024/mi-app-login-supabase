@@ -974,24 +974,30 @@
                 
                 // Guardar la puntuación en Supabase si hay un usuario registrado
                 if (currentUserId && currentUserId !== 'default-user') {
-                    const { data, error } = await supabase
-                        .from('scores')
-                        .insert([
-                            { 
-                                user_id: currentUserId, 
-                                movements: moves, 
-                                pairs_found: pairsFound,
-                                completion_time: new Date().toISOString()
-                            }
-                        ]);
-                    
-                    if (error) {
+                    try {
+                        const { data, error } = await supabase
+                            .from('scores')
+                            .insert([
+                                { 
+                                    user_id: currentUserId, 
+                                    movements: moves, 
+                                    pairs_found: pairsFound,
+                                    completion_time: new Date().toISOString()
+                                }
+                            ]);
+                        
+                        if (error) {
+                            console.error('Error guardando puntuación:', error);
+                            scoreErrorMessage.style.display = 'block';
+                            scoreSavedMessage.style.display = 'none';
+                        } else {
+                            scoreSavedMessage.style.display = 'block';
+                            scoreErrorMessage.style.display = 'none';
+                        }
+                    } catch (error) {
                         console.error('Error guardando puntuación:', error);
                         scoreErrorMessage.style.display = 'block';
                         scoreSavedMessage.style.display = 'none';
-                    } else {
-                        scoreSavedMessage.style.display = 'block';
-                        scoreErrorMessage.style.display = 'none';
                     }
                 } else {
                     scoreErrorMessage.style.display = 'block';
@@ -1013,62 +1019,76 @@
                 rankingContent.innerHTML = '<p>Cargando ranking...</p>';
                 rankingModal.style.display = 'flex';
                 
-                const { data, error } = await supabase
-                    .from('scores')
-                    .select(`
-                        movements,
-                        pairs_found,
-                        completion_time,
-                        profiles:user_id (username)
-                    `)
-                    .order('movements', { ascending: true })
-                    .limit(10);
-                
-                if (error) {
-                    console.error('Error cargando ranking:', error);
-                    rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
-                    return;
-                }
-                
-                if (data && data.length > 0) {
-                    let tableHtml = `
-                        <table class="ranking-table">
-                            <thead>
-                                <tr>
-                                    <th>Pos.</th>
-                                    <th>Jugador</th>
-                                    <th>Movimientos</th>
-                                    <th>Pares</th>
-                                    <th>Fecha</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
+                try {
+                    // Consulta directa a la tabla scores sin joins para evitar problemas de RLS
+                    const { data, error } = await supabase
+                        .from('scores')
+                        .select('movements, pairs_found, completion_time, user_id')
+                        .order('movements', { ascending: true })
+                        .limit(10);
                     
-                    data.forEach((score, index) => {
-                        const username = score.profiles?.username || 'Anónimo';
-                        const date = new Date(score.completion_time).toLocaleDateString();
-                        const positionClass = index < 3 ? `top-${index + 1}` : '';
+                    if (error) {
+                        console.error('Error cargando ranking:', error);
+                        rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
+                        return;
+                    }
+                    
+                    if (data && data.length > 0) {
+                        let tableHtml = `
+                            <table class="ranking-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pos.</th>
+                                        <th>Jugador</th>
+                                        <th>Movimientos</th>
+                                        <th>Pares</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        
+                        data.forEach((score, index) => {
+                            // Obtener el nombre de usuario desde localStorage si está disponible
+                            let username = 'Anónimo';
+                            try {
+                                const userData = localStorage.getItem('memoryUser');
+                                if (userData) {
+                                    const user = JSON.parse(userData);
+                                    if (user.id === score.user_id) {
+                                        username = user.username;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('Error obteniendo nombre de usuario:', e);
+                            }
+                            
+                            const date = new Date(score.completion_time).toLocaleDateString();
+                            const positionClass = index < 3 ? `top-${index + 1}` : '';
+                            
+                            tableHtml += `
+                                <tr>
+                                    <td class="ranking-position ${positionClass}">${index + 1}</td>
+                                    <td>${username}</td>
+                                    <td>${score.movements}</td>
+                                    <td>${score.pairs_found}</td>
+                                    <td>${date}</td>
+                                </tr>
+                            `;
+                        });
                         
                         tableHtml += `
-                            <tr>
-                                <td class="ranking-position ${positionClass}">${index + 1}</td>
-                                <td>${username}</td>
-                                <td>${score.movements}</td>
-                                <td>${score.pairs_found}</td>
-                                <td>${date}</td>
-                            </tr>
+                                </tbody>
+                            </table>
                         `;
-                    });
-                    
-                    tableHtml += `
-                            </tbody>
-                        </table>
-                    `;
-                    
-                    rankingContent.innerHTML = tableHtml;
-                } else {
-                    rankingContent.innerHTML = '<p>No hay puntuaciones aún. ¡Sé el primero en jugar!</p>';
+                        
+                        rankingContent.innerHTML = tableHtml;
+                    } else {
+                        rankingContent.innerHTML = '<p>No hay puntuaciones aún. ¡Sé el primero en jugar!</p>';
+                    }
+                } catch (error) {
+                    console.error('Error cargando ranking:', error);
+                    rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
                 }
             }
             
@@ -1099,24 +1119,6 @@
                 
                 updateUserUI();
                 loginModal.style.display = 'none';
-                
-                // Intentar crear el perfil en Supabase
-                try {
-                    const { error } = await supabase
-                        .from('profiles')
-                        .upsert({
-                            id: userId,
-                            username: username,
-                            email: email || null,
-                            updated_at: new Date().toISOString()
-                        });
-                    
-                    if (error) {
-                        console.error('Error creando perfil:', error);
-                    }
-                } catch (error) {
-                    console.error('Error creando perfil:', error);
-                }
             }
             
             // Generar un ID único para el usuario
