@@ -390,6 +390,9 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
         }
         
         .ranking-table th, .ranking-table td {
@@ -430,28 +433,6 @@
             justify-content: center;
             gap: 15px;
             margin-top: 20px;
-        }
-        
-        /* Login modal */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-        }
-        
-        .login-input {
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            font-size: 1rem;
-        }
-        
-        .login-input:focus {
-            outline: none;
-            border-color: #60d7ff;
         }
         
         .user-info {
@@ -634,32 +615,6 @@
             font-size: 24px;
             color: #fff;
         }
-        
-        .login-btn {
-            position: absolute;
-            top: 150px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .login-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-        
-        .login-btn i {
-            font-size: 24px;
-            color: #fff;
-        }
     </style>
 </head>
 <body>
@@ -675,9 +630,6 @@
             </div>
             <div class="dashboard-btn" id="dashboard-btn">
                 <i class="fas fa-home"></i>
-            </div>
-            <div class="login-btn" id="login-btn">
-                <i class="fas fa-user"></i>
             </div>
             <div class="user-info" id="user-info" style="display: none;">
                 <i class="fas fa-user-circle"></i>
@@ -759,24 +711,11 @@
             </div>
         </div>
     </div>
-    
-    <!-- Modal de login -->
-    <div class="modal" id="login-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-login-modal">&times;</span>
-            <h2><i class="fas fa-user"></i> Iniciar Sesión</h2>
-            <div class="login-container">
-                <input type="text" id="username-input" class="login-input" placeholder="Nombre de usuario">
-                <input type="email" id="email-input" class="login-input" placeholder="Correo electrónico (opcional)">
-                <button id="login-submit"><i class="fas fa-sign-in-alt"></i> Jugar como invitado</button>
-                <p style="text-align: center; opacity: 0.7;">Usa un nombre único para identificar tus puntuaciones</p>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts externos -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -805,12 +744,6 @@
             const rankingContent = document.getElementById('ranking-content');
             const scoreSavedMessage = document.getElementById('score-saved-message');
             const scoreErrorMessage = document.getElementById('score-error-message');
-            const loginBtn = document.getElementById('login-btn');
-            const loginModal = document.getElementById('login-modal');
-            const closeLoginModal = document.getElementById('close-login-modal');
-            const loginSubmit = document.getElementById('login-submit');
-            const usernameInput = document.getElementById('username-input');
-            const emailInput = document.getElementById('email-input');
             const userInfo = document.getElementById('user-info');
             const usernameSpan = document.getElementById('username');
             
@@ -828,6 +761,9 @@
                 currentUserId = userData.id;
                 currentUsername = userData.username;
                 updateUserUI();
+            } else {
+                // Si no hay usuario, mostrar alerta de login
+                showLoginAlert();
             }
             
             // Lista de iconos FontAwesome para las tarjetas
@@ -835,6 +771,106 @@
                 'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
                 'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
             ];
+            
+            // Función para mostrar alerta de login con SweetAlert2
+            async function showLoginAlert() {
+                const { value: formValues } = await Swal.fire({
+                    title: '¡Bienvenido a Memory Elegante!',
+                    html:
+                        '<input id="swal-input1" class="swal2-input" placeholder="Nombre de usuario" required>' +
+                        '<input id="swal-input2" class="swal2-input" placeholder="Correo electrónico (opcional)" type="email">',
+                    focusConfirm: false,
+                    showCancelButton: false,
+                    confirmButtonText: 'Comenzar a jugar',
+                    preConfirm: () => {
+                        return {
+                            username: document.getElementById('swal-input1').value,
+                            email: document.getElementById('swal-input2').value
+                        }
+                    },
+                    validationMessage: 'El nombre de usuario es requerido',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+                
+                if (formValues) {
+                    await loginUser(formValues.username, formValues.email);
+                }
+            }
+            
+            // Función para iniciar sesión
+            async function loginUser(username, email) {
+                try {
+                    // Buscar usuario existente por username
+                    const { data: existingUsers, error: searchError } = await supabase
+                        .from('profiles')
+                        .select('id, username')
+                        .eq('username', username);
+                    
+                    if (searchError) {
+                        console.error('Error buscando usuario:', searchError);
+                        throw searchError;
+                    }
+                    
+                    let userId;
+                    
+                    if (existingUsers && existingUsers.length > 0) {
+                        // Usuario existente
+                        userId = existingUsers[0].id;
+                    } else {
+                        // Crear nuevo usuario
+                        const newUser = {
+                            username: username,
+                            email: email || null,
+                            updated_at: new Date().toISOString()
+                        };
+                        
+                        // Insertar nuevo perfil
+                        const { data: newUserData, error: insertError } = await supabase
+                            .from('profiles')
+                            .insert([newUser])
+                            .select('id')
+                            .single();
+                        
+                        if (insertError) {
+                            console.error('Error creando usuario:', insertError);
+                            throw insertError;
+                        }
+                        
+                        userId = newUserData.id;
+                    }
+                    
+                    // Guardar en localStorage
+                    const userData = {
+                        id: userId,
+                        username: username,
+                        email: email || ''
+                    };
+                    
+                    localStorage.setItem('memoryUser', JSON.stringify(userData));
+                    
+                    currentUserId = userId;
+                    currentUsername = username;
+                    
+                    updateUserUI();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Bienvenido!',
+                        text: `Hola ${username}, ¡disfruta del juego!`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo iniciar sesión. Intenta nuevamente.'
+                    });
+                }
+            }
             
             // Función para actualizar la UI con información del usuario
             function updateUserUI() {
@@ -973,7 +1009,7 @@
                 createConfetti();
                 
                 // Guardar la puntuación en Supabase si hay un usuario registrado
-                if (currentUserId && currentUserId !== 'default-user') {
+                if (currentUserId) {
                     try {
                         const { data, error } = await supabase
                             .from('scores')
@@ -1020,10 +1056,15 @@
                 rankingModal.style.display = 'flex';
                 
                 try {
-                    // Consulta directa a la tabla scores sin joins para evitar problemas de RLS
+                    // Consulta para obtener el ranking con información de usuarios
                     const { data, error } = await supabase
                         .from('scores')
-                        .select('movements, pairs_found, completion_time, user_id')
+                        .select(`
+                            movements,
+                            pairs_found,
+                            completion_time,
+                            profiles:user_id (username)
+                        `)
                         .order('movements', { ascending: true })
                         .limit(10);
                     
@@ -1049,20 +1090,7 @@
                         `;
                         
                         data.forEach((score, index) => {
-                            // Obtener el nombre de usuario desde localStorage si está disponible
-                            let username = 'Anónimo';
-                            try {
-                                const userData = localStorage.getItem('memoryUser');
-                                if (userData) {
-                                    const user = JSON.parse(userData);
-                                    if (user.id === score.user_id) {
-                                        username = user.username;
-                                    }
-                                }
-                            } catch (e) {
-                                console.error('Error obteniendo nombre de usuario:', e);
-                            }
-                            
+                            const username = score.profiles?.username || 'Anónimo';
                             const date = new Date(score.completion_time).toLocaleDateString();
                             const positionClass = index < 3 ? `top-${index + 1}` : '';
                             
@@ -1090,50 +1118,6 @@
                     console.error('Error cargando ranking:', error);
                     rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
                 }
-            }
-            
-            // Iniciar sesión como invitado
-            async function loginAsGuest() {
-                const username = usernameInput.value.trim();
-                const email = emailInput.value.trim();
-                
-                if (!username) {
-                    alert('Por favor, ingresa un nombre de usuario');
-                    return;
-                }
-                
-                // Generar un ID único para el usuario
-                const userId = generateUserId(username, email);
-                
-                // Guardar en localStorage
-                const userData = {
-                    id: userId,
-                    username: username,
-                    email: email || ''
-                };
-                
-                localStorage.setItem('memoryUser', JSON.stringify(userData));
-                
-                currentUserId = userId;
-                currentUsername = username;
-                
-                updateUserUI();
-                loginModal.style.display = 'none';
-            }
-            
-            // Generar un ID único para el usuario
-            function generateUserId(username, email) {
-                // Usar el email si está disponible
-                if (email) {
-                    return email.split('').reduce((acc, char) => {
-                        return acc + char.charCodeAt(0);
-                    }, '');
-                }
-                
-                // Si no hay email, generar un ID basado en el username y timestamp
-                return username.split('').reduce((acc, char) => {
-                    return acc + char.charCodeAt(0);
-                }, '') + Date.now();
             }
             
             // Reiniciar el juego
@@ -1174,19 +1158,6 @@
                 rankingModal.style.display = 'none';
             });
             
-            // Mostrar modal de login
-            loginBtn.addEventListener('click', () => {
-                loginModal.style.display = 'flex';
-            });
-            
-            // Cerrar modal de login
-            closeLoginModal.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-            });
-            
-            // Enviar formulario de login
-            loginSubmit.addEventListener('click', loginAsGuest);
-            
             // Ir al dashboard
             dashboardBtn.addEventListener('click', () => {
                 window.location.href = 'dashboard.html';
@@ -1199,9 +1170,6 @@
                 }
                 if (e.target === rankingModal) {
                     rankingModal.style.display = 'none';
-                }
-                if (e.target === loginModal) {
-                    loginModal.style.display = 'none';
                 }
             });
             
