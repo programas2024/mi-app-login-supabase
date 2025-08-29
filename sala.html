@@ -785,6 +785,11 @@
                             
                         if (profileError) {
                             console.error('Error obteniendo perfil:', profileError);
+                            // Si no existe el perfil, lo creamos
+                            await createProfile(session.user);
+                            currentUserId = session.user.id;
+                            currentUsername = session.user.email || 'Usuario';
+                            updateUserUI();
                             return;
                         }
                         
@@ -796,6 +801,34 @@
                     }
                 } catch (error) {
                     console.error('Error obteniendo usuario:', error);
+                }
+            }
+            
+            // Función para crear perfil si no existe
+            async function createProfile(user) {
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .insert([
+                            { 
+                                id: user.id, 
+                                username: user.email || `user_${Math.random().toString(36).substring(2, 10)}`,
+                                gold: 0,
+                                diamonds: 0
+                            }
+                        ])
+                        .select()
+                        .single();
+                        
+                    if (error) {
+                        console.error('Error creando perfil:', error);
+                        return null;
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    console.error('Error creando perfil:', error);
+                    return null;
                 }
             }
             
@@ -963,6 +996,7 @@
                         scoreSavedMessage.style.display = 'none';
                     }
                 } else {
+                    scoreErrorMessage.textContent = 'Debes iniciar sesión para guardar tu puntuación';
                     scoreErrorMessage.style.display = 'block';
                     scoreSavedMessage.style.display = 'none';
                 }
