@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sala de Amigos</title>
+    <title>Sala de Amigos - Tiempo Real</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -126,6 +126,12 @@
             flex-direction: column;
             align-items: center;
             position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
         
         .user-avatar {
@@ -348,6 +354,87 @@
         .expel-btn:hover {
             background: rgba(231, 76, 60, 0.5);
         }
+        
+        .real-time-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 0 0 rgba(255, 255, 255, 0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+            }
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(41, 128, 185, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; bottom: 0; }
+            to { opacity: 1; bottom: 30px; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; bottom: 30px; }
+            to { opacity: 0; bottom: 0; }
+        }
     </style>
 </head>
 <body>
@@ -414,1044 +501,1110 @@
         </div>
     </div>
 
+    <div class="real-time-indicator">
+        <div class="pulse"></div>
+        Tiempo real activo
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-       // Configuración de Supabase
-const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Estado de la aplicación
-let currentUser = null;
-let userFriends = [];
-let refreshInterval = null;
-let currentGuest = null;
-let friendsTableRendered = false;
-let roomSubscription = null;
-let currentRoomId = null;
-let roomsTableExists = false;
-let invitationsSubscription = null;
-let pendingInvitations = new Map();
-let isRoomCreator = false;
+        // Estado de la aplicación
+        let currentUser = null;
+        let userFriends = [];
+        let refreshInterval = null;
+        let currentGuest = null;
+        let friendsTableRendered = false;
+        let roomSubscription = null;
+        let currentRoomId = null;
+        let roomsTableExists = false;
+        let invitationsSubscription = null;
+        let pendingInvitations = new Map();
+        let isRoomCreator = false;
+        let realTimeSubscriptions = [];
 
-// Inicializar la aplicación
-document.addEventListener('DOMContentLoaded', async function() {
-    await checkUserSession();
-    await checkRoomsTable();
-    await loadUserFriends();
-    
-    if (roomsTableExists) {
-        await setupRoom();
-        subscribeToRoomChanges();
-        subscribeToInvitations();
-    } else {
-        showError('La funcionalidad de salas no está disponible. Contacta al administrador.');
-    }
-    
-    // Iniciar actualización automática cada 30 segundos
-    startAutoRefresh();
-});
-
-// Verificar si la tabla rooms existe
-async function checkRoomsTable() {
-    try {
-        // Intentar hacer una consulta simple a la tabla rooms
-        const { error } = await supabase
-            .from('rooms')
-            .select('count')
-            .limit(1);
-        
-        // Si no hay error, la tabla existe
-        roomsTableExists = !error;
-        
-        if (error) {
-            console.warn('La tabla rooms no existe o no tienes permisos:', error);
-            updateDebugInfo('Tabla rooms', 'No existe o sin permisos');
-        }
-    } catch (error) {
-        console.error('Error verificando tabla rooms:', error);
-        roomsTableExists = false;
-    }
-}
-
-// Verificar la sesión del usuario
-async function checkUserSession() {
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-            console.error('Error obteniendo sesión:', error);
-            showError('Error al verificar la sesión: ' + error.message);
-            updateDebugInfo('Error de sesión', error);
-            return;
-        }
-        
-        if (!session) {
-            showError('No hay sesión activa. Redirigiendo al login...');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
-            return;
-        }
-        
-        currentUser = session.user;
-        console.log('Usuario actual:', currentUser.id);
-        updateDebugInfo('Usuario actual', currentUser);
-        
-        // Actualizar last_sign_in_at del usuario actual (solo si tenemos permisos)
-        try {
-            await updateUserLastSignIn();
-        } catch (updateError) {
-            console.warn('No se pudo actualizar last_sign_in_at (puede ser normal):', updateError);
-        }
-    } catch (error) {
-        console.error('Error inesperado:', error);
-        showError('Error inesperado al verificar sesión: ' + error.message);
-        updateDebugInfo('Error inesperado', error);
-    }
-}
-
-// Actualizar last_sign_in_at del usuario actual (con manejo de errores mejorado)
-async function updateUserLastSignIn() {
-    try {
-        const { error } = await supabase
-            .from('profiles')
-            .update({ last_sign_in_at: new Date().toISOString() })
-            .eq('id', currentUser.id);
-        
-        if (error) {
-            // Si es error de API key, no mostrar error en consola
-            if (error.message.includes('API key')) {
-                console.warn('Error de API key al actualizar last_sign_in_at (puede ser normal)');
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkUserSession();
+            await checkRoomsTable();
+            await loadUserFriends();
+            
+            if (roomsTableExists) {
+                await setupRoom();
+                subscribeToRoomChanges();
+                subscribeToInvitations();
+                subscribeToFriendsStatus();
             } else {
-                console.error('Error actualizando last_sign_in_at:', error);
+                showError('La funcionalidad de salas no está disponible. Contacta al administrador.');
             }
-            throw error;
-        }
-    } catch (error) {
-        // No mostrar errores de API key como errores críticos
-        if (!error.message.includes('API key')) {
-            console.error('Error inesperado actualizando last_sign_in_at:', error);
-        }
-        throw error;
-    }
-}
+            
+            // Iniciar actualización automática cada 30 segundos
+            startAutoRefresh();
+        });
 
-// Configurar la sala del usuario (solo si la tabla existe)
-async function setupRoom() {
-    if (!currentUser || !roomsTableExists) return;
-    
-    try {
-        // Buscar si el usuario ya tiene una sala activa
-        const { data: existingRoom, error: roomError } = await supabase
-            .from('rooms')
-            .select('*')
-            .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
-            .eq('is_active', true)
-            .maybeSingle();
-        
-        if (roomError) {
-            console.error('Error buscando sala:', roomError);
-            return;
-        }
-        
-        if (existingRoom) {
-            // El usuario ya está en una sala
-            currentRoomId = existingRoom.id;
-            
-            // Determinar si el usuario actual es el creador de la sala
-            isRoomCreator = existingRoom.user1_id === currentUser.id;
-            
-            // Determinar quién es el otro usuario en la sala
-            const otherUserId = existingRoom.user1_id === currentUser.id 
-                ? existingRoom.user2_id 
-                : existingRoom.user1_id;
-            
-            if (otherUserId) {
-                // Cargar información del otro usuario
-                const { data: otherUser } = await supabase
-                    .from('profiles')
-                    .select('id, username, avatar_url')
-                    .eq('id', otherUserId)
-                    .single();
+        // Verificar si la tabla rooms existe
+        async function checkRoomsTable() {
+            try {
+                // Intentar hacer una consulta simple a la tabla rooms
+                const { error } = await supabase
+                    .from('rooms')
+                    .select('count')
+                    .limit(1);
                 
-                if (otherUser) {
-                    currentGuest = otherUser;
-                    addGuestToRoom(otherUser);
+                // Si no hay error, la tabla existe
+                roomsTableExists = !error;
+                
+                if (error) {
+                    console.warn('La tabla rooms no existe o no tienes permisos:', error);
+                    updateDebugInfo('Tabla rooms', 'No existe o sin permisos');
                 }
+            } catch (error) {
+                console.error('Error verificando tabla rooms:', error);
+                roomsTableExists = false;
             }
-        } else {
-            // Crear una nueva sala para el usuario
-            const { data: newRoom, error: createError } = await supabase
-                .from('rooms')
-                .insert([{ 
-                    user1_id: currentUser.id, 
-                    is_active: true 
-                }])
-                .select()
-                .single();
-            
-            if (createError) {
-                console.error('Error creando sala:', createError);
-                return;
-            }
-            
-            currentRoomId = newRoom.id;
-            isRoomCreator = true;
         }
-        
-        updateDebugInfo('Sala configurada', { roomId: currentRoomId, guest: currentGuest, isRoomCreator });
-    } catch (error) {
-        console.error('Error configurando sala:', error);
-        updateDebugInfo('Error configurando sala', error);
-    }
-}
 
-// Suscribirse a cambios en la sala en tiempo real
-function subscribeToRoomChanges() {
-    if (!currentRoomId || !roomsTableExists) return;
-    
-    // Cancelar suscripción anterior si existe
-    if (roomSubscription) {
-        supabase.removeChannel(roomSubscription);
-    }
-    
-    // Suscribirse a cambios en la sala actual
-    roomSubscription = supabase
-        .channel('room-changes')
-        .on(
-            'postgres_changes',
-            {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'rooms',
-                filter: `id=eq.${currentRoomId}`
-            },
-            async (payload) => {
-                console.log('Cambio en sala recibido:', payload);
+        // Verificar la sesión del usuario
+        async function checkUserSession() {
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
                 
-                // Actualizar la interfaz según los cambios
-                const room = payload.new;
+                if (error) {
+                    console.error('Error obteniendo sesión:', error);
+                    showError('Error al verificar la sesión: ' + error.message);
+                    updateDebugInfo('Error de sesión', error);
+                    return;
+                }
                 
-                // Determinar quién es el otro usuario en la sala
-                const otherUserId = room.user1_id === currentUser.id 
-                    ? room.user2_id 
-                    : room.user1_id;
+                if (!session) {
+                    showError('No hay sesión activa. Redirigiendo al login...');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                    return;
+                }
                 
-                if (otherUserId && !currentGuest) {
-                    // Cargar información del otro usuario
-                    const { data: otherUser } = await supabase
-                        .from('profiles')
-                        .select('id, username, avatar_url')
-                        .eq('id', otherUserId)
+                currentUser = session.user;
+                console.log('Usuario actual:', currentUser.id);
+                updateDebugInfo('Usuario actual', currentUser);
+                
+                // Actualizar last_sign_in_at del usuario actual
+                try {
+                    await updateUserLastSignIn();
+                } catch (updateError) {
+                    console.warn('No se pudo actualizar last_sign_in_at (puede ser normal):', updateError);
+                }
+            } catch (error) {
+                console.error('Error inesperado:', error);
+                showError('Error inesperado al verificar sesión: ' + error.message);
+                updateDebugInfo('Error inesperado', error);
+            }
+        }
+
+        // Actualizar last_sign_in_at del usuario actual
+        async function updateUserLastSignIn() {
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ last_sign_in_at: new Date().toISOString() })
+                    .eq('id', currentUser.id);
+                
+                if (error) {
+                    throw error;
+                }
+            } catch (error) {
+                console.error('Error inesperado actualizando last_sign_in_at:', error);
+                throw error;
+            }
+        }
+
+        // Configurar la sala del usuario
+        async function setupRoom() {
+            if (!currentUser || !roomsTableExists) return;
+            
+            try {
+                // Buscar si el usuario ya tiene una sala activa
+                const { data: existingRoom, error: roomError } = await supabase
+                    .from('rooms')
+                    .select('*')
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
+                    .eq('is_active', true)
+                    .maybeSingle();
+                
+                if (roomError) {
+                    console.error('Error buscando sala:', roomError);
+                    return;
+                }
+                
+                if (existingRoom) {
+                    // El usuario ya está en una sala
+                    currentRoomId = existingRoom.id;
+                    
+                    // Determinar si el usuario actual es el creador de la sala
+                    isRoomCreator = existingRoom.user1_id === currentUser.id;
+                    
+                    // Determinar quién es el otro usuario en la sala
+                    const otherUserId = existingRoom.user1_id === currentUser.id 
+                        ? existingRoom.user2_id 
+                        : existingRoom.user1_id;
+                    
+                    if (otherUserId) {
+                        // Cargar información del otro usuario
+                        const { data: otherUser } = await supabase
+                            .from('profiles')
+                            .select('id, username, avatar_url')
+                            .eq('id', otherUserId)
+                            .single();
+                        
+                        if (otherUser) {
+                            currentGuest = otherUser;
+                            addGuestToRoom(otherUser);
+                        }
+                    }
+                } else {
+                    // Crear una nueva sala para el usuario
+                    const { data: newRoom, error: createError } = await supabase
+                        .from('rooms')
+                        .insert([{ 
+                            user1_id: currentUser.id, 
+                            is_active: true 
+                        }])
+                        .select()
                         .single();
                     
-                    if (otherUser) {
-                        currentGuest = otherUser;
-                        addGuestToRoom(otherUser);
-                        await loadUserFriends(); // Actualizar lista de amigos
+                    if (createError) {
+                        console.error('Error creando sala:', createError);
+                        return;
                     }
-                } else if (!otherUserId && currentGuest) {
-                    // El otro usuario salió de la sala
-                    const guestName = currentGuest.username;
-                    currentGuest = null;
-                    clearGuestFromRoom(guestName);
-                    await loadUserFriends(); // Actualizar lista de amigos
+                    
+                    currentRoomId = newRoom.id;
+                    isRoomCreator = true;
                 }
                 
-                // Verificar si la sala fue desactivada (ambos usuarios salieron)
-                if (!room.is_active) {
-                    handleRoomDeactivated();
-                }
+                updateDebugInfo('Sala configurada', { roomId: currentRoomId, guest: currentGuest, isRoomCreator });
+            } catch (error) {
+                console.error('Error configurando sala:', error);
+                updateDebugInfo('Error configurando sala', error);
             }
-        )
-        .subscribe();
-}
-
-// Manejar cuando la sala se desactiva
-function handleRoomDeactivated() {
-    if (currentGuest) {
-        const guestName = currentGuest.username;
-        currentGuest = null;
-        clearGuestFromRoom(guestName, true);
-    } else {
-        clearGuestFromRoom(null, true);
-    }
-    
-    // Crear una nueva sala para el usuario actual
-    setTimeout(async () => {
-        await createNewRoom();
-    }, 2000);
-}
-
-// Crear una nueva sala para el usuario
-async function createNewRoom() {
-    try {
-        const { data: newRoom, error: createError } = await supabase
-            .from('rooms')
-            .insert([{ 
-                user1_id: currentUser.id, 
-                is_active: true 
-            }])
-            .select()
-            .single();
-        
-        if (createError) {
-            console.error('Error creando nueva sala:', createError);
-            return;
         }
-        
-        currentRoomId = newRoom.id;
-        isRoomCreator = true;
-        
-        // Resuscribirse a cambios en la nueva sala
-        subscribeToRoomChanges();
-        
-        console.log('Nueva sala creada:', currentRoomId);
-    } catch (error) {
-        console.error('Error creando nueva sala:', error);
-    }
-}
 
-// Suscribirse a invitaciones en tiempo real
-function subscribeToInvitations() {
-    if (!currentUser || !roomsTableExists) return;
-    
-    // Cancelar suscripción anterior si existe
-    if (invitationsSubscription) {
-        supabase.removeChannel(invitationsSubscription);
-    }
-    
-    // Suscribirse a invitaciones dirigidas a este usuario
-    invitationsSubscription = supabase
-        .channel('invitations-channel')
-        .on(
-            'postgres_changes',
-            {
-                event: 'INSERT',
-                schema: 'public',
-                table: 'invitations',
-                filter: `invited_id=eq.${currentUser.id}`
-            },
-            async (payload) => {
-                console.log('Nueva invitación recibida:', payload);
-                const invitation = payload.new;
-                
-                // Obtener información del usuario que invitó
-                const { data: inviter } = await supabase
-                    .from('profiles')
-                    .select('id, username')
-                    .eq('id', invitation.inviter_id)
+        // Suscribirse a cambios en la sala en tiempo real
+        function subscribeToRoomChanges() {
+            if (!currentRoomId || !roomsTableExists) return;
+            
+            // Cancelar suscripción anterior si existe
+            if (roomSubscription) {
+                supabase.removeChannel(roomSubscription);
+            }
+            
+            // Suscribirse a cambios en la sala actual
+            roomSubscription = supabase
+                .channel('room-changes')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'rooms',
+                        filter: `id=eq.${currentRoomId}`
+                    },
+                    async (payload) => {
+                        console.log('Cambio en sala recibido:', payload);
+                        
+                        // Actualizar la interfaz según los cambios
+                        const room = payload.new;
+                        
+                        // Determinar quién es el otro usuario en la sala
+                        const otherUserId = room.user1_id === currentUser.id 
+                            ? room.user2_id 
+                            : room.user1_id;
+                        
+                        if (otherUserId && !currentGuest) {
+                            // Cargar información del otro usuario
+                            const { data: otherUser } = await supabase
+                                .from('profiles')
+                                .select('id, username, avatar_url')
+                                .eq('id', otherUserId)
+                                .single();
+                            
+                            if (otherUser) {
+                                currentGuest = otherUser;
+                                addGuestToRoom(otherUser);
+                                await loadUserFriends(); // Actualizar lista de amigos
+                                showToast(`${otherUser.username} se ha unido a la sala`);
+                            }
+                        } else if (!otherUserId && currentGuest) {
+                            // El otro usuario salió de la sala
+                            const guestName = currentGuest.username;
+                            currentGuest = null;
+                            clearGuestFromRoom(guestName);
+                            await loadUserFriends(); // Actualizar lista de amigos
+                            showToast(`${guestName} ha salido de la sala`);
+                        }
+                        
+                        // Verificar si la sala fue desactivada (ambos usuarios salieron)
+                        if (!room.is_active) {
+                            handleRoomDeactivated();
+                        }
+                    }
+                )
+                .subscribe();
+            
+            realTimeSubscriptions.push(roomSubscription);
+        }
+
+        // Suscribirse a cambios de estado de amigos en tiempo real
+        function subscribeToFriendsStatus() {
+            if (!currentUser) return;
+            
+            // Obtener IDs de amigos
+            const friendIds = userFriends.map(friend => {
+                return friend.user1_id === currentUser.id ? friend.user2_id : friend.user1_id;
+            });
+            
+            if (friendIds.length === 0) return;
+            
+            // Suscribirse a cambios en los perfiles de amigos
+            const friendsStatusSubscription = supabase
+                .channel('friends-status')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'profiles',
+                        filter: `id=in.(${friendIds.join(',')})`
+                    },
+                    async (payload) => {
+                        console.log('Cambio en estado de amigo:', payload);
+                        // Actualizar la lista de amigos
+                        await loadUserFriends();
+                    }
+                )
+                .subscribe();
+            
+            realTimeSubscriptions.push(friendsStatusSubscription);
+        }
+
+        // Manejar cuando la sala se desactiva
+        function handleRoomDeactivated() {
+            if (currentGuest) {
+                const guestName = currentGuest.username;
+                currentGuest = null;
+                clearGuestFromRoom(guestName, true);
+                showToast('La sala ha sido cerrada');
+            } else {
+                clearGuestFromRoom(null, true);
+            }
+            
+            // Crear una nueva sala para el usuario actual
+            setTimeout(async () => {
+                await createNewRoom();
+            }, 2000);
+        }
+
+        // Crear una nueva sala para el usuario
+        async function createNewRoom() {
+            try {
+                const { data: newRoom, error: createError } = await supabase
+                    .from('rooms')
+                    .insert([{ 
+                        user1_id: currentUser.id, 
+                        is_active: true 
+                    }])
+                    .select()
                     .single();
                 
-                if (inviter) {
-                    showInvitationAlert(inviter, invitation.id);
+                if (createError) {
+                    console.error('Error creando nueva sala:', createError);
+                    return;
+                }
+                
+                currentRoomId = newRoom.id;
+                isRoomCreator = true;
+                
+                // Resuscribirse a cambios en la nueva sala
+                subscribeToRoomChanges();
+                
+                console.log('Nueva sala creada:', currentRoomId);
+            } catch (error) {
+                console.error('Error creando nueva sala:', error);
+            }
+        }
+
+        // Suscribirse a invitaciones en tiempo real
+        function subscribeToInvitations() {
+            if (!currentUser || !roomsTableExists) return;
+            
+            // Cancelar suscripción anterior si existe
+            if (invitationsSubscription) {
+                supabase.removeChannel(invitationsSubscription);
+            }
+            
+            // Suscribirse a invitaciones dirigidas a este usuario
+            invitationsSubscription = supabase
+                .channel('invitations-channel')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'invitations',
+                        filter: `invited_id=eq.${currentUser.id}`
+                    },
+                    async (payload) => {
+                        console.log('Nueva invitación recibida:', payload);
+                        const invitation = payload.new;
+                        
+                        // Obtener información del usuario que invitó
+                        const { data: inviter } = await supabase
+                            .from('profiles')
+                            .select('id, username')
+                            .eq('id', invitation.inviter_id)
+                            .single();
+                        
+                        if (inviter) {
+                            showInvitationAlert(inviter, invitation.id);
+                        }
+                    }
+                )
+                .subscribe();
+            
+            realTimeSubscriptions.push(invitationsSubscription);
+        }
+
+        // Mostrar alerta de invitación
+        function showInvitationAlert(inviter, invitationId) {
+            // Mostrar notificación toast
+            showToast(`Invitación de ${inviter.username}`);
+            
+            Swal.fire({
+                title: '¡Invitación a Sala!',
+                html: `<strong>${inviter.username}</strong> te invita a su sala de amigos. ¿Quieres unirte?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#43cea2',
+                cancelButtonColor: '#e74c3c',
+                confirmButtonText: '¡Sí, unirme!',
+                cancelButtonText: 'Rechazar',
+                allowOutsideClick: false
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // Aceptar la invitación
+                    await acceptInvitation(invitationId, inviter);
+                } else {
+                    // Rechazar la invitación
+                    await rejectInvitation(invitationId);
+                }
+            });
+        }
+
+        // Aceptar invitación
+        async function acceptInvitation(invitationId, inviter) {
+            try {
+                // Actualizar la sala del usuario actual para unirse a la sala del invitador
+                const { data: invitation } = await supabase
+                    .from('invitations')
+                    .select('room_id')
+                    .eq('id', invitationId)
+                    .single();
+                
+                if (invitation) {
+                    // Unirse a la sala
+                    const { error } = await supabase
+                        .from('rooms')
+                        .update({ 
+                            user2_id: currentUser.id,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', invitation.room_id);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // Marcar la invitación como aceptada
+                    await supabase
+                        .from('invitations')
+                        .update({ status: 'accepted' })
+                        .eq('id', invitationId);
+                    
+                    // Actualizar la interfaz
+                    currentGuest = inviter;
+                    isRoomCreator = false; // Ya no es el creador de la sala
+                    addGuestToRoom(inviter);
+                    
+                    Swal.fire({
+                        title: '¡Bienvenido a la sala!',
+                        html: `Te has unido a la sala de <strong>${inviter.username}</strong>`,
+                        icon: 'success',
+                        confirmButtonColor: '#43cea2'
+                    });
+                    
+                    await loadUserFriends();
+                }
+            } catch (error) {
+                console.error('Error aceptando invitación:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo aceptar la invitación',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Rechazar invitación
+        async function rejectInvitation(invitationId) {
+            try {
+                await supabase
+                    .from('invitations')
+                    .update({ status: 'rejected' })
+                    .eq('id', invitationId);
+                
+                Swal.fire({
+                    title: 'Invitación rechazada',
+                    text: 'Has rechazado la invitación a la sala',
+                    icon: 'info',
+                    confirmButtonColor: '#43cea2'
+                });
+            } catch (error) {
+                console.error('Error rechazando invitación:', error);
+            }
+        }
+
+        // Cargar amigos del usuario
+        async function loadUserFriends() {
+            if (!currentUser) return;
+            
+            try {
+                console.log('Cargando amigos para usuario:', currentUser.id);
+                
+                // Consulta directa a la tabla friends
+                const { data: friends, error } = await supabase
+                    .from('friends')
+                    .select(`
+                        *,
+                        user1:profiles!user1_id(id, username, avatar_url, last_sign_in_at),
+                        user2:profiles!user2_id(id, username, avatar_url, last_sign_in_at)
+                    `)
+                    .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
+                
+                if (error) {
+                    console.error('Error cargando amigos:', error);
+                    
+                    if (error.code === '42501' || error.message.includes('permission')) {
+                        showError('Error de permisos: Necesitas habilitar políticas RLS en Supabase.');
+                        updateDebugInfo('Error de políticas RLS', error);
+                    } else if (error.message.includes('API key')) {
+                        // Si es error de API key, usar datos de muestra
+                        console.warn('Error de API key, usando datos de muestra');
+                        renderFriendsList(getSampleFriends());
+                        return;
+                    } else {
+                        showError('Error al cargar la lista de amigos: ' + error.message);
+                        updateDebugInfo('Error cargando amigos', error);
+                    }
+                    
+                    renderFriendsList(getSampleFriends());
+                    return;
+                }
+                
+                console.log('Amigos cargados:', friends);
+                userFriends = friends || [];
+                renderFriendsList(userFriends);
+                
+                // Resuscribirse a cambios de estado de amigos
+                subscribeToFriendsStatus();
+            } catch (error) {
+                console.error('Error inesperado:', error);
+                showError('Error inesperado al cargar amigos: ' + error.message);
+                updateDebugInfo('Error inesperado', error);
+                
+                renderFriendsList(getSampleFriends());
+            }
+        }
+
+        // Determinar si un usuario está en línea (últimos 2 minutos)
+        function isUserOnline(lastSignInAt) {
+            if (!lastSignInAt) return false;
+            
+            const lastSignInTime = new Date(lastSignInAt).getTime();
+            const currentTime = new Date().getTime();
+            const twoMinutesAgo = currentTime - (2 * 60 * 1000); // 2 minutos en milisegundos
+            
+            return lastSignInTime >= twoMinutesAgo;
+        }
+
+        // Datos de ejemplo para desarrollo cuando hay errores
+        function getSampleFriends() {
+            return [
+                {
+                    user1_id: currentUser.id,
+                    user2_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                    user2: {
+                        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                        username: 'Amigo Ejemplo',
+                        avatar_url: null,
+                        last_sign_in_at: new Date().toISOString() // En línea
+                    }
+                },
+                {
+                    user1_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
+                    user2_id: currentUser.id,
+                    user1: {
+                        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
+                        username: 'Otro Amigo',
+                        avatar_url: null,
+                        last_sign_in_at: new Date(Date.now() - 3 * 60 * 1000).toISOString() // Desconectado
+                    }
+                }
+            ];
+        }
+
+        // Renderizar la lista de amigos
+        function renderFriendsList(friends) {
+            const friendsContainer = document.getElementById('friends-container');
+            
+            // Si ya se renderizó la tabla, actualizarla en lugar de reemplazar
+            if (friendsTableRendered) {
+                updateFriendsTable(friends);
+                return;
+            }
+            
+            // Crear la tabla por primera vez
+            const friendsTable = document.createElement('table');
+            friendsTable.className = 'friends-table';
+            friendsTable.id = 'friends-table';
+            
+            // Crear encabezado de la tabla
+            const thead = document.createElement('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th>Nombre</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            `;
+            friendsTable.appendChild(thead);
+            
+            // Crear cuerpo de la tabla
+            const tbody = document.createElement('tbody');
+            tbody.id = 'friends-tbody';
+            
+            if (friends.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">
+                            No tienes amigos aún. ¡Agrega algunos para jugar juntos!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                renderFriendsRows(tbody, friends);
+            }
+            
+            friendsTable.appendChild(tbody);
+            
+            // Eliminar el elemento de carga si existe
+            const loadingElement = document.getElementById('friends-loading');
+            if (loadingElement && loadingElement.parentNode === friendsContainer) {
+                friendsContainer.removeChild(loadingElement);
+            }
+            
+            // Agregar la tabla al contenedor
+            friendsContainer.appendChild(friendsTable);
+            friendsTableRendered = true;
+        }
+
+        // Renderizar filas de amigos
+        function renderFriendsRows(tbody, friends) {
+            friends.forEach(friend => {
+                // Determinar qué usuario es el amigo (no el usuario actual)
+                let friendProfile;
+                if (friend.user1_id === currentUser.id) {
+                    friendProfile = friend.user2 || { 
+                        id: friend.user2_id, 
+                        username: 'Usuario ' + friend.user2_id.substring(0, 8),
+                        avatar_url: null,
+                        last_sign_in_at: null
+                    };
+                } else {
+                    friendProfile = friend.user1 || { 
+                        id: friend.user1_id, 
+                        username: 'Usuario ' + friend.user1_id.substring(0, 8),
+                        avatar_url: null,
+                        last_sign_in_at: null
+                    };
+                }
+                
+                const isOnline = isUserOnline(friendProfile.last_sign_in_at);
+                const isAlreadyInRoom = currentGuest && currentGuest.id === friendProfile.id;
+                const hasPendingInvitation = pendingInvitations.has(friendProfile.id);
+                const canInvite = isOnline && !isAlreadyInRoom && !hasPendingInvitation && roomsTableExists;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
+                    <td class="friend-status">
+                        <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
+                        ${isOnline ? 'En línea' : 'Desconectado'}
+                        ${isAlreadyInRoom ? ' (En sala)' : ''}
+                        ${hasPendingInvitation ? ' (Invitación pendiente)' : ''}
+                    </td>
+                    <td>
+                        <button class="invite-btn ${canInvite ? 'invite-online' : hasPendingInvitation ? 'invite-pending' : 'invite-offline'}" 
+                                ${canInvite ? '' : 'disabled'}>
+                            <i class="fas ${isAlreadyInRoom ? 'fa-check' : hasPendingInvitation ? 'fa-clock' : 'fa-plus'}"></i> 
+                            ${isAlreadyInRoom ? 'En sala' : hasPendingInvitation ? 'Pendiente' : 'Invitar'}
+                        </button>
+                    </td>
+                `;
+                
+                // Agregar evento al botón de invitar
+                if (canInvite) {
+                    const inviteBtn = row.querySelector('.invite-btn');
+                    inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
+                }
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Actualizar la tabla de amigos existente
+        function updateFriendsTable(friends) {
+            const tbody = document.getElementById('friends-tbody');
+            if (!tbody) return;
+            
+            // Limpiar el cuerpo de la tabla
+            tbody.innerHTML = '';
+            
+            // Volver a renderizar las filas
+            if (friends.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">
+                            No tienes amigos aún. ¡Agrega algunos para jugar juntos!
+                        </td>
+                    </tr>
+                `;
+            } else {
+                renderFriendsRows(tbody, friends);
+            }
+        }
+
+        // Enviar invitación a un amigo
+        async function sendInvitation(friend) {
+            try {
+                // Crear una invitación en la base de datos
+                const { data: invitation, error } = await supabase
+                    .from('invitations')
+                    .insert([{
+                        inviter_id: currentUser.id,
+                        invited_id: friend.id,
+                        room_id: currentRoomId,
+                        status: 'pending'
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error('Error creando invitación:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo enviar la invitación',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Agregar a invitaciones pendientes
+                pendingInvitations.set(friend.id, invitation.id);
+                
+                // Actualizar la interfaz
+                await loadUserFriends();
+                
+                showToast(`Invitación enviada a ${friend.username}`);
+                
+            } catch (error) {
+                console.error('Error enviando invitación:', error);
+                showError('Error al enviar la invitación: ' + error.message);
+                updateDebugInfo('Error invitación', error);
+            }
+        }
+
+        // Añadir invitado a la sala
+        function addGuestToRoom(guest) {
+            const guestCard = document.getElementById('guest-user-card');
+            if (guestCard) {
+                let guestContent = `
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="user-name">${guest.username}</h3>
+                    <div class="user-status status-online">Conectado</div>
+                    <p>Jugando contigo</p>
+                `;
+                
+                // Si es el creador de la sala, agregar botón de expulsión
+                if (isRoomCreator) {
+                    guestContent += `
+                        <button class="expel-btn" onclick="expelGuest('${guest.id}', '${guest.username}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                }
+                
+                guestCard.innerHTML = guestContent;
+            }
+        }
+
+        // Expulsar a un invitado de la sala
+        async function expelGuest(guestId, guestName) {
+            try {
+                const result = await Swal.fire({
+                    title: '¿Expulsar al invitado?',
+                    html: `¿Estás seguro de que quieres expulsar a <strong>${guestName}</strong> de la sala?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#95a5a6',
+                    confirmButtonText: 'Sí, expulsar',
+                    cancelButtonText: 'Cancelar'
+                });
+                
+                if (result.isConfirmed) {
+                    // Expulsar al invitado de la sala
+                    const { error } = await supabase
+                        .from('rooms')
+                        .update({ 
+                            user2_id: null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentRoomId);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // Mostrar mensaje de expulsión en el lado del invitado
+                    await supabase
+                        .from('notifications')
+                        .insert([{
+                            user_id: guestId,
+                            title: 'Has sido expulsado',
+                            message: `El anfitrión te ha expulsado de la sala`,
+                            type: 'expulsion',
+                            room_id: currentRoomId
+                        }]);
+                    
+                    // Actualizar la interfaz local
+                    currentGuest = null;
+                    clearGuestFromRoom(guestName);
+                    
+                    showToast(`${guestName} ha sido expulsado`);
+                    
+                    await loadUserFriends();
+                }
+            } catch (error) {
+                console.error('Error expulsando invitado:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo expulsar al invitado',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Limpiar invitado de la sala con mensaje personalizado
+        function clearGuestFromRoom(guestName = null, roomDeactivated = false) {
+            const guestCard = document.getElementById('guest-user-card');
+            if (guestCard) {
+                if (roomDeactivated) {
+                    // Mostrar mensaje específico si la sala fue desactivada
+                    if (guestName) {
+                        guestCard.innerHTML = `
+                            <div class="empty-room">
+                                <div class="empty-room-icon">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="empty-room-text">
+                                    <strong>${guestName}</strong> salió de la sala
+                                </div>
+                                <div class="empty-room-subtext">
+                                    La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        guestCard.innerHTML = `
+                            <div class="empty-room">
+                                <div class="empty-room-icon">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="empty-room-text">
+                                    El usuario salió de la sala
+                                </div>
+                                <div class="empty-room-subtext">
+                                    La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Mensaje normal para cuando un usuario sale pero la sala sigue activa
+                    if (guestName) {
+                        guestCard.innerHTML = `
+                            <div class="empty-room">
+                                <div class="empty-room-icon">
+                                    <i class="fas fa-user-slash"></i>
+                                </div>
+                                <div class="empty-room-text">
+                                    <strong>${guestName}</strong> salió de la sala
+                                </div>
+                                <div class="empty-room-subtext">
+                                    Invita a otro amigo para continuar jugando
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        guestCard.innerHTML = `
+                            <div class="empty-room">
+                                <div class="empty-room-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="empty-room-text">
+                                    Invita a un amigo para jugar juntos
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
             }
-        )
-        .subscribe();
-}
-
-// Mostrar alerta de invitación
-function showInvitationAlert(inviter, invitationId) {
-    Swal.fire({
-        title: '¡Invitación a Sala!',
-        html: `<strong>${inviter.username}</strong> te invita a su sala de amigos. ¿Quieres unirte?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#43cea2',
-        cancelButtonColor: '#e74c3c',
-        confirmButtonText: '¡Sí, unirme!',
-        cancelButtonText: 'Rechazar',
-        allowOutsideClick: false
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            // Aceptar la invitación
-            await acceptInvitation(invitationId, inviter);
-        } else {
-            // Rechazar la invitación
-            await rejectInvitation(invitationId);
         }
-    });
-}
 
-// Aceptar invitación
-async function acceptInvitation(invitationId, inviter) {
-    try {
-        // Actualizar la sala del usuario actual para unirse a la sala del invitador
-        const { data: invitation } = await supabase
-            .from('invitations')
-            .select('room_id')
-            .eq('id', invitationId)
-            .single();
-        
-        if (invitation) {
-            // Unirse a la sala
-            const { error } = await supabase
-                .from('rooms')
-                .update({ 
-                    user2_id: currentUser.id,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', invitation.room_id);
+        // Manejar el botón de volver
+        async function handleBackButton() {
+            if (currentGuest) {
+                // Si hay un invitado, preguntar si quiere salir de la sala
+                const result = await Swal.fire({
+                    title: '¿Salir de la sala?',
+                    html: `Al salir, ${isRoomCreator ? 'la sala se cerrará y tu invitado será expulsado' : 'abandonarás la sala'}.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#95a5a6',
+                    confirmButtonText: 'Sí, salir',
+                    cancelButtonText: 'Cancelar'
+                });
+                
+                if (result.isConfirmed) {
+                    await leaveRoom();
+                    window.location.href = 'dashboard.html';
+                }
+            } else {
+                // Si no hay invitado, simplemente redirigir
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        // Salir de la sala actual
+        async function leaveRoom() {
+            if (!currentRoomId) return;
             
-            if (error) {
-                throw error;
+            try {
+                // Si el usuario actual es el creador de la sala, desactivar toda la sala
+                if (isRoomCreator) {
+                    const { error } = await supabase
+                        .from('rooms')
+                        .update({ 
+                            is_active: false,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentRoomId);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // Notificar al invitado si existe
+                    if (currentGuest) {
+                        await supabase
+                            .from('notifications')
+                            .insert([{
+                                user_id: currentGuest.id,
+                                title: 'Sala cerrada',
+                                message: 'El anfitrión ha cerrado la sala',
+                                type: 'room_closed',
+                                room_id: currentRoomId
+                            }]);
+                    }
+                } 
+                // Si el usuario actual es el invitado, simplemente salir
+                else {
+                    const { error } = await supabase
+                        .from('rooms')
+                        .update({ 
+                            user2_id: null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', currentRoomId);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                }
+                
+                // Limpiar el estado local
+                if (currentGuest) {
+                    const guestName = currentGuest.username;
+                    currentGuest = null;
+                    clearGuestFromRoom(guestName, isRoomCreator);
+                }
+                
+                await loadUserFriends();
+            } catch (error) {
+                console.error('Error saliendo de la sala:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo salir de la sala',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Iniciar actualización automática
+        function startAutoRefresh() {
+            // Limpiar intervalo existente
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
             }
             
-            // Marcar la invitación como aceptada
-            await supabase
-                .from('invitations')
-                .update({ status: 'accepted' })
-                .eq('id', invitationId);
-            
-            // Actualizar la interfaz
-            currentGuest = inviter;
-            isRoomCreator = false; // Ya no es el creador de la sala
-            addGuestToRoom(inviter);
-            
-            Swal.fire({
-                title: '¡Bienvenido a la sala!',
-                html: `Te has unido a la sala de <strong>${inviter.username}</strong>`,
-                icon: 'success',
-                confirmButtonColor: '#43cea2'
-            });
+            // Actualizar cada 30 segundos
+            refreshInterval = setInterval(async () => {
+                console.log('Actualizando datos automáticamente...');
+                await loadUserFriends();
+            }, 30000); // 30 segundos
+        }
+
+        // Refrescar datos manualmente
+        async function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            const originalHtml = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             await loadUserFriends();
-        }
-    } catch (error) {
-        console.error('Error aceptando invitación:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'No se pudo aceptar la invitación',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-}
-
-// Rechazar invitación
-async function rejectInvitation(invitationId) {
-    try {
-        await supabase
-            .from('invitations')
-            .update({ status: 'rejected' })
-            .eq('id', invitationId);
-        
-        Swal.fire({
-            title: 'Invitación rechazada',
-            text: 'Has rechazado la invitación a la sala',
-            icon: 'info',
-            confirmButtonColor: '#43cea2'
-        });
-    } catch (error) {
-        console.error('Error rechazando invitación:', error);
-    }
-}
-
-// Cargar amigos del usuario
-async function loadUserFriends() {
-    if (!currentUser) return;
-    
-    try {
-        console.log('Cargando amigos para usuario:', currentUser.id);
-        
-        // Consulta directa a la tabla friends
-        const { data: friends, error } = await supabase
-            .from('friends')
-            .select(`
-                *,
-                user1:profiles!user1_id(id, username, avatar_url, last_sign_in_at),
-                user2:profiles!user2_id(id, username, avatar_url, last_sign_in_at)
-            `)
-            .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`);
-        
-        if (error) {
-            console.error('Error cargando amigos:', error);
             
-            if (error.code === '42501' || error.message.includes('permission')) {
-                showError('Error de permisos: Necesitas habilitar políticas RLS en Supabase.');
-                updateDebugInfo('Error de políticas RLS', error);
-            } else if (error.message.includes('API key')) {
-                // Si es error de API key, usar datos de muestra
-                console.warn('Error de API key, usando datos de muestra');
-                renderFriendsList(getSampleFriends());
-                return;
-            } else {
-                showError('Error al cargar la lista de amigos: ' + error.message);
-                updateDebugInfo('Error cargando amigos', error);
-            }
-            
-            renderFriendsList(getSampleFriends());
-            return;
+            setTimeout(() => {
+                refreshBtn.innerHTML = originalHtml;
+            }, 1000);
         }
-        
-        console.log('Amigos cargados:', friends);
-        userFriends = friends || [];
-        renderFriendsList(userFriends);
-    } catch (error) {
-        console.error('Error inesperado:', error);
-        showError('Error inesperado al cargar amigos: ' + error.message);
-        updateDebugInfo('Error inesperado', error);
-        
-        renderFriendsList(getSampleFriends());
-    }
-}
 
-// Determinar si un usuario está en línea (últimos 2 minutos)
-function isUserOnline(lastSignInAt) {
-    if (!lastSignInAt) return false;
-    
-    const lastSignInTime = new Date(lastSignInAt).getTime();
-    const currentTime = new Date().getTime();
-    const twoMinutesAgo = currentTime - (2 * 60 * 1000); // 2 minutos en milisegundos
-    
-    return lastSignInTime >= twoMinutesAgo;
-}
-
-// Datos de ejemplo para desarrollo cuando hay errores
-function getSampleFriends() {
-    return [
-        {
-            user1_id: currentUser.id,
-            user2_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-            user2: {
-                id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
-                username: 'Amigo Ejemplo',
-                avatar_url: null,
-                last_sign_in_at: new Date().toISOString() // En línea
-            }
-        },
-        {
-            user1_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
-            user2_id: currentUser.id,
-            user1: {
-                id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567891',
-                username: 'Otro Amigo',
-                avatar_url: null,
-                last_sign_in_at: new Date(Date.now() - 3 * 60 * 1000).toISOString() // Desconectado
-            }
-        }
-    ];
-}
-
-// Renderizar la lista de amigos
-function renderFriendsList(friends) {
-    const friendsContainer = document.getElementById('friends-container');
-    
-    // Si ya se renderizó la tabla, actualizarla en lugar de reemplazar
-    if (friendsTableRendered) {
-        updateFriendsTable(friends);
-        return;
-    }
-    
-    // Crear la tabla por primera vez
-    const friendsTable = document.createElement('table');
-    friendsTable.className = 'friends-table';
-    friendsTable.id = 'friends-table';
-    
-    // Crear encabezado de la tabla
-    const thead = document.createElement('thead');
-    thead.innerHTML = `
-        <tr>
-            <th>Nombre</th>
-            <th>Estado</th>
-            <th>Acción</th>
-        </tr>
-    `;
-    friendsTable.appendChild(thead);
-    
-    // Crear cuerpo de la tabla
-    const tbody = document.createElement('tbody');
-    tbody.id = 'friends-tbody';
-    
-    if (friends.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align: center; padding: 20px;">
-                    No tienes amigos aún. ¡Agrega algunos para jugar juntos!
-                </td>
-            </tr>
-        `;
-    } else {
-        renderFriendsRows(tbody, friends);
-    }
-    
-    friendsTable.appendChild(tbody);
-    
-    // Eliminar el elemento de carga si existe
-    const loadingElement = document.getElementById('friends-loading');
-    if (loadingElement && loadingElement.parentNode === friendsContainer) {
-        friendsContainer.removeChild(loadingElement);
-    }
-    
-    // Agregar la tabla al contenedor
-    friendsContainer.appendChild(friendsTable);
-    friendsTableRendered = true;
-}
-
-// Renderizar filas de amigos
-function renderFriendsRows(tbody, friends) {
-    friends.forEach(friend => {
-        // Determinar qué usuario es el amigo (no el usuario actual)
-        let friendProfile;
-        if (friend.user1_id === currentUser.id) {
-            friendProfile = friend.user2 || { 
-                id: friend.user2_id, 
-                username: 'Usuario ' + friend.user2_id.substring(0, 8),
-                avatar_url: null,
-                last_sign_in_at: null
-            };
-        } else {
-            friendProfile = friend.user1 || { 
-                id: friend.user1_id, 
-                username: 'Usuario ' + friend.user1_id.substring(0, 8),
-                avatar_url: null,
-                last_sign_in_at: null
-            };
-        }
-        
-        const isOnline = isUserOnline(friendProfile.last_sign_in_at);
-        const isAlreadyInRoom = currentGuest && currentGuest.id === friendProfile.id;
-        const hasPendingInvitation = pendingInvitations.has(friendProfile.id);
-        const canInvite = isOnline && !isAlreadyInRoom && !hasPendingInvitation && roomsTableExists;
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="friend-name">${friendProfile.username || 'Usuario'}</td>
-            <td class="friend-status">
-                <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
-                ${isOnline ? 'En línea' : 'Desconectado'}
-                ${isAlreadyInRoom ? ' (En sala)' : ''}
-                ${hasPendingInvitation ? ' (Invitación pendiente)' : ''}
-            </td>
-            <td>
-                <button class="invite-btn ${canInvite ? 'invite-online' : hasPendingInvitation ? 'invite-pending' : 'invite-offline'}" 
-                        ${canInvite ? '' : 'disabled'}>
-                    <i class="fas ${isAlreadyInRoom ? 'fa-check' : hasPendingInvitation ? 'fa-clock' : 'fa-plus'}"></i> 
-                    ${isAlreadyInRoom ? 'En sala' : hasPendingInvitation ? 'Pendiente' : 'Invitar'}
-                </button>
-            </td>
-        `;
-        
-        // Agregar evento al botón de invitar
-        if (canInvite) {
-            const inviteBtn = row.querySelector('.invite-btn');
-            inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
-        }
-        
-        tbody.appendChild(row);
-    });
-}
-
-// Actualizar la tabla de amigos existente
-function updateFriendsTable(friends) {
-    const tbody = document.getElementById('friends-tbody');
-    if (!tbody) return;
-    
-    // Limpiar el cuerpo de la tabla
-    tbody.innerHTML = '';
-    
-    // Volver a renderizar las filas
-    if (friends.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="3" style="text-align: center; padding: 20px;">
-                    No tienes amigos aún. ¡Agrega algunos para jugar juntos!
-                </td>
-            </tr>
-        `;
-    } else {
-        renderFriendsRows(tbody, friends);
-    }
-}
-
-// Enviar invitación a un amigo
-async function sendInvitation(friend) {
-    try {
-        // Crear una invitación en la base de datos
-        const { data: invitation, error } = await supabase
-            .from('invitations')
-            .insert([{
-                inviter_id: currentUser.id,
-                invited_id: friend.id,
-                room_id: currentRoomId,
-                status: 'pending'
-            }])
-            .select()
-            .single();
-        
-        if (error) {
-            console.error('Error creando invitación:', error);
+        // Mostrar información de la sala
+        function showRoomInfo() {
             Swal.fire({
-                title: 'Error',
-                text: 'No se pudo enviar la invitación',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: 'Sala de Amigos',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="margin-bottom: 15px;">Bienvenido a la sala de amigos, un espacio donde puedes:</p>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="margin-bottom: 8px;"><i class="fas fa-users" style="margin-right: 8px;"></i> Conectar con tus amigos</p>
+                            <p style="margin-bottom: 8px;"><i class="fas fa-gamepad" style="margin-right: 8px;"></i> Jugar juntos</p>
+                            <p><i class="fas fa-trophy" style="margin-right: 8px;"></i> Competir y ganar premios</p>
+                        </div>
+                        
+                        <p>Los usuarios aparecen como "En línea" si han iniciado sesión en los últimos 2 minutos.</p>
+                        <p>¡Invita a más amigos y diviértanse!</p>
+                    </div>
+                `,
+                icon: 'info',
+                iconColor: '#667eea',
+                background: '#764ba2',
+                color: '#ffffff',
+                confirmButtonColor: '#43cea2',
+                confirmButtonText: '¡Entendido!',
+                width: '600px'
             });
-            return;
         }
-        
-        // Agregar a invitaciones pendientes
-        pendingInvitations.set(friend.id, invitation.id);
-        
-        // Actualizar la interfaz
-        await loadUserFriends();
-        
-        Swal.fire({
-            title: 'Invitación enviada',
-            html: `Se ha enviado una invitación a <strong>${friend.username}</strong>. Esperando respuesta...`,
-            icon: 'info',
-            timer: 2000,
-            showConfirmButton: false
-        });
-        
-    } catch (error) {
-        console.error('Error enviando invitación:', error);
-        showError('Error al enviar la invitación: ' + error.message);
-        updateDebugInfo('Error invitación', error);
-    }
-}
 
-// Añadir invitado a la sala
-function addGuestToRoom(guest) {
-    const guestCard = document.getElementById('guest-user-card');
-    if (guestCard) {
-        let guestContent = `
-            <div class="user-avatar">
-                <i class="fas fa-user"></i>
-            </div>
-            <h3 class="user-name">${guest.username}</h3>
-            <div class="user-status status-online">Conectado</div>
-            <p>Jugando contigo</p>
-        `;
-        
-        // Si es el creador de la sala, agregar botón de expulsión
-        if (isRoomCreator) {
-            guestContent += `
-                <button class="expel-btn" onclick="expelGuest('${guest.id}', '${guest.username}')">
-                    <i class="fas fa-times"></i>
-                </button>
+        // Mostrar error
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> ${message}
+                </div>
             `;
         }
-        
-        guestCard.innerHTML = guestContent;
-    }
-}
 
-// Expulsar a un invitado de la sala
-async function expelGuest(guestId, guestName) {
-    try {
-        const result = await Swal.fire({
-            title: '¿Expulsar al invitado?',
-            html: `¿Estás seguro de que quieres expulsar a <strong>${guestName}</strong> de la sala?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e74c3c',
-            cancelButtonColor: '#95a5a6',
-            confirmButtonText: 'Sí, expulsar',
-            cancelButtonText: 'Cancelar'
-        });
-        
-        if (result.isConfirmed) {
-            // Expulsar al invitado de la sala
-            const { error } = await supabase
-                .from('rooms')
-                .update({ 
-                    user2_id: null,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', currentRoomId);
-            
-            if (error) {
-                throw error;
+        // Mostrar notificación toast
+        function showToast(message) {
+            // Eliminar toast existente si hay uno
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
             }
             
-            // Mostrar mensaje de expulsión en el lado del invitado
-            await supabase
-                .from('notifications')
-                .insert([{
-                    user_id: guestId,
-                    title: 'Has sido expulsado',
-                    message: `El anfitrión te ha expulsado de la sala`,
-                    type: 'expulsion',
-                    room_id: currentRoomId
-                }]);
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <i class="fas fa-bell"></i>
+                <span>${message}</span>
+            `;
             
-            // Actualizar la interfaz local
-            currentGuest = null;
-            clearGuestFromRoom(guestName);
+            document.body.appendChild(toast);
             
-            Swal.fire({
-                title: 'Invitado expulsado',
-                html: `<strong>${guestName}</strong> ha sido expulsado de la sala.`,
-                icon: 'success',
-                confirmButtonColor: '#43cea2',
-                timer: 2000
+            // Eliminar el toast después de 3 segundos
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // Actualizar información de depuración
+        function updateDebugInfo(context, data) {
+            const debugContent = document.getElementById('debugContent');
+            debugContent.innerHTML = `
+                <strong>Contexto:</strong> ${context}<br>
+                <strong>Hora:</strong> ${new Date().toLocaleTimeString()}<br>
+                <strong>Datos:</strong><br> 
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        // Alternar visibilidad de información de depuración
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debugInfo');
+            const debugToggle = document.querySelector('.debug-toggle');
+            
+            if (debugInfo.style.display === 'none') {
+                debugInfo.style.display = 'block';
+                debugToggle.textContent = 'Ocultar información de depuración';
+            } else {
+                debugInfo.style.display = 'none';
+                debugToggle.textContent = 'Mostrar información de depuración';
+            }
+        }
+
+        // Limpiar suscripciones al cerrar la página
+        window.addEventListener('beforeunload', () => {
+            realTimeSubscriptions.forEach(subscription => {
+                if (subscription) {
+                    supabase.removeChannel(subscription);
+                }
             });
-            
-            await loadUserFriends();
-        }
-    } catch (error) {
-        console.error('Error expulsando invitado:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'No se pudo expulsar al invitado',
-            icon: 'error',
-            confirmButtonText: 'OK'
         });
-    }
-}
-
-// Limpiar invitado de la sala con mensaje personalizado
-function clearGuestFromRoom(guestName = null, roomDeactivated = false) {
-    const guestCard = document.getElementById('guest-user-card');
-    if (guestCard) {
-        if (roomDeactivated) {
-            // Mostrar mensaje específico si la sala fue desactivada
-            if (guestName) {
-                guestCard.innerHTML = `
-                    <div class="empty-room">
-                        <div class="empty-room-icon">
-                            <i class="fas fa-door-open"></i>
-                        </div>
-                        <div class="empty-room-text">
-                            <strong>${guestName}</strong> salió de la sala
-                        </div>
-                        <div class="empty-room-subtext">
-                            La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
-                        </div>
-                    </div>
-                `;
-            } else {
-                guestCard.innerHTML = `
-                    <div class="empty-room">
-                        <div class="empty-room-icon">
-                            <i class="fas fa-door-open"></i>
-                        </div>
-                        <div class="empty-room-text">
-                            El usuario salió de la sala
-                        </div>
-                        <div class="empty-room-subtext">
-                            La sala se ha cerrado. Puedes crear una nueva invitando a otro amigo.
-                        </div>
-                    </div>
-                `;
-            }
-        } else {
-            // Mensaje normal para cuando un usuario sale pero la sala sigue activa
-            if (guestName) {
-                guestCard.innerHTML = `
-                    <div class="empty-room">
-                        <div class="empty-room-icon">
-                            <i class="fas fa-user-slash"></i>
-                        </div>
-                        <div class="empty-room-text">
-                            <strong>${guestName}</strong> salió de la sala
-                        </div>
-                        <div class="empty-room-subtext">
-                            Invita a otro amigo para continuar jugando
-                        </div>
-                    </div>
-                `;
-            } else {
-                guestCard.innerHTML = `
-                    <div class="empty-room">
-                        <div class="empty-room-icon">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="empty-room-text">
-                            Invita a un amigo para jugar juntos
-                        </div>
-                    </div>
-                `;
-            }
-        }
-    }
-}
-
-// Manejar el botón de volver
-async function handleBackButton() {
-    if (currentGuest) {
-        // Si hay un invitado, preguntar si quiere salir de la sala
-        const result = await Swal.fire({
-            title: '¿Salir de la sala?',
-            html: `Al salir, ${isRoomCreator ? 'la sala se cerrará y tu invitado será expulsado' : 'abandonarás la sala'}.`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e74c3c',
-            cancelButtonColor: '#95a5a6',
-            confirmButtonText: 'Sí, salir',
-            cancelButtonText: 'Cancelar'
-        });
-        
-        if (result.isConfirmed) {
-            await leaveRoom();
-            window.location.href = 'dashboard.html';
-        }
-    } else {
-        // Si no hay invitado, simplemente redirigir
-        window.location.href = 'dashboard.html';
-    }
-}
-
-// Salir de la sala actual
-async function leaveRoom() {
-    if (!currentRoomId) return;
-    
-    try {
-        // Si el usuario actual es el creador de la sala, desactivar toda la sala
-        if (isRoomCreator) {
-            const { error } = await supabase
-                .from('rooms')
-                .update({ 
-                    is_active: false,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', currentRoomId);
-            
-            if (error) {
-                throw error;
-            }
-            
-            // Notificar al invitado si existe
-            if (currentGuest) {
-                await supabase
-                    .from('notifications')
-                    .insert([{
-                        user_id: currentGuest.id,
-                        title: 'Sala cerrada',
-                        message: 'El anfitrión ha cerrado la sala',
-                        type: 'room_closed',
-                        room_id: currentRoomId
-                    }]);
-            }
-        } 
-        // Si el usuario actual es el invitado, simplemente salir
-        else {
-            const { error } = await supabase
-                .from('rooms')
-                .update({ 
-                    user2_id: null,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', currentRoomId);
-            
-            if (error) {
-                throw error;
-            }
-        }
-        
-        // Limpiar el estado local
-        if (currentGuest) {
-            const guestName = currentGuest.username;
-            currentGuest = null;
-            clearGuestFromRoom(guestName, isRoomCreator);
-        }
-        
-        await loadUserFriends();
-    } catch (error) {
-        console.error('Error saliendo de la sala:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'No se pudo salir de la sala',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-}
-
-// Iniciar actualización automática
-function startAutoRefresh() {
-    // Limpiar intervalo existente
-    if (refreshInterval) {
-        clearInterval(refreshInterval);
-    }
-    
-    // Actualizar cada 30 segundos
-    refreshInterval = setInterval(async () => {
-        console.log('Actualizando datos automáticamente...');
-        await loadUserFriends();
-    }, 30000); // 30 segundos
-}
-
-// Refrescar datos manualmente
-async function refreshData() {
-    const refreshBtn = document.querySelector('.refresh-btn');
-    const originalHtml = refreshBtn.innerHTML;
-    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    
-    await loadUserFriends();
-    
-    setTimeout(() => {
-        refreshBtn.innerHTML = originalHtml;
-    }, 1000);
-}
-
-// Mostrar información de la sala
-function showRoomInfo() {
-    Swal.fire({
-        title: 'Sala de Amigos',
-        html: `
-            <div style="text-align: left; padding: 10px;">
-                <p style="margin-bottom: 15px;">Bienvenido a la sala de amigos, un espacio donde puedes:</p>
-                
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                    <p style="margin-bottom: 8px;"><i class="fas fa-users" style="margin-right: 8px;"></i> Conectar con tus amigos</p>
-                    <p style="margin-bottom: 8px;"><i class="fas fa-gamepad" style="margin-right: 8px;"></i> Jugar juntos</p>
-                    <p><i class="fas fa-trophy" style="margin-right: 8px;"></i> Competir y ganar premios</p>
-                </div>
-                
-                <p>Los usuarios aparecen como "En línea" si han iniciado sesión en los últimos 2 minutos.</p>
-                <p>¡Invita a más amigos y diviértanse!</p>
-            </div>
-        `,
-        icon: 'info',
-        iconColor: '#667eea',
-        background: '#764ba2',
-        color: '#ffffff',
-        confirmButtonColor: '#43cea2',
-        confirmButtonText: '¡Entendido!',
-        width: '600px'
-    });
-}
-
-// Mostrar error
-function showError(message) {
-    const errorContainer = document.getElementById('errorContainer');
-    errorContainer.innerHTML = `
-        <div class="error-message">
-            <i class="fas fa-exclamation-circle"></i> ${message}
-        </div>
-    `;
-}
-
-// Actualizar información de depuración
-function updateDebugInfo(context, data) {
-    const debugContent = document.getElementById('debugContent');
-    debugContent.innerHTML = `
-        <strong>Contexto:</strong> ${context}<br>
-        <strong>Hora:</strong> ${new Date().toLocaleTimeString()}<br>
-        <strong>Datos:</strong><br> 
-        <pre>${JSON.stringify(data, null, 2)}</pre>
-    `;
-}
-
-// Alternar visibilidad de información de depuración
-function toggleDebug() {
-    const debugInfo = document.getElementById('debugInfo');
-    const debugToggle = document.querySelector('.debug-toggle');
-    
-    if (debugInfo.style.display === 'none') {
-        debugInfo.style.display = 'block';
-        debugToggle.textContent = 'Ocultar información de depuración';
-    } else {
-        debugInfo.style.display = 'none';
-        debugToggle.textContent = 'Mostrar información de depuración';
-    }
-}
     </script>
 </body>
 </html>
