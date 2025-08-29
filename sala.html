@@ -23,6 +23,7 @@
             justify-content: center;
             padding: 20px;
             color: #fff;
+            transition: background 1s ease;
         }
         
         .container {
@@ -45,7 +46,7 @@
             margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             letter-spacing: 1px;
-            background: linear-gradient(to right, #fdbb2d, #ff5e62);
+            background: linear-gradient(to right, #fdf92d, #60d7ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 700;
@@ -69,6 +70,7 @@
             padding: 20px 30px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
         }
         
         .stats {
@@ -85,11 +87,12 @@
             border-radius: 16px;
             min-width: 140px;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
         }
         
         .stat-box i {
             font-size: 1.8rem;
-            color: #fdbb2d;
+            color: #d32dfd;
             margin-bottom: 10px;
         }
         
@@ -110,6 +113,7 @@
             padding: 35px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
         }
         
         .memory-game {
@@ -150,7 +154,7 @@
         }
         
         .card-front {
-            background: linear-gradient(135deg, #834d9b, #d04ed6);
+            background: linear-gradient(135deg, #56bbaa, #ca6dcf);
             transform: rotateY(180deg);
         }
         
@@ -161,9 +165,10 @@
         }
         
         .card-back {
-            background: linear-gradient(45deg, #fdbb2d, #ff5e62);
+            background: linear-gradient(45deg, #0ff7ff, #16004b);
             font-size: 2.8rem;
             color: white;
+            transition: all 0.5s ease;
         }
         
         .card-back:hover {
@@ -177,7 +182,7 @@
         }
         
         button {
-            background: linear-gradient(to right, #834d9b, #d04ed6);
+            background: linear-gradient(to right, #94eaff, #d04ed6);
             border: none;
             padding: 16px 35px;
             border-radius: 50px;
@@ -212,7 +217,7 @@
         }
         
         .win-content {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #90b7ff, #2a5298);
             padding: 60px;
             border-radius: 24px;
             text-align: center;
@@ -226,8 +231,8 @@
             font-family: 'Playfair Display', serif;
             font-size: 3.5rem;
             margin-bottom: 20px;
-            color: gold;
-            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+            color: rgb(0, 0, 0);
+            text-shadow: 0 2px 10px rgba(255, 217, 0, 0.822);
         }
         
         .win-content p {
@@ -281,7 +286,7 @@
         }
         
         .modal-content {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #000000, #2a5298);
             padding: 40px;
             border-radius: 20px;
             max-width: 600px;
@@ -303,7 +308,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #fdbb2d;
+            color: #fda32d;
             text-align: center;
         }
         
@@ -351,6 +356,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 20px;
+            transition: all 0.5s ease;
         }
         
         .horizontal-stats {
@@ -367,11 +373,12 @@
             border-radius: 16px;
             min-width: 140px;
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
         }
         
         .horizontal-stat i {
             font-size: 1.8rem;
-            color: #fdbb2d;
+            color: #2d53fd;
             margin-bottom: 10px;
         }
         
@@ -492,6 +499,32 @@
             opacity: 0.7;
             font-size: 0.9rem;
         }
+        
+        .theme-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .theme-btn i {
+            font-size: 24px;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -502,17 +535,20 @@
             <div class="info-btn" id="info-btn">
                 <i class="fas fa-info"></i>
             </div>
+            <div class="theme-btn" id="theme-btn">
+                <i class="fas fa-palette"></i>
+            </div>
         </header>
         
         <!-- Estadísticas en horizontal -->
-        <div class="stats-container">
+        <div class="stats-container" id="stats-container">
             <div class="horizontal-stats">
-                <div class="horizontal-stat">
+                <div class="horizontal-stat" id="moves-stat">
                     <i class="fas fa-sync-alt"></i>
                     <div class="value" id="moves-count">0</div>
                     <div class="label">Movimientos</div>
                 </div>
-                <div class="horizontal-stat">
+                <div class="horizontal-stat" id="pairs-stat">
                     <i class="fas fa-heart"></i>
                     <div class="value" id="pairs-found">0</div>
                     <div class="label">Pares Encontrados</div>
@@ -524,7 +560,7 @@
             </div>
         </div>
         
-        <div class="game-container">
+        <div class="game-container" id="game-container">
             <div class="memory-game" id="memory-game">
                 <!-- Las tarjetas se generarán con JavaScript -->
             </div>
@@ -572,24 +608,115 @@
             const infoBtn = document.getElementById('info-btn');
             const infoModal = document.getElementById('info-modal');
             const closeModal = document.getElementById('close-modal');
+            const themeBtn = document.getElementById('theme-btn');
+            const statsContainer = document.getElementById('stats-container');
+            const gameContainerElement = document.getElementById('game-container');
+            const movesStat = document.getElementById('moves-stat');
+            const pairsStat = document.getElementById('pairs-stat');
             
             let moves = 0;
             let pairsFound = 0;
             let firstCard, secondCard;
             let lockBoard = false;
             
-            // Iconos FontAwesome para las tarjetas (6 pares)
-            const icons = [
-                '<i class="fas fa-gem"></i>',
-                '<i class="fas fa-heart"></i>',
-                '<i class="fas fa-star"></i>',
-                '<i class="fas fa-moon"></i>',
-                '<i class="fas fa-sun"></i>',
-                '<i class="fas fa-cloud"></i>'
+            // Lista de iconos FontAwesome para las tarjetas (más variedad)
+            const allIcons = [
+                'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
+                'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire',
+                'fa-bell', 'fa-key', 'fa-flag', 'fa-heartbeat', 'fa-globe', 'fa-book',
+                'fa-camera', 'fa-gift', 'fa-clock', 'fa-paper-plane', 'fa-trophy', 'fa-umbrella'
             ];
             
-            // Duplicar los iconos para crear pares
-            let cards = [...icons, ...icons];
+            // Lista de colores para los fondos
+            const colorSchemes = [
+                { 
+                    body: ['#0f2027', '#203a43', '#2c5364'],
+                    cardBack: ['#fdbb2d', '#ff5e62'],
+                    cardFront: ['#834d9b', '#d04ed6'],
+                    matched: ['#00b09b', '#96c93d'],
+                    button: ['#834d9b', '#d04ed6'],
+                    statBox: ['rgba(0, 0, 0, 0.25)'],
+                    container: ['rgba(255, 255, 255, 0.08)']
+                },
+                { 
+                    body: ['#4b79a1', '#283e51'],
+                    cardBack: ['#FF5F6D', '#FFC371'],
+                    cardFront: ['#7b4397', '#dc2430'],
+                    matched: ['#56ab2f', '#a8e6cf'],
+                    button: ['#7b4397', '#dc2430'],
+                    statBox: ['rgba(0, 0, 0, 0.3)'],
+                    container: ['rgba(255, 255, 255, 0.1)']
+                },
+                { 
+                    body: ['#ff6e7f', '#bfe9ff'],
+                    cardBack: ['#C06C84', '#6C5B7B'],
+                    cardFront: ['#355C7D', '#F67280'],
+                    matched: ['#11998e', '#38ef7d'],
+                    button: ['#355C7D', '#F67280'],
+                    statBox: ['rgba(0, 0, 0, 0.2)'],
+                    container: ['rgba(255, 255, 255, 0.12)']
+                },
+                { 
+                    body: ['#3a7bd5', '#00d2ff'],
+                    cardBack: ['#FF9966', '#FF5E62'],
+                    cardFront: ['#654ea3', '#eaafc8'],
+                    matched: ['#56ccf2', '#2f80ed'],
+                    button: ['#654ea3', '#eaafc8'],
+                    statBox: ['rgba(0, 0, 0, 0.35)'],
+                    container: ['rgba(255, 255, 255, 0.09)']
+                }
+            ];
+            
+            let currentColorScheme = 0;
+            
+            // Función para cambiar el esquema de colores
+            function changeColorScheme() {
+                currentColorScheme = (currentColorScheme + 1) % colorSchemes.length;
+                const scheme = colorSchemes[currentColorScheme];
+                
+                // Aplicar nuevos colores
+                document.body.style.background = `linear-gradient(135deg, ${scheme.body[0]}, ${scheme.body[1]}, ${scheme.body[2] || scheme.body[1]})`;
+                
+                // Actualizar colores de las cartas
+                document.querySelectorAll('.card-back').forEach(card => {
+                    card.style.background = `linear-gradient(45deg, ${scheme.cardBack[0]}, ${scheme.cardBack[1]})`;
+                });
+                
+                document.querySelectorAll('.card-front').forEach(card => {
+                    card.style.background = `linear-gradient(135deg, ${scheme.cardFront[0]}, ${scheme.cardFront[1]})`;
+                });
+                
+                document.querySelectorAll('.card.matched .card-front').forEach(card => {
+                    card.style.background = `linear-gradient(135deg, ${scheme.matched[0]}, ${scheme.matched[1]})`;
+                });
+                
+                // Actualizar botones
+                document.querySelectorAll('button').forEach(btn => {
+                    btn.style.background = `linear-gradient(to right, ${scheme.button[0]}, ${scheme.button[1]})`;
+                });
+                
+                // Actualizar cajas de estadísticas
+                document.querySelectorAll('.stat-box, .horizontal-stat').forEach(box => {
+                    box.style.background = scheme.statBox[0];
+                });
+                
+                // Actualizar contenedores
+                document.querySelectorAll('.game-info, .game-container, .stats-container').forEach(container => {
+                    container.style.background = scheme.container[0];
+                });
+            }
+            
+            // Función para obtener iconos aleatorios
+            function getRandomIcons() {
+                // Mezclar todos los iconos disponibles
+                const shuffledIcons = [...allIcons].sort(() => Math.random() - 0.5);
+                
+                // Seleccionar 6 iconos aleatorios
+                const selectedIcons = shuffledIcons.slice(0, 6);
+                
+                // Convertir a formato HTML
+                return selectedIcons.map(icon => `<i class="fas ${icon}"></i>`);
+            }
             
             // Función para mezclar array (algoritmo Fisher-Yates)
             function shuffleArray(array) {
@@ -603,6 +730,11 @@
             // Generar las tarjetas
             function generateCards() {
                 gameContainer.innerHTML = '';
+                
+                // Obtener iconos aleatorios
+                const icons = getRandomIcons();
+                let cards = [...icons, ...icons];
+                
                 shuffleArray(cards);
                 
                 cards.forEach((icon, index) => {
@@ -729,7 +861,10 @@
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
                 
-                // Volver a mezclar las cartas
+                // Cambiar colores
+                changeColorScheme();
+                
+                // Volver a generar las cartas con iconos aleatorios
                 generateCards();
                 resetBoard();
             }
@@ -743,6 +878,9 @@
             closeModal.addEventListener('click', () => {
                 infoModal.style.display = 'none';
             });
+            
+            // Cambiar tema de colores
+            themeBtn.addEventListener('click', changeColorScheme);
             
             // Cerrar modal al hacer clic fuera del contenido
             window.addEventListener('click', (e) => {
