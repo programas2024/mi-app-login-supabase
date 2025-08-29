@@ -432,6 +432,41 @@
             margin-top: 20px;
         }
         
+        /* Login modal */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .login-input {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: #60d7ff;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 90px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
         @media (max-width: 900px) {
             .memory-game {
                 grid-template-columns: repeat(3, 1fr);
@@ -467,6 +502,14 @@
             .stats-container {
                 flex-direction: column;
                 gap: 20px;
+            }
+            
+            .user-info {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-top: 10px;
+                justify-content: center;
             }
         }
         
@@ -591,6 +634,32 @@
             font-size: 24px;
             color: #fff;
         }
+        
+        .login-btn {
+            position: absolute;
+            top: 150px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .login-btn i {
+            font-size: 24px;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -606,6 +675,13 @@
             </div>
             <div class="dashboard-btn" id="dashboard-btn">
                 <i class="fas fa-home"></i>
+            </div>
+            <div class="login-btn" id="login-btn">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info" id="user-info" style="display: none;">
+                <i class="fas fa-user-circle"></i>
+                <span id="username">Usuario</span>
             </div>
         </header>
         
@@ -647,6 +723,7 @@
             <h2>¡Felicidades!</h2>
             <p>Has encontrado todos los pares en <span id="final-moves">0</span> movimientos.</p>
             <p id="score-saved-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación guardada en el ranking!</p>
+            <p id="score-error-message" style="display: none; color: #f44336; font-weight: bold;">Inicia sesión para guardar tu puntuación en el ranking</p>
             <div class="nav-buttons">
                 <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
                 <button id="ranking-btn-2"><i class="fas fa-trophy"></i> Ver Ranking</button>
@@ -682,6 +759,20 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal de login -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-login-modal">&times;</span>
+            <h2><i class="fas fa-user"></i> Iniciar Sesión</h2>
+            <div class="login-container">
+                <input type="text" id="username-input" class="login-input" placeholder="Nombre de usuario">
+                <input type="email" id="email-input" class="login-input" placeholder="Correo electrónico (opcional)">
+                <button id="login-submit"><i class="fas fa-sign-in-alt"></i> Jugar como invitado</button>
+                <p style="text-align: center; opacity: 0.7;">Usa un nombre único para identificar tus puntuaciones</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts externos -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -691,7 +782,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Configuración de Supabase
             const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
@@ -713,23 +804,47 @@
             const dashboardBtn = document.getElementById('dashboard-btn');
             const rankingContent = document.getElementById('ranking-content');
             const scoreSavedMessage = document.getElementById('score-saved-message');
+            const scoreErrorMessage = document.getElementById('score-error-message');
+            const loginBtn = document.getElementById('login-btn');
+            const loginModal = document.getElementById('login-modal');
+            const closeLoginModal = document.getElementById('close-login-modal');
+            const loginSubmit = document.getElementById('login-submit');
+            const usernameInput = document.getElementById('username-input');
+            const emailInput = document.getElementById('email-input');
+            const userInfo = document.getElementById('user-info');
+            const usernameSpan = document.getElementById('username');
             
             let moves = 0;
             let pairsFound = 0;
             let firstCard, secondCard;
             let lockBoard = false;
             let currentUserId = null;
+            let currentUsername = null;
             
-            // Obtener el ID de usuario de la URL (simulado para este ejemplo)
-            // En una aplicación real, esto vendría de la autenticación
-            const urlParams = new URLSearchParams(window.location.search);
-            currentUserId = urlParams.get('user_id') || 'default-user';
+            // Verificar si hay una sesión guardada
+            const savedUser = localStorage.getItem('memoryUser');
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                currentUserId = userData.id;
+                currentUsername = userData.username;
+                updateUserUI();
+            }
             
             // Lista de iconos FontAwesome para las tarjetas
             const allIcons = [
                 'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
                 'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
             ];
+            
+            // Función para actualizar la UI con información del usuario
+            function updateUserUI() {
+                if (currentUsername) {
+                    userInfo.style.display = 'flex';
+                    usernameSpan.textContent = currentUsername;
+                } else {
+                    userInfo.style.display = 'none';
+                }
+            }
             
             // Función para obtener iconos aleatorios
             function getRandomIcons() {
@@ -857,22 +972,30 @@
                 winMessage.style.display = 'flex';
                 createConfetti();
                 
-                // Guardar la puntuación en Supabase
-                const { data, error } = await supabase
-                    .from('scores')
-                    .insert([
-                        { 
-                            user_id: currentUserId, 
-                            movements: moves, 
-                            pairs_found: pairsFound,
-                            completion_time: new Date().toISOString()
-                        }
-                    ]);
-                
-                if (error) {
-                    console.error('Error guardando puntuación:', error);
+                // Guardar la puntuación en Supabase si hay un usuario registrado
+                if (currentUserId && currentUserId !== 'default-user') {
+                    const { data, error } = await supabase
+                        .from('scores')
+                        .insert([
+                            { 
+                                user_id: currentUserId, 
+                                movements: moves, 
+                                pairs_found: pairsFound,
+                                completion_time: new Date().toISOString()
+                            }
+                        ]);
+                    
+                    if (error) {
+                        console.error('Error guardando puntuación:', error);
+                        scoreErrorMessage.style.display = 'block';
+                        scoreSavedMessage.style.display = 'none';
+                    } else {
+                        scoreSavedMessage.style.display = 'block';
+                        scoreErrorMessage.style.display = 'none';
+                    }
                 } else {
-                    scoreSavedMessage.style.display = 'block';
+                    scoreErrorMessage.style.display = 'block';
+                    scoreSavedMessage.style.display = 'none';
                 }
             }
             
@@ -949,6 +1072,68 @@
                 }
             }
             
+            // Iniciar sesión como invitado
+            async function loginAsGuest() {
+                const username = usernameInput.value.trim();
+                const email = emailInput.value.trim();
+                
+                if (!username) {
+                    alert('Por favor, ingresa un nombre de usuario');
+                    return;
+                }
+                
+                // Generar un ID único para el usuario
+                const userId = generateUserId(username, email);
+                
+                // Guardar en localStorage
+                const userData = {
+                    id: userId,
+                    username: username,
+                    email: email || ''
+                };
+                
+                localStorage.setItem('memoryUser', JSON.stringify(userData));
+                
+                currentUserId = userId;
+                currentUsername = username;
+                
+                updateUserUI();
+                loginModal.style.display = 'none';
+                
+                // Intentar crear el perfil en Supabase
+                try {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .upsert({
+                            id: userId,
+                            username: username,
+                            email: email || null,
+                            updated_at: new Date().toISOString()
+                        });
+                    
+                    if (error) {
+                        console.error('Error creando perfil:', error);
+                    }
+                } catch (error) {
+                    console.error('Error creando perfil:', error);
+                }
+            }
+            
+            // Generar un ID único para el usuario
+            function generateUserId(username, email) {
+                // Usar el email si está disponible
+                if (email) {
+                    return email.split('').reduce((acc, char) => {
+                        return acc + char.charCodeAt(0);
+                    }, '');
+                }
+                
+                // Si no hay email, generar un ID basado en el username y timestamp
+                return username.split('').reduce((acc, char) => {
+                    return acc + char.charCodeAt(0);
+                }, '') + Date.now();
+            }
+            
             // Reiniciar el juego
             function resetGame() {
                 moves = 0;
@@ -957,6 +1142,7 @@
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
                 scoreSavedMessage.style.display = 'none';
+                scoreErrorMessage.style.display = 'none';
                 
                 // Volver a generar las cartas con iconos aleatorios
                 generateCards();
@@ -986,6 +1172,19 @@
                 rankingModal.style.display = 'none';
             });
             
+            // Mostrar modal de login
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+            
+            // Cerrar modal de login
+            closeLoginModal.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+            
+            // Enviar formulario de login
+            loginSubmit.addEventListener('click', loginAsGuest);
+            
             // Ir al dashboard
             dashboardBtn.addEventListener('click', () => {
                 window.location.href = 'dashboard.html';
@@ -999,6 +1198,9 @@
                 if (e.target === rankingModal) {
                     rankingModal.style.display = 'none';
                 }
+                if (e.target === loginModal) {
+                    loginModal.style.display = 'none';
+                }
             });
             
             // Event listeners para los botones
@@ -1007,7 +1209,6 @@
             
             // Inicializar el juego
             generateCards();
-            
         });
     </script>
 </body>
