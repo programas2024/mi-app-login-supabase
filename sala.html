@@ -578,6 +578,7 @@
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
         }
         
         .ranking-btn:hover {
@@ -604,6 +605,7 @@
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
         }
         
         .dashboard-btn:hover {
@@ -675,7 +677,7 @@
             <h2>¡Felicidades!</h2>
             <p>Has encontrado todos los pares en <span id="final-moves">0</span> movimientos.</p>
             <p id="score-saved-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación guardada en el ranking!</p>
-            <p id="score-error-message" style="display: none; color: #f44336; font-weight: bold;">Inicia sesión para guardar tu puntuación en el ranking</p>
+            <p id="score-error-message" style="display: none; color: #f44336; font-weight: bold;">Error al guardar la puntuación</p>
             <div class="nav-buttons">
                 <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
                 <button id="ranking-btn-2"><i class="fas fa-trophy"></i> Ver Ranking</button>
@@ -715,7 +717,6 @@
     <!-- Scripts externos -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -754,17 +755,8 @@
             let currentUserId = null;
             let currentUsername = null;
             
-            // Verificar si hay una sesión guardada
-            const savedUser = localStorage.getItem('memoryUser');
-            if (savedUser) {
-                const userData = JSON.parse(savedUser);
-                currentUserId = userData.id;
-                currentUsername = userData.username;
-                updateUserUI();
-            } else {
-                // Si no hay usuario, mostrar alerta de login
-                showLoginAlert();
-            }
+            // Obtener usuario autenticado
+            await getCurrentUser();
             
             // Lista de iconos FontAwesome para las tarjetas
             const allIcons = [
@@ -772,103 +764,38 @@
                 'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
             ];
             
-            // Función para mostrar alerta de login con SweetAlert2
-            async function showLoginAlert() {
-                const { value: formValues } = await Swal.fire({
-                    title: '¡Bienvenido a Memory Elegante!',
-                    html:
-                        '<input id="swal-input1" class="swal2-input" placeholder="Nombre de usuario" required>' +
-                        '<input id="swal-input2" class="swal2-input" placeholder="Correo electrónico (opcional)" type="email">',
-                    focusConfirm: false,
-                    showCancelButton: false,
-                    confirmButtonText: 'Comenzar a jugar',
-                    preConfirm: () => {
-                        return {
-                            username: document.getElementById('swal-input1').value,
-                            email: document.getElementById('swal-input2').value
-                        }
-                    },
-                    validationMessage: 'El nombre de usuario es requerido',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false
-                });
-                
-                if (formValues) {
-                    await loginUser(formValues.username, formValues.email);
-                }
-            }
-            
-            // Función para iniciar sesión
-            async function loginUser(username, email) {
+            // Función para obtener el usuario actual desde Supabase Auth
+            async function getCurrentUser() {
                 try {
-                    // Buscar usuario existente por username
-                    const { data: existingUsers, error: searchError } = await supabase
-                        .from('profiles')
-                        .select('id, username')
-                        .eq('username', username);
+                    // Obtener la sesión actual
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                     
-                    if (searchError) {
-                        console.error('Error buscando usuario:', searchError);
-                        throw searchError;
+                    if (sessionError) {
+                        console.error('Error obteniendo sesión:', sessionError);
+                        return;
                     }
                     
-                    let userId;
-                    
-                    if (existingUsers && existingUsers.length > 0) {
-                        // Usuario existente
-                        userId = existingUsers[0].id;
-                    } else {
-                        // Crear nuevo usuario
-                        const newUser = {
-                            username: username,
-                            email: email || null,
-                            updated_at: new Date().toISOString()
-                        };
-                        
-                        // Insertar nuevo perfil
-                        const { data: newUserData, error: insertError } = await supabase
+                    if (session && session.user) {
+                        // Obtener información del perfil
+                        const { data: profile, error: profileError } = await supabase
                             .from('profiles')
-                            .insert([newUser])
-                            .select('id')
+                            .select('id, username')
+                            .eq('id', session.user.id)
                             .single();
-                        
-                        if (insertError) {
-                            console.error('Error creando usuario:', insertError);
-                            throw insertError;
+                            
+                        if (profileError) {
+                            console.error('Error obteniendo perfil:', profileError);
+                            return;
                         }
                         
-                        userId = newUserData.id;
+                        if (profile) {
+                            currentUserId = profile.id;
+                            currentUsername = profile.username;
+                            updateUserUI();
+                        }
                     }
-                    
-                    // Guardar en localStorage
-                    const userData = {
-                        id: userId,
-                        username: username,
-                        email: email || ''
-                    };
-                    
-                    localStorage.setItem('memoryUser', JSON.stringify(userData));
-                    
-                    currentUserId = userId;
-                    currentUsername = username;
-                    
-                    updateUserUI();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Bienvenido!',
-                        text: `Hola ${username}, ¡disfruta del juego!`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    
                 } catch (error) {
-                    console.error('Error en login:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo iniciar sesión. Intenta nuevamente.'
-                    });
+                    console.error('Error obteniendo usuario:', error);
                 }
             }
             
@@ -1008,7 +935,7 @@
                 winMessage.style.display = 'flex';
                 createConfetti();
                 
-                // Guardar la puntuación en Supabase si hay un usuario registrado
+                // Guardar la puntuación en Supabase si hay un usuario autenticado
                 if (currentUserId) {
                     try {
                         const { data, error } = await supabase
