@@ -526,17 +526,46 @@
         let friendsTableRendered = false;
         let roomSubscription = null;
         let currentRoomId = null;
+        let roomsTableExists = false;
         
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', async function() {
             await checkUserSession();
+            await checkRoomsTable();
             await loadUserFriends();
-            await setupRoom();
-            subscribeToRoomChanges();
+            
+            if (roomsTableExists) {
+                await setupRoom();
+                subscribeToRoomChanges();
+            } else {
+                showError('La funcionalidad de salas no está disponible. Contacta al administrador.');
+            }
             
             // Iniciar actualización automática cada 30 segundos
             startAutoRefresh();
         });
+        
+        // Verificar si la tabla rooms existe
+        async function checkRoomsTable() {
+            try {
+                // Intentar hacer una consulta simple a la tabla rooms
+                const { error } = await supabase
+                    .from('rooms')
+                    .select('count')
+                    .limit(1);
+                
+                // Si no hay error, la tabla existe
+                roomsTableExists = !error;
+                
+                if (error) {
+                    console.warn('La tabla rooms no existe o no tienes permisos:', error);
+                    updateDebugInfo('Tabla rooms', 'No existe o sin permisos');
+                }
+            } catch (error) {
+                console.error('Error verificando tabla rooms:', error);
+                roomsTableExists = false;
+            }
+        }
         
         // Verificar la sesión del usuario
         async function checkUserSession() {
@@ -571,9 +600,9 @@
             }
         }
         
-        // Configurar la sala del usuario
+        // Configurar la sala del usuario (solo si la tabla existe)
         async function setupRoom() {
-            if (!currentUser) return;
+            if (!currentUser || !roomsTableExists) return;
             
             try {
                 // Buscar si el usuario ya tiene una sala activa
@@ -582,9 +611,9 @@
                     .select('*')
                     .or(`user1_id.eq.${currentUser.id},user2_id.eq.${currentUser.id}`)
                     .eq('is_active', true)
-                    .single();
+                    .maybeSingle();  // Usar maybeSingle en lugar de single
                 
-                if (roomError && roomError.code !== 'PGRST116') {
+                if (roomError) {
                     console.error('Error buscando sala:', roomError);
                     return;
                 }
@@ -637,9 +666,9 @@
             }
         }
         
-        // Suscribirse a cambios en la sala en tiempo real
+        // Suscribirse a cambios en la sala en tiempo real (solo si la tabla existe)
         function subscribeToRoomChanges() {
-            if (!currentRoomId) return;
+            if (!currentRoomId || !roomsTableExists) return;
             
             // Cancelar suscripción anterior si existe
             if (roomSubscription) {
@@ -679,11 +708,13 @@
                             if (otherUser) {
                                 currentGuest = otherUser;
                                 addGuestToRoom(otherUser);
+                                await loadUserFriends(); // Actualizar lista de amigos
                             }
                         } else if (!otherUserId && currentGuest) {
                             // El otro usuario salió de la sala
                             currentGuest = null;
                             clearGuestFromRoom();
+                            await loadUserFriends(); // Actualizar lista de amigos
                         }
                     }
                 )
@@ -787,7 +818,7 @@
             ];
         }
         
-        // Renderizar la lista de amigos - VERSIÓN CORREGIDA
+        // Renderizar la lista de amigos
         function renderFriendsList(friends) {
             const friendsContainer = document.getElementById('friends-container');
             
@@ -808,7 +839,7 @@
                 <tr>
                     <th>Nombre</th>
                     <th>Estado</th>
-                    <th>Invitar</th>
+                    <th>Acción</th>
                 </tr>
             `;
             friendsTable.appendChild(thead);
@@ -865,6 +896,7 @@
                 
                 const isOnline = isUserOnline(friendProfile.last_sign_in_at);
                 const isAlreadyInRoom = currentGuest && currentGuest.id === friendProfile.id;
+                const canInvite = isOnline && !isAlreadyInRoom && roomsTableExists;
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -872,10 +904,11 @@
                     <td class="friend-status">
                         <span class="status-indicator ${isOnline ? 'status-online-indicator' : 'status-offline-indicator'}"></span>
                         ${isOnline ? 'En línea' : 'Desconectado'}
+                        ${isAlreadyInRoom ? ' (En sala)' : ''}
                     </td>
                     <td>
-                        <button class="invite-btn ${isOnline && !isAlreadyInRoom ? 'invite-online' : 'invite-offline'}" 
-                                ${isOnline && !isAlreadyInRoom ? '' : 'disabled'}>
+                        <button class="invite-btn ${canInvite ? 'invite-online' : 'invite-offline'}" 
+                                ${canInvite ? '' : 'disabled'}>
                             <i class="fas fa-plus"></i> 
                             ${isAlreadyInRoom ? 'En sala' : 'Invitar'}
                         </button>
@@ -883,7 +916,7 @@
                 `;
                 
                 // Agregar evento al botón de invitar
-                if (isOnline && !isAlreadyInRoom) {
+                if (canInvite) {
                     const inviteBtn = row.querySelector('.invite-btn');
                     inviteBtn.addEventListener('click', () => sendInvitation(friendProfile));
                 }
@@ -956,8 +989,8 @@
                     
                     Swal.fire({
                         title: 'Invitación enviada',
-                        html: `Esperando a <strong>${friend.username}</strong>...`,
-                        icon: 'info',
+                        html: `<strong>${friend.username}</strong> puede unirse a la sala`,
+                        icon: 'success',
                         timer: 2000,
                         showConfirmButton: false
                     });
@@ -1002,9 +1035,6 @@
                     </div>
                 `;
             }
-            
-            // Recargar la lista de amigos para actualizar los botones
-            loadUserFriends();
         }
         
         // Iniciar actualización automática
