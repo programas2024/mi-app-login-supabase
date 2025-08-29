@@ -1,4 +1,12 @@
-/* Estilos básicos para la interfaz */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Amigos - Tiempo Real</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos básicos para la interfaz */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -517,92 +525,7 @@
             display: block;
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <button class="back-button" onclick="handleBackButton()">
-                <i class="fas fa-arrow-left"></i> Volver
-            </button>
-            
-            <h1 class="page-title">Sala de Amigos</h1>
-            
-            <div>
-                <button class="inbox-toggle" id="inbox-toggle">
-                    <i class="fas fa-inbox"></i>
-                    <span class="inbox-badge" id="inbox-badge">0</span>
-                </button>
-                <button class="action-btn" onclick="showRoomInfo()">
-                    <i class="fas fa-info"></i>
-                </button>
-                <button class="refresh-btn" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
-        </div>
 
-        <!-- Buzón de solicitudes (oculto inicialmente) -->
-        <div class="inbox-container" id="inbox-container">
-            <div class="inbox-header">
-                <h3>Solicitudes Pendientes</h3>
-                <button class="inbox-close" onclick="toggleInbox()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="inbox-content" id="inbox-content">
-                <!-- Las solicitudes se cargarán aquí dinámicamente -->
-            </div>
-        </div>
-        
-        <p class="page-subtitle">Conecta con tus amigos y disfruten juntos de una experiencia de juego única</p>
-        
-        <div id="errorContainer"></div>
-        
-        <div class="room-content">
-            <div class="users-container">
-                <!-- Usuario actual -->
-                <div class="user-card" id="current-user-card">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h3 class="user-name">Tú</h3>
-                    <div class="user-status status-online">Conectado</div>
-                    <p>Esperando amigos...</p>
-                </div>
-                
-                <!-- Espacio para invitado -->
-                <div class="user-card" id="guest-user-card">
-                    <div class="empty-room">
-                        <div class="empty-room-icon">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="empty-room-text">
-                            Invita a un amigo para jugar juntos
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="friends-table-container" id="friends-container">
-                <h3 class="friends-table-title">Amigos</h3>
-                <div class="loading" id="friends-loading">
-                    <div class="loading-spinner"></div>
-                    <span>Cargando amigos...</span>
-                </div>
-            </div>
-        </div>
-
-        <button class="debug-toggle" onclick="toggleDebug()">Mostrar información de depuración</button>
-        <div class="debug-info" id="debugInfo">
-            <h4>Información de depuración:</h4>
-            <p id="debugContent">Cargando...</p>
-        </div>
-    </div>
-
-    <div class="real-time-indicator">
-        <div class="pulse"></div>
-        Tiempo real activo
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
