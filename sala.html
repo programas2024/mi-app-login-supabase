@@ -717,14 +717,13 @@
     <!-- Scripts externos -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Iniciando Memory Elegante...');
             
             // Configuración de Supabase
             const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3RwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
             console.log('Configurando Supabase con URL:', SUPABASE_URL);
             console.log('Usando API Key:', SUPABASE_ANON_KEY.substring(0, 10) + '...');
@@ -760,14 +759,44 @@
             let currentUserId = null;
             let currentUsername = null;
             
-            // Obtener usuario autenticado
-            await getCurrentUser();
+            // Verificar sesión al cargar la página
+            try {
+                // Obtener la sesión actual
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError) {
+                    console.error('Error al obtener la sesión:', sessionError);
+                    showError('No se pudo verificar la sesión. Por favor, inicia sesión nuevamente.');
+                    return;
+                }
+                
+                if (!session) {
+                    showError('No hay una sesión activa. Por favor, inicia sesión.');
+                    return;
+                }
+                
+                currentUserId = session.user.id;
+                console.log('Usuario actual:', currentUserId);
+                
+                // Obtener información del perfil
+                await getCurrentUser();
+                
+            } catch (error) {
+                console.error('Error verificando sesión:', error);
+                showError('Error al verificar la sesión. Por favor, recarga la página.');
+            }
             
             // Lista de iconos FontAwesome para las tarjetas
             const allIcons = [
                 'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
                 'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
             ];
+            
+            // Función para mostrar errores
+            function showError(message) {
+                console.error('Error:', message);
+                // Puedes implementar aquí la lógica para mostrar errores en la UI
+            }
             
             // Función para obtener el usuario actual desde Supabase Auth
             async function getCurrentUser() {
@@ -787,26 +816,31 @@
                         console.log('Usuario autenticado encontrado:', session.user.id);
                         console.log('Email del usuario:', session.user.email);
                         
-                        // Obtener información del perfil
-                        const { data: profile, error: profileError } = await supabase
-                            .from('profiles')
-                            .select('id, username')
-                            .eq('id', session.user.id)
-                            .single();
-                            
-                        console.log('Respuesta de profiles:', { profile, profileError });
-                            
-                        if (profileError) {
-                            console.error('Error obteniendo perfil:', profileError);
-                            return;
+                        // Establecer el usuario actual
+                        currentUserId = session.user.id;
+                        currentUsername = session.user.email; // Usar email como fallback
+                        
+                        // Intentar obtener información del perfil
+                        try {
+                            const { data: profile, error: profileError } = await supabase
+                                .from('profiles')
+                                .select('id, username')
+                                .eq('id', session.user.id)
+                                .single();
+                                
+                            console.log('Respuesta de profiles:', { profile, profileError });
+                                
+                            if (!profileError && profile) {
+                                currentUsername = profile.username;
+                                console.log('Perfil obtenido - ID:', currentUserId, 'Username:', currentUsername);
+                            } else {
+                                console.log('Usando email como nombre de usuario');
+                            }
+                        } catch (profileError) {
+                            console.log('Error obteniendo perfil, usando email:', profileError);
                         }
                         
-                        if (profile) {
-                            currentUserId = profile.id;
-                            currentUsername = profile.username;
-                            console.log('Perfil obtenido - ID:', currentUserId, 'Username:', currentUsername);
-                            updateUserUI();
-                        }
+                        updateUserUI();
                     } else {
                         console.log('No hay sesión activa');
                     }
