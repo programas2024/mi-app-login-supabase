@@ -19,7 +19,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #ff44d7, #203a43, #2c5364);
+            background: linear-gradient(135deg, #41ff6a, #203a43, #2c5364);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -637,6 +637,7 @@
             <h2>¡Felicidades!</h2>
             <p>Has encontrado todos los pares en <span id="final-moves">0</span> movimientos.</p>
             <p id="score-saved-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación guardada en el ranking!</p>
+            <p id="score-updated-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación actualizada en el ranking!</p>
             <p id="score-error-message" style="display: none; color: #f44336; font-weight: bold;">Error al guardar la puntuación</p>
             <div class="nav-buttons">
                 <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
@@ -674,8 +675,7 @@
         </div>
     </div>
 
-  
-     <script>
+    <script>
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Iniciando Memory Elegante...');
             
@@ -830,7 +830,7 @@
             function shuffleArray(array) {
                 console.log('Mezclando array...');
                 for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() - 0.5);
+                    const j = Math.floor(Math.random() * (i + 1));
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
