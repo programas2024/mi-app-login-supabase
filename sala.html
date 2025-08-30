@@ -19,7 +19,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #44c7ff, #203a43, #2c5364);
+            background: linear-gradient(135deg, #ff44d7, #203a43, #2c5364);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -830,7 +830,7 @@
             function shuffleArray(array) {
                 console.log('Mezclando array...');
                 for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
+                    const j = Math.floor(Math.random() - 0.5);
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
@@ -957,9 +957,9 @@
                         if (selectError && selectError.code !== 'PGRST116') {
                             // PGRST116 es el código cuando no se encuentra ningún resultado
                             console.error('Error verificando puntuación existente:', selectError);
-                            scoreErrorMessage.style.display = 'block';
-                            scoreSavedMessage.style.display = 'none';
-                            scoreUpdatedMessage.style.display = 'none';
+                            if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
+                            if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                            if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
                             return;
                         }
                         
@@ -982,20 +982,20 @@
                                 
                                 if (result.error) {
                                     console.error('Error actualizando puntuación:', result.error);
-                                    scoreErrorMessage.style.display = 'block';
-                                    scoreSavedMessage.style.display = 'none';
-                                    scoreUpdatedMessage.style.display = 'none';
+                                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
+                                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
                                 } else {
                                     console.log('Puntuación actualizada correctamente');
-                                    scoreUpdatedMessage.style.display = 'block';
-                                    scoreSavedMessage.style.display = 'none';
-                                    scoreErrorMessage.style.display = 'none';
+                                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'block';
+                                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
                                 }
                             } else {
                                 console.log('La puntuación existente es mejor, no se actualiza');
-                                scoreUpdatedMessage.style.display = 'none';
-                                scoreSavedMessage.style.display = 'none';
-                                scoreErrorMessage.style.display = 'none';
+                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
                             }
                         } else {
                             // Si no existe, insertar nueva puntuación
@@ -1005,26 +1005,26 @@
                             
                             if (result.error) {
                                 console.error('Error guardando puntuación:', result.error);
-                                scoreErrorMessage.style.display = 'block';
-                                scoreSavedMessage.style.display = 'none';
-                                scoreUpdatedMessage.style.display = 'none';
+                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
+                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
                             } else {
                                 console.log('Puntuación guardada correctamente');
-                                scoreSavedMessage.style.display = 'block';
-                                scoreUpdatedMessage.style.display = 'none';
-                                scoreErrorMessage.style.display = 'none';
+                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'block';
+                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
                             }
                         }
                     } catch (error) {
                         console.error('Error guardando puntuación:', error);
-                        scoreErrorMessage.style.display = 'block';
-                        scoreSavedMessage.style.display = 'none';
-                        scoreUpdatedMessage.style.display = 'none';
+                        if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
+                        if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                        if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
                     }
                 } else {
-                    scoreErrorMessage.style.display = 'block';
-                    scoreSavedMessage.style.display = 'none';
-                    scoreUpdatedMessage.style.display = 'none';
+                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
+                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
                 }
             }
             
@@ -1113,9 +1113,9 @@
                 movesElement.textContent = moves;
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
-                scoreSavedMessage.style.display = 'none';
-                scoreUpdatedMessage.style.display = 'none';
-                scoreErrorMessage.style.display = 'none';
+                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
+                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
                 
                 // Volver a generar las cartas con iconos aleatorios
                 generateCards();
