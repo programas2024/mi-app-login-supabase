@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        /* Estilos CSS (sin cambios) */
         * {
             margin: 0;
             padding: 0;
@@ -60,24 +59,26 @@
             margin: 0 auto;
         }
         
-        .game-info {
+        .stats-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 20px 30px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
         }
         
-        .stats {
+        .horizontal-stats {
             display: flex;
             gap: 30px;
         }
         
-        .stat-box {
+        .horizontal-stat {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -88,18 +89,18 @@
             box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
-        .stat-box i {
+        .horizontal-stat i {
             font-size: 1.8rem;
-            color: #d32dfd;
+            color: #2d53fd;
             margin-bottom: 10px;
         }
         
-        .stat-box .value {
+        .horizontal-stat .value {
             font-size: 1.8rem;
             font-weight: 500;
         }
         
-        .stat-box .label {
+        .horizontal-stat .label {
             font-size: 0.9rem;
             opacity: 0.8;
         }
@@ -339,53 +340,6 @@
             color: #fff;
         }
         
-        /* Mejoras para las estadísticas */
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 20px 30px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-        
-        .horizontal-stats {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .horizontal-stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px 25px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 16px;
-            min-width: 140px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .horizontal-stat i {
-            font-size: 1.8rem;
-            color: #2d53fd;
-            margin-bottom: 10px;
-        }
-        
-        .horizontal-stat .value {
-            font-size: 1.8rem;
-            font-weight: 500;
-        }
-        
-        .horizontal-stat .label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
         /* Ranking modal */
         .ranking-table {
             width: 100%;
@@ -466,16 +420,6 @@
                 font-size: 2.8rem;
             }
             
-            .stats {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .game-info {
-                flex-direction: column;
-                gap: 25px;
-            }
-            
             .horizontal-stats {
                 flex-direction: column;
                 gap: 15px;
@@ -519,15 +463,6 @@
             
             .game-container {
                 padding: 20px;
-            }
-            
-            .stat-box {
-                padding: 12px 20px;
-                min-width: 120px;
-            }
-            
-            .stat-box .value {
-                font-size: 1.5rem;
             }
             
             .horizontal-stat {
@@ -627,6 +562,16 @@
             margin: 10px 0;
             text-align: center;
         }
+
+        .gold-badge {
+            background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-left: 10px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -646,6 +591,7 @@
             <div class="user-info" id="user-info" style="display: none;">
                 <i class="fas fa-user-circle"></i>
                 <span id="username">Usuario</span>
+                <span class="gold-badge" id="gold-badge" style="display: none;">Gold</span>
             </div>
         </header>
         
@@ -736,7 +682,6 @@
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
             console.log('Configurando Supabase con URL:', SUPABASE_URL);
-            console.log('Usando API Key:', SUPABASE_ANON_KEY.substring(0, 10) + '...');
             
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
@@ -761,6 +706,7 @@
             const scoreErrorMessage = document.getElementById('score-error-message');
             const userInfo = document.getElementById('user-info');
             const usernameSpan = document.getElementById('username');
+            const goldBadge = document.getElementById('gold-badge');
             
             let moves = 0;
             let pairsFound = 0;
@@ -768,94 +714,88 @@
             let lockBoard = false;
             let currentUserId = null;
             let currentUsername = null;
+            let currentUserEmail = null;
             
-            // Verificar sesión al cargar la página
-            try {
-                // Obtener la sesión actual
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                
-                if (sessionError) {
-                    console.error('Error al obtener la sesión:', sessionError);
-                    showError('No se pudo verificar la sesión. Por favor, inicia sesión nuevamente.');
-                    return;
+            // Función para verificar la sesión del usuario
+            async function checkUserSession() {
+                try {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    
+                    if (error) {
+                        showError('Error al verificar la sesión: ' + error.message);
+                        return false;
+                    }
+                    
+                    if (!session) {
+                        showError('No hay una sesión activa. Por favor, inicia sesión primero.');
+                        // Redirigir a la página de login después de 3 segundos
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 3000);
+                        return false;
+                    }
+                    
+                    currentUserId = session.user.id;
+                    currentUserEmail = session.user.email;
+                    
+                    // Obtener información del perfil
+                    await getCurrentUser();
+                    
+                    return true;
+                } catch (error) {
+                    showError('Error inesperado: ' + error.message);
+                    return false;
                 }
-                
-                if (!session) {
-                    showError('No hay una sesión activa. Por favor, inicia sesión.');
-                    return;
-                }
-                
-                currentUserId = session.user.id;
-                console.log('Usuario actual:', currentUserId);
-                
-                // Obtener información del perfil
-                await getCurrentUser();
-                
-            } catch (error) {
-                console.error('Error verificando sesión:', error);
-                showError('Error al verificar la sesión. Por favor, recarga la página.');
             }
-            
-            // Lista de iconos FontAwesome para las tarjetas
-            const allIcons = [
-                'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
-                'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
-            ];
             
             // Función para mostrar errores
             function showError(message) {
                 console.error('Error:', message);
-                // Puedes implementar aquí la lógica para mostrar errores en la UI
+                // Crear elemento de error si no existe
+                let errorElement = document.getElementById('error-message');
+                if (!errorElement) {
+                    errorElement = document.createElement('div');
+                    errorElement.id = 'error-message';
+                    errorElement.className = 'error-message';
+                    document.body.prepend(errorElement);
+                }
+                errorElement.textContent = message;
+                
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 5000);
             }
             
-            // Función para obtener el usuario actual desde Supabase Auth
+            // Función para obtener el usuario actual
             async function getCurrentUser() {
-                console.log('Obteniendo usuario actual...');
+                console.log('Obteniendo información del usuario...');
                 try {
-                    // Obtener la sesión actual
-                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                    // Primero intentar obtener el perfil desde la tabla profiles
+                    const { data: profile, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('username, membership_type')
+                        .eq('id', currentUserId)
+                        .single();
                     
-                    console.log('Respuesta de getSession:', { session, sessionError });
-                    
-                    if (sessionError) {
-                        console.error('Error obteniendo sesión:', sessionError);
-                        return;
-                    }
-                    
-                    if (session && session.user) {
-                        console.log('Usuario autenticado encontrado:', session.user.id);
-                        console.log('Email del usuario:', session.user.email);
+                    if (!profileError && profile) {
+                        console.log('Perfil obtenido:', profile);
+                        currentUsername = profile.username;
                         
-                        // Establecer el usuario actual
-                        currentUserId = session.user.id;
-                        currentUsername = session.user.email; // Usar email como fallback
-                        
-                        // Intentar obtener información del perfil
-                        try {
-                            const { data: profile, error: profileError } = await supabase
-                                .from('profiles')
-                                .select('id, username')
-                                .eq('id', session.user.id)
-                                .single();
-                                
-                            console.log('Respuesta de profiles:', { profile, profileError });
-                                
-                            if (!profileError && profile) {
-                                currentUsername = profile.username;
-                                console.log('Perfil obtenido - ID:', currentUserId, 'Username:', currentUsername);
-                            } else {
-                                console.log('Usando email como nombre de usuario');
-                            }
-                        } catch (profileError) {
-                            console.log('Error obteniendo perfil, usando email:', profileError);
+                        // Mostrar badge si es usuario Gold
+                        if (profile.membership_type === 'gold') {
+                            goldBadge.style.display = 'inline';
                         }
-                        
-                        updateUserUI();
                     } else {
-                        console.log('No hay sesión activa');
+                        console.log('No se pudo obtener el perfil, usando email:', profileError);
+                        currentUsername = currentUserEmail;
                     }
+                    
+                    updateUserUI();
                 } catch (error) {
-                    console.error('Error obteniendo usuario:', error);
+                    console.error('Error obteniendo información del usuario:', error);
+                    currentUsername = currentUserEmail;
+                    updateUserUI();
                 }
             }
             
@@ -931,27 +871,15 @@
             
             // Voltear una carta
             function flipCard() {
-                console.log('Volteando carta...');
-                if (lockBoard) {
-                    console.log('Tablero bloqueado, ignorando click');
-                    return;
-                }
-                if (this === firstCard) {
-                    console.log('Misma carta, ignorando click');
-                    return;
-                }
-                if (this.classList.contains('matched')) {
-                    console.log('Carta ya emparejada, ignorando click');
-                    return;
-                }
+                if (lockBoard) return;
+                if (this === firstCard) return;
+                if (this.classList.contains('matched')) return;
                 
                 this.classList.add('flipped');
-                console.log('Carta volteada');
                 
                 if (!firstCard) {
                     // Primera carta volteada
                     firstCard = this;
-                    console.log('Primera carta seleccionada');
                     return;
                 }
                 
@@ -959,25 +887,20 @@
                 secondCard = this;
                 moves++;
                 movesElement.textContent = moves;
-                console.log('Segunda carta seleccionada. Movimientos:', moves);
                 
                 checkForMatch();
             }
             
             // Comprobar si las cartas coinciden
             function checkForMatch() {
-                console.log('Comprobando coincidencia...');
                 const isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
-                console.log('Coincidencia:', isMatch);
                 
                 if (isMatch) {
                     disableCards();
                     pairsFound++;
                     pairsElement.textContent = pairsFound;
-                    console.log('Pares encontrados:', pairsFound);
                     
                     if (pairsFound === 6) {
-                        console.log('¡Juego completado!');
                         setTimeout(() => {
                             showWinMessage();
                         }, 1000);
@@ -989,7 +912,6 @@
             
             // Deshabilitar cartas coincidentes
             function disableCards() {
-                console.log('Deshabilitando cartas coincidentes...');
                 firstCard.classList.add('matched');
                 secondCard.classList.add('matched');
                 firstCard.removeEventListener('click', flipCard);
@@ -1000,7 +922,6 @@
             
             // Volver a voltear las cartas si no coinciden
             function unflipCards() {
-                console.log('Volteando cartas de vuelta...');
                 lockBoard = true;
                 
                 setTimeout(() => {
@@ -1013,20 +934,17 @@
             
             // Reiniciar el tablero después de cada turno
             function resetBoard() {
-                console.log('Reiniciando tablero...');
                 [firstCard, secondCard, lockBoard] = [null, null, false];
             }
             
             // Mostrar mensaje de victoria
             async function showWinMessage() {
-                console.log('Mostrando mensaje de victoria...');
                 finalMovesElement.textContent = moves;
                 winMessage.style.display = 'flex';
                 createConfetti();
                 
                 // Guardar la puntuación en Supabase si hay un usuario autenticado
                 if (currentUserId) {
-                    console.log('Guardando puntuación para usuario:', currentUserId);
                     try {
                         const scoreData = { 
                             user_id: currentUserId, 
@@ -1035,13 +953,9 @@
                             completion_time: new Date().toISOString()
                         };
                         
-                        console.log('Datos a guardar:', scoreData);
-                        
                         const { data, error } = await supabase
                             .from('scores')
                             .insert([scoreData]);
-                        
-                        console.log('Respuesta de inserción:', { data, error });
                         
                         if (error) {
                             console.error('Error guardando puntuación:', error);
@@ -1058,7 +972,6 @@
                         scoreSavedMessage.style.display = 'none';
                     }
                 } else {
-                    console.log('No hay usuario autenticado, no se guarda puntuación');
                     scoreErrorMessage.style.display = 'block';
                     scoreSavedMessage.style.display = 'none';
                 }
@@ -1066,7 +979,6 @@
             
             // Crear efecto de confeti
             function createConfetti() {
-                console.log('Creando efecto de confeti...');
                 confetti({
                     particleCount: 150,
                     spread: 70,
@@ -1076,13 +988,10 @@
             
             // Cargar y mostrar ranking
             async function loadRanking() {
-                console.log('Cargando ranking...');
                 rankingContent.innerHTML = '<p>Cargando ranking...</p>';
                 rankingModal.style.display = 'flex';
                 
                 try {
-                    // Consulta para obtener el ranking con información de usuarios
-                    console.log('Realizando consulta a Supabase...');
                     const { data, error } = await supabase
                         .from('scores')
                         .select(`
@@ -1094,8 +1003,6 @@
                         .order('movements', { ascending: true })
                         .limit(10);
                     
-                    console.log('Respuesta de ranking:', { data, error });
-                    
                     if (error) {
                         console.error('Error cargando ranking:', error);
                         rankingContent.innerHTML = '<p>Error al cargar el ranking. Intenta nuevamente.</p>';
@@ -1103,7 +1010,6 @@
                     }
                     
                     if (data && data.length > 0) {
-                        console.log('Datos de ranking recibidos:', data.length, 'registros');
                         let tableHtml = `
                             <table class="ranking-table">
                                 <thead>
@@ -1141,7 +1047,6 @@
                         
                         rankingContent.innerHTML = tableHtml;
                     } else {
-                        console.log('No hay datos de ranking');
                         rankingContent.innerHTML = '<p>No hay puntuaciones aún. ¡Sé el primero en jugar!</p>';
                     }
                 } catch (error) {
@@ -1152,7 +1057,6 @@
             
             // Reiniciar el juego
             function resetGame() {
-                console.log('Reiniciando juego...');
                 moves = 0;
                 pairsFound = 0;
                 movesElement.textContent = moves;
@@ -1166,59 +1070,66 @@
                 resetBoard();
             }
             
-            // Mostrar modal de información
+            // Lista de iconos FontAwesome para las tarjetas
+            const allIcons = [
+                'fa-gem', 'fa-heart', 'fa-star', 'fa-moon', 'fa-sun', 'fa-cloud',
+                'fa-bolt', 'fa-flask', 'fa-music', 'fa-snowflake', 'fa-leaf', 'fa-fire'
+            ];
+            
+            // Inicializar el juego
+            async function initGame() {
+                console.log('Inicializando juego...');
+                
+                // Verificar sesión primero
+                const isAuthenticated = await checkUserSession();
+                
+                if (!isAuthenticated) {
+                    return;
+                }
+                
+                // Si está autenticado, generar las cartas
+                generateCards();
+                console.log('Juego inicializado correctamente');
+            }
+            
+            // Event listeners
             infoBtn.addEventListener('click', () => {
-                console.log('Mostrando modal de información');
                 infoModal.style.display = 'flex';
             });
             
-            // Cerrar modal de información
             closeModal.addEventListener('click', () => {
-                console.log('Cerrando modal de información');
                 infoModal.style.display = 'none';
             });
             
-            // Mostrar modal de ranking
             rankingBtn.addEventListener('click', loadRanking);
             rankingBtn2.addEventListener('click', loadRanking);
             
-            // Cerrar modal de ranking
             closeRankingModal.addEventListener('click', () => {
-                console.log('Cerrando modal de ranking');
                 rankingModal.style.display = 'none';
             });
             
             closeRankingBtn.addEventListener('click', () => {
-                console.log('Cerrando modal de ranking con botón');
                 rankingModal.style.display = 'none';
             });
             
-            // Ir al dashboard
             dashboardBtn.addEventListener('click', () => {
-                console.log('Navegando al dashboard');
                 window.location.href = 'dashboard.html';
             });
             
-            // Cerrar modales al hacer clic fuera del contenido
             window.addEventListener('click', (e) => {
                 if (e.target === infoModal) {
-                    console.log('Cerrando modal de información (click externo)');
                     infoModal.style.display = 'none';
                 }
                 if (e.target === rankingModal) {
-                    console.log('Cerrando modal de ranking (click externo)');
                     rankingModal.style.display = 'none';
                 }
             });
             
-            // Event listeners para los botones
             resetButton.addEventListener('click', resetGame);
             playAgainButton.addEventListener('click', resetGame);
             
-            // Inicializar el juego
-            console.log('Inicializando juego...');
-            generateCards();
-            console.log('Juego inicializado correctamente');
+            // Iniciar el juego
+            initGame();
         });
     </script>
 </body>
