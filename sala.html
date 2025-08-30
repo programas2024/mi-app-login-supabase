@@ -19,7 +19,7 @@
         }
         
         body {
-            background: linear-gradient(135deg, #00b3ff, #203a43, #ff0505);
+            background: linear-gradient(135deg, #44c7ff, #203a43, #2c5364);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -637,7 +637,6 @@
             <h2>¡Felicidades!</h2>
             <p>Has encontrado todos los pares en <span id="final-moves">0</span> movimientos.</p>
             <p id="score-saved-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación guardada en el ranking!</p>
-            <p id="score-updated-message" style="display: none; color: #4caf50; font-weight: bold;">¡Puntuación actualizada en el ranking!</p>
             <p id="score-error-message" style="display: none; color: #f44336; font-weight: bold;">Error al guardar la puntuación</p>
             <div class="nav-buttons">
                 <button id="play-again"><i class="fas fa-play"></i> Jugar de nuevo</button>
@@ -675,13 +674,14 @@
         </div>
     </div>
 
-    <script>
+  
+     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Iniciando Memory Elegante...');
             
             // Configuración de Supabase
             const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhbmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
@@ -775,7 +775,7 @@
                     // Primero intentar obtener el perfil desde la tabla profiles
                     const { data: profile, error: profileError } = await supabase
                         .from('profiles')
-                        .select('username, gold')
+                        .select('username, gold')  // Cambiado a 'gold' en lugar de 'membership_type'
                         .eq('id', currentUserId)
                         .single();
                     
@@ -957,9 +957,9 @@
                         if (selectError && selectError.code !== 'PGRST116') {
                             // PGRST116 es el código cuando no se encuentra ningún resultado
                             console.error('Error verificando puntuación existente:', selectError);
-                            if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
-                            if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                            if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                            scoreErrorMessage.style.display = 'block';
+                            scoreSavedMessage.style.display = 'none';
+                            scoreUpdatedMessage.style.display = 'none';
                             return;
                         }
                         
@@ -982,20 +982,20 @@
                                 
                                 if (result.error) {
                                     console.error('Error actualizando puntuación:', result.error);
-                                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
-                                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                                    scoreErrorMessage.style.display = 'block';
+                                    scoreSavedMessage.style.display = 'none';
+                                    scoreUpdatedMessage.style.display = 'none';
                                 } else {
                                     console.log('Puntuación actualizada correctamente');
-                                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'block';
-                                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
+                                    scoreUpdatedMessage.style.display = 'block';
+                                    scoreSavedMessage.style.display = 'none';
+                                    scoreErrorMessage.style.display = 'none';
                                 }
                             } else {
                                 console.log('La puntuación existente es mejor, no se actualiza');
-                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
-                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
+                                scoreUpdatedMessage.style.display = 'none';
+                                scoreSavedMessage.style.display = 'none';
+                                scoreErrorMessage.style.display = 'none';
                             }
                         } else {
                             // Si no existe, insertar nueva puntuación
@@ -1005,26 +1005,26 @@
                             
                             if (result.error) {
                                 console.error('Error guardando puntuación:', result.error);
-                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
-                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                                scoreErrorMessage.style.display = 'block';
+                                scoreSavedMessage.style.display = 'none';
+                                scoreUpdatedMessage.style.display = 'none';
                             } else {
                                 console.log('Puntuación guardada correctamente');
-                                if (scoreSavedMessage) scoreSavedMessage.style.display = 'block';
-                                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
-                                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
+                                scoreSavedMessage.style.display = 'block';
+                                scoreUpdatedMessage.style.display = 'none';
+                                scoreErrorMessage.style.display = 'none';
                             }
                         }
                     } catch (error) {
                         console.error('Error guardando puntuación:', error);
-                        if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
-                        if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                        if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                        scoreErrorMessage.style.display = 'block';
+                        scoreSavedMessage.style.display = 'none';
+                        scoreUpdatedMessage.style.display = 'none';
                     }
                 } else {
-                    if (scoreErrorMessage) scoreErrorMessage.style.display = 'block';
-                    if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                    if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
+                    scoreErrorMessage.style.display = 'block';
+                    scoreSavedMessage.style.display = 'none';
+                    scoreUpdatedMessage.style.display = 'none';
                 }
             }
             
@@ -1113,9 +1113,9 @@
                 movesElement.textContent = moves;
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
-                if (scoreSavedMessage) scoreSavedMessage.style.display = 'none';
-                if (scoreUpdatedMessage) scoreUpdatedMessage.style.display = 'none';
-                if (scoreErrorMessage) scoreErrorMessage.style.display = 'none';
+                scoreSavedMessage.style.display = 'none';
+                scoreUpdatedMessage.style.display = 'none';
+                scoreErrorMessage.style.display = 'none';
                 
                 // Volver a generar las cartas con iconos aleatorios
                 generateCards();
