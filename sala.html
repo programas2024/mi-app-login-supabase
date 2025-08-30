@@ -776,7 +776,7 @@
                     // Primero intentar obtener el perfil desde la tabla profiles
                     const { data: profile, error: profileError } = await supabase
                         .from('profiles')
-                        .select('username, membership_type')
+                        .select('username, gold')  
                         .eq('id', currentUserId)
                         .single();
                     
