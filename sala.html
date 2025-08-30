@@ -934,7 +934,7 @@
                 }, 1000);
             }
             
-            // Reiniciar el tablero después de cada turno
+           // Reiniciar el tablero después de cada turno
             function resetBoard() {
                 [firstCard, secondCard, lockBoard] = [null, null, false];
             }
@@ -945,8 +945,8 @@
                 winMessage.style.display = 'flex';
                 createConfetti();
                 
-                // Guardar la puntuación en Supabase si hay un usuario autenticado
-                if (currentUserId) {
+                // Guardar la puntuación en Supabase si hay un usuario autenticado y la API key es válida
+                if (currentUserId && apiKeyValid) {
                     try {
                         const scoreData = { 
                             user_id: currentUserId, 
@@ -974,6 +974,7 @@
                         scoreSavedMessage.style.display = 'none';
                     }
                 } else {
+                    scoreErrorMessage.textContent = 'Puntuación no guardada (modo invitado o problema de conexión)';
                     scoreErrorMessage.style.display = 'block';
                     scoreSavedMessage.style.display = 'none';
                 }
@@ -990,6 +991,12 @@
             
             // Cargar y mostrar ranking
             async function loadRanking() {
+                if (!apiKeyValid) {
+                    rankingContent.innerHTML = '<p>No se puede cargar el ranking debido a un problema de configuración.</p>';
+                    rankingModal.style.display = 'flex';
+                    return;
+                }
+                
                 rankingContent.innerHTML = '<p>Cargando ranking...</p>';
                 rankingModal.style.display = 'flex';
                 
@@ -1083,13 +1090,9 @@
                 console.log('Inicializando juego...');
                 
                 // Verificar sesión primero
-                const isAuthenticated = await checkUserSession();
+                await checkUserSession();
                 
-                if (!isAuthenticated) {
-                    return;
-                }
-                
-                // Si está autenticado, generar las cartas
+                // Generar las cartas
                 generateCards();
                 console.log('Juego inicializado correctamente');
             }
