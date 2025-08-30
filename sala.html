@@ -675,13 +675,11 @@
     </div>
 
   
-    <script>
+     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Iniciando Memory Elegante...');
             
-            
-            
-             // Configuración de Supabase
+            // Configuración de Supabase
             const SUPABASE_URL = 'https://fesrphtabjohxcklbosh.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZlc3JwaHRhYmpvaHhja2xib3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMjQ0ODAsImV4cCI6MjA2ODYwMDQ4MH0.S8EJGetv7v9OWfiUCbxvoza1e8yUBVojyWvYCrR5nLo';
             
@@ -705,6 +703,7 @@
             const dashboardBtn = document.getElementById('dashboard-btn');
             const rankingContent = document.getElementById('ranking-content');
             const scoreSavedMessage = document.getElementById('score-saved-message');
+            const scoreUpdatedMessage = document.getElementById('score-updated-message');
             const scoreErrorMessage = document.getElementById('score-error-message');
             const userInfo = document.getElementById('user-info');
             const usernameSpan = document.getElementById('username');
@@ -776,7 +775,7 @@
                     // Primero intentar obtener el perfil desde la tabla profiles
                     const { data: profile, error: profileError } = await supabase
                         .from('profiles')
-                        .select('username, gold')  
+                        .select('username, gold')  // Cambiado a 'gold' en lugar de 'membership_type'
                         .eq('id', currentUserId)
                         .single();
                     
@@ -784,8 +783,8 @@
                         console.log('Perfil obtenido:', profile);
                         currentUsername = profile.username;
                         
-                        // Mostrar badge si es usuario Gold
-                        if (profile.membership_type === 'gold') {
+                        // Mostrar badge si es usuario Gold (tiene gold > 0)
+                        if (profile.gold > 0) {
                             goldBadge.style.display = 'inline';
                         }
                     } else {
@@ -934,7 +933,7 @@
                 }, 1000);
             }
             
-           // Reiniciar el tablero después de cada turno
+            // Reiniciar el tablero después de cada turno
             function resetBoard() {
                 [firstCard, secondCard, lockBoard] = [null, null, false];
             }
@@ -945,9 +944,25 @@
                 winMessage.style.display = 'flex';
                 createConfetti();
                 
-                // Guardar la puntuación en Supabase si hay un usuario autenticado y la API key es válida
-                if (currentUserId && apiKeyValid) {
+                // Guardar la puntuación en Supabase si hay un usuario autenticado
+                if (currentUserId) {
                     try {
+                        // Primero verificar si ya existe una puntuación para este usuario
+                        const { data: existingScore, error: selectError } = await supabase
+                            .from('scores')
+                            .select('id, movements')
+                            .eq('user_id', currentUserId)
+                            .single();
+                        
+                        if (selectError && selectError.code !== 'PGRST116') {
+                            // PGRST116 es el código cuando no se encuentra ningún resultado
+                            console.error('Error verificando puntuación existente:', selectError);
+                            scoreErrorMessage.style.display = 'block';
+                            scoreSavedMessage.style.display = 'none';
+                            scoreUpdatedMessage.style.display = 'none';
+                            return;
+                        }
+                        
                         const scoreData = { 
                             user_id: currentUserId, 
                             movements: moves, 
@@ -955,28 +970,61 @@
                             completion_time: new Date().toISOString()
                         };
                         
-                        const { data, error } = await supabase
-                            .from('scores')
-                            .insert([scoreData]);
+                        let result;
                         
-                        if (error) {
-                            console.error('Error guardando puntuación:', error);
-                            scoreErrorMessage.style.display = 'block';
-                            scoreSavedMessage.style.display = 'none';
+                        if (existingScore) {
+                            // Si ya existe una puntuación, actualizarla solo si la nueva es mejor (menos movimientos)
+                            if (moves < existingScore.movements) {
+                                result = await supabase
+                                    .from('scores')
+                                    .update(scoreData)
+                                    .eq('id', existingScore.id);
+                                
+                                if (result.error) {
+                                    console.error('Error actualizando puntuación:', result.error);
+                                    scoreErrorMessage.style.display = 'block';
+                                    scoreSavedMessage.style.display = 'none';
+                                    scoreUpdatedMessage.style.display = 'none';
+                                } else {
+                                    console.log('Puntuación actualizada correctamente');
+                                    scoreUpdatedMessage.style.display = 'block';
+                                    scoreSavedMessage.style.display = 'none';
+                                    scoreErrorMessage.style.display = 'none';
+                                }
+                            } else {
+                                console.log('La puntuación existente es mejor, no se actualiza');
+                                scoreUpdatedMessage.style.display = 'none';
+                                scoreSavedMessage.style.display = 'none';
+                                scoreErrorMessage.style.display = 'none';
+                            }
                         } else {
-                            console.log('Puntuación guardada correctamente');
-                            scoreSavedMessage.style.display = 'block';
-                            scoreErrorMessage.style.display = 'none';
+                            // Si no existe, insertar nueva puntuación
+                            result = await supabase
+                                .from('scores')
+                                .insert([scoreData]);
+                            
+                            if (result.error) {
+                                console.error('Error guardando puntuación:', result.error);
+                                scoreErrorMessage.style.display = 'block';
+                                scoreSavedMessage.style.display = 'none';
+                                scoreUpdatedMessage.style.display = 'none';
+                            } else {
+                                console.log('Puntuación guardada correctamente');
+                                scoreSavedMessage.style.display = 'block';
+                                scoreUpdatedMessage.style.display = 'none';
+                                scoreErrorMessage.style.display = 'none';
+                            }
                         }
                     } catch (error) {
                         console.error('Error guardando puntuación:', error);
                         scoreErrorMessage.style.display = 'block';
                         scoreSavedMessage.style.display = 'none';
+                        scoreUpdatedMessage.style.display = 'none';
                     }
                 } else {
-                    scoreErrorMessage.textContent = 'Puntuación no guardada (modo invitado o problema de conexión)';
                     scoreErrorMessage.style.display = 'block';
                     scoreSavedMessage.style.display = 'none';
+                    scoreUpdatedMessage.style.display = 'none';
                 }
             }
             
@@ -991,12 +1039,6 @@
             
             // Cargar y mostrar ranking
             async function loadRanking() {
-                if (!apiKeyValid) {
-                    rankingContent.innerHTML = '<p>No se puede cargar el ranking debido a un problema de configuración.</p>';
-                    rankingModal.style.display = 'flex';
-                    return;
-                }
-                
                 rankingContent.innerHTML = '<p>Cargando ranking...</p>';
                 rankingModal.style.display = 'flex';
                 
@@ -1072,6 +1114,7 @@
                 pairsElement.textContent = pairsFound;
                 winMessage.style.display = 'none';
                 scoreSavedMessage.style.display = 'none';
+                scoreUpdatedMessage.style.display = 'none';
                 scoreErrorMessage.style.display = 'none';
                 
                 // Volver a generar las cartas con iconos aleatorios
@@ -1090,9 +1133,13 @@
                 console.log('Inicializando juego...');
                 
                 // Verificar sesión primero
-                await checkUserSession();
+                const isAuthenticated = await checkUserSession();
                 
-                // Generar las cartas
+                if (!isAuthenticated) {
+                    return;
+                }
+                
+                // Si está autenticado, generar las cartas
                 generateCards();
                 console.log('Juego inicializado correctamente');
             }
